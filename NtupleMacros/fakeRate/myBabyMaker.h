@@ -154,6 +154,7 @@ class myBabyMaker {
       // WW
       Bool_t num_el_smurfV3_;
       Bool_t v1_el_smurfV1_;
+      Bool_t v2_el_smurfV1_;
       Bool_t v3_el_smurfV1_;
       Bool_t v4_el_smurfV1_;
 
@@ -204,6 +205,11 @@ class myBabyMaker {
     Bool_t fo_wwV1_04_;     // muonSelectionFO_mu_wwV1
     Bool_t fo_wwV1_10_;     // muonSelectionFO_mu_wwV1_iso10
     Bool_t fo_wwV1_10_d0_;  // muonSelectionFO_mu_wwV1_iso10_d0
+
+    // HWW
+    Bool_t num_mu_smurfV3_;
+    Bool_t fo_mu_smurf_04_;
+    Bool_t fo_mu_smurf_10_;
 
   //////////////////////////////////////////////////////
   // End Fake Rate Numerator & Denominator Selections //
@@ -556,6 +562,7 @@ void myBabyMaker::InitBabyNtuple () {
       // WW
       num_el_smurfV3_ = false;
       v1_el_smurfV1_  = false;
+      v2_el_smurfV1_  = false;
       v3_el_smurfV1_  = false;
       v4_el_smurfV1_  = false;
 
@@ -599,6 +606,10 @@ void myBabyMaker::InitBabyNtuple () {
     fo_wwV1_04_    = false;
     fo_wwV1_10_    = false;
     fo_wwV1_10_d0_ = false;
+    
+    num_mu_smurfV3_ = false;
+    fo_mu_smurf_04_ = false;
+    fo_mu_smurf_10_ = false;
 
   //////////////////////////////////////////////////////
   // End Fake Rate Numerator & Denominator Selections //
@@ -898,6 +909,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
         // WW
         babyTree_->Branch("num_el_smurfV3", &num_el_smurfV3_ );
         babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
+        babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
         babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
         babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
 
@@ -941,6 +953,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       babyTree_->Branch("fo_wwV1_10",         &fo_wwV1_10_,        "fo_wwV1_10/O"      );
       babyTree_->Branch("fo_wwV1_10_d0",         &fo_wwV1_10_d0_,        "fo_wwV1_10_d0/O"      );
 
+      babyTree_->Branch("num_mu_smurfV3",  &num_mu_smurfV3_,  "num_mu_smurfV3/O"      );
+      babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_,  "fo_mu_smurf_04/O"      );
+      babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_,  "fo_mu_smurf_10/O"      );
     //////////////////////////////////////////////////////
     // End Fake Rate Numerator & Denominator Selections //
     //////////////////////////////////////////////////////

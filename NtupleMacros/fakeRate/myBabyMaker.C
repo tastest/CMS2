@@ -252,6 +252,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           // WW
           num_el_smurfV3_ = pass_electronSelection( iEl, electronSelection_smurfV3          );
           v1_el_smurfV1_  = pass_electronSelection( iEl, electronSelectionFO_el_smurf_v1    );
+          v2_el_smurfV1_  = pass_electronSelection( iEl, electronSelectionFO_el_smurf_v2    );
           v3_el_smurfV1_  = pass_electronSelection( iEl, electronSelectionFO_el_smurf_v3    );
           v4_el_smurfV1_  = pass_electronSelection( iEl, electronSelectionFO_el_smurf_v4    );
 
@@ -328,7 +329,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
               (!v1_el_ssV3_)    && (!v2_el_ssV3_)    && (!v3_el_ssV3_)    &&                      // SS 2011
               (!v1OSOct18_)     && (!v2OSOct18_)     && (!v3OSOct18_)     &&                      // OS
               (!v1_wwV1_)       && (!v2_wwV1_)       && (!v3_wwV1_)       && (!v4_wwV1_)       && // WW 2010
-              (!v1_el_smurfV1_) &&                      (!v3_el_smurfV1_) && (!v4_el_smurfV1_)    // WW 2011
+              (!v1_el_smurfV1_) && (!v2_el_smurfV1_) && (!v3_el_smurfV1_) && (!v4_el_smurfV1_)    // WW 2011
             ) continue;
  
         //////////////////////////////////////////////////////
@@ -985,11 +986,17 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
           fo_wwV1_10_     = muonId(iMu, muonSelectionFO_mu_wwV1_iso10     );
           fo_wwV1_10_d0_  = muonId(iMu, muonSelectionFO_mu_wwV1_iso10_d0  );
   
+          // WW
+          num_mu_smurfV3_    = muonId(iMu, NominalSmurfV3                    );
+          fo_mu_smurf_04_    = muonId(iMu, muonSelectionFO_mu_smurf_04       );
+          fo_mu_smurf_10_    = muonId(iMu, muonSelectionFO_mu_smurf_10       );
+	  
           // 
           if( 
               !fo_04_ && !fo_10_ &&                                       // ttbar
               !fo_mussV2_04_ && !fo_mussV2_10_ &&                         // SS
-              !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_wwV1_10_d0_             // WW
+              !fo_wwV1_04_ && !fo_wwV1_10_ && !fo_wwV1_10_d0_ &&          // WW
+	      !fo_mu_smurf_04_ && !fo_mu_smurf_10_                        // HWW
           ) continue;
   
         //////////////////////////////////////////////////////
