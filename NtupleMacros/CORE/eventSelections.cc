@@ -213,7 +213,7 @@ bool hypsFromSameVtx(size_t hypIdx) {
 // of 0.2 cm of the same PV and if that PV is
 // the closest vertex to each lepton
 //----------------------------------------------------------------
-bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
+bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClosest)
 {
     int lt_trkidx = -1;
     int ll_trkidx = -1;
@@ -236,24 +236,29 @@ bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
     if (lt_trkidx < 0 || ll_trkidx < 0)
         return false;
 
+    // figure out which vertex collection to use
+    std::vector<LorentzVector> vtxP4s = useDAvtxs ? cms2.davtxs_position() : cms2.vtxs_position();
+
     if (!requireClosest) {
-        for (size_t v = 0; v < cms2.vtxs_position().size(); ++v)  {
-            if(!isGoodVertex(v))
+        for (size_t v = 0; v < vtxP4s.size(); ++v)  {
+
+            bool vertexIsGood = useDAvtxs ? isGoodDAVertex(v) : isGoodVertex(v);
+            if (!vertexIsGood)
                 continue;
             if (lt_isGsf) {
-                if (gsftrks_dz_pv(lt_trkidx, v).first > dz)
+                if (gsftrks_dz_pv(lt_trkidx, v, useDAvtxs).first > dz)
                     continue;
             }
             else {
-                if (trks_dz_pv(lt_trkidx, v).first > dz)
+                if (trks_dz_pv(lt_trkidx, v, useDAvtxs).first > dz)
                     continue;
             }
             if (ll_isGsf) {
-                if (gsftrks_dz_pv(ll_trkidx, v).first > dz)
+                if (gsftrks_dz_pv(ll_trkidx, v, useDAvtxs).first > dz)
                     continue;
             }
             else {
-                if (trks_dz_pv(ll_trkidx, v).first > dz)
+                if (trks_dz_pv(ll_trkidx, v, useDAvtxs).first > dz)
                     continue;
             }
             //if we've gotten here, then the vertex is good
@@ -269,35 +274,36 @@ bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
     int lt_vidx = -999;
     int ll_vidx = -999;
 
-    for (int vtxi = 0; vtxi < cms2.vtxs_position().size(); vtxi++) {
+    for (int vtxi = 0; vtxi < vtxP4s.size(); vtxi++) {
         
-        if (!isGoodVertex(vtxi))
+        bool vertexIsGood = useDAvtxs ? isGoodDAVertex(vtxi) : isGoodVertex(vtxi);
+        if (!vertexIsGood)
             continue;
 
         // first take care of lt
         if (lt_isGsf) {
-            if (fabs(gsftrks_dz_pv(lt_trkidx, vtxi).first) < lt_dz) {
-                lt_dz = fabs(gsftrks_dz_pv(lt_trkidx, vtxi).first);
+            if (fabs(gsftrks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first) < lt_dz) {
+                lt_dz = fabs(gsftrks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first);
                 lt_vidx = vtxi;
             }            
         }
         else {
-            if (fabs(trks_dz_pv(lt_trkidx, vtxi).first) < lt_dz) {
-                lt_dz = fabs(trks_dz_pv(lt_trkidx, vtxi).first);
+            if (fabs(trks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first) < lt_dz) {
+                lt_dz = fabs(trks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first);
                 lt_vidx = vtxi;
             }
         }
 
         // now same thing for ll
         if (ll_isGsf) {
-            if (fabs(gsftrks_dz_pv(ll_trkidx, vtxi).first) < ll_dz) {
-                ll_dz = fabs(gsftrks_dz_pv(ll_trkidx, vtxi).first);
+            if (fabs(gsftrks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first) < ll_dz) {
+                ll_dz = fabs(gsftrks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first);
                 ll_vidx = vtxi;
             }            
         }
         else {
-            if (fabs(trks_dz_pv(ll_trkidx, vtxi).first) < ll_dz) {
-                ll_dz = fabs(trks_dz_pv(ll_trkidx, vtxi).first);
+            if (fabs(trks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first) < ll_dz) {
+                ll_dz = fabs(trks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first);
                 ll_vidx = vtxi;
             }
         }
