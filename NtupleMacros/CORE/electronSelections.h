@@ -986,6 +986,16 @@ static const cuts_t electronSelectionFO_SS_baseline =
            (1ll<<ELENOMUON_010);
 
 // Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_ssV3_noIso = 
+           electronSelection_smurfV3_baseline |
+           electronSelection_smurfV3_convrej  |
+           electronSelection_smurfV3_id       |
+           (1ll<<ELECHARGE_NOTFLIP3AGREE)     |
+           (1ll<<ELENOMUON_010);
+
+static const cuts_t electronSelection_ssV3_iso =
+                 (1ll<<ELEISO_RELNT015);
+
 static const cuts_t electronSelection_ssV3 = 
            electronSelection_smurfV3_baseline |
            electronSelection_smurfV3_convrej  |
