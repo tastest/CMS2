@@ -29,20 +29,20 @@ void makeGatherPlotsZMet(TString prefix, const std::vector<BabySample*> &babyVec
     //
 
     //non-integral plots
-    DrawAll("mass",     prefix+"_osz_mass_ee_2jets",             osz_dilep_all + "njets>=2 && hyp_type==3"             , luminosity, 40, 0., 200, 0, babyVector);
-    DrawAll("mass",     prefix+"_osz_mass_ee_2jets_pfmet60",     osz_dilep_all + "njets>=2 && hyp_type==3 && pfmet>60" , luminosity, 40, 0., 200, 0, babyVector);
-    DrawAll("mass",     prefix+"_osz_mass_mm_2jets",             osz_dilep_all + "njets>=2 && hyp_type==0"             , luminosity, 40, 0., 200, 0, babyVector);
-    DrawAll("mass",     prefix+"_osz_mass_mm_2jets_pfmet60",     osz_dilep_all + "njets>=2 && hyp_type==0 && pfmet>60" , luminosity, 40, 0., 200, 0, babyVector);
-    DrawAll("pfmet",    prefix+"_osz_pfmet_ee_2jets",            osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==3" , luminosity, 40, 0., 200, 0, babyVector);
-    DrawAll("pfmet",    prefix+"_osz_pfmet_mm_2jets",            osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==0" , luminosity, 40, 0., 200, 0, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_ee_2jets",             TCut("ee {NJets>=2}", osz_dilep_all + "njets>=2 && hyp_type==3")             , luminosity, 40, 0., 200, 0, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_ee_2jets_pfmet60",     TCut("ee {NJets>=2, PFMet>60}", osz_dilep_all + "njets>=2 && hyp_type==3 && pfmet>60") , luminosity, 40, 0., 200, 0, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_mm_2jets",             TCut("mm {NJets>=2}", osz_dilep_all + "njets>=2 && hyp_type==0")             , luminosity, 40, 0., 200, 0, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_mm_2jets_pfmet60",     TCut("mm {NJets>=2, PFMet>60}", osz_dilep_all + "njets>=2 && hyp_type==0 && pfmet>60") , luminosity, 40, 0., 200, 0, babyVector);
+    DrawAll("pfmet",    prefix+"_osz_pfmet_ee_2jets",            TCut("ee {NJets>=2}", osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==3") , luminosity, 40, 0., 200, 0, babyVector);
+    DrawAll("pfmet",    prefix+"_osz_pfmet_mm_2jets",            TCut("mm {NJets>=2}", osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==0") , luminosity, 40, 0., 200, 0, babyVector);
 
     //same as above, but integral plots
-    DrawAll("mass",     prefix+"_osz_mass_ee_2jets_int",             osz_dilep_all + "njets>=2 && hyp_type==3"             , luminosity, 40, 0., 200, 1, babyVector);
-    DrawAll("mass",     prefix+"_osz_mass_ee_2jets_pfmet60_int",     osz_dilep_all + "njets>=2 && hyp_type==3 && pfmet>60" , luminosity, 40, 0., 200, 1, babyVector);
-    DrawAll("mass",     prefix+"_osz_mass_mm_2jets_int",             osz_dilep_all + "njets>=2 && hyp_type==0"             , luminosity, 40, 0., 200, 1, babyVector);
-    DrawAll("mass",     prefix+"_osz_mass_mm_2jets_pfmet60_int",     osz_dilep_all + "njets>=2 && hyp_type==0 && pfmet>60" , luminosity, 40, 0., 200, 1, babyVector);
-    DrawAll("pfmet",    prefix+"_osz_pfmet_ee_2jets_int",            osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==3" , luminosity, 40, 0., 200, 1, babyVector);
-    DrawAll("pfmet",    prefix+"_osz_pfmet_mm_2jets_int",            osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==0" , luminosity, 40, 0., 200, 1, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_ee_2jets_int",             TCut("ee {NJets>=2}", osz_dilep_all + "njets>=2 && hyp_type==3")             , luminosity, 40, 0., 200, 1, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_ee_2jets_pfmet60_int",     TCut("ee {NJets>=2, PFMet>60}", osz_dilep_all + "njets>=2 && hyp_type==3 && pfmet>60") , luminosity, 40, 0., 200, 1, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_mm_2jets_int",             TCut("mm {NJets>=2}", osz_dilep_all + "njets>=2 && hyp_type==0")             , luminosity, 40, 0., 200, 1, babyVector);
+    DrawAll("mass",     prefix+"_osz_mass_mm_2jets_pfmet60_int",     TCut("mm {NJets>=2, PFMet>60}", osz_dilep_all + "njets>=2 && hyp_type==0 && pfmet>60") , luminosity, 40, 0., 200, 1, babyVector);
+    DrawAll("pfmet",    prefix+"_osz_pfmet_ee_2jets_int",            TCut("ee {NJets>=2}", osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==3") , luminosity, 40, 0., 200, 1, babyVector);
+    DrawAll("pfmet",    prefix+"_osz_pfmet_mm_2jets_int",            TCut("mm {NJets>=2}", osz_dilep_all + osz_zmass + "njets>=2 && hyp_type==0") , luminosity, 40, 0., 200, 1, babyVector);
 
 }
 
