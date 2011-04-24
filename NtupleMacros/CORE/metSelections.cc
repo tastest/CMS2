@@ -324,8 +324,8 @@ metStruct trackerMET( int hyp_index, double deltaZCut,
       if (matched) continue;
     }
 	
-    unsigned int trkIndex = cms2.pfcands_trkidx().at(i);
-    
+    int trkIndex = cms2.pfcands_trkidx().at(i);
+    if (trkIndex<0) continue;
     double dzpv = dzPV(cms2.trks_vertex_p4()[trkIndex], cms2.trks_trk_p4()[trkIndex], cms2.davtxs_position().front());
 
     if ( fabs(dzpv) > deltaZCut) continue;
