@@ -142,11 +142,11 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun(run,ls))||(run>%i||(run==%i&&ls>%i))",
                 brun, erun, brun, bls, erun, els, erun, erun, els));
     TCut c_remove_end2010bad("remove_end2010bad", "run <= 149294 || run >= 160325");
-
+    TCut c_remove_2T2011runs("remove_2T2011runs", "run != 162713");
     // set up the duplicate removal cut and
     // set up the preselection cut for data
     TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
-    TCut c_datapresel = c_goodrunplus + c_notduplicate + c_remove_end2010bad;
+    TCut c_datapresel = c_goodrunplus + c_notduplicate + c_remove_end2010bad + c_remove_2T2011runs;
 
     // ALL
     BabySample *bs_data = new BabySample("data", "data", base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root", c_datapresel, 1.0, DATA, kBlack);
@@ -180,6 +180,15 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
 
     // 2011 Express Post Tech Stop
     BabySample *bs_data_express_post_tech_stop = new BabySample("express", "data", base+"data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root", c_datapresel, 1.0, DATA, kRed);
+
+    // 2011 Max (prompt reco + post tech stop express)
+    BabySample *bs_data2011max = new BabySample("data", "data", base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root", c_datapresel, 1.0, DATA, kBlack);
+    bs_data2011max->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    bs_data2011max->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    bs_data2011max->add(base+"/data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root");
 
     //
     // Define the mixtures of signals, background 
@@ -245,6 +254,18 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     babyVectorSM2011.push_back(bs_dilep_tw);
     babyVectorSM2011.push_back(bs_dilep_wjets);
 
+    std::vector<BabySample*> babyVectorSM2011max;
+    babyVectorSM2011max.push_back(bs_data2011max);
+    babyVectorSM2011max.push_back(bs_dilep_ww);
+    babyVectorSM2011max.push_back(bs_dilep_wz);
+    babyVectorSM2011max.push_back(bs_dilep_zz);
+    babyVectorSM2011max.push_back(bs_dilep_dyeemm);
+    babyVectorSM2011max.push_back(bs_dilep_dytt);
+    babyVectorSM2011max.push_back(bs_dilep_vgammajets);
+    babyVectorSM2011max.push_back(bs_dilep_ttbar);
+    babyVectorSM2011max.push_back(bs_dilep_tw);
+    babyVectorSM2011max.push_back(bs_dilep_wjets);
+
     std::vector<BabySample*> babyVectorSM2010;
     babyVectorSM2010.push_back(bs_data2010);
     babyVectorSM2010.push_back(bs_dilep_ww);
@@ -257,40 +278,6 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     babyVectorSM2010.push_back(bs_dilep_tw);
     babyVectorSM2010.push_back(bs_dilep_wjets);
 
-
-    //
-    // Higgs
-    //
-
-    std::vector<BabySample*> babyVectorHiggs;
-    babyVectorHiggs.push_back(bs_dilep_ww);
-    babyVectorHiggs.push_back(bs_dilep_wz);
-    babyVectorHiggs.push_back(bs_dilep_zz);
-    babyVectorHiggs.push_back(bs_dilep_dyeemm);
-    babyVectorHiggs.push_back(bs_dilep_dytt);
-    babyVectorHiggs.push_back(bs_dilep_vgammajets);
-    babyVectorHiggs.push_back(bs_dilep_ttbar);
-    babyVectorHiggs.push_back(bs_dilep_tw);
-    babyVectorHiggs.push_back(bs_dilep_wjets);
-    babyVectorHiggs.push_back(bs_data);
-    babyVectorHiggs.push_back(bs_dilep_hww160);
-    babyVectorHiggs.push_back(bs_dilep_hww130);
-    babyVectorHiggs.push_back(bs_dilep_hww200);
-
-    std::vector<BabySample*> babyVectorHiggs2011;
-    babyVectorHiggs2011.push_back(bs_dilep_ww);
-    babyVectorHiggs2011.push_back(bs_dilep_wz);
-    babyVectorHiggs2011.push_back(bs_dilep_zz);
-    babyVectorHiggs2011.push_back(bs_dilep_dyeemm);
-    babyVectorHiggs2011.push_back(bs_dilep_dytt);
-    babyVectorHiggs2011.push_back(bs_dilep_vgammajets);
-    babyVectorHiggs2011.push_back(bs_dilep_ttbar);
-    babyVectorHiggs2011.push_back(bs_dilep_tw);
-    babyVectorHiggs2011.push_back(bs_dilep_wjets);
-    babyVectorHiggs2011.push_back(bs_data2011);
-    babyVectorHiggs2011.push_back(bs_dilep_hww160);
-    babyVectorHiggs2011.push_back(bs_dilep_hww130);
-    babyVectorHiggs2011.push_back(bs_dilep_hww200);
 
     //
     // SUSY
@@ -322,6 +309,18 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     babyVectorSusy2011.push_back(bs_dilep_lm0);
     babyVectorSusy2011.push_back(bs_data2011);
 
+    std::vector<BabySample*> babyVectorSusy2011max;
+    babyVectorSusy2011max.push_back(bs_dilep_ww);
+    babyVectorSusy2011max.push_back(bs_dilep_wz);
+    babyVectorSusy2011max.push_back(bs_dilep_zz);
+    babyVectorSusy2011max.push_back(bs_dilep_dyeemm);
+    babyVectorSusy2011max.push_back(bs_dilep_dytt);
+    babyVectorSusy2011max.push_back(bs_dilep_vgammajets);
+    babyVectorSusy2011max.push_back(bs_dilep_ttbar);
+    babyVectorSusy2011max.push_back(bs_dilep_tw);
+    babyVectorSusy2011max.push_back(bs_dilep_wjets);
+    babyVectorSusy2011max.push_back(bs_dilep_lm0);
+    babyVectorSusy2011max.push_back(bs_data2011max);
 
 
     //
@@ -333,16 +332,7 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     std::cout << "[The Gathering] Determining luminosity" << std::endl;
     std::cout << "[The Gathering] " << goodrunlist << std::endl;
     set_goodrun_file(goodrunlist);
-
     float zPerPb = GetZPerPb(bs_data->chain(), goodruns_lumi);
-    float est_lumi = 0.0;
-    float est_extra_lumi = 0.0;
-    if (mode == PROMPT || mode == DEBUG) {
-        est_extra_lumi = GetNewLumi(bs_data2011->chain(), zPerPb);
-        est_lumi = est_extra_lumi + goodruns_lumi;
-        std::cout << "[The Gathering] Estimated L = " << est_lumi << std::endl;
-        std::cout << std::endl;
-    }
 
     //
     // Make the plots
@@ -355,44 +345,57 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     }
 
     if (mode == DEBUG) {
+        float est_extra_lumi = GetNewLumi(bs_data2011->chain(), zPerPb);
+        std::cout << "[The Gathering] Estimated L in 2011 Prompt = " << est_extra_lumi << std::endl;
         //makeGatherPlotsElectrons(babyVectorTPee, est_lumi);
         //makeGatherPlotsMuons(babyVectorTP, est_lumi);
         //makeGatherTriggerMonitor(babyVectorSM, est_lumi);
         //makeGatherPlotsValidation("express", babyVectorSM_express, goodruns_lumi, est_extra_lumi);
         makeGatherPlotsExotica("run2011", babyVectorSM2011, est_extra_lumi);
         makeGatherPlotsExotica("run2010", babyVectorSM2010, goodruns_lumi);
-        makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
+        //makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
     }
 
     if (mode == PROMPT) {
+        float est_extra_lumi = GetNewLumi(bs_data2011->chain(), zPerPb);
+        std::cout << "[The Gathering] Estimated L in 2011 Prompt = " << est_extra_lumi << std::endl;
+        float est_extra_lumi_2011max = GetNewLumi(bs_data2011max->chain(), zPerPb);
+        std::cout << "[The Gathering] Estimated L in 2011max = " << est_extra_lumi_2011max << std::endl;
 
         // validation for all
         //makeGatherPlotsValidation("all", babyVectorSM, goodruns_lumi, est_extra_lumi);
         makeGatherPlotsValidation("run2011", babyVectorSM2011, goodruns_lumi, est_extra_lumi);
+        makeGatherPlotsValidation("max2011", babyVectorSM2011max, goodruns_lumi, est_extra_lumi_2011max);
 
         // higgs for all data and for 2010 + 2011
         //makeGatherPlotsHiggs("all", babyVectorSM, est_lumi);
         makeGatherPlotsHiggs("run2011", babyVectorSM2011, est_extra_lumi);
+        makeGatherPlotsHiggs("max2011", babyVectorSM2011max, est_extra_lumi_2011max);
 
         // OS for all data and for 2010 + 2011
         //makeGatherPlotsOS("all", babyVectorSusy, est_lumi);
         makeGatherPlotsOS("run2011", babyVectorSusy2011, est_extra_lumi);
+        makeGatherPlotsOS("max2011", babyVectorSusy2011max, est_extra_lumi_2011max);
 
         // ZMet for all data and for 2010 + 2011
         //makeGatherPlotsZMet("all", babyVectorSusy, est_lumi);
         makeGatherPlotsZMet("run2011", babyVectorSusy2011, est_extra_lumi);
+        makeGatherPlotsZMet("max2011", babyVectorSusy2011max, est_extra_lumi_2011max);
 
         // SS plots for all data and for 2010 + 2011
         //makeGatherPlotsSS("all", babyVectorSusy, est_lumi);
         makeGatherPlotsSS("run2011", babyVectorSusy2011, est_extra_lumi);
+        makeGatherPlotsSS("max2011", babyVectorSusy2011max, est_extra_lumi_2011max);
 
         // ST plots for all data and for 2010 + 2011
         //makeGatherPlotsST("all", babyVectorSusy, est_lumi);
         makeGatherPlotsST("run2011", babyVectorSusy2011, est_extra_lumi);
+        makeGatherPlotsST("max2011", babyVectorSusy2011max, est_extra_lumi_2011max);
         
         // Exotica (in this context... Misc) for all data and for 2010 + 2011
         //makeGatherPlotsExotica("all", babyVectorSM, est_lumi);
         makeGatherPlotsExotica("run2011", babyVectorSM2011, est_extra_lumi);
+        makeGatherPlotsExotica("max2011", babyVectorSM2011max, est_extra_lumi_2011max);
 
     } 
 
