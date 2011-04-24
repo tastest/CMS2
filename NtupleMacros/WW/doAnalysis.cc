@@ -1,4 +1,4 @@
-const char* config_info = "SmurfV3 selection; Spring11 samples";
+const char* config_info = "SmurfV3 selection (only baseline cuts are applied); Spring11 samples";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -37,29 +37,43 @@ using namespace std;
 enum jetregion { HCAL, HF, ALLJET};
 
 enum hyp_selection {
-  PASS_ZVETO,
-  PASS_MET,
-  PASS_JETVETO,  
-  PASS_LT_FINAL,
-  PASS_LL_FINAL,
-  PASS_SOFTMUVETO,
-  PASS_EXTRALEPTONVETO,
-  PASS_TOPVETO,
-  PASS_1BJET,
-  PASS_1JET,
-  PASS_ZControlSampleVeryTight,   // within Z mass window +/- 5GeV
-  PASS_ZControlSampleTight,       // within Z mass window +/- 10GeV
-  PASS_ZControlSampleLoose,       // within Z mass window +/- 20GeV
-  PASS_TopControlSample,          // 2 or more jets
-  PASS_PROBE                      // passed only 1 leg final selection.
+  PASSED_BaseLine                = 1UL<<0,
+  PASSED_ZVETO                   = 1UL<<1,
+  PASSED_ZControlSampleVeryTight = 1UL<<2,   // within Z mass window +/- 5GeV
+  PASSED_ZControlSampleTight     = 1UL<<3,   // within Z mass window +/- 10GeV
+  PASSED_ZControlSampleLoose     = 1UL<<4,   // within Z mass window +/- 20GeV
+  PASSED_MET                     = 1UL<<5,
+  PASSED_LT_FINAL                = 1UL<<6,
+  PASSED_LT_FO_MU1               = 1UL<<7,
+  PASSED_LT_FO_MU2               = 1UL<<8,
+  PASSED_LT_FO_ELEV1             = 1UL<<9,
+  PASSED_LT_FO_ELEV2             = 1UL<<10,
+  PASSED_LT_FO_ELEV3             = 1UL<<11,
+  PASSED_LT_FO_ELEV4             = 1UL<<12,
+  PASSED_LL_FINAL                = 1UL<<13,
+  PASSED_LL_FO_MU1               = 1UL<<14,
+  PASSED_LL_FO_MU2               = 1UL<<15,
+  PASSED_LL_FO_ELEV1             = 1UL<<16,
+  PASSED_LL_FO_ELEV2             = 1UL<<17,
+  PASSED_LL_FO_ELEV3             = 1UL<<18,
+  PASSED_LL_FO_ELEV4             = 1UL<<19,
+  PASSED_JETVETO                 = 1UL<<20,
+  PASSED_TopControlSample        = 1UL<<21,  // 2 or more jets
+  PASSED_1BJET                   = 1UL<<22,
+  PASSED_SOFTMUVETO_NotInJets    = 1UL<<23,
+  PASSED_SOFTMUVETO              = 1UL<<24,
+  PASSED_EXTRALEPTONVETO         = 1UL<<25,  
+  PASSED_TOPVETO_NotInJets       = 1UL<<26,  // exclude jets over threshold from top tagging
+  PASSED_TOPVETO                 = 1UL<<27,
+  PASSED_Skim1                   = 1UL<<28   // one fakable object + one final; full met
 };
 
-cuts_t pass_all = (1<<PASS_ZVETO) | (1<<PASS_MET) |/* (1<<PASS_JETVETO) |*/ (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
-  (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+wwcuts_t pass_all = PASSED_Skim1;
 
 bool applyJEC = false;
 bool applyFastJetCorrection = true;
-bool lockToCoreSelectors = false;
+bool lockToCoreSelectors = true;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_jpt;
@@ -73,7 +87,7 @@ FactorizedJetCorrector *jet_corrector_calo;
 
 std::vector<std::string> jetcorr_filenames_trk;
 FactorizedJetCorrector *jet_corrector_trk;
-
+wwcuts_t cuts_passed = 0;
 
 //
 // Key analysis method implementation
@@ -85,18 +99,21 @@ bool goodElectronWithoutIsolation(unsigned int i){
 
 bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
-  bool core = ptcut && pass_electronSelection( i, electronSelection_wwV1);
+  bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV3);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
   assert(!lockToCoreSelectors || core==internal);
   return internal;
 }
 
-bool fakableElectron(unsigned int i){
-  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
-  // extrapolate in partial id, iso and d0
-  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
-  // extrapolate in id
-  // return ww_elBase(i) && ww_eld0(i) && ww_elIso(i);
+bool fakableElectron(unsigned int i, EleFOTypes type){
+  if ( cms2.els_p4().at(i).pt() < 15.0 ) return false;
+  switch (type){
+  case EleFOV1: return pass_electronSelection( i, electronSelectionFO_el_smurf_v1);
+  case EleFOV2: return pass_electronSelection( i, electronSelectionFO_el_smurf_v2);
+  case EleFOV3: return pass_electronSelection( i, electronSelectionFO_el_smurf_v3);
+  case EleFOV4: return pass_electronSelection( i, electronSelectionFO_el_smurf_v4);
+  }
+  return false;
 }
 
 bool goodMuonWithoutIsolation(unsigned int i){
@@ -105,18 +122,19 @@ bool goodMuonWithoutIsolation(unsigned int i){
 
 bool goodMuonIsolated(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  bool core = ptcut && muonId(i, NominalWWV1);
+  bool core = ptcut && muonId(i, NominalSmurfV3);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
   assert(!lockToCoreSelectors || core==internal);
   return internal;
 }
 
-bool fakableMuon(unsigned int i){
-  bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  // extrapolate in iso
-  // return muonId(i, muonSelectionFO_mu_ww);
-  return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
-  // return ww_muBase(i) && ww_muId(i) && ww_muIsoVal(i)<1.0 && fabs(cms2.mus_d0corr()[i]) < 2; 
+bool fakableMuon(unsigned int i, MuFOTypes type){
+  if ( cms2.mus_p4().at(i).pt() < 10.0 ) return false;
+  switch (type){
+  case MuFOV1: return muonId(i, muonSelectionFO_mu_smurf_10);
+  case MuFOV2: return muonId(i, muonSelectionFO_mu_smurf_04);
+  }
+  return false;
 }
 
 WWJetType jetType(){
@@ -1228,18 +1246,18 @@ void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone
   }
 }
 
-void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
+void fill_val_plots(int i_hyp, wwcuts_t cuts_passed, double weight)
 {
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // Fill MET related plots
-  if(CheckCuts( (1<<PASS_JETVETO) | (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
+  if(CheckCuts( PASSED_JETVETO | PASSED_LL_FINAL | PASSED_LT_FINAL  , cuts_passed)) {
     hmetVal[type] -> Fill(metValue(), weight);
     hmetVal[3] -> Fill(metValue(), weight);
     hmetProjVal[type] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);
     hmetProjVal[3] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);
   }
   // Fill Leading Jet Pt
-  if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL)  , cuts_passed)) {
+  if(CheckCuts( PASSED_LL_FINAL | PASSED_LT_FINAL  , cuts_passed)) {
     double pfJetMax(0.);
     find_leading_pfjet(i_hyp, 0.0, 5.0, 0.3, pfJetMax);
     hmaxPFJetPtVal[type]->Fill(pfJetMax, weight);
@@ -1249,20 +1267,20 @@ void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight)
   }
 
   // Fill the N-1 plots
-  if (CheckCutsNM1(pass_all, (1<<PASS_MET), cuts_passed) ) {
+  if (CheckCutsNM1(pass_all, PASSED_MET, cuts_passed) ) {
     hmetNM1[type] -> Fill(metValue(), weight);
     hmetNM1[3] -> Fill(metValue(), weight);
     hmetProjNM1[type] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);
     hmetProjNM1[3] -> Fill(projectedMet(i_hyp, metValue(), metPhiValue()), weight);    
   }
 
-  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed) ) {
+  if (CheckCutsNM1(pass_all, PASSED_JETVETO, cuts_passed) ) {
     double pfJetMax(0.);
     find_leading_pfjet(i_hyp, 0.0, 5.0, 0.3, pfJetMax);
     hmaxPFJetPtNM1[type]->Fill(pfJetMax, weight);
     hmaxPFJetPtNM1[3]->Fill(pfJetMax, weight);
   }
-  if (CheckCutsNM1(pass_all, (1<<PASS_ZVETO), cuts_passed) ) {
+  if (CheckCutsNM1(pass_all, PASSED_ZVETO, cuts_passed) ) {
     hdilMassNM1[type]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
     hdilMassNM1[3]->Fill(cms2.hyp_p4()[i_hyp].mass(), weight);
   }
@@ -1272,14 +1290,14 @@ void extractFakeRateSingleLepton(){
   // weights are ignore. see no reason to complicate stuff
   for ( unsigned int i=0; i < cms2.els_p4().size(); ++i ){
     if ( cms2.els_p4().at(i).pt() < 20 ) continue;
-    if ( fakableElectron(i) ) 
+    if ( fakableElectron(i,EleFOV4) ) 
       hFakableRateSingleElectron->Fill(cms2.els_p4().at(i).pt(), fabs(cms2.els_p4().at(i).eta()) );
     if ( goodElectronIsolated(i) ) 
       hFinalRateSingleElectron->Fill(cms2.els_p4().at(i).pt(), fabs(cms2.els_p4().at(i).eta()) );  
   }
   for ( unsigned int i=0; i < cms2.mus_p4().size(); ++i ){
     if ( cms2.mus_p4().at(i).pt() < 20 ) continue;
-    if ( fakableMuon(i) ) 
+    if ( fakableMuon(i,MuFOV2) ) 
       hFakableRateSingleMuon->Fill(cms2.mus_p4().at(i).pt(), fabs(cms2.mus_p4().at(i).eta()) );
     if ( goodMuonIsolated(i) ) 
       hFinalRateSingleMuon->Fill(cms2.mus_p4().at(i).pt(), fabs(cms2.mus_p4().at(i).eta()) );  
@@ -1525,6 +1543,7 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
 
 bool hypo (int i_hyp, double weight, bool zStudy, bool realData) 
 {
+  cuts_passed = 0;
   //  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
   if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
 
@@ -1547,102 +1566,98 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
   // monitor.count(cms2, type, "after vertex cut");
   
+  if (cms2.hyp_p4().at(i_hyp).mass2()<0) return false;
+  if (nGoodVertex()<1) return false;
+
   if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "trigger requirements",weight);
 
+  cuts_passed = PASSED_BaseLine;
+  
   // Require opposite sign
-  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) return false;
+  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) cuts_passed &= ~PASSED_BaseLine;
 
   // Baseline cuts
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_lt_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
+  if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_ll_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
+  if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_lt_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
+  if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_ll_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
   
-  monitor.count(cms2,type,"baseline cuts",weight);
+  // monitor.count(cms2,type,"baseline cuts",weight);
  
   if (gSystem->Getenv("Sync")) // Synchronization info
-    if (!hypoSync(i_hyp,weight,zStudy,realData)) return false;
+    {
+      if ( (cuts_passed & PASSED_BaseLine) == 0) return false;
+      if (!hypoSync(i_hyp,weight,zStudy,realData)) return false;
+    }
 
-  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
-  if (nGoodVertex()<1) return false;
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) cuts_passed &= ~PASSED_BaseLine;
   hnGoodVertex -> Fill(nGoodVertex(), weight);
   
-  if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
-      cms2.hyp_p4()[i_hyp].mass() < 12) return false;
+  if ( cms2.hyp_p4()[i_hyp].mass() < 12) cuts_passed &= ~PASSED_BaseLine;
 
   // check electron isolation and id (no selection at this point)
   // checkIsolation(i_hyp, weight);
 
-  cuts_t cuts_passed = 0;
-  
   // == Z mass veto using hyp_leptons for ee and mumu final states
   if ( type == EE || type == MM) {
-    if ( !zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))    cuts_passed |= (1<<PASS_ZVETO);
-    if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= (1<<PASS_ZVETO);
+    if ( !zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))    cuts_passed |= PASSED_ZVETO;
+    if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= PASSED_ZVETO;
   }
-  if (type == EM)     cuts_passed |= (1<<PASS_ZVETO);
-  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),5))  cuts_passed |= (1<<PASS_ZControlSampleVeryTight);
-  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),10))  cuts_passed |= (1<<PASS_ZControlSampleTight);
-  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),20))  cuts_passed |= (1<<PASS_ZControlSampleLoose);
+  if (type == EM)     cuts_passed |= PASSED_ZVETO;
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),5))  cuts_passed |= PASSED_ZControlSampleVeryTight;
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),10))  cuts_passed |= PASSED_ZControlSampleTight;
+  if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),20))  cuts_passed |= PASSED_ZControlSampleLoose;
     
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
  
   // == MET
-  if (zStudy) cuts_passed |= (1<<PASS_MET);
-  if (!zStudy && passedMetRequirements(i_hyp)) { 
-    cuts_passed |= (1<<PASS_MET);
-  }
+  if (zStudy) cuts_passed |= PASSED_MET;
+  if ( passedMetRequirements(i_hyp) ) cuts_passed |= PASSED_MET;
   
   // == letpon ID and Isolation
-  bool passedLTFinalRequirements = true;
-  bool passedLLFinalRequirements = true;
-  bool passedLTElFakableRequirements = true;
-  bool passedLLElFakableRequirements = true;
-  bool passedLTMuFakableRequirements = true;
-  bool passedLLMuFakableRequirements = true;
-
   // Muon quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
-    if ( !goodMuonIsolated(index) ) passedLTFinalRequirements = false;
-    if ( !fakableMuon(index) ) passedLTMuFakableRequirements = false;
-    passedLTElFakableRequirements = false;
+    if ( goodMuonIsolated(index) )   cuts_passed |= PASSED_LT_FINAL;
+    if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LT_FO_MU1;
+    if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LT_FO_MU2;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
-    if ( !goodMuonIsolated(index) ) passedLLFinalRequirements = false;
-    if ( !fakableMuon(index) ) passedLLMuFakableRequirements = false;
-    passedLLElFakableRequirements = false;
+    if ( goodMuonIsolated(index) )   cuts_passed |= PASSED_LL_FINAL;
+    if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LL_FO_MU1;
+    if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LL_FO_MU2;
   } 
   // Electron quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
-    if ( !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) passedLTFinalRequirements = false;
-    if ( !fakableElectron(cms2.hyp_lt_index()[i_hyp]) ) passedLTElFakableRequirements = false;
-    passedLTMuFakableRequirements = false;
+    unsigned int index = cms2.hyp_lt_index()[i_hyp];
+    if ( goodElectronIsolated(index) ) cuts_passed |= PASSED_LT_FINAL;
+    if ( fakableElectron(index,EleFOV1) )   cuts_passed |= PASSED_LT_FO_ELEV1;
+    if ( fakableElectron(index,EleFOV2) )   cuts_passed |= PASSED_LT_FO_ELEV2;
+    if ( fakableElectron(index,EleFOV3) )   cuts_passed |= PASSED_LT_FO_ELEV3;
+    if ( fakableElectron(index,EleFOV4) )   cuts_passed |= PASSED_LT_FO_ELEV4;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
-    if ( !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) passedLLFinalRequirements = false;
-    if ( !fakableElectron(cms2.hyp_ll_index()[i_hyp]) ) passedLLElFakableRequirements = false;
-    passedLLMuFakableRequirements = false;
+    unsigned int index = cms2.hyp_ll_index()[i_hyp];
+    if ( goodElectronIsolated(index) ) cuts_passed |= PASSED_LL_FINAL;
+    if ( fakableElectron(index,EleFOV1) )   cuts_passed |= PASSED_LL_FO_ELEV1;
+    if ( fakableElectron(index,EleFOV2) )   cuts_passed |= PASSED_LL_FO_ELEV2;
+    if ( fakableElectron(index,EleFOV3) )   cuts_passed |= PASSED_LL_FO_ELEV3;
+    if ( fakableElectron(index,EleFOV4) )   cuts_passed |= PASSED_LL_FO_ELEV4;
   }
 
-  if ( passedLTFinalRequirements ) cuts_passed |= (1<<PASS_LT_FINAL);
-  if ( passedLLFinalRequirements ) cuts_passed |= (1<<PASS_LL_FINAL);
-  if ( passedLTFinalRequirements || passedLLFinalRequirements ) cuts_passed |= (1<<PASS_PROBE);
+  // if ( passedLTFinalRequirements || passedLLFinalRequirements ) cuts_passed |= (1<<PASS_PROBE);
 
   // == Jet-veto
   const std::vector<LorentzVector>& vetojets(getDefaultJets(i_hyp, false));
   unsigned int nJets = vetojets.size();
-  if (nJets==0) 
-    cuts_passed |= (1<<PASS_JETVETO);
-  if (nJets>1) 
-    cuts_passed |= (1<<PASS_TopControlSample);
+  if (nJets==0) cuts_passed |= PASSED_JETVETO;
+  if (nJets>1)  cuts_passed |= PASSED_TopControlSample;
   if (nJets==1){
-    cuts_passed |= (1<<PASS_1JET);
     if ( getDefaultJets(i_hyp,true).size()==1 ){
-      cuts_passed |= (1<<PASS_1BJET);
+      cuts_passed |= PASSED_1BJET;
     }
   }
   // trkjet veto
@@ -1650,28 +1665,45 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   // == ExtraVeto Muons
   int countmus = numberOfSoftMuons(i_hyp,true);
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true,vetojets);
-  if ( nExtraVetoMuons == 0) 
-    cuts_passed |=   (1<<PASS_SOFTMUVETO);
-  if ( numberOfExtraLeptons(i_hyp,10) == 0) 
-    cuts_passed |=   (1<<PASS_EXTRALEPTONVETO);
-  if ( ! toptag(CaloJet,i_hyp,0,vetojets) )
-    cuts_passed |=   (1<<PASS_TOPVETO);
+  if ( countmus == 0)        cuts_passed |=   PASSED_SOFTMUVETO;
+  if ( nExtraVetoMuons == 0) cuts_passed |=   PASSED_SOFTMUVETO_NotInJets;
+  if ( numberOfExtraLeptons(i_hyp,10) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
+  if ( ! toptag(CaloJet,i_hyp,0,vetojets) ) cuts_passed |= PASSED_TOPVETO_NotInJets;
+  if ( ! toptag(CaloJet,i_hyp,0) )          cuts_passed |= PASSED_TOPVETO;
 
   // -------------------------------------------------------------------//
   // Finished checking the cuts, fill histograms before the final sel   //
   // -------------------------------------------------------------------//
 
-  if (CheckCutsNM1(pass_all, (1<<PASS_LT_FINAL)|(1<<PASS_LL_FINAL), cuts_passed) ) {
-    countFakableObjectsAfterAllSelections(i_hyp, weight, 
-					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
-					  passedLTMuFakableRequirements, passedLLMuFakableRequirements, 
-					  passedLTFinalRequirements, passedLLFinalRequirements);
+  // Make some validation plots 
+  if( CheckCuts(  PASSED_MET | PASSED_BaseLine, cuts_passed)) {
+    if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU2,   cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV1, cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV2, cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV3, cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV4, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_MU1,   cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_MU2,   cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV1, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV2, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV3, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV4, cuts_passed ) )
+      cuts_passed |= PASSED_Skim1;
   }
+  
+  // NEED TO BE FIXED
+  //   if (CheckCutsNM1(pass_all, PASSED_LT_FINAL|PASSED_LL_FINAL, cuts_passed) ) {
+  //     countFakableObjectsAfterAllSelections(i_hyp, weight, 
+  // 					  passedLTElFakableRequirements, passedLLElFakableRequirements, 
+  // 					  passedLTMuFakableRequirements, passedLLMuFakableRequirements, 
+  // 					  passedLTFinalRequirements, passedLLFinalRequirements);
+  //   }
     
   // Jet-veto effciency studies
 
   //if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO) | (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO), cuts_passed)) {
-  if (CheckCutsNM1(pass_all, (1<<PASS_JETVETO), cuts_passed)) {
+  if (CheckCutsNM1(pass_all, PASSED_JETVETO, cuts_passed)) {
     find_most_energetic_jets(i_hyp,weight,realData,0.0,5.0);
     find_most_energetic_jets(i_hyp,weight,realData,0.0,3.0);
     find_most_energetic_jets(i_hyp,weight,realData,3.0,5.0);
@@ -1680,47 +1712,42 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   }
   
   // Make some validation plots 
-  if(CheckCuts(  (1<<PASS_LL_FINAL) | (1<<PASS_LT_FINAL), cuts_passed)) {
+  if(CheckCuts(  PASSED_LL_FINAL | PASSED_LT_FINAL, cuts_passed)) {
     fill_val_plots(i_hyp, cuts_passed, weight);
   }
   
   // Do Drell Yan Estimation
-  if(CheckCutsNM1(pass_all, (1<<PASS_ZVETO) | (1<<PASS_MET) , cuts_passed))
+  if(CheckCutsNM1(pass_all, PASSED_ZVETO | PASSED_MET , cuts_passed))
     fill_dyest_histograms(i_hyp, weight);
 
   // top background related histograms
+  // WARNING: code was changed, logic needs to be verified
   if ( CheckCutsNM1( pass_all, 
-		     (1<<PASS_SOFTMUVETO) | (1<<PASS_TOPVETO) | (1<<PASS_JETVETO) | (1<< PASS_ZVETO) | (1<<PASS_MET), 
+		     PASSED_SOFTMUVETO | PASSED_TOPVETO | PASSED_JETVETO | PASSED_ZVETO | PASSED_MET, 
 		     cuts_passed ) ){
     float tag = 1; // not tagged
-    if ( ! CheckCuts(1<<PASS_SOFTMUVETO, cuts_passed) ){
-      if ( ! CheckCuts(1<<PASS_TOPVETO, cuts_passed) )
+    if ( ! CheckCuts(PASSED_SOFTMUVETO, cuts_passed) ){
+      if ( ! CheckCuts(PASSED_TOPVETO, cuts_passed) )
 	tag = 4; // both
       else
 	tag = 2; // soft muon
     } else {
-      if ( ! CheckCuts(1<<PASS_TOPVETO, cuts_passed) )
+      if ( ! CheckCuts(PASSED_TOPVETO, cuts_passed) )
 	tag = 3; // b-tagged
     }
     float evtType = 1; // passed jet veto
-    if ( ! CheckCuts(1<<PASS_JETVETO, cuts_passed) ){
-    if ( CheckCuts(1<<PASS_1JET,cuts_passed) ){
-      if ( CheckCuts(1<<PASS_1BJET,cuts_passed) ){
-	  evtType = 3; // have 1 btagged jet
-	} else { 
-	  evtType = 2; // have 1 non-btagged jet
-	}
-      } else {
-	evtType = 4; // more than 1 jet
+    if ( ! CheckCuts(PASSED_JETVETO, cuts_passed) ){
+      if ( CheckCuts(PASSED_1BJET,cuts_passed) ){
+	evtType = 3; // have 1 btagged jet
       }
     }
     bool zevent = (type == EE || type == MM);
-    if ( CheckCuts((1<< PASS_ZVETO), cuts_passed) ) zevent = false;
+    if ( CheckCuts((PASSED_ZVETO), cuts_passed) ) zevent = false;
     if ( zevent ) {
       htoptagz[type]->Fill(tag-0.5,evtType-0.5,weight);
       htoptagz[3]->Fill(tag-0.5,evtType-0.5,weight);
     }
-    if ( CheckCuts((1<<PASS_ZVETO)|(1<<PASS_MET), cuts_passed) ){
+    if ( CheckCuts(PASSED_ZVETO|PASSED_MET, cuts_passed) ){
       htoptag[type]->Fill(tag-0.5,evtType-0.5,weight);
       htoptag[3]->Fill(tag-0.5,evtType-0.5,weight);
       // 2D hist for muon tag counting
@@ -1734,7 +1761,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
     }
   }
 
-  if ( !realData && CheckCutsNM1( pass_all, (1<<PASS_SOFTMUVETO), cuts_passed ) ) {
+  if ( !realData && CheckCutsNM1( pass_all, PASSED_SOFTMUVETO, cuts_passed ) ) {
     // loop over gen particles
     float centralBQuarkEta(100);
     float forwardBQuarkEta(0);
@@ -2190,7 +2217,8 @@ void initializeHistograms(const char *prefix, bool qcdBackground){
 double mt(double pt1, double pt2, double dphi){
   return 2*sqrt(pt1*pt2)*fabs(sin(dphi/2));
 }
-void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum SmurfTree::DataType sample){
+void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, 
+		     double weight, enum SmurfTree::DataType sample, wwcuts_t cuts_passed){
   tree.InitVariables();
   tree.run_   = cms2.evt_run();
   tree.event_ = cms2.evt_event();
@@ -2199,6 +2227,11 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sm
   tree.scale1fb_ = weight;
   tree.met_    = metValue();
   tree.metPhi_ = metPhiValue();
+  metStruct trkMET = trackerMET(i_hyp,0.2);
+  tree.trackMet_ = trkMET.met;
+  tree.trackMetPhi_ = trkMET.metphi;
+  tree.pTrackMet_ = projectedMet(i_hyp, trkMET.met, trkMET.metphi);
+
   // sumet_;
   bool ltIsFirst = true;
   if ( cms2.hyp_lt_p4().at(i_hyp).pt()<cms2.hyp_ll_p4().at(i_hyp).pt() ) ltIsFirst = false;
@@ -2218,6 +2251,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sm
   const std::vector<LorentzVector>& jets = getJets(jetType(), i_hyp, 0, 5.0, false, false);
   if (jets.size()>0) tree.jet1_ = jets.at(0);
   if (jets.size()>1) tree.jet2_ = jets.at(1);
+  if (jets.size()>2) tree.jet3_ = jets.at(2);
   // jet1_btag_;
   // jet2_btag_;
   tree.njets_ = numberOfJets(i_hyp);
@@ -2255,8 +2289,50 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, enum Sm
   // jet1McId_;
   // jet2McId_;
   tree.dstype_ = sample;
-}
 
+  // fill cuts
+  tree.cuts_ = 0;
+  if (ltIsFirst){
+    if ( cuts_passed & PASSED_LT_FINAL )    tree.cuts_ |= SmurfTree::Lep1FullSelection;
+    if ( cuts_passed & PASSED_LT_FO_MU1 )   tree.cuts_ |= SmurfTree::Lep1LooseMuV1;
+    if ( cuts_passed & PASSED_LT_FO_MU2 )   tree.cuts_ |= SmurfTree::Lep1LooseMuV2;
+    if ( cuts_passed & PASSED_LT_FO_ELEV1 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV1;
+    if ( cuts_passed & PASSED_LT_FO_ELEV2 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV2;
+    if ( cuts_passed & PASSED_LT_FO_ELEV3 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV3;
+    if ( cuts_passed & PASSED_LT_FO_ELEV4 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV4;
+    if ( cuts_passed & PASSED_LL_FINAL )    tree.cuts_ |= SmurfTree::Lep2FullSelection;
+    if ( cuts_passed & PASSED_LL_FO_MU1 )   tree.cuts_ |= SmurfTree::Lep2LooseMuV1;
+    if ( cuts_passed & PASSED_LL_FO_MU2 )   tree.cuts_ |= SmurfTree::Lep2LooseMuV2;
+    if ( cuts_passed & PASSED_LL_FO_ELEV1 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV1;
+    if ( cuts_passed & PASSED_LL_FO_ELEV2 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV2;
+    if ( cuts_passed & PASSED_LL_FO_ELEV3 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV3;
+    if ( cuts_passed & PASSED_LL_FO_ELEV4 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV4;
+  } else {
+    if ( cuts_passed & PASSED_LL_FINAL )    tree.cuts_ |= SmurfTree::Lep1FullSelection;
+    if ( cuts_passed & PASSED_LL_FO_MU1 )   tree.cuts_ |= SmurfTree::Lep1LooseMuV1;
+    if ( cuts_passed & PASSED_LL_FO_MU2 )   tree.cuts_ |= SmurfTree::Lep1LooseMuV2;
+    if ( cuts_passed & PASSED_LL_FO_ELEV1 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV1;
+    if ( cuts_passed & PASSED_LL_FO_ELEV2 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV2;
+    if ( cuts_passed & PASSED_LL_FO_ELEV3 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV3;
+    if ( cuts_passed & PASSED_LL_FO_ELEV4 ) tree.cuts_ |= SmurfTree::Lep1LooseEleV4;
+    if ( cuts_passed & PASSED_LT_FINAL )    tree.cuts_ |= SmurfTree::Lep2FullSelection;
+    if ( cuts_passed & PASSED_LT_FO_MU1 )   tree.cuts_ |= SmurfTree::Lep2LooseMuV1;
+    if ( cuts_passed & PASSED_LT_FO_MU2 )   tree.cuts_ |= SmurfTree::Lep2LooseMuV2;
+    if ( cuts_passed & PASSED_LT_FO_ELEV1 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV1;
+    if ( cuts_passed & PASSED_LT_FO_ELEV2 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV2;
+    if ( cuts_passed & PASSED_LT_FO_ELEV3 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV3;
+    if ( cuts_passed & PASSED_LT_FO_ELEV4 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV4;
+  }
+  if ( cuts_passed & PASSED_BaseLine )                tree.cuts_ |= SmurfTree::BaseLine;
+  if ( cuts_passed & PASSED_MET )                     tree.cuts_ |= SmurfTree::FullMET;
+  if ( cuts_passed & PASSED_ZVETO )                   tree.cuts_ |= SmurfTree::ZVeto;
+  if ( !(cuts_passed & PASSED_TOPVETO) ||
+       !(cuts_passed & PASSED_SOFTMUVETO) )           tree.cuts_ |= SmurfTree::TopTag;
+  if ( !(cuts_passed & PASSED_TOPVETO_NotInJets) ||
+       !(cuts_passed & PASSED_SOFTMUVETO_NotInJets) ) tree.cuts_ |= SmurfTree::TopTagNotInJets;
+  if ( cuts_passed & PASSED_1BJET )                   tree.cuts_ |= SmurfTree::OneBJet;
+  if ( cuts_passed & PASSED_EXTRALEPTONVETO )         tree.cuts_ |= SmurfTree::ExtraLeptonVeto;
+}
 
 void ScanChain( TChain* chain, 
 		enum SmurfTree::DataType sample, 
@@ -2276,25 +2352,25 @@ void ScanChain( TChain* chain,
   }
 
   if ( gSystem->Getenv("ZSelection") )
-    pass_all = (1<<PASS_ZControlSampleTight) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
-      (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+    pass_all = PASSED_ZControlSampleTight | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | 
+      PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
   
   if ( gSystem->Getenv("ZSelectionVeryTight") )
-    pass_all = (1<<PASS_ZControlSampleVeryTight) | (1<<PASS_JETVETO) | (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | 
-      (1<<PASS_SOFTMUVETO) | (1<<PASS_EXTRALEPTONVETO) | (1<<PASS_TOPVETO);
+    pass_all = PASSED_ZControlSampleVeryTight | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | 
+      PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
-  if ( gSystem->Getenv("ZProbeSelectionVeryTight") )
-    pass_all = (1<<PASS_ZControlSampleVeryTight) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
-
-  if ( gSystem->Getenv("ZProbeSelectionTight") )
-    pass_all = (1<<PASS_ZControlSampleTight) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
-  
-  if ( gSystem->Getenv("ZProbeSelectionLoose") )
-    pass_all = (1<<PASS_ZControlSampleLoose) | (1<<PASS_JETVETO) | (1<<PASS_PROBE);
+  // The following needs to be redesigned if want to use it
+  //
+  //   if ( gSystem->Getenv("ZProbeSelectionVeryTight") )
+  //     pass_all = PASSED_ZControlSampleVeryTight | PASSED_JETVETO | PASSED_PROBE;
+  //   if ( gSystem->Getenv("ZProbeSelectionTight") )
+  //     pass_all = PASSED_ZControlSampleTight | PASSED_JETVETO | PASSED_PROBE;
+  //   if ( gSystem->Getenv("ZProbeSelectionLoose") )
+  //     pass_all = PASSED_ZControlSampleLoose | PASSED_JETVETO | PASSED_PROBE;
 
   if ( gSystem->Getenv("TopSelection") )
-    pass_all = (1<<PASS_ZVETO) | (1<<PASS_TopControlSample) | (1<<PASS_MET) | 
-      (1<<PASS_LT_FINAL) | (1<<PASS_LL_FINAL) | (1<<PASS_EXTRALEPTONVETO) ;
+    pass_all = PASSED_ZVETO | PASSED_TopControlSample | PASSED_MET | 
+      PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_EXTRALEPTONVETO;
 
   // chain->SetParallelUnzip(kTRUE);
   // gErrorIgnoreLevel = 3000; // suppress warnings about missing dictionaries 
@@ -2450,7 +2526,7 @@ void ScanChain( TChain* chain,
 	     continue;
 	   }
 	 }
-
+	 cuts_passed = 0;
 	 // loop over hypothesis candidates
 	 unsigned int nHyps = cms2.hyp_type().size();
 	 bool goodEvent = false;
@@ -2461,7 +2537,7 @@ void ScanChain( TChain* chain,
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
 	   if (hypo(i_hyp, weight, zStudy, realData)){
 	     goodEvent=true;
-	     FillSmurfNtuple(smurfTree,i_hyp,weight,sample);
+	     FillSmurfNtuple(smurfTree,i_hyp,weight,sample,cuts_passed);
 	     smurfTree.tree_->Fill();
 	   }
 	 }
@@ -2918,13 +2994,13 @@ bool passedSkimSelection()
 }
 
 
-bool CheckCutsNM1(cuts_t apply, cuts_t remove, cuts_t passed)
+bool CheckCutsNM1(wwcuts_t apply, wwcuts_t remove, wwcuts_t passed)
 {           
   if ((passed & (apply & (~remove))) == (apply & (~remove))) return true;
   return false;
 }   
 
-bool CheckCuts(cuts_t apply, cuts_t passed)
+bool CheckCuts(wwcuts_t apply, wwcuts_t passed)
 {
   if ((apply & passed) == apply) return true;
   return false;

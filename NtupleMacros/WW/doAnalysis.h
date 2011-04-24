@@ -11,7 +11,7 @@
 #include "../../../Smurf/Core/SmurfTree.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
-typedef ULong64_t  cuts_t;
+typedef UInt_t wwcuts_t; // 32 bits only!
 
 //
 // Electron Id
@@ -28,7 +28,8 @@ double ww_elIsoVal(unsigned int i);
 // combined analysis selectors
 bool goodElectronWithoutIsolation(unsigned int i);
 bool goodElectronIsolated(unsigned int i);
-bool fakableElectron(unsigned int i);
+enum EleFOTypes { EleFOV1, EleFOV2, EleFOV3, EleFOV4};
+bool fakableElectron(unsigned int i,EleFOTypes);
 
 //
 // Muon Id
@@ -48,7 +49,8 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
 // combined analysis selectors
 bool goodMuonWithoutIsolation(unsigned int i);
 bool goodMuonIsolated(unsigned int i);
-bool fakableMuon(unsigned int i);
+enum MuFOTypes { MuFOV1, MuFOV2 };
+bool fakableMuon(unsigned int i, MuFOTypes);
 
 //
 // trigger
@@ -128,9 +130,9 @@ bool isWZ();
 bool isZZ();
 // N-1
 // return true if the cuts to apply - the cuts to remove were passed in the cuts that "passed"
-bool CheckCutsNM1(cuts_t apply, cuts_t remove, cuts_t passed);
+bool CheckCutsNM1(wwcuts_t apply, wwcuts_t remove, wwcuts_t passed);
 // Simple check if the desired cuts to apply are set in the cuts that "passed"
-bool CheckCuts(cuts_t apply, cuts_t passed);
+bool CheckCuts(wwcuts_t apply, wwcuts_t passed);
 
 //
 // Not Classified
@@ -150,7 +152,7 @@ void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCon
 void find_leading_pfjet(int i_hyp, double etaMin, double etaMax, double vetoCone, double & pfJetMax);
 void find_most_energetic_jets(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
 void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
-void fill_val_plots(int i_hyp, cuts_t cuts_passed, double weight);
+void fill_val_plots(int i_hyp, wwcuts_t cuts_passed, double weight);
 void fill_dyest_histograms(int i_hyp, float weight);
 				
 unsigned int bestZHyp();
