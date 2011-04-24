@@ -35,7 +35,9 @@ enum SelectionType {
          NominalTTbar_pass6 = 25,
 	 muonSelectionFO_mu_ttbar_pass6 = 26,
 	 OSGeneric_v2 = 27,
-	 NominalSmurfV3 = 28
+	 NominalSmurfV3 = 28,
+	 muonSelectionFO_mu_smurf_04 = 29,
+	 muonSelectionFO_mu_smurf_10 = 30
 }; 
 
 //
