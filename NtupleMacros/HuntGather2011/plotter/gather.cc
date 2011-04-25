@@ -4,6 +4,7 @@
 #include "../../Tools/goodrun.h"
 #include "BabyDorkIdentifier.h"
 
+#include "TPad.h"
 #include "TCanvas.h"
 #include "TChain.h"
 #include "TCut.h"
@@ -452,19 +453,30 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
     // set up the legend
     //
 
-    TLegend* leg = new TLegend(0.7,0.5,0.95,0.90);
+    TLegend* leg = new TLegend(0.0, 0.4, 1.0, 0.95);
     leg->SetBorderSize(0);
     leg->SetFillStyle(0);
     leg->SetShadowColor(0);
+    leg->SetTextSize(0.08);
 
     //
     // do the drawing
     //
 
-    TCanvas *c1 = new TCanvas(savename);
-    c1->SetTopMargin(0.08);
-    c1->cd(1);
+    TCanvas *c1 = new TCanvas(savename, savename, 800, 600);
+    c1->cd();
+    TPad *pad1 = new TPad("p_main", "p_main", 0.0, 0.0, 0.75, 1.0);
+    pad1->SetBottomMargin(0.13);
+    pad1->SetRightMargin(0.07);
+    pad1->Draw();
+    c1->cd();
+    TPad *pad2 = new TPad("p_leg", "p_leg", 0.75, 0.0, 1.0, 1.0);
+    pad2->SetTopMargin(0.01);
+    pad2->SetRightMargin(0.01);
+    pad2->SetBottomMargin(0.13);
+    pad2->Draw();
 
+    pad1->cd();
     // do the background MC histograms
     for(unsigned int i = 0; i < vh_background.size(); ++i) 
     { 
@@ -501,8 +513,10 @@ TCanvas* DrawAll(TCut var, const char *savename, TCut sel, float intlumipb, unsi
     vh_background[0]->SetMaximum(ymax);
 
     // draw the legend and tidy up
+    pad2->cd();
     leg->Draw();
 
+    c1->cd();
     c1->RedrawAxis();
     gDrawAllCount++;
     reset_babydorkidentifier();
