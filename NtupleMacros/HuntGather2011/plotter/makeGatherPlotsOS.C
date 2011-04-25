@@ -34,13 +34,13 @@ void makeGatherPlotsOS(TString prefix, const std::vector<BabySample*> &babyVecto
     DrawAll("tcmet",                   prefix+"_os_tcmet",           os_preselection, luminosity, 40, 0., 300, 0, babyVector);
     DrawAll( y,                        prefix+"_os_y",               os_preselection, luminosity, 40, 0.,  20, 0, babyVector);
     DrawAll("sumjetpt",                prefix+"_os_sumjetpt",        os_preselection, luminosity ,40, 0., 800, 0, babyVector);
-    DrawAll("njets",                   prefix+"_os_njets",           os_preselection, luminosity , 5, 0.,   5, 0, babyVector);
+    DrawAll("njets",                   prefix+"_os_njets",           os_preselection, luminosity , 8, 0.,   8, 0, babyVector);
 
     DrawAll("mass",                    prefix+"_os_mass_int",        os_preselection, luminosity, 40, 0., 500, 1, babyVector);
     DrawAll("tcmet",                   prefix+"_os_tcmet_int",       os_preselection, luminosity, 40, 0., 300, 1, babyVector);
     DrawAll( y,                        prefix+"_os_y_int",           os_preselection, luminosity, 40, 0.,  20, 1, babyVector);
     DrawAll("sumjetpt",                prefix+"_os_sumjetpt_int",    os_preselection, luminosity ,40, 0., 800, 1, babyVector);
-    DrawAll("njets",                   prefix+"_os_njets_int",       os_preselection, luminosity , 5, 0.,   5, 1, babyVector);
+    DrawAll("njets",                   prefix+"_os_njets_int",       os_preselection, luminosity , 8, 0.,   8, 1, babyVector);
 
 }
 
