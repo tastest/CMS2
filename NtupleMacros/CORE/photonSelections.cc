@@ -1,6 +1,5 @@
 #include "photonSelections.h"
 #include "jetSelections.h"
-#include "utilities.h"
 #include <iostream>
 #include "TSystem.h"
 #include "Math/VectorUtil.h"
@@ -106,7 +105,7 @@ int isGoodEMObject( const unsigned int index ){
         if( vjet.pt()  < 10  )       continue;
         if( fabs(vjet.eta()) > 2.5 )       continue;
     
-        float dr = dRbetweenVectors(vjet, vg);
+        float dr = ROOT::Math::VectorUtil::DeltaR(vjet, vg);
     
         if( dr < drmin ){
             drmin       = dr;
