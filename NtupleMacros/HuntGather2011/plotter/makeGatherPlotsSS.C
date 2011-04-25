@@ -31,6 +31,8 @@ void makeGatherPlotsSS(TString prefix, const std::vector<BabySample*> &babyVecto
     DrawAll("mass",prefix+"_ss_mm_mass",ssanal_mm_dilep,luminosity,40,0.,500.,0, babyVector);
     DrawAll("sumjetpt",prefix+"_ss_sumjetpt_int",ssanal_dilep,luminosity,40,0.,800.,1, babyVector);
     DrawAll("tcmet",prefix+"_ss_tcmet_int",ssanal_dilep,luminosity,40,0.,300.,1, babyVector);
+    DrawAll("hyp_type",prefix+"_ss_hyp",ssanal_dilep,luminosity, 7, -0.5, 6.5, 0, babyVector);
+    DrawAll("hyp_type",prefix+"_ss_hyp_met80",TCut("ssanal_dilep_met80", ssanal_dilep+"tcmet>80.0"),luminosity, 7, -0.5, 6.5, 0, babyVector);
 
 }
 
