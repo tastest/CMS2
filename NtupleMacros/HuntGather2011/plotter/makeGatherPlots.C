@@ -40,6 +40,7 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     gROOT->ProcessLine(".L makeGatherPlotsST.C");
     gROOT->ProcessLine(".L makeGatherPlotsExotica.C");
     gROOT->ProcessLine(".L makeGatherPlotsExpress.C");
+    gROOT->ProcessLine(".L makeGatherMETMonitor.C");
 
     //
     // define samples
@@ -366,8 +367,13 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
 
         // validation for all
         //makeGatherPlotsValidation("all", babyVectorSM, goodruns_lumi, est_extra_lumi);
-        makeGatherPlotsValidation("run2011", babyVectorSM2011, goodruns_lumi, est_extra_lumi);
-        makeGatherPlotsValidation("max2011", babyVectorSM2011max, goodruns_lumi, est_extra_lumi_2011max);
+        //makeGatherPlotsValidation("run2011", babyVectorSM2011, goodruns_lumi, est_extra_lumi);
+        //makeGatherPlotsValidation("max2011", babyVectorSM2011max, goodruns_lumi, est_extra_lumi_2011max);
+
+        // MET monitor
+        //makeGatherPlotsHiggs("all", babyVectorSM, est_lumi);
+        makeGatherMETMonitor("run2011", babyVectorSM2011, est_extra_lumi);
+        makeGatherMETMonitor("max2011", babyVectorSM2011max, est_extra_lumi_2011max);
 
         // higgs for all data and for 2010 + 2011
         //makeGatherPlotsHiggs("all", babyVectorSM, est_lumi);

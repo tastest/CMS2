@@ -387,7 +387,7 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     gr_eff->SetName(TString("gr_") + h1_pass->GetName());
     gr_eff->SetTitle(TString(savename));
     gr_eff->BayesDivide(h1_pass, h1_total);
-    PrintBins(gr_eff);
+    //PrintBins(gr_eff);
 
     //
     // do the drawing
@@ -402,7 +402,7 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     gr_eff->GetXaxis()->SetTitle(var.GetTitle());
     gr_eff->GetYaxis()->SetTitle("Efficiency");
     gr_eff->GetXaxis()->SetNdivisions(504);
-    gr_eff->GetYaxis()->SetRangeUser(0.10, 1.10);
+    //gr_eff->GetYaxis()->SetRangeUser(0.0, 1.10);
  
     // draw the legend and tidy up
     c1->RedrawAxis();
