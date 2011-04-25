@@ -134,19 +134,12 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     // Data
     //
 
-    // set up the good run list cut
-    int brun = min_run();
-    int bls  = min_run_min_lumi();
-    int erun = max_run();
-    int els  = max_run_max_lumi();
-    TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun(run,ls))||(run>%i||(run==%i&&ls>%i))",
-                brun, erun, brun, bls, erun, els, erun, erun, els));
     TCut c_remove_end2010bad("remove_end2010bad", "run <= 149294 || run >= 160325");
     TCut c_remove_2T2011runs("remove_2T2011runs", "run != 162713");
     // set up the duplicate removal cut and
     // set up the preselection cut for data
     TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
-    TCut c_datapresel = c_goodrunplus + c_notduplicate + c_remove_end2010bad + c_remove_2T2011runs;
+    TCut c_datapresel = c_notduplicate + c_remove_end2010bad + c_remove_2T2011runs;
 
     // ALL
     BabySample *bs_data = new BabySample("data", "data", base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root", c_datapresel, 1.0, DATA, kBlack);
@@ -182,12 +175,15 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     BabySample *bs_data_express_post_tech_stop = new BabySample("express", "data", base+"data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root", c_datapresel, 1.0, DATA, kRed);
 
     // 2011 Max (prompt reco + post tech stop express)
-    BabySample *bs_data2011max = new BabySample("data", "data", base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root", c_datapresel, 1.0, DATA, kBlack);
-    bs_data2011max->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
-    bs_data2011max->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
-    bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
-    bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
-    bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    //BabySample *bs_data2011max = new BabySample("data", "data", base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root", c_datapresel, 1.0, DATA, kBlack);
+    //bs_data2011max->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    //bs_data2011max->add(base+"/mctmp/CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/baby_gather*.root");
+    //bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    //bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    //bs_data2011max->add(base+"/data/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    //bs_data2011max->add(base+"/data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root");
+
+    BabySample *bs_data2011max = new BabySample("data", "data", base+"mctmp/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root", c_datapresel, 1.0, DATA, kBlack);
     bs_data2011max->add(base+"/data/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root");
 
     //
@@ -326,22 +322,27 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     //
     // Luminosity determination
     //
-    //const char *goodrunlist = "../runlists/Cert_TopNov5_Merged_135821-149442_allPVT.txt";
+
     const char *goodrunlist = "../runlists/top_nov22.txt";
     float goodruns_lumi = 36.1; // (I missed 2010A for the time being)
     std::cout << "[The Gathering] Determining luminosity" << std::endl;
-    std::cout << "[The Gathering] " << goodrunlist << std::endl;
+    std::cout << "[The Gathering] Z Norm determined using: " << goodrunlist << std::endl;
     set_goodrun_file(goodrunlist);
     float zPerPb = GetZPerPb(bs_data->chain(), goodruns_lumi);
+
+    // now set the dcs good run list for 2011A
+    const char *goodrunlist = "../runlists/dcs_jmu.txt";
+    set_goodrun_file(goodrunlist);
+    std::cout << "[The Gathering] Good run list set: " << goodrunlist << std::endl;
 
     //
     // Make the plots
     //
 
     if (mode == EXPRESS) {
-        float est_extra_lumi_express = GetNewLumi(bs_data_express_post_tech_stop->chain(), zPerPb);
+        float est_extra_lumi_express = GetAllLumi(bs_data2011max->chain(), zPerPb);
         std::cout << "[The Gathering] Estimated L in EXPRESS = " << est_extra_lumi_express << std::endl;
-        makeGatherPlotsExpress("post_techstop", babyVectorSM2011PostTechStopExpress, goodruns_lumi, est_extra_lumi_express);
+        makeGatherPlotsExpress("post_techstop", babyVectorSM2011max, goodruns_lumi, est_extra_lumi_express);
     }
 
     if (mode == DEBUG) {
@@ -357,9 +358,10 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     }
 
     if (mode == PROMPT) {
-        float est_extra_lumi = GetNewLumi(bs_data2011->chain(), zPerPb);
+
+        float est_extra_lumi = GetAllLumi(bs_data2011->chain(), zPerPb);
         std::cout << "[The Gathering] Estimated L in 2011 Prompt = " << est_extra_lumi << std::endl;
-        float est_extra_lumi_2011max = GetNewLumi(bs_data2011max->chain(), zPerPb);
+        float est_extra_lumi_2011max = GetAllLumi(bs_data2011max->chain(), zPerPb);
         std::cout << "[The Gathering] Estimated L in 2011max = " << est_extra_lumi_2011max << std::endl;
 
         // validation for all
@@ -414,8 +416,11 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
         c1->Print(Form("../output/%s.root", c1->GetName()));
 
         // log
-        c1->SetLogy(1);
+        TPad *p_main = 0;
+        if ((p_main = (TPad*)c1->FindObject("p_main"))) p_main->SetLogy(1);
+        else c1->SetLogy(1);
         c1->Print(Form("../output/%s_log.png", c1->GetName()));
+
     }
 
     //

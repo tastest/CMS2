@@ -28,7 +28,7 @@ void ComputeEfficiency(TH1F *gr_eff_data, const TH1F *h1_data_denom, const TH1F 
 //
 // luminosity functions
 //
-
+float GetAllLumi(TChain *c, float zPerPb);
 float GetNewLumi(TChain *c, float zPerPb);
 float GetZPerPb(TChain *c, float lumi);
 

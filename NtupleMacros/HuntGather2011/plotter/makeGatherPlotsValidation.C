@@ -29,11 +29,13 @@ void makeGatherPlotsValidation(TString prefix, const std::vector<BabySample*> &b
     //
 
     // mass in new and goodruns
-    DrawAll("mass", prefix+"_validation_mass_goodruns_ee", validation_ee+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
-    DrawAll("mass", prefix+"_validation_mass_newruns_ee", validation_ee+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
+    //DrawAll("mass", prefix+"_validation_mass_goodruns_ee", validation_ee+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
+    //DrawAll("mass", prefix+"_validation_mass_newruns_ee", validation_ee+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
+    //DrawAll("mass", prefix+"_validation_mass_goodruns_mm", validation_mm+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
+    //DrawAll("mass", prefix+"_validation_mass_newruns_mm", validation_mm+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
 
-    DrawAll("mass", prefix+"_validation_mass_goodruns_mm", validation_mm+validation_goodrun, goodruns_lumi, 50,0., 200., 0, babyVector);
-    DrawAll("mass", prefix+"_validation_mass_newruns_mm", validation_mm+validation_newrun, est_newruns_lumi, 50,0., 200., 0, babyVector);
+    DrawAll("mass", prefix+"_validation_mass_newruns_ee", validation_ee, est_newruns_lumi, 50,0., 200., 0, babyVector);
+    DrawAll("mass", prefix+"_validation_mass_newruns_mm", validation_mm, est_newruns_lumi, 50,0., 200., 0, babyVector);
 
     // hyps with ttbar and dy like selection
     DrawAll("hyp_type", prefix+"_validation_hyp_type_top", dileptonictopv4_dilep, goodruns_lumi+est_newruns_lumi, 7, -0.5, 7.5, 0, babyVector);

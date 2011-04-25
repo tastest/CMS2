@@ -20,6 +20,27 @@
 #include <vector>
 #include <iostream>
 
+float GetAllLumi(TChain *c, float zPerPb)
+{   
+
+    int brun = min_run();
+    int bls  = min_run_min_lumi();
+    int erun = max_run();
+    int els  = max_run_max_lumi();
+    // goodrun plus events beyond range of goodrun
+    // which are not goodrun penalized
+    TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
+    TCut c_remove_end2010bad("remove_end2010bad", "run <= 149294 || run >= 160325");
+
+    reset_babydorkidentifier();
+    int n_new = c->GetEntries(c_goodrunplus+c_remove_end2010bad+inclusivez_dilep);
+    reset_babydorkidentifier();
+    float lumi = ((float)(n_new))/zPerPb;
+    return lumi;
+
+}
+
+
 float GetNewLumi(TChain *c, float zPerPb)
 {
 
@@ -683,9 +704,17 @@ TH1F* slideIntegrated(TH1F* h1)
 void PreselectBabies(std::vector<BabySample*> bss, TCut cut)
 {
 
+    // set up the good run list cut
+    int brun = min_run();
+    int bls  = min_run_min_lumi();
+    int erun = max_run();
+    int els  = max_run_max_lumi();
+    TCut c_goodrunplus(Form("((((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun(run,ls))||(run>%i||(run==%i&&ls>%i)))||!isdata",
+                brun, erun, brun, bls, erun, els, erun, erun, els));
+
     std::cout << "Preselecting Babies..." << std::endl;
     for (unsigned int i = 0; i < bss.size(); ++i) {
-        bss[i]->setEventList(cut);
+        bss[i]->setEventList(cut+c_goodrunplus);
     }
 
 }
