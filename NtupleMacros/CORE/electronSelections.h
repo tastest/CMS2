@@ -102,6 +102,9 @@ enum EleSelectionType {
 	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
 	 // represent HLT requirements for CaloIdL_TrkIdVL
 	 ELEID_VBTF_90_HLT,
+ 	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
+ 	 // represent HLT requirements for CaloIdT_TrkIdVL
+ 	 ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,
 	 // CIC_MEDIUM electron ID (V03)
 	 ELEID_CIC_V03_MEDIUM,
 	 //

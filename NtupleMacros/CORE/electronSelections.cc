@@ -107,6 +107,9 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // VBTF90 with H/E and dPhiIn tuned to match HLT
     answer_vbtf = electronId_VBTF(index, VBTF_90_HLT, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_90_HLT);
+    // VBTF90 with H/E and dPhiIn tuned to match HLT (CaloIdT+TrkIdVL)
+    answer_vbtf = electronId_VBTF(index, VBTF_90_HLT_CALOIDT_TRKIDVL, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL);
     //
     // CIC ID  
     //
