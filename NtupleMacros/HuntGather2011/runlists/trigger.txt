@@ -16,16 +16,19 @@
 #
 160329 161176 HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1 e 0
 161210 999999 HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2 e 0
-
 #
 # double muon triggers
 #
-160325 9999999 HLT_DoubleMu7_v1 mm 0
+160325 163262 HLT_DoubleMu7_v1 mm 0
+163265 999999 HLT_DoubleMu7_v2 mm 0
 #
 # double electron triggers
 #
 160329 161176 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1 ee 0
-161210 999999 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2 ee 0
+161210 163262 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2 ee 0
+163265 999999 HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3 ee 0
+161200 163262 HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v2 ee 1
+163265 999999 HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v3 ee 1
 #
 #note that these next two are identical except for version number
 #so I assign them to the same bit so run range consistently covered
@@ -37,31 +40,39 @@
 # cross triggers
 #
 160329 161176 HLT_Mu17_Ele8_CaloIdL_v1 em 0
-161210 999999 HLT_Mu17_Ele8_CaloIdL_v2 em 0
+161210 163262 HLT_Mu17_Ele8_CaloIdL_v2 em 0
+163265 999999 HLT_Mu17_Ele8_CaloIdL_v3 em 0
 160329 161176 HLT_Mu8_Ele17_CaloIdL_v1 em 1
-161210 999999 HLT_Mu8_Ele17_CaloIdL_v2 em 1
+161210 163262 HLT_Mu8_Ele17_CaloIdL_v2 em 1
+163265 999999 HLT_Mu8_Ele17_CaloIdL_v3 em 1
 160325 999999 HLT_Mu8_Photon20_CaloIdVT_IsoT_v2 em 2
 #
 # electron had triggers
 #
 160329 161176 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v2 eehad 0
-161210 999999 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v3 eehad 0
+161210 163262 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v3 eehad 0
 160329 161176 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v2 eehad 1
-161210 999999 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v3 eehad 1
+161210 163262 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v3 eehad 1
+163265 999999 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v1 eehad 2
+163265 999999 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v1 eehad 3
 #
 # muon had triggers
 #
 160329 161176 HLT_DoubleMu3_HT160_v2 mmhad 0
-161210 999999 HLT_DoubleMu3_HT160_v3 mmhad 0
+161210 163262 HLT_DoubleMu3_HT160_v3 mmhad 0
 160329 161176 HLT_DoubleMu3_HT200_v2 mmhad 1
-161210 999999 HLT_DoubleMu3_HT200_v3 mmhad 1
+161210 163262 HLT_DoubleMu3_HT200_v3 mmhad 1
+163265 999999 HLT_DoubleMu3_HT200_v4 mmhad 1
+163265 999999 HLT_DoubleMu3_HT150_v1 mmhad 2
 #
 # muon had cross triggers
 #
 160329 161176 HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v2 emhad 0
-161210 999999 HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v3 emhad 0
+161210 163262 HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v3 emhad 0
 160329 161176 HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v2 emhad 1
 161210 999999 HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v3 emhad 1
+163265 999999 HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v1 emhad 2
+163265 999999 HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v1 emhad 3
 #
 # Run2010
 #
