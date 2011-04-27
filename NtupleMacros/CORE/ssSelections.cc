@@ -36,7 +36,7 @@ bool isGoodLepton(int id, int idx, int vidx)
 
     // muons
     if (abs(id) == 13)
-        return (muonIdNotIsolated(idx, NominalSSv2, vidx));
+        return (muonIdNotIsolated(idx, NominalSSv3, vidx));
 
     return false;
 }
@@ -49,7 +49,7 @@ bool isIsolatedLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV3_iso, false, false, vidx) && electronIsolation_ECAL_rel_v1(idx) < 0.2);
+        return (pass_electronSelection(idx, electronSelection_ssV3_iso));
 
     // muons
     if (abs(id) == 13)
@@ -79,6 +79,23 @@ bool isNumeratorHypothesis(int idx, int vidx)
         return false;
 
     return true;
+}
+
+
+/******************************************************************************************/     
+// 2011 denominator lepton
+/******************************************************************************************/     
+bool isDenominatorLepton(int id, int idx, int vidx)
+{
+    // electrons
+    if (abs(id) == 11)
+        return (pass_electronSelection(idx, electronSelectionFOV3_ssVBTF80_v3, false, false, vidx));
+
+    // muons
+    if (abs(id) == 13)
+        return (muonId(idx, muonSelectionFO_ssV3, vidx));
+
+    return false;
 }
 
 

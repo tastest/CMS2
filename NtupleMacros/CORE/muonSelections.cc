@@ -86,12 +86,12 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
             return muonIsoValue(index,false) < 0.15;
         break;
     case NominalSSv3:
-        if (!muonIdNotIsolated(index, type))
+        if (!muonIdNotIsolated(index, type, vertex_index))
             return false;
         return (muonIsoValue(index, false) < 0.15);
         break;
     case muonSelectionFO_ssV3:
-        if (!muonIdNotIsolated(index, type))
+        if (!muonIdNotIsolated(index, type, vertex_index))
             return false;
         return (muonIsoValue(index, false) < 0.40);
         break;
@@ -101,7 +101,7 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         return false;
     } 
     return 
-        muonIdNotIsolated( index, type ) && 
+        muonIdNotIsolated( index, type, vertex_index ) && 
         muonIsoValue(index) < isovalue;          // Isolation cut
 }
 bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index){
