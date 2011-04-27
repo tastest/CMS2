@@ -14,12 +14,12 @@
 
 class myBabyMaker {
 
- public:
+public:
 
     myBabyMaker() {};
     ~myBabyMaker() {
-      delete babyFile_;
-      delete babyTree_;
+        delete babyFile_;
+        delete babyTree_;
     };
     void MakeBabyNtuple (const char *);
     void InitBabyNtuple ();
@@ -27,15 +27,15 @@ class myBabyMaker {
     void CloseBabyNtuple ();
     void ScanChain (TChain *, const char *, bool, int);
   
- private:
+private:
       
-  // BABY NTUPLE VARIABLES
-  TFile *babyFile_;
-  TTree *babyTree_;
+    // BABY NTUPLE VARIABLES
+    TFile *babyFile_;
+    TTree *babyTree_;
      
-  /////////////////////////// 
-  // Event Information     //
-  ///////////////////////////
+    /////////////////////////// 
+    // Event Information     //
+    ///////////////////////////
 
     // Basic Event Information
     Int_t   run_;
@@ -81,15 +81,15 @@ class myBabyMaker {
     vector<LorentzVector>   davtxs_position_;
 
 
-  /////////////////////////// 
-  // End Event Information //
-  ///////////////////////////
+    /////////////////////////// 
+    // End Event Information //
+    ///////////////////////////
 
 
 
-  //////////////////////////
-  // Lepton Variables     //
-  //////////////////////////
+    //////////////////////////
+    // Lepton Variables     //
+    //////////////////////////
 
     // Lepton pt and eta and phi
     Float_t pt_;
@@ -131,32 +131,36 @@ class myBabyMaker {
     float ht_pf_L2L3_;       
     float ht_pf_L1FastL2L3_;  
 
-  //////////////////////////
-  // End Lepton Variables //
-  //////////////////////////
+    //////////////////////////
+    // End Lepton Variables //
+    //////////////////////////
 
 
 
-  //////////////////////////////////////////////////////
-  // Fake Rate Numerator & Denominator Selections     //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // Fake Rate Numerator & Denominator Selections     //
+    //////////////////////////////////////////////////////
 
     //////////
     // 2011 //
     //////////
   
-      // SS
-      Bool_t num_el_ssV3_;
-      Bool_t v1_el_ssV3_;
-      Bool_t v2_el_ssV3_;
-      Bool_t v3_el_ssV3_;
+    // SS electrons
+    Bool_t num_el_ssV3_;
+    Bool_t v1_el_ssV3_;
+    Bool_t v2_el_ssV3_;
+    Bool_t v3_el_ssV3_;
 
-      // WW
-      Bool_t num_el_smurfV3_;
-      Bool_t v1_el_smurfV1_;
-      Bool_t v2_el_smurfV1_;
-      Bool_t v3_el_smurfV1_;
-      Bool_t v4_el_smurfV1_;
+    // SS muons
+    Bool_t numNomSSv3_;   // NominalSSv3
+    Bool_t fo_mussV3_04_; // muonSelectionFO_mu_ssV3
+
+    // WW
+    Bool_t num_el_smurfV3_;
+    Bool_t v1_el_smurfV1_;
+    Bool_t v2_el_smurfV1_;
+    Bool_t v3_el_smurfV1_;
+    Bool_t v4_el_smurfV1_;
 
     //////////
     // 2010 //
@@ -164,29 +168,29 @@ class myBabyMaker {
   
     // ttbar
   
-      // electrons ( not filled for muons )
-      Bool_t numOct6_;      // electronSelection_ttbarV1_pass5
-      Bool_t v1Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
-      Bool_t v2Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
-      Bool_t v3Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
+    // electrons ( not filled for muons )
+    Bool_t numOct6_;      // electronSelection_ttbarV1_pass5
+    Bool_t v1Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
+    Bool_t v2Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
+    Bool_t v3Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
   
-      // muons     ( not filled for electrons )
-      Bool_t num_;          // NominalTTbarV2
-      Bool_t fo_04_;        // muonSelectionFO_mu_ttbar
-      Bool_t fo_10_;        // muonSelectionFO_mu_ttbar_iso10
+    // muons     ( not filled for electrons )
+    Bool_t num_;          // NominalTTbarV2
+    Bool_t fo_04_;        // muonSelectionFO_mu_ttbar
+    Bool_t fo_10_;        // muonSelectionFO_mu_ttbar_iso10
   
     // Same Sign Susy
 
-      // electrons ( not filled for muons )
-      Bool_t numSSV2_;      // electronSelection_ssV2, false, false && !isSpikeElectron
-      Bool_t v1SSV2_;       // electronSelectionFOV2_ssVBTF80_v1, false, false
-      Bool_t v2SSV2_;       // electronSelectionFOV2_ssVBTF80_v2, false, false
-      Bool_t v3SSV2_;       // electronSelectionFOV2_ssVBTF80_v3, false, false
+    // electrons ( not filled for muons )
+    Bool_t numSSV2_;      // electronSelection_ssV2, false, false && !isSpikeElectron
+    Bool_t v1SSV2_;       // electronSelectionFOV2_ssVBTF80_v1, false, false
+    Bool_t v2SSV2_;       // electronSelectionFOV2_ssVBTF80_v2, false, false
+    Bool_t v3SSV2_;       // electronSelectionFOV2_ssVBTF80_v3, false, false
 
-      // muons
-      Bool_t numNomSSv2_;   // NominalSSv2
-      Bool_t fo_mussV2_04_; // muonSelectionFO_mu_ssV2
-      Bool_t fo_mussV2_10_; // muonSelectionFO_mu_ssV2_iso10
+    // muons
+    Bool_t numNomSSv2_;   // NominalSSv2
+    Bool_t fo_mussV2_04_; // muonSelectionFO_mu_ssV2
+    Bool_t fo_mussV2_10_; // muonSelectionFO_mu_ssV2_iso10
   
     // Opposite Sign Susy
     Bool_t num_OSGv1_;      // OSGeneric_v1 (muons) | nothing for ele
@@ -211,15 +215,15 @@ class myBabyMaker {
     Bool_t fo_mu_smurf_04_;
     Bool_t fo_mu_smurf_10_;
 
-  //////////////////////////////////////////////////////
-  // End Fake Rate Numerator & Denominator Selections //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // End Fake Rate Numerator & Denominator Selections //
+    //////////////////////////////////////////////////////
 
 
 
-  ///////////////////////  
-  // 2011 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2011 Triggers     //
+    ///////////////////////
 
     // Triggers & HLT matching
     // 0  = fail 
@@ -271,15 +275,15 @@ class myBabyMaker {
     Float_t dr_mu30_v1_;                                          // HLT_Mu30_v1
     Float_t dr_mu8_Jet40_v3_;                                     // HLT_Mu8_Jet40_v3
 
-  ///////////////////////  
-  // End 2011 Triggers //
-  ///////////////////////
+    ///////////////////////  
+    // End 2011 Triggers //
+    ///////////////////////
 
 
 
-  ///////////////////////  
-  // 2010 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2010 Triggers     //
+    ///////////////////////
 
     // Jet Triggers
   
@@ -367,15 +371,15 @@ class myBabyMaker {
     Float_t drmu7_;   // HLT_Mu7
     Float_t drmu5_;   // HLT_Mu5
   
-  ///////////////////////  
-  // End 2010 Triggers //
-  ///////////////////////
+    ///////////////////////  
+    // End 2010 Triggers //
+    ///////////////////////
 
 
 
-  //////////////
-  // Jets     //
-  //////////////
+    //////////////
+    // Jets     //
+    //////////////
 
     // Btag information
     Int_t nbjet_; // number of btagged jet pt>15
@@ -419,25 +423,25 @@ class myBabyMaker {
     Int_t   njptcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagjptc_; 
 
-  //////////////
-  // End Jets //
-  //////////////
+    //////////////
+    // End Jets //
+    //////////////
 
 
 
-  // transverse W mass
-  Float_t mt_;
-  Float_t pfmt_;
+    // transverse W mass
+    Float_t mt_;
+    Float_t pfmt_;
 
-  // do the 3 electron charges agree?
-  Bool_t q3_;
+    // do the 3 electron charges agree?
+    Bool_t q3_;
 
- // Missing hit info
-  Int_t els_exp_innerlayers_;
+    // Missing hit info
+    Int_t els_exp_innerlayers_;
 
-  //Some MC informatio added 16 Sep 2010
-  Int_t mcid_;        // els_mc_id or mus_mc_id
-  Int_t mcmotherid_;  // els_mc_motherid or mus_mc_motherid
+    //Some MC informatio added 16 Sep 2010
+    Int_t mcid_;        // els_mc_id or mus_mc_id
+    Int_t mcmotherid_;  // els_mc_motherid or mus_mc_motherid
 
 };
 #endif
@@ -447,9 +451,9 @@ class myBabyMaker {
 //------------------------------------------
 void myBabyMaker::InitBabyNtuple () {
 
-  /////////////////////////// 
-  // Event Information     //
-  ///////////////////////////
+    /////////////////////////// 
+    // Event Information     //
+    ///////////////////////////
     
     // 
     run_ = -1;
@@ -493,15 +497,15 @@ void myBabyMaker::InitBabyNtuple () {
     davtxs_covMatrix_.clear();
     davtxs_position_.clear();
 
-  /////////////////////////// 
-  // End Event Information //
-  ///////////////////////////
+    /////////////////////////// 
+    // End Event Information //
+    ///////////////////////////
 
 
 
-  //////////////////////////// 
-  // Lepton Information     //
-  ////////////////////////////
+    //////////////////////////// 
+    // Lepton Information     //
+    ////////////////////////////
 
     id_               = -1;
     pt_               = -999.;
@@ -539,32 +543,35 @@ void myBabyMaker::InitBabyNtuple () {
     ht_pf_L2L3_       = -999;        
     ht_pf_L1FastL2L3_ = -999;  
 
-  //////////////////////////// 
-  // End Lepton Information //
-  ////////////////////////////
+    //////////////////////////// 
+    // End Lepton Information //
+    ////////////////////////////
 
 
 
-  //////////////////////////////////////////////////////
-  // Fake Rate Numerator & Denominator Selections     //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // Fake Rate Numerator & Denominator Selections     //
+    //////////////////////////////////////////////////////
 
     //////////
     // 2011 //
     //////////
 
-      // SS
-      num_el_ssV3_    = false;
-      v1_el_ssV3_     = false;
-      v2_el_ssV3_     = false;
-      v3_el_ssV3_     = false;
+    // SS
+    num_el_ssV3_    = false;
+    v1_el_ssV3_     = false;
+    v2_el_ssV3_     = false;
+    v3_el_ssV3_     = false;
 
-      // WW
-      num_el_smurfV3_ = false;
-      v1_el_smurfV1_  = false;
-      v2_el_smurfV1_  = false;
-      v3_el_smurfV1_  = false;
-      v4_el_smurfV1_  = false;
+    numNomSSv3_   = false;
+    fo_mussV3_04_ = false;
+
+    // WW
+    num_el_smurfV3_ = false;
+    v1_el_smurfV1_  = false;
+    v2_el_smurfV1_  = false;
+    v3_el_smurfV1_  = false;
+    v4_el_smurfV1_  = false;
 
     //////////
     // 2010 //
@@ -611,15 +618,15 @@ void myBabyMaker::InitBabyNtuple () {
     fo_mu_smurf_04_ = false;
     fo_mu_smurf_10_ = false;
 
-  //////////////////////////////////////////////////////
-  // End Fake Rate Numerator & Denominator Selections //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // End Fake Rate Numerator & Denominator Selections //
+    //////////////////////////////////////////////////////
 
    
   
-  ///////////////////////  
-  // 2011 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2011 Triggers     //
+    ///////////////////////
 
     // Electrons
     ele8_v2_                                             = 0;
@@ -657,15 +664,15 @@ void myBabyMaker::InitBabyNtuple () {
     dr_mu30_v1_      = 99.0;
     dr_mu8_Jet40_v3_ = 99.0;
 
-  ///////////////////////  
-  // End 2011 Triggers //
-  ///////////////////////
+    ///////////////////////  
+    // End 2011 Triggers //
+    ///////////////////////
 
 
 
-  ///////////////////////  
-  // 2010 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2010 Triggers     //
+    ///////////////////////
 
     // Jets
     hlt15u_ = 0;
@@ -742,15 +749,15 @@ void myBabyMaker::InitBabyNtuple () {
     drmu15_ = 99.0;
     drmu17_ = 99.0;
    
-  ///////////////////////  
-  // End 2010 Triggers //
-  ///////////////////////
+    ///////////////////////  
+    // End 2010 Triggers //
+    ///////////////////////
 
 
 
-  //////////////
-  // Jets     //
-  //////////////
+    //////////////
+    // Jets     //
+    //////////////
 
     ptj1_   = 0.;
     nj1_    = 0;
@@ -775,9 +782,9 @@ void myBabyMaker::InitBabyNtuple () {
     dRbpfcNear_ = 99.;
     dRbpfcFar_ = -99.;
 
-  //////////////
-  // End Jets //
-  //////////////
+    //////////////
+    // End Jets //
+    //////////////
 
 }
 
@@ -794,47 +801,47 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Event Information     //
     ///////////////////////////
 
-      babyTree_->Branch("run",          &run_,         "run/I"         );
-      babyTree_->Branch("ls",           &ls_,          "ls/I"          );
-      babyTree_->Branch("evt",          &evt_,         "evt/I"         );
-      babyTree_->Branch("weight",       &weight_,      "weight/F"      );
+    babyTree_->Branch("run",          &run_,         "run/I"         );
+    babyTree_->Branch("ls",           &ls_,          "ls/I"          );
+    babyTree_->Branch("evt",          &evt_,         "evt/I"         );
+    babyTree_->Branch("weight",       &weight_,      "weight/F"      );
   
-      // Pileup - PUSummaryInfoMaker
-      babyTree_->Branch("pu_nPUvertices", &pu_nPUvertices_ );
-      babyTree_->Branch("pu_zpositions" , &pu_zpositions_  );
-      babyTree_->Branch("pu_sumptlowpt" , &pu_sumptlowpt_  );
-      babyTree_->Branch("pu_sumpthighpt", &pu_sumpthighpt_ );
-      babyTree_->Branch("pu_instLumi"   , &pu_instLumi_    );
-      babyTree_->Branch("pu_ntrkslowpt" , &pu_ntrkslowpt_  );
-      babyTree_->Branch("pu_ntrkshighpt", &pu_ntrkshighpt_ );
+    // Pileup - PUSummaryInfoMaker
+    babyTree_->Branch("pu_nPUvertices", &pu_nPUvertices_ );
+    babyTree_->Branch("pu_zpositions" , &pu_zpositions_  );
+    babyTree_->Branch("pu_sumptlowpt" , &pu_sumptlowpt_  );
+    babyTree_->Branch("pu_sumpthighpt", &pu_sumpthighpt_ );
+    babyTree_->Branch("pu_instLumi"   , &pu_instLumi_    );
+    babyTree_->Branch("pu_ntrkslowpt" , &pu_ntrkslowpt_  );
+    babyTree_->Branch("pu_ntrkshighpt", &pu_ntrkshighpt_ );
   
-      // Pileup - VertexMaker
-      babyTree_->Branch("evt_nvtxs"      , &evt_nvtxs_      );
-      babyTree_->Branch("vtxs_xError"    , &vtxs_xError_    );
-      babyTree_->Branch("vtxs_yError"    , &vtxs_yError_    );
-      babyTree_->Branch("vtxs_zError"    , &vtxs_zError_    );
-      babyTree_->Branch("vtxs_chi2"      , &vtxs_chi2_      );
-      babyTree_->Branch("vtxs_ndof"      , &vtxs_ndof_      );
-      babyTree_->Branch("vtxs_sumpt"     , &vtxs_sumpt_     );
-      babyTree_->Branch("vtxs_isFake"    , &vtxs_isFake_    );
-      babyTree_->Branch("vtxs_isValid"   , &vtxs_isValid_   );
-      babyTree_->Branch("vtxs_tracksSize", &vtxs_tracksSize_);
-      babyTree_->Branch("vtxs_covMatrix" , &vtxs_covMatrix_ );
-      babyTree_->Branch("vtxs_position"  , &vtxs_position_  );
+    // Pileup - VertexMaker
+    babyTree_->Branch("evt_nvtxs"      , &evt_nvtxs_      );
+    babyTree_->Branch("vtxs_xError"    , &vtxs_xError_    );
+    babyTree_->Branch("vtxs_yError"    , &vtxs_yError_    );
+    babyTree_->Branch("vtxs_zError"    , &vtxs_zError_    );
+    babyTree_->Branch("vtxs_chi2"      , &vtxs_chi2_      );
+    babyTree_->Branch("vtxs_ndof"      , &vtxs_ndof_      );
+    babyTree_->Branch("vtxs_sumpt"     , &vtxs_sumpt_     );
+    babyTree_->Branch("vtxs_isFake"    , &vtxs_isFake_    );
+    babyTree_->Branch("vtxs_isValid"   , &vtxs_isValid_   );
+    babyTree_->Branch("vtxs_tracksSize", &vtxs_tracksSize_);
+    babyTree_->Branch("vtxs_covMatrix" , &vtxs_covMatrix_ );
+    babyTree_->Branch("vtxs_position"  , &vtxs_position_  );
   
-      // Pileup - VertexMaker
-      babyTree_->Branch("evt_ndavtxs"      , &evt_ndavtxs_      );
-      babyTree_->Branch("davtxs_xError"    , &davtxs_xError_    );
-      babyTree_->Branch("davtxs_yError"    , &davtxs_yError_    );
-      babyTree_->Branch("davtxs_zError"    , &davtxs_zError_    );
-      babyTree_->Branch("davtxs_chi2"      , &davtxs_chi2_      );
-      babyTree_->Branch("davtxs_ndof"      , &davtxs_ndof_      );
-      babyTree_->Branch("davtxs_sumpt"     , &davtxs_sumpt_     );
-      babyTree_->Branch("davtxs_isFake"    , &davtxs_isFake_    );
-      babyTree_->Branch("davtxs_isValid"   , &davtxs_isValid_   );
-      babyTree_->Branch("davtxs_tracksSize", &davtxs_tracksSize_);
-      babyTree_->Branch("davtxs_covMatrix" , &davtxs_covMatrix_ );
-      babyTree_->Branch("davtxs_position"  , &davtxs_position_  );
+    // Pileup - VertexMaker
+    babyTree_->Branch("evt_ndavtxs"      , &evt_ndavtxs_      );
+    babyTree_->Branch("davtxs_xError"    , &davtxs_xError_    );
+    babyTree_->Branch("davtxs_yError"    , &davtxs_yError_    );
+    babyTree_->Branch("davtxs_zError"    , &davtxs_zError_    );
+    babyTree_->Branch("davtxs_chi2"      , &davtxs_chi2_      );
+    babyTree_->Branch("davtxs_ndof"      , &davtxs_ndof_      );
+    babyTree_->Branch("davtxs_sumpt"     , &davtxs_sumpt_     );
+    babyTree_->Branch("davtxs_isFake"    , &davtxs_isFake_    );
+    babyTree_->Branch("davtxs_isValid"   , &davtxs_isValid_   );
+    babyTree_->Branch("davtxs_tracksSize", &davtxs_tracksSize_);
+    babyTree_->Branch("davtxs_covMatrix" , &davtxs_covMatrix_ );
+    babyTree_->Branch("davtxs_position"  , &davtxs_position_  );
 
     /////////////////////////// 
     // End Event Information //
@@ -846,43 +853,43 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Lepton Information     //
     ////////////////////////////
 
-      babyTree_->Branch("pt"              , &pt_      , "pt/F"      );
-      babyTree_->Branch("eta"             , &eta_     , "eta/F"     );
-      babyTree_->Branch("phi"             , &phi_     , "phi/F"     );
-      babyTree_->Branch("scet"            , &scet_    , "scet/F"    );
-      babyTree_->Branch("tcmet"           , &tcmet_   , "tcmet/F"   );
-      babyTree_->Branch("tcmetphi"        , &tcmetphi_, "tcmetphi/F");
-      babyTree_->Branch("pfmet"           , &pfmet_   , "pfmet/F"   );
-      babyTree_->Branch("pfmetphi"        , &pfmetphi_, "pfmetphi/F");
-      babyTree_->Branch("iso"             , &iso_     , "iso/F"     );
-      babyTree_->Branch("nt_iso"          , &nt_iso_                );
-      babyTree_->Branch("trck_nt_iso"     , &trck_nt_iso_           );
-      babyTree_->Branch("ecal_nt_iso"     , &ecal_nt_iso_           );
-      babyTree_->Branch("hcal_nt_iso"     , &hcal_nt_iso_           );
-      babyTree_->Branch("id"              , &id_      , "id/I"      );
+    babyTree_->Branch("pt"              , &pt_      , "pt/F"      );
+    babyTree_->Branch("eta"             , &eta_     , "eta/F"     );
+    babyTree_->Branch("phi"             , &phi_     , "phi/F"     );
+    babyTree_->Branch("scet"            , &scet_    , "scet/F"    );
+    babyTree_->Branch("tcmet"           , &tcmet_   , "tcmet/F"   );
+    babyTree_->Branch("tcmetphi"        , &tcmetphi_, "tcmetphi/F");
+    babyTree_->Branch("pfmet"           , &pfmet_   , "pfmet/F"   );
+    babyTree_->Branch("pfmetphi"        , &pfmetphi_, "pfmetphi/F");
+    babyTree_->Branch("iso"             , &iso_     , "iso/F"     );
+    babyTree_->Branch("nt_iso"          , &nt_iso_                );
+    babyTree_->Branch("trck_nt_iso"     , &trck_nt_iso_           );
+    babyTree_->Branch("ecal_nt_iso"     , &ecal_nt_iso_           );
+    babyTree_->Branch("hcal_nt_iso"     , &hcal_nt_iso_           );
+    babyTree_->Branch("id"              , &id_      , "id/I"      );
 
 
-      babyTree_->Branch("el_id_smurfV3"   , &el_id_smurfV3_   );
-      babyTree_->Branch("el_id_vbtf80"    , &el_id_vbtf80_     );
-      babyTree_->Branch("el_id_vbtf90"    , &el_id_vbtf90_     );
-      babyTree_->Branch("convHitPattern"  , &convHitPattern_   );
-      babyTree_->Branch("convPartnerTrack", &convPartnerTrack_ );
-      babyTree_->Branch("convMIT"         , &convMIT_          );
+    babyTree_->Branch("el_id_smurfV3"   , &el_id_smurfV3_   );
+    babyTree_->Branch("el_id_vbtf80"    , &el_id_vbtf80_     );
+    babyTree_->Branch("el_id_vbtf90"    , &el_id_vbtf90_     );
+    babyTree_->Branch("convHitPattern"  , &convHitPattern_   );
+    babyTree_->Branch("convPartnerTrack", &convPartnerTrack_ );
+    babyTree_->Branch("convMIT"         , &convMIT_          );
 
-      babyTree_->Branch("mt",          &mt_,         "mt/F"         );
-      babyTree_->Branch("pfmt",          &pfmt_,         "pfmt/F"         );
-      babyTree_->Branch("q3",          &q3_,         "q3/O"         );
-      babyTree_->Branch("els_exp_innerlayers", &els_exp_innerlayers_, "els_exp_innerlayers/I" );
-      babyTree_->Branch("mcid",       &mcid_,       "mcid/I"      );
-      babyTree_->Branch("mcmotherid", &mcmotherid_, "mcmotherid/I"      );
+    babyTree_->Branch("mt",          &mt_,         "mt/F"         );
+    babyTree_->Branch("pfmt",          &pfmt_,         "pfmt/F"         );
+    babyTree_->Branch("q3",          &q3_,         "q3/O"         );
+    babyTree_->Branch("els_exp_innerlayers", &els_exp_innerlayers_, "els_exp_innerlayers/I" );
+    babyTree_->Branch("mcid",       &mcid_,       "mcid/I"      );
+    babyTree_->Branch("mcmotherid", &mcmotherid_, "mcmotherid/I"      );
 
-      // HT
-      babyTree_->Branch("ht_calo"         , &ht_calo_          );
-      babyTree_->Branch("ht_calo_L2L3"    , &ht_calo_L2L3_     );
-      babyTree_->Branch("ht_jpt_L2L3"     , &ht_jpt_L2L3_      );
-      babyTree_->Branch("ht_pf"           , &ht_pf_            );
-      babyTree_->Branch("ht_pf_L2L3"      , &ht_pf_L2L3_       );
-      babyTree_->Branch("ht_pf_L1FastL2L3", &ht_pf_L1FastL2L3_ );
+    // HT
+    babyTree_->Branch("ht_calo"         , &ht_calo_          );
+    babyTree_->Branch("ht_calo_L2L3"    , &ht_calo_L2L3_     );
+    babyTree_->Branch("ht_jpt_L2L3"     , &ht_jpt_L2L3_      );
+    babyTree_->Branch("ht_pf"           , &ht_pf_            );
+    babyTree_->Branch("ht_pf_L2L3"      , &ht_pf_L2L3_       );
+    babyTree_->Branch("ht_pf_L1FastL2L3", &ht_pf_L1FastL2L3_ );
 
     //////////////////////////// 
     // End Lepton Information //
@@ -894,185 +901,188 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Fake Rate Numerator & Denominator Selections     //
     //////////////////////////////////////////////////////
 
-      //////////
-      // 2011 //
-      //////////
+    //////////
+    // 2011 //
+    //////////
 
-        // SS
-        babyTree_->Branch("num_el_ssV3"   , &num_el_ssV3_    );
-        babyTree_->Branch("v1_el_ssV3"    , &v1_el_ssV3_     );
-        babyTree_->Branch("v2_el_ssV3"    , &v2_el_ssV3_     );
-        babyTree_->Branch("v3_el_ssV3"    , &v3_el_ssV3_     );
+    // SS
+    babyTree_->Branch("num_el_ssV3"   , &num_el_ssV3_    );
+    babyTree_->Branch("v1_el_ssV3"    , &v1_el_ssV3_     );
+    babyTree_->Branch("v2_el_ssV3"    , &v2_el_ssV3_     );
+    babyTree_->Branch("v3_el_ssV3"    , &v3_el_ssV3_     );
+
+	babyTree_->Branch("numNomSSv3",   &numNomSSv3_,   "numNomSSv3/O");
+	babyTree_->Branch("fo_mussV3_04", &fo_mussV3_04_, "fo_mussV3_04/O");
  
-        // OS
+    // OS
  
-        // WW
-        babyTree_->Branch("num_el_smurfV3", &num_el_smurfV3_ );
-        babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
-        babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
-        babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
-        babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
+    // WW
+    babyTree_->Branch("num_el_smurfV3", &num_el_smurfV3_ );
+    babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
+    babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
+    babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
+    babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
 
-      //////////
-      // 2010 //
-      //////////
+    //////////
+    // 2010 //
+    //////////
 
-      // ttbar
-      babyTree_->Branch("numOct6",         &numOct6_,        "numOct6/O"      );
-      babyTree_->Branch("v1Oct6",         &v1Oct6_,        "v1Oct6/O"      );
-      babyTree_->Branch("v2Oct6",         &v2Oct6_,        "v2Oct6/O"      );
-      babyTree_->Branch("v3Oct6",         &v3Oct6_,        "v3Oct6/O"      );
-      babyTree_->Branch("num",         &num_,        "num/O"      );
-      babyTree_->Branch("fo_04",         &fo_04_,        "fo_04/O"      );
-      babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
+    // ttbar
+    babyTree_->Branch("numOct6",         &numOct6_,        "numOct6/O"      );
+    babyTree_->Branch("v1Oct6",         &v1Oct6_,        "v1Oct6/O"      );
+    babyTree_->Branch("v2Oct6",         &v2Oct6_,        "v2Oct6/O"      );
+    babyTree_->Branch("v3Oct6",         &v3Oct6_,        "v3Oct6/O"      );
+    babyTree_->Branch("num",         &num_,        "num/O"      );
+    babyTree_->Branch("fo_04",         &fo_04_,        "fo_04/O"      );
+    babyTree_->Branch("fo_10",         &fo_10_,        "fo_10/O"      );
 
-      // SS
-      babyTree_->Branch("v1SSV2",         &v1SSV2_,        "v1SSV2/O"      );
-      babyTree_->Branch("v2SSV2",         &v2SSV2_,        "v2SSV2/O"      );
-      babyTree_->Branch("v3SSV2",         &v3SSV2_,        "v3SSV2/O"      );
-      babyTree_->Branch("numSSV2",         &numSSV2_,        "numSSV2/O"      );
-      babyTree_->Branch("numNomSSv2",         &numNomSSv2_,        "numNomSSv2/O"      );
-      babyTree_->Branch("fo_mussV2_04",         &fo_mussV2_04_,        "fo_mussV2_04/O"      );
-      babyTree_->Branch("fo_mussV2_10",         &fo_mussV2_10_,        "fo_mussV2_10/O"      );
+    // SS
+    babyTree_->Branch("v1SSV2",         &v1SSV2_,        "v1SSV2/O"      );
+    babyTree_->Branch("v2SSV2",         &v2SSV2_,        "v2SSV2/O"      );
+    babyTree_->Branch("v3SSV2",         &v3SSV2_,        "v3SSV2/O"      );
+    babyTree_->Branch("numSSV2",         &numSSV2_,        "numSSV2/O"      );
+    babyTree_->Branch("numNomSSv2",         &numNomSSv2_,        "numNomSSv2/O"      );
+    babyTree_->Branch("fo_mussV2_04",         &fo_mussV2_04_,        "fo_mussV2_04/O"      );
+    babyTree_->Branch("fo_mussV2_10",         &fo_mussV2_10_,        "fo_mussV2_10/O"      );
 
-      // OS
-      babyTree_->Branch("num_OSGv1",         &num_OSGv1_,        "num_OSGv1/O"      );
-      babyTree_->Branch("num_OSZv1",         &num_OSZv1_,        "num_OSZv1/O"      );
-      babyTree_->Branch("numOSOct18",         &numOSOct18_,        "numOSOct18/O"      );
-      babyTree_->Branch("v1OSOct18",         &v1OSOct18_,        "v1OSOct18/O"      );
-      babyTree_->Branch("v2OSOct18",         &v2OSOct18_,        "v2OSOct18/O"      );
-      babyTree_->Branch("v3OSOct18",         &v3OSOct18_,        "v3OSOct18/O"      );
+    // OS
+    babyTree_->Branch("num_OSGv1",         &num_OSGv1_,        "num_OSGv1/O"      );
+    babyTree_->Branch("num_OSZv1",         &num_OSZv1_,        "num_OSZv1/O"      );
+    babyTree_->Branch("numOSOct18",         &numOSOct18_,        "numOSOct18/O"      );
+    babyTree_->Branch("v1OSOct18",         &v1OSOct18_,        "v1OSOct18/O"      );
+    babyTree_->Branch("v2OSOct18",         &v2OSOct18_,        "v2OSOct18/O"      );
+    babyTree_->Branch("v3OSOct18",         &v3OSOct18_,        "v3OSOct18/O"      );
 
-      // WW
-      babyTree_->Branch("num_wwV1",         &num_wwV1_,        "num_wwV1/O"      );
-      babyTree_->Branch("v1_wwV1",         &v1_wwV1_,        "v1_wwV1/O"      );
-      babyTree_->Branch("v2_wwV1",         &v2_wwV1_,        "v2_wwV1/O"      );
-      babyTree_->Branch("v3_wwV1",         &v3_wwV1_,        "v3_wwV1/O"      );
-      babyTree_->Branch("v4_wwV1",         &v4_wwV1_,        "v4_wwV1/O"      );
-      babyTree_->Branch("fo_wwV1_04",         &fo_wwV1_04_,        "fo_wwV1_04/O"      );
-      babyTree_->Branch("fo_wwV1_10",         &fo_wwV1_10_,        "fo_wwV1_10/O"      );
-      babyTree_->Branch("fo_wwV1_10_d0",         &fo_wwV1_10_d0_,        "fo_wwV1_10_d0/O"      );
+    // WW
+    babyTree_->Branch("num_wwV1",         &num_wwV1_,        "num_wwV1/O"      );
+    babyTree_->Branch("v1_wwV1",         &v1_wwV1_,        "v1_wwV1/O"      );
+    babyTree_->Branch("v2_wwV1",         &v2_wwV1_,        "v2_wwV1/O"      );
+    babyTree_->Branch("v3_wwV1",         &v3_wwV1_,        "v3_wwV1/O"      );
+    babyTree_->Branch("v4_wwV1",         &v4_wwV1_,        "v4_wwV1/O"      );
+    babyTree_->Branch("fo_wwV1_04",         &fo_wwV1_04_,        "fo_wwV1_04/O"      );
+    babyTree_->Branch("fo_wwV1_10",         &fo_wwV1_10_,        "fo_wwV1_10/O"      );
+    babyTree_->Branch("fo_wwV1_10_d0",         &fo_wwV1_10_d0_,        "fo_wwV1_10_d0/O"      );
 
-      babyTree_->Branch("num_mu_smurfV3",  &num_mu_smurfV3_,  "num_mu_smurfV3/O"      );
-      babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_,  "fo_mu_smurf_04/O"      );
-      babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_,  "fo_mu_smurf_10/O"      );
+    babyTree_->Branch("num_mu_smurfV3",  &num_mu_smurfV3_,  "num_mu_smurfV3/O"      );
+    babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_,  "fo_mu_smurf_04/O"      );
+    babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_,  "fo_mu_smurf_10/O"      );
     //////////////////////////////////////////////////////
     // End Fake Rate Numerator & Denominator Selections //
     //////////////////////////////////////////////////////
 
-      // Electrons
-      babyTree_->Branch("ele8_v2_"                                            , &ele8_v2_                                             );
-      babyTree_->Branch("ele8_CaloIdL_TrkIdVL_v2_"                            , &ele8_CaloIdL_TrkIdVL_v2_                             );
-      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_v2_                     );
-      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_v2_"                          , &ele8_CaloIdL_CaloIsoVL_v2_                           );
-      babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_v2_"                         , &ele17_CaloIdL_CaloIsoVL_v2_                          );
-      babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_    );
+    // Electrons
+    babyTree_->Branch("ele8_v2_"                                            , &ele8_v2_                                             );
+    babyTree_->Branch("ele8_CaloIdL_TrkIdVL_v2_"                            , &ele8_CaloIdL_TrkIdVL_v2_                             );
+    babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_v2_                     );
+    babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_v2_"                          , &ele8_CaloIdL_CaloIsoVL_v2_                           );
+    babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_v2_"                         , &ele17_CaloIdL_CaloIsoVL_v2_                          );
+    babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_    );
 
-      babyTree_->Branch("dr_ele8_v2_"                                         , &dr_ele8_v2_                                          );
-      babyTree_->Branch("dr_ele8_CaloIdL_TrkIdVL_v2_"                         , &dr_ele8_CaloIdL_TrkIdVL_v2_                          );
-      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                 , &dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_                  );
-      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_v2_"                       , &dr_ele8_CaloIdL_CaloIsoVL_v2_                        );
-      babyTree_->Branch("dr_ele17_CaloIdL_CaloIsoVL_v2_"                      , &dr_ele17_CaloIdL_CaloIsoVL_v2_                       );
-      babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_", &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_ );
+    babyTree_->Branch("dr_ele8_v2_"                                         , &dr_ele8_v2_                                          );
+    babyTree_->Branch("dr_ele8_CaloIdL_TrkIdVL_v2_"                         , &dr_ele8_CaloIdL_TrkIdVL_v2_                          );
+    babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                 , &dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_                  );
+    babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_v2_"                       , &dr_ele8_CaloIdL_CaloIsoVL_v2_                        );
+    babyTree_->Branch("dr_ele17_CaloIdL_CaloIsoVL_v2_"                      , &dr_ele17_CaloIdL_CaloIsoVL_v2_                       );
+    babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_", &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_ );
 
-      babyTree_->Branch("mu3_v3"          , &mu3_v3_          );
-      babyTree_->Branch("mu5_v3"          , &mu5_v3_          );
-      babyTree_->Branch("mu8_v1"          , &mu8_v1_          );
-      babyTree_->Branch("mu12_v1"         , &mu12_v1_         );
-      babyTree_->Branch("mu15_v2"         , &mu15_v2_         );
-      babyTree_->Branch("mu20_v1"         , &mu20_v1_         );
-      babyTree_->Branch("mu24_v1"         , &mu24_v1_         );
-      babyTree_->Branch("mu30_v1"         , &mu30_v1_         );
-      babyTree_->Branch("mu8_Jet40_v3"    , &mu8_Jet40_v3_    );
+    babyTree_->Branch("mu3_v3"          , &mu3_v3_          );
+    babyTree_->Branch("mu5_v3"          , &mu5_v3_          );
+    babyTree_->Branch("mu8_v1"          , &mu8_v1_          );
+    babyTree_->Branch("mu12_v1"         , &mu12_v1_         );
+    babyTree_->Branch("mu15_v2"         , &mu15_v2_         );
+    babyTree_->Branch("mu20_v1"         , &mu20_v1_         );
+    babyTree_->Branch("mu24_v1"         , &mu24_v1_         );
+    babyTree_->Branch("mu30_v1"         , &mu30_v1_         );
+    babyTree_->Branch("mu8_Jet40_v3"    , &mu8_Jet40_v3_    );
 
-      babyTree_->Branch("dr_mu3_v3"       , &dr_mu3_v3_       );
-      babyTree_->Branch("dr_mu5_v3"       , &dr_mu5_v3_       );
-      babyTree_->Branch("dr_mu8_v1"       , &dr_mu8_v1_       );
-      babyTree_->Branch("dr_mu12_v1"      , &dr_mu12_v1_      );
-      babyTree_->Branch("dr_mu15_v2"      , &dr_mu15_v2_      );
-      babyTree_->Branch("dr_mu20_v1"      , &dr_mu20_v1_      );
-      babyTree_->Branch("dr_mu24_v1"      , &dr_mu24_v1_      );
-      babyTree_->Branch("dr_mu30_v1"      , &dr_mu30_v1_      );
-      babyTree_->Branch("dr_mu8_Jet40_v3" , &dr_mu8_Jet40_v3_ );
+    babyTree_->Branch("dr_mu3_v3"       , &dr_mu3_v3_       );
+    babyTree_->Branch("dr_mu5_v3"       , &dr_mu5_v3_       );
+    babyTree_->Branch("dr_mu8_v1"       , &dr_mu8_v1_       );
+    babyTree_->Branch("dr_mu12_v1"      , &dr_mu12_v1_      );
+    babyTree_->Branch("dr_mu15_v2"      , &dr_mu15_v2_      );
+    babyTree_->Branch("dr_mu20_v1"      , &dr_mu20_v1_      );
+    babyTree_->Branch("dr_mu24_v1"      , &dr_mu24_v1_      );
+    babyTree_->Branch("dr_mu30_v1"      , &dr_mu30_v1_      );
+    babyTree_->Branch("dr_mu8_Jet40_v3" , &dr_mu8_Jet40_v3_ );
   
     ///////////////////////  
     // End 2010 Triggers //
     ///////////////////////
 
-      // Jets
-      babyTree_->Branch("hlt15u",       &hlt15u_,       "hlt15u/I"      );
-      babyTree_->Branch("hlt30u",       &hlt30u_,       "hlt30u/I"      );
-      babyTree_->Branch("hlt50u",       &hlt50u_,       "hlt50u/I"      );
-      babyTree_->Branch("l16u",         &l16u_,         "l16uu/I"      );
-      babyTree_->Branch("l110",         &l110u_,        "l110u/I"      );
+    // Jets
+    babyTree_->Branch("hlt15u",       &hlt15u_,       "hlt15u/I"      );
+    babyTree_->Branch("hlt30u",       &hlt30u_,       "hlt30u/I"      );
+    babyTree_->Branch("hlt50u",       &hlt50u_,       "hlt50u/I"      );
+    babyTree_->Branch("l16u",         &l16u_,         "l16uu/I"      );
+    babyTree_->Branch("l110",         &l110u_,        "l110u/I"      );
   
-      // Electrons
-      babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
-      babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
-      babyTree_->Branch("ph20",       &ph20_,       "ph20/I"      );
-      babyTree_->Branch("el10_lw",         &el10_lw_,         "el10_lw/I"      );
-      babyTree_->Branch("el10_sw",         &el10_sw_,         "el10_sw/I"      );
-      babyTree_->Branch("el10_sw_v2",         &el10_sw_v2_,         "el10_sw_v2/I"      );
-      babyTree_->Branch("el10_lw_id",         &el10_lw_id_,         "el10_lw_id/I"      );
-      babyTree_->Branch("el10_sw_id",         &el10_sw_id_,         "el10_sw_id/I"      );
-      babyTree_->Branch("el15_lw",         &el15_lw_,         "el15_lw/I"      );
-      babyTree_->Branch("el15_sw",         &el15_sw_,         "el15_sw/I"      );
-      babyTree_->Branch("el15_lw_id",         &el15_lw_id_,         "el15_lw_id/I"      );
-      babyTree_->Branch("el15_sw_id",         &el15_sw_id_,         "el15_sw_id/I"      );
-      babyTree_->Branch("el15_sw_cid",         &el15_sw_cid_,         "el15_sw_cid/I"      );
-      babyTree_->Branch("el20_sw",         &el20_sw_,         "el20_sw/I"      );
-      babyTree_->Branch("el25_sw",         &el25_sw_,         "el25_sw/I"      );
-      babyTree_->Branch("Del10_sw",         &Del10_sw_,         "Del10_sw/I"      );
-      babyTree_->Branch("el17_sw",         &el17_sw_,         "el17_sw/I"      );
-      babyTree_->Branch("el17_sw_v2",         &el17_sw_v2_,         "el17_sw_v2/I"      );
-      babyTree_->Branch("el17_iso",         &el17_iso_,         "el17_iso/I"      );
-      babyTree_->Branch("el17_loose",         &el17_loose_,         "el17_loose/I"      );
-      babyTree_->Branch("el17_sw_cid",         &el17_sw_cid_,         "el17_sw_cid/I"      );
-      babyTree_->Branch("el17_sw_id",         &el17_sw_id_,         "el17_sw_id/I"      );
-      babyTree_->Branch("el17_tiso",         &el17_tiso_,         "el17_tiso/I"      );
-      babyTree_->Branch("el17_tiso_v1",         &el17_tiso_v1_,         "el17_tiso_v1/I"      );
+    // Electrons
+    babyTree_->Branch("ph10",       &ph10_,       "ph10/I"      );
+    babyTree_->Branch("ph15",       &ph15_,       "ph15/I"      );
+    babyTree_->Branch("ph20",       &ph20_,       "ph20/I"      );
+    babyTree_->Branch("el10_lw",         &el10_lw_,         "el10_lw/I"      );
+    babyTree_->Branch("el10_sw",         &el10_sw_,         "el10_sw/I"      );
+    babyTree_->Branch("el10_sw_v2",         &el10_sw_v2_,         "el10_sw_v2/I"      );
+    babyTree_->Branch("el10_lw_id",         &el10_lw_id_,         "el10_lw_id/I"      );
+    babyTree_->Branch("el10_sw_id",         &el10_sw_id_,         "el10_sw_id/I"      );
+    babyTree_->Branch("el15_lw",         &el15_lw_,         "el15_lw/I"      );
+    babyTree_->Branch("el15_sw",         &el15_sw_,         "el15_sw/I"      );
+    babyTree_->Branch("el15_lw_id",         &el15_lw_id_,         "el15_lw_id/I"      );
+    babyTree_->Branch("el15_sw_id",         &el15_sw_id_,         "el15_sw_id/I"      );
+    babyTree_->Branch("el15_sw_cid",         &el15_sw_cid_,         "el15_sw_cid/I"      );
+    babyTree_->Branch("el20_sw",         &el20_sw_,         "el20_sw/I"      );
+    babyTree_->Branch("el25_sw",         &el25_sw_,         "el25_sw/I"      );
+    babyTree_->Branch("Del10_sw",         &Del10_sw_,         "Del10_sw/I"      );
+    babyTree_->Branch("el17_sw",         &el17_sw_,         "el17_sw/I"      );
+    babyTree_->Branch("el17_sw_v2",         &el17_sw_v2_,         "el17_sw_v2/I"      );
+    babyTree_->Branch("el17_iso",         &el17_iso_,         "el17_iso/I"      );
+    babyTree_->Branch("el17_loose",         &el17_loose_,         "el17_loose/I"      );
+    babyTree_->Branch("el17_sw_cid",         &el17_sw_cid_,         "el17_sw_cid/I"      );
+    babyTree_->Branch("el17_sw_id",         &el17_sw_id_,         "el17_sw_id/I"      );
+    babyTree_->Branch("el17_tiso",         &el17_tiso_,         "el17_tiso/I"      );
+    babyTree_->Branch("el17_tiso_v1",         &el17_tiso_v1_,         "el17_tiso_v1/I"      );
   
-      babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
-      babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
-      babyTree_->Branch("drph20",       &drph20_,       "drph20/F"      );
-      babyTree_->Branch("drel10_lw",         &drel10_lw_,         "drel10_lw/F"      );
-      babyTree_->Branch("drel10_sw",         &drel10_sw_,         "drel10_sw/F"      );
-      babyTree_->Branch("drel10_sw_v2",         &drel10_sw_v2_,         "drel10_sw_v2/F"      );
-      babyTree_->Branch("drel10_lw_id",         &drel10_lw_id_,         "drel10_lw_id/F"      );
-      babyTree_->Branch("drel10_sw_id",         &drel10_sw_id_,         "drel10_sw_id/F"      );
-      babyTree_->Branch("drel15_lw",         &drel15_lw_,         "drel15_lw/F"      );
-      babyTree_->Branch("drel15_sw",         &drel15_sw_,         "drel15_sw/F"      );
-      babyTree_->Branch("drel15_lw_id",         &drel15_lw_id_,         "drel15_lw_id/F"      );
-      babyTree_->Branch("drel15_sw_id",         &drel15_sw_id_,         "drel15_sw_id/F"      );
-      babyTree_->Branch("drel15_sw_cid",         &drel15_sw_cid_,         "drel15_sw_cid/F"      );
-      babyTree_->Branch("drel20_sw",         &drel20_sw_,         "drel20_sw/F"      );
-      babyTree_->Branch("drel25_sw",         &drel25_sw_,         "drel25_sw/F"      );
-      babyTree_->Branch("drDel10_sw",         &drDel10_sw_,         "drDel10_sw/F"      );
-      babyTree_->Branch("drel17_sw",         &drel17_sw_,         "drel17_sw/F"      );
-      babyTree_->Branch("drel17_sw_v2",         &drel17_sw_v2_,         "drel17_sw_v2/F"      );
-      babyTree_->Branch("drel17_iso",         &drel17_iso_,         "drel17_iso/F"      );
-      babyTree_->Branch("drel17_loose",         &drel17_loose_,         "drel17_loose/F"      );
-      babyTree_->Branch("drel17_sw_cid",         &drel17_sw_cid_,         "drel17_sw_cid/F"      );
-      babyTree_->Branch("drel17_sw_id",         &drel17_sw_id_,         "drel17_sw_id/F"      );
-      babyTree_->Branch("drel17_tiso",         &drel17_tiso_,         "drel17_tiso/F"      );
-      babyTree_->Branch("drel17_tiso_v1",         &drel17_tiso_v1_,         "drel17_tiso_v1/F"      );
+    babyTree_->Branch("drph10",       &drph10_,       "drph10/F"      );
+    babyTree_->Branch("drph15",       &drph15_,       "drph15/F"      );
+    babyTree_->Branch("drph20",       &drph20_,       "drph20/F"      );
+    babyTree_->Branch("drel10_lw",         &drel10_lw_,         "drel10_lw/F"      );
+    babyTree_->Branch("drel10_sw",         &drel10_sw_,         "drel10_sw/F"      );
+    babyTree_->Branch("drel10_sw_v2",         &drel10_sw_v2_,         "drel10_sw_v2/F"      );
+    babyTree_->Branch("drel10_lw_id",         &drel10_lw_id_,         "drel10_lw_id/F"      );
+    babyTree_->Branch("drel10_sw_id",         &drel10_sw_id_,         "drel10_sw_id/F"      );
+    babyTree_->Branch("drel15_lw",         &drel15_lw_,         "drel15_lw/F"      );
+    babyTree_->Branch("drel15_sw",         &drel15_sw_,         "drel15_sw/F"      );
+    babyTree_->Branch("drel15_lw_id",         &drel15_lw_id_,         "drel15_lw_id/F"      );
+    babyTree_->Branch("drel15_sw_id",         &drel15_sw_id_,         "drel15_sw_id/F"      );
+    babyTree_->Branch("drel15_sw_cid",         &drel15_sw_cid_,         "drel15_sw_cid/F"      );
+    babyTree_->Branch("drel20_sw",         &drel20_sw_,         "drel20_sw/F"      );
+    babyTree_->Branch("drel25_sw",         &drel25_sw_,         "drel25_sw/F"      );
+    babyTree_->Branch("drDel10_sw",         &drDel10_sw_,         "drDel10_sw/F"      );
+    babyTree_->Branch("drel17_sw",         &drel17_sw_,         "drel17_sw/F"      );
+    babyTree_->Branch("drel17_sw_v2",         &drel17_sw_v2_,         "drel17_sw_v2/F"      );
+    babyTree_->Branch("drel17_iso",         &drel17_iso_,         "drel17_iso/F"      );
+    babyTree_->Branch("drel17_loose",         &drel17_loose_,         "drel17_loose/F"      );
+    babyTree_->Branch("drel17_sw_cid",         &drel17_sw_cid_,         "drel17_sw_cid/F"      );
+    babyTree_->Branch("drel17_sw_id",         &drel17_sw_id_,         "drel17_sw_id/F"      );
+    babyTree_->Branch("drel17_tiso",         &drel17_tiso_,         "drel17_tiso/F"      );
+    babyTree_->Branch("drel17_tiso_v1",         &drel17_tiso_v1_,         "drel17_tiso_v1/F"      );
   
-      // Muons
-      babyTree_->Branch("mu17",       &mu17_,       "mu17/I"      );
-      babyTree_->Branch("mu15",       &mu15_,       "mu15/I"      );
-      babyTree_->Branch("mu13",       &mu13_,       "mu13/I"      );
-      babyTree_->Branch("mu11",       &mu11_,       "mu11/I"      );
-      babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
-      babyTree_->Branch("mu7",       &mu7_,       "mu7/I"      );
-      babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );
+    // Muons
+    babyTree_->Branch("mu17",       &mu17_,       "mu17/I"      );
+    babyTree_->Branch("mu15",       &mu15_,       "mu15/I"      );
+    babyTree_->Branch("mu13",       &mu13_,       "mu13/I"      );
+    babyTree_->Branch("mu11",       &mu11_,       "mu11/I"      );
+    babyTree_->Branch("mu9",       &mu9_,       "mu9/I"      );
+    babyTree_->Branch("mu7",       &mu7_,       "mu7/I"      );
+    babyTree_->Branch("mu5",       &mu5_,       "mu5/I"      );
   
-      babyTree_->Branch("drmu17",       &drmu17_,       "drmu17/F"      );
-      babyTree_->Branch("drmu15",       &drmu15_,       "drmu15/F"      );
-      babyTree_->Branch("drmu13",       &drmu13_,       "drmu13/F"      );
-      babyTree_->Branch("drmu11",       &drmu11_,       "drmu11/F"      );
-      babyTree_->Branch("drmu9",       &drmu9_,       "drmu9/F"      );
-      babyTree_->Branch("drmu7",       &drmu7_,       "drmu7/F"      );
-      babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );
+    babyTree_->Branch("drmu17",       &drmu17_,       "drmu17/F"      );
+    babyTree_->Branch("drmu15",       &drmu15_,       "drmu15/F"      );
+    babyTree_->Branch("drmu13",       &drmu13_,       "drmu13/F"      );
+    babyTree_->Branch("drmu11",       &drmu11_,       "drmu11/F"      );
+    babyTree_->Branch("drmu9",       &drmu9_,       "drmu9/F"      );
+    babyTree_->Branch("drmu7",       &drmu7_,       "drmu7/F"      );
+    babyTree_->Branch("drmu5",       &drmu5_,       "drmu5/F"      );
 
     ///////////////////////  
     // End 2010 Triggers //
@@ -1084,28 +1094,28 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Jets     //
     //////////////
 
-      babyTree_->Branch("ptj1"         , &ptj1_         , "ptj1/F"          );
-      babyTree_->Branch("nj1"          , &nj1_          , "nj1/I"           );
-      babyTree_->Branch("ptj1_b2b"     , &ptj1_b2b_     , "ptj1_b2b/F"      );
-      babyTree_->Branch("dphij1_b2b"   , &dphij1_b2b_   , "dphij1_b2b/F"    );
-      babyTree_->Branch("ptpfj1"       , &ptpfj1_       , "ptpfj1/F"        );
-      babyTree_->Branch("npfj1"        , &npfj1_        , "npfj1/I"         );
-      babyTree_->Branch("ptpfj1_b2b"   , &ptpfj1_b2b_   , "ptpfj1_b2b/F"    );
-      babyTree_->Branch("dphipfj1_b2b" , &dphipfj1_b2b_ , "dphipfj1_b2b/F"  );
+    babyTree_->Branch("ptj1"         , &ptj1_         , "ptj1/F"          );
+    babyTree_->Branch("nj1"          , &nj1_          , "nj1/I"           );
+    babyTree_->Branch("ptj1_b2b"     , &ptj1_b2b_     , "ptj1_b2b/F"      );
+    babyTree_->Branch("dphij1_b2b"   , &dphij1_b2b_   , "dphij1_b2b/F"    );
+    babyTree_->Branch("ptpfj1"       , &ptpfj1_       , "ptpfj1/F"        );
+    babyTree_->Branch("npfj1"        , &npfj1_        , "npfj1/I"         );
+    babyTree_->Branch("ptpfj1_b2b"   , &ptpfj1_b2b_   , "ptpfj1_b2b/F"    );
+    babyTree_->Branch("dphipfj1_b2b" , &dphipfj1_b2b_ , "dphipfj1_b2b/F"  );
   
-      babyTree_->Branch("ptpfcj1"      , &ptpfcj1_      , "ptpfcj1/F"       );
-      babyTree_->Branch("npfcj1"       , &npfcj1_       , "npfcj1/I"        );
-      babyTree_->Branch("ptpfcj1_b2b"  , &ptpfcj1_b2b_  , "ptpfcj1_b2b/F"   );
-      babyTree_->Branch("dphipfcj1_b2b", &dphipfcj1_b2b_, "dphipfcj1_b2b/F" );
-      babyTree_->Branch("btagpfc"      , &btagpfc_      , "btagpfc/O"       );
+    babyTree_->Branch("ptpfcj1"      , &ptpfcj1_      , "ptpfcj1/F"       );
+    babyTree_->Branch("npfcj1"       , &npfcj1_       , "npfcj1/I"        );
+    babyTree_->Branch("ptpfcj1_b2b"  , &ptpfcj1_b2b_  , "ptpfcj1_b2b/F"   );
+    babyTree_->Branch("dphipfcj1_b2b", &dphipfcj1_b2b_, "dphipfcj1_b2b/F" );
+    babyTree_->Branch("btagpfc"      , &btagpfc_      , "btagpfc/O"       );
 
-      babyTree_->Branch("nbjet"        , &nbjet_        , "nbjet/I"         );
-      babyTree_->Branch("dRNear"       , &dRbNear_      , "dRbNear/F"       );
-      babyTree_->Branch("dRFar"        , &dRbFar_       , "dRbFar/F"        );
+    babyTree_->Branch("nbjet"        , &nbjet_        , "nbjet/I"         );
+    babyTree_->Branch("dRNear"       , &dRbNear_      , "dRbNear/F"       );
+    babyTree_->Branch("dRFar"        , &dRbFar_       , "dRbFar/F"        );
   
-      babyTree_->Branch("nbpfcjet"     , &nbpfcjet_     , "nbpfcjet/I"      );
-      babyTree_->Branch("dRpfcNear"    , &dRbpfcNear_   , "dRbpfcNear/F"    );   
-      babyTree_->Branch("dRpfcFar"     , &dRbpfcFar_    , "dRbpfcFar/F"     );
+    babyTree_->Branch("nbpfcjet"     , &nbpfcjet_     , "nbpfcjet/I"      );
+    babyTree_->Branch("dRpfcNear"    , &dRbpfcNear_   , "dRbpfcNear/F"    );   
+    babyTree_->Branch("dRpfcFar"     , &dRbpfcFar_    , "dRbpfcFar/F"     );
 
     //////////////
     // End Jets //
@@ -1114,7 +1124,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
 // Fill the baby
 void myBabyMaker::FillBabyNtuple() { 
-  babyTree_->Fill(); 
+    babyTree_->Fill(); 
 }
 
 // Close the baby
