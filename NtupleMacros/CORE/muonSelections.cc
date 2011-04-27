@@ -324,9 +324,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
         if (TMath::Abs(mudzPV_smurfV3(index)) > 0.2)                             return false; // dz(PV) < 0.2 cm
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6 
-        return true;
+	return true;
 
     case OSZ_v1:
         //this selector is Nominal + eta < 2.4 + dpt/pt < 0.1
