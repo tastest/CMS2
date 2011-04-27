@@ -305,7 +305,7 @@ int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClo
     int lt_vidx = -999;
     int ll_vidx = -999;
 
-    for (int vtxi = 0; vtxi < vtxP4s.size(); vtxi++) {
+    for (unsigned int vtxi = 0; vtxi < vtxP4s.size(); vtxi++) {
         
         bool vertexIsGood = useDAvtxs ? isGoodDAVertex(vtxi) : isGoodVertex(vtxi);
         if (!vertexIsGood)
