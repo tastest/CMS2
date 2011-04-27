@@ -28,15 +28,15 @@
 /******************************************************************************************/     
 // 2011 good lepton
 /******************************************************************************************/     
-bool isGoodLepton(int id, int idx)
+bool isGoodLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV3_noIso));
+        return (pass_electronSelection(idx, electronSelection_ssV3_noIso, false, false, vidx));
 
     // muons
     if (abs(id) == 13)
-        return (muonIdNotIsolated(idx, NominalSSv2));
+        return (muonIdNotIsolated(idx, NominalSSv2, vidx));
 
     return false;
 }
@@ -45,11 +45,11 @@ bool isGoodLepton(int id, int idx)
 /******************************************************************************************/     
 // 2011 isolated lepton
 /******************************************************************************************/     
-bool isIsolatedLepton(int id, int idx)
+bool isIsolatedLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV3_iso) && electronIsolation_ECAL_rel_v1(idx) < 0.2);
+        return (pass_electronSelection(idx, electronSelection_ssV3_iso, false, false, vidx) && electronIsolation_ECAL_rel_v1(idx) < 0.2);
 
     // muons
     if (abs(id) == 13)
@@ -62,20 +62,20 @@ bool isIsolatedLepton(int id, int idx)
 /******************************************************************************************/     
 // 2011 numerator lepton
 /******************************************************************************************/     
-bool isNumeratorLepton(int id, int idx)
+bool isNumeratorLepton(int id, int idx, int vidx)
 {
-    return (isGoodLepton(id, idx) && isIsolatedLepton(id, idx));
+    return (isGoodLepton(id, idx, vidx) && isIsolatedLepton(id, idx, vidx));
 }
 
 
 /******************************************************************************************/     
 // 2011 numerator hypothesis
 /******************************************************************************************/     
-bool isNumeratorHypothesis(int idx)
+bool isNumeratorHypothesis(int idx, int vidx)
 {
-    if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx)))
+    if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), vidx))
         return false;
-    if (!isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx)))
+    if (!isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), vidx))
         return false;
 
     return true;
