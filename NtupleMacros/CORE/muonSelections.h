@@ -7,37 +7,39 @@
 //
 
 enum SelectionType { 
-	 FakableObject = 0, 
-	 Nominal = 1, 
-	 Tight = 2,
-	 NominalTTbar = 3,
-	 muonSelectionFO_mu_v1 = 4,
-	 muonSelectionFO_mu_ttbar = 5,
-	 NominalTTbarV2 = 6,
-	 muonSelectionFO_mu_ttbar_iso10 = 7,
-	 NominalWWV0 = 8,
-	 muonSelectionFO_mu_ww = 9,
-	 muonSelectionFO_mu_ww_iso10 = 10,
-	 NominalSS = 11,
-	 NominalSSd0PV = 12,
-	 NominalSSnod0 = 13,
-	 muonSelectionFO_mu_ss = 14,
-	 muonSelectionFO_mu_ss_iso10 = 15,
-	 NominalWWV1 = 16,
-	 muonSelectionFO_mu_wwV1 = 17,
-	 muonSelectionFO_mu_wwV1_iso10 = 18,
-	 OSGeneric_v1 = 19,
-	 OSZ_v1 = 20,
-	 NominalSSv2 = 21,
-	 muonSelectionFO_mu_ssV2 = 22,
-	 muonSelectionFO_mu_ssV2_iso10 = 23,
-	 muonSelectionFO_mu_wwV1_iso10_d0 = 24,
-         NominalTTbar_pass6 = 25,
-	 muonSelectionFO_mu_ttbar_pass6 = 26,
-	 OSGeneric_v2 = 27,
-	 NominalSmurfV3 = 28,
-	 muonSelectionFO_mu_smurf_04 = 29,
-	 muonSelectionFO_mu_smurf_10 = 30
+    FakableObject = 0, 
+    Nominal = 1, 
+    Tight = 2,
+    NominalTTbar = 3,
+    muonSelectionFO_mu_v1 = 4,
+    muonSelectionFO_mu_ttbar = 5,
+    NominalTTbarV2 = 6,
+    muonSelectionFO_mu_ttbar_iso10 = 7,
+    NominalWWV0 = 8,
+    muonSelectionFO_mu_ww = 9,
+    muonSelectionFO_mu_ww_iso10 = 10,
+    NominalSS = 11,
+    NominalSSd0PV = 12,
+    NominalSSnod0 = 13,
+    muonSelectionFO_mu_ss = 14,
+    muonSelectionFO_mu_ss_iso10 = 15,
+    NominalWWV1 = 16,
+    muonSelectionFO_mu_wwV1 = 17,
+    muonSelectionFO_mu_wwV1_iso10 = 18,
+    OSGeneric_v1 = 19,
+    OSZ_v1 = 20,
+    NominalSSv2 = 21,
+    muonSelectionFO_mu_ssV2 = 22,
+    muonSelectionFO_mu_ssV2_iso10 = 23,
+    muonSelectionFO_mu_wwV1_iso10_d0 = 24,
+    NominalTTbar_pass6 = 25,
+    muonSelectionFO_mu_ttbar_pass6 = 26,
+    OSGeneric_v2 = 27,
+    NominalSmurfV3 = 28,
+    muonSelectionFO_mu_smurf_04 = 29,
+    muonSelectionFO_mu_smurf_10 = 30,
+    NominalSSv3 = 31,
+    muonSelectionFO_ssV3 = 32
 }; 
 
 //
@@ -45,8 +47,8 @@ enum SelectionType {
 // is tight enough for most if not all analysis. Tight 
 // version is a backup.
 //
-bool muonId(unsigned int index, SelectionType type = Nominal);
-bool muonIdNotIsolated(unsigned int index, SelectionType type = Nominal);
+bool muonId(unsigned int index, SelectionType type = Nominal, int vertex_index = -1);
+bool muonIdNotIsolated(unsigned int index, SelectionType type = Nominal, int vertex_index = -1);
 
 //
 // relative isolation

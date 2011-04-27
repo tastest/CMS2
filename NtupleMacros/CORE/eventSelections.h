@@ -81,7 +81,7 @@ bool hypsFromSameVtx(size_t hypIdx);
 // of 0.2 cm of the same PV and if that PV is
 // the closest vertex to each lepton
 //----------------------------------------------------------------
-bool hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool useDAvtxs = false, bool requireClosest = false);
+int hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool useDAvtxs = false, bool requireClosest = false);
 
 #endif
 

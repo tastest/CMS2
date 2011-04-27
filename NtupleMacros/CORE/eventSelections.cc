@@ -213,7 +213,7 @@ bool hypsFromSameVtx(size_t hypIdx) {
 // of 0.2 cm of the same PV and if that PV is
 // the closest vertex to each lepton
 //----------------------------------------------------------------
-bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClosest)
+int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClosest)
 {
     int lt_trkidx = -1;
     int ll_trkidx = -1;
@@ -263,10 +263,10 @@ bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireCl
             }
             //if we've gotten here, then the vertex is good
             //and both leptons belong to it
-            return true;
+            return v;
         }
 
-        return false;
+        return -1;
     }
 
     float lt_dz = 999.;
@@ -310,13 +310,13 @@ bool hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireCl
     } // end loop over vertices
 
     if (lt_vidx < 0 || ll_vidx < 0)
-        return false;
+        return -1;
 
     if (lt_vidx != ll_vidx)
-        return false;
+        return -1;
 
     if (fabs(lt_dz) > dz || fabs(ll_dz) > dz)
-        return false;
+        return -1;
 
-    return true;
+    return lt_vidx;
 }

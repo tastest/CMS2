@@ -6,6 +6,7 @@
 #include "electronSelections.h"
 #include "eventSelections.h"
 #include "MITConversionUtilities.h"
+#include "trackSelections.h"
 
 
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
@@ -14,14 +15,14 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
     return false;
 }
 
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index)
 {
-    cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap);
+  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) 
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index) 
 {
     // keep track of which cuts passed
     cuts_t cuts_passed = 0;
@@ -35,6 +36,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if( electronIsolation_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_TRK_RELNT020);   // Tracker Relative Isolation
     if( electronIsolation_ECAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020);  // ECAL    Relative Isolation
     if( electronIsolation_HCAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_RELNT020);  // HCAL    Relative Isolation
+    if (electronIsolation_ECAL_rel_v1(index, false) < 0.20) cuts_passed |= (ELEISO_ECAL_RELNT020_NPS); // ECAL Relative Isolation, no ped sub in EB
     if( electronIsolation_ECAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_REL020);    // ECAL    Relative Isolation (truncated)
     if( electronIsolation_HCAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_REL020);    // HCAL    Relative Isolation (truncated)
 
@@ -59,6 +61,27 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
     if (fabs(electron_d0PV_wwV1(index)) < 0.02 && fabs(electron_dzPV_wwV1(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_wwV1);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.02 && fabs(electron_dzPV_smurfV3(index)) < 0.2 ) cuts_passed |= (1ll<<ELEIP_PV_SMURFV3);
+
+    if (vertex_index < 0) {
+        if (fabs(cms2.els_d0corr()[index]) < 0.02)
+            cuts_passed |= (1ll<<ELEIP_SS200);  
+        if (fabs(cms2.els_d0corr()[index]) < 0.20)
+            cuts_passed |= (1ll<<ELEIP_SS2000);  
+    }
+    else {
+        if (cms2.els_trkidx()[index] < 0) {
+            if (fabs(cms2.els_d0corr()[index]) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
+            if (fabs(cms2.els_d0corr()[index]) < 0.20)
+                cuts_passed |= (1ll<<ELEIP_SS2000);
+        }
+        else {
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.20)
+                cuts_passed |= (1ll<<ELEIP_SS2000);
+        }
+    }
 
     // id
 
@@ -809,11 +832,16 @@ float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso){
 }
 
 // ECAL Relative Isolation, Non-Truncated
-float electronIsolation_ECAL_rel_v1(const unsigned int index){
+float electronIsolation_ECAL_rel_v1(const unsigned int index, bool useEBps){
   float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
   float ecal_sum_over_pt = 0.0;                                                                                           // ECAL Relative Isolation, NT
-  if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap
-  if( fabs(cms2.els_etaSC().at(index)) <= 1.479 ) ecal_sum_over_pt += max( 0.0, ( cms2.els_ecalIso().at(index) - 1.0 ) ); // EB: Ecal Barrel
+  if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap  
+  if( fabs(cms2.els_etaSC().at(index)) <= 1.479 ) {
+      if (useEBps)
+          ecal_sum_over_pt += max( 0.0, ( cms2.els_ecalIso().at(index) - 1.0 ) ); // EB: Ecal Barrel
+      else
+          ecal_sum_over_pt += cms2.els_ecalIso().at(index); // EB: Ecal Barrel
+  }
   ecal_sum_over_pt /= pt;
   return ecal_sum_over_pt;
 }
