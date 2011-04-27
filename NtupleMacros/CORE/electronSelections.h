@@ -500,7 +500,7 @@ static const cuts_t electronSelection_el_OSV2_noiso =
 
 static const cuts_t electronSelection_el_OSV2_iso = 
   (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
-  (1ll<<ELEISO_REL015);                      // reliso < 0.15, non-truncated, 1 GeV EB PS
+  (1ll<<ELEISO_REL015);                      // reliso < 0.15, truncated, 1 GeV EB PS
 
 static const cuts_t electronSelection_el_OSV2 = 
   electronSelection_el_OSV2_iso | electronSelection_el_OSV2_noiso;
