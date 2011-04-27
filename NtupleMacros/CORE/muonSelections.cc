@@ -322,7 +322,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
         if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
-        if (TMath::Abs(mudzPV_smurfV3(index)) > 0.2)                             return false; // dz(PV) < 0.2 cm
+        if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
 	return true;
 
