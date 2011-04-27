@@ -68,10 +68,12 @@ enum EleSelectionType {
 	 ELEIP_PV_wwV1,
 	 // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
 	 ELEIP_PV_SMURFV3,
-     // 2011 SS numerator d0 cut
-     ELEIP_SS200,
-     // 2011 SS potential denominator d0 cut
-     ELEIP_SS2000,
+	 // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
+	 ELEIP_PV_OSV2,
+	 // 2011 SS numerator d0 cut
+	 ELEIP_SS200,
+	 // 2011 SS potential denominator d0 cut
+	 ELEIP_SS2000,
 
 	 //
 	 // id cuts
@@ -488,21 +490,21 @@ static const cuts_t electronSelection_el_OSV1 =
 //---------------------------------------------------------
 
 static const cuts_t electronSelection_el_OSV2_noiso = 
-  (1ll<<ELEID_VBTF_85_NOHOEEND)       | // VBTF85, no H/E in endcap
-  (1ll<<ELEIP_PV_SMURFV3)             | // d0(PV) < 0.02 cm, dz(PV) < 0.2 cm
-  (1ll<<ELENOMUON_010)                | // no muon dR < 0.1
-  (1ll<<ELENOTCONV_HITPATTERN)        | // <=1 missing hits
-  (1ll<<ELENOTCONV_MIT)               | // MIT conversion rejection
-  (1ll<<ELEPT_010)                    | // electron p_T > 10 GeV
-  (1ll<<ELEETA_250);                    // |eta| < 2.5
+  (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
+  (1ll<<ELEIP_PV_OSV2)                     | // d0(PV) < 0.04 cm, dz(PV) < 1.0 cm
+  (1ll<<ELENOMUON_010)                     | // no muon dR < 0.1
+  (1ll<<ELENOTCONV_HITPATTERN)             | // <=1 missing hits
+  (1ll<<ELENOTCONV_MIT)                    | // MIT conversion rejection
+  (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
+  (1ll<<ELEETA_250);                         // |eta| < 2.5
 
 static const cuts_t electronSelection_el_OSV2_iso = 
-  (1ll<<ELEISO_ECAL_REL020)           | // ECAL relative isolation
-  (1ll<<ELEISO_HCAL_REL020)           | // HCAL relative isolation
-  (1ll<<ELEISO_REL015);                 // reliso < 0.15, non-truncated, 1 GeV EB PS
+  (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
+  (1ll<<ELEISO_REL015);                      // reliso < 0.15, non-truncated, 1 GeV EB PS
 
 static const cuts_t electronSelection_el_OSV2 = 
   electronSelection_el_OSV2_iso | electronSelection_el_OSV2_noiso;
+
 
 //
 // ======================== WW ============================
