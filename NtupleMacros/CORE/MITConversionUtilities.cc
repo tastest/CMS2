@@ -35,9 +35,7 @@ bool isMITConversion(unsigned int elidx,
     if(conversionMatchFound==false)
       continue;
     
-    if(TMath::Prob(cms2.convs_chi2()[iconv],cms2.convs_ndof()[iconv])  > probMin
-       && cms2.convs_dl()[iconv] > dlMin)
-      isGoodConversion = true;
+    if( TMath::Prob( cms2.convs_chi2()[iconv], (Int_t)cms2.convs_ndof()[iconv] )  > probMin && cms2.convs_dl()[iconv] > dlMin ) isGoodConversion = true;
     if(requireArbitratedMerged) {
       if(cms2.convs_quality()[iconv] & 4)
 	isGoodConversion = true;
