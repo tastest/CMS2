@@ -282,7 +282,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // muon loop
                 for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
                     // for SS
-                    if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalSSv2) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
+                    if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalSSv3) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
                         goodMuonIndicesSSV2.push_back(muii);
                         ++ngoodlepSS_;
                         ++ngoodmusSS_;
