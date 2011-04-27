@@ -199,18 +199,20 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
     //mm
     if( hypType == 0 ){
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
     }
     
     //em
     else if( hypType == 1 || hypType == 2 ){
       if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v") )   return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu10_Ele10_CaloIdL_v") )  return true;
     }
     
     //ee
     else if( hypType == 3 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
+
     }
   }
   
