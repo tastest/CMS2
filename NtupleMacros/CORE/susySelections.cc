@@ -153,7 +153,7 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
 //passes the OS SUSY trigger selection 2011
 /*****************************************************************************************/
 
-bool passSUSYTrigger2011_v1( bool isData , int hypType ) {
+bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
   
   //----------------------------------------
   // no trigger requirements applied to MC
@@ -165,8 +165,8 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType ) {
   // triggers for lepton-HT datasets
   //---------------------------------
   
-  if( TString( cms2.evt_dataset() ).Contains("Had") ) {
-
+  if( !highpt ) {
+  
     //mm
     if( hypType == 0 ){
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )   return true;
@@ -195,7 +195,7 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType ) {
   //---------------------------------
   
   else{
-
+  
     //mm
     if( hypType == 0 ){
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
