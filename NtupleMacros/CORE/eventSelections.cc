@@ -54,6 +54,20 @@ bool cleaning_standardOctober2010()
 }
 
 //
+// 26 April 2011
+// standard event cleaning
+// for 2011 OS analysis
+//
+bool cleaning_standardApril2011()
+{
+    if (!cleaning_goodDAVertexApril2011()) return false;
+    if (!cleaning_goodTracks())            return false;
+    
+    return true;
+}
+
+
+//
 // 5 August 2010
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
@@ -124,6 +138,23 @@ bool cleaning_goodVertexAugust2010()
         nGoodVertex ++;
     }
     if (nGoodVertex == 0) return false;
+    return true;
+}
+
+//
+// 26 April 2011
+// at least 1 good DA vertex
+// 
+bool cleaning_goodDAVertexApril2011()
+{             
+    int nGoodDAVertex = 0;
+    for (size_t v = 0; v < cms2.davtxs_position().size(); ++v) 
+    {
+
+      if(isGoodDAVertex(v))
+        nGoodDAVertex ++;
+    }
+    if (nGoodDAVertex == 0) return false;
     return true;
 }
 

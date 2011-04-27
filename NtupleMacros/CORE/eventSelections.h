@@ -19,6 +19,13 @@ bool cleaning_standard(bool isData);
 //----------------------------------------------------------------
 bool cleaning_standardOctober2010();
 
+
+//----------------------------------------------------------------
+// 26 April 2011
+// standard event cleaning used for OS analysis
+//----------------------------------------------------------------
+bool cleaning_standardApril2011();
+
 //----------------------------------------------------------------
 // 5 August 2010
 // standard event cleaning
@@ -54,6 +61,12 @@ bool cleaning_beamHalo();
 // z position increased from 15 to 24 cm
 // ----------------------------------------------------------------
 bool cleaning_goodVertexAugust2010();
+
+// ----------------------------------------------------------------
+// 26 April 2011
+// at least 1 good DA vertex
+// ----------------------------------------------------------------
+bool cleaning_goodDAVertexApril2011();
 
 //----------------------------------------------------------------
 // if >= 10 tracks, require at least 25% high purity
