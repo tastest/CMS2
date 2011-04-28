@@ -1428,7 +1428,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         // JetID
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
+//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
                         LorentzVector jp4cor = jp4 * jet_cor;
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
