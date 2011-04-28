@@ -5,9 +5,11 @@ cvs co -r V05-00-17      JetMETCorrections/Modules
 cvs co -r V03-01-21      CondFormats/JetMETObjects
 cvs co -r V08-11-08      RecoEgamma/EgammaTools
 
-# Masked ECAL Cells
-cvs co -r CMSSW_4_2_2 DataFormats/EcalRecHit
+#
+#cvs co -r CMSSW_4_2_2 DataFormats/EcalRecHit
+#cvs co -r V02-02-06   DataFormats/EcalRecHit/interface/EcalSeverityLevel.h
 
+# Masked ECAL Cells
 cvs co -r V031411 -d DataFormats/AnomalousEcalDataFormats  UserCode/gebbert/DataFormats/AnomalousEcalDataFormats
 cvs co -r V031411 -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
 cvs co -r V031411 -d UserCode/EcalDeadCellEventFilter      UserCode/KHatakeyama/EcalDeadCellEventFilter
