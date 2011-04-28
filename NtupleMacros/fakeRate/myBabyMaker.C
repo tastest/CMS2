@@ -322,13 +322,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
     jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
-
+/*
     std::vector<std::string> jetcorr_pf_L1FastL2L3_filenames;
     //jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Jec10V1_L1FastJet_AK5PF.txt");
     jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
     jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
     FactorizedJetCorrector *jet_pf_L1FastL2L3corrector = makeJetCorrector(jetcorr_pf_L1FastL2L3_filenames);
-
+*/
     std::vector<std::string> jetcorr_jpt_L2L3_filenames;
     jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5JPT.txt");
     jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5JPT.txt");
@@ -952,7 +952,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
+//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
                         LorentzVector jp4cor = jp4 * jet_cor;
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
