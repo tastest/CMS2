@@ -13,12 +13,12 @@
 
 class myBabyMaker {
 
- public:
+public:
 
     myBabyMaker() {};
     ~myBabyMaker() {
-      delete babyFile_;
-      delete babyTree_;
+        delete babyFile_;
+        delete babyTree_;
     };
     void MakeBabyNtuple (const char *);
     void InitBabyNtuple ();
@@ -26,15 +26,15 @@ class myBabyMaker {
     void CloseBabyNtuple ();
     void ScanChain (TChain *, const char *, bool, int);
   
- private:
+private:
       
-  // BABY NTUPLE VARIABLES
-  TFile *babyFile_;
-  TTree *babyTree_;
+    // BABY NTUPLE VARIABLES
+    TFile *babyFile_;
+    TTree *babyTree_;
      
-  /////////////////////////// 
-  // Event Information     //
-  ///////////////////////////
+    /////////////////////////// 
+    // Event Information     //
+    ///////////////////////////
 
     // Basic Event Information
     Int_t   run_;
@@ -43,23 +43,23 @@ class myBabyMaker {
     Float_t weight_;
 
     // Pileup - PUSummaryInfoMaker
-    Int_t         pu_nPUvertices_;
+    Int_t pu_nPUvertices_;
   
     // Pileup - VertexMaker
-    Int_t                   evt_nvtxs_;
+    Int_t evt_nvtxs_;
   
     // Pileup - VertexMaker
-    Int_t                   evt_ndavtxs_;
+    Int_t evt_ndavtxs_;
 
-  /////////////////////////// 
-  // End Event Information //
-  ///////////////////////////
+    /////////////////////////// 
+    // End Event Information //
+    ///////////////////////////
 
 
 
-  //////////////////////////
-  // Lepton Variables     //
-  //////////////////////////
+    //////////////////////////
+    // Lepton Variables     //
+    //////////////////////////
 
     // Lepton pt and eta and phi
     Float_t pt_;
@@ -115,45 +115,43 @@ class myBabyMaker {
     float ht_pf_L2L3_;       
     float ht_pf_L1FastL2L3_;  
 
-  //////////////////////////
-  // End Lepton Variables //
-  //////////////////////////
+    //////////////////////////
+    // End Lepton Variables //
+    //////////////////////////
 
-
-
-  //////////////////////////////////////////////////////
-  // Fake Rate Numerator & Denominator Selections     //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // Fake Rate Numerator & Denominator Selections     //
+    //////////////////////////////////////////////////////
 
     //////////
     // 2011 //
     //////////
   
-      // SS
+    // SS
       
-        // Electrons
-        Bool_t num_el_ssV3_;
-        Bool_t v1_el_ssV3_;
-        Bool_t v2_el_ssV3_;
-        Bool_t v3_el_ssV3_;
+    // Electrons
+    Bool_t num_el_ssV3_;
+    Bool_t v1_el_ssV3_;
+    Bool_t v2_el_ssV3_;
+    Bool_t v3_el_ssV3_;
     
-        // Muons
-        Bool_t numNomSSv3_;   // NominalSSv3
-        Bool_t fo_mussV3_04_; // muonSelectionFO_mu_ssV3
+    // Muons
+    Bool_t numNomSSv3_;   // NominalSSv3
+    Bool_t fo_mussV3_04_; // muonSelectionFO_mu_ssV3
 
-      // WW, HWW
+    // WW, HWW
 
-        // Electrons
-        Bool_t num_el_smurfV3_;
-        Bool_t v1_el_smurfV1_;
-        Bool_t v2_el_smurfV1_;
-        Bool_t v3_el_smurfV1_;
-        Bool_t v4_el_smurfV1_;
+    // Electrons
+    Bool_t num_el_smurfV3_;
+    Bool_t v1_el_smurfV1_;
+    Bool_t v2_el_smurfV1_;
+    Bool_t v3_el_smurfV1_;
+    Bool_t v4_el_smurfV1_;
 
-        // Muons
-        Bool_t num_mu_smurfV3_;
-        Bool_t fo_mu_smurf_04_;
-        Bool_t fo_mu_smurf_10_;
+    // Muons
+    Bool_t num_mu_smurfV3_;
+    Bool_t fo_mu_smurf_04_;
+    Bool_t fo_mu_smurf_10_;
 
 
     //////////
@@ -162,29 +160,29 @@ class myBabyMaker {
   
     // ttbar
   
-      // electrons ( not filled for muons )
-      Bool_t numOct6_;      // electronSelection_ttbarV1_pass5
-      Bool_t v1Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
-      Bool_t v2Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
-      Bool_t v3Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
+    // electrons ( not filled for muons )
+    Bool_t numOct6_;      // electronSelection_ttbarV1_pass5
+    Bool_t v1Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
+    Bool_t v2Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
+    Bool_t v3Oct6_;       // electronSelectionFO_el_ttbarV1_v1_pass5
   
-      // muons     ( not filled for electrons )
-      Bool_t num_;          // NominalTTbarV2
-      Bool_t fo_04_;        // muonSelectionFO_mu_ttbar
-      Bool_t fo_10_;        // muonSelectionFO_mu_ttbar_iso10
+    // muons     ( not filled for electrons )
+    Bool_t num_;          // NominalTTbarV2
+    Bool_t fo_04_;        // muonSelectionFO_mu_ttbar
+    Bool_t fo_10_;        // muonSelectionFO_mu_ttbar_iso10
   
     // Same Sign Susy
 
-      // electrons ( not filled for muons )
-      Bool_t numSSV2_;      // electronSelection_ssV2, false, false && !isSpikeElectron
-      Bool_t v1SSV2_;       // electronSelectionFOV2_ssVBTF80_v1, false, false
-      Bool_t v2SSV2_;       // electronSelectionFOV2_ssVBTF80_v2, false, false
-      Bool_t v3SSV2_;       // electronSelectionFOV2_ssVBTF80_v3, false, false
+    // electrons ( not filled for muons )
+    Bool_t numSSV2_;      // electronSelection_ssV2, false, false && !isSpikeElectron
+    Bool_t v1SSV2_;       // electronSelectionFOV2_ssVBTF80_v1, false, false
+    Bool_t v2SSV2_;       // electronSelectionFOV2_ssVBTF80_v2, false, false
+    Bool_t v3SSV2_;       // electronSelectionFOV2_ssVBTF80_v3, false, false
 
-      // muons
-      Bool_t numNomSSv2_;   // NominalSSv2
-      Bool_t fo_mussV2_04_; // muonSelectionFO_mu_ssV2
-      Bool_t fo_mussV2_10_; // muonSelectionFO_mu_ssV2_iso10
+    // muons
+    Bool_t numNomSSv2_;   // NominalSSv2
+    Bool_t fo_mussV2_04_; // muonSelectionFO_mu_ssV2
+    Bool_t fo_mussV2_10_; // muonSelectionFO_mu_ssV2_iso10
   
     // Opposite Sign Susy
     Bool_t num_OSGv1_;      // OSGeneric_v1 (muons) | nothing for ele
@@ -204,15 +202,15 @@ class myBabyMaker {
     Bool_t fo_wwV1_10_;     // muonSelectionFO_mu_wwV1_iso10
     Bool_t fo_wwV1_10_d0_;  // muonSelectionFO_mu_wwV1_iso10_d0
 
-  //////////////////////////////////////////////////////
-  // End Fake Rate Numerator & Denominator Selections //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // End Fake Rate Numerator & Denominator Selections //
+    //////////////////////////////////////////////////////
 
 
 
-  ///////////////////////  
-  // 2011 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2011 Triggers     //
+    ///////////////////////
 
     // Triggers & HLT matching
     // 0  = fail 
@@ -229,64 +227,67 @@ class myBabyMaker {
     //  3. Delta R to the closest trigger object should be stored for each trigger by prepending "dr_" to the trigger variable name
 
     // Electrons
-    Int_t ele8_v1_;                                               // HLT_Ele8_v1
-    Int_t ele8_CaloIdL_TrkIdVL_v1_;                               // HLT_Ele8_CaloIdL_TrkIdVL_v1
-    Int_t ele8_CaloIdL_CaloIsoVL_Jet40_v1_;                       // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v1
-    Int_t ele8_CaloIdL_CaloIsoVL_v1_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v1
-    Int_t ele17_CaloIdL_CaloIsoVL_v1_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v1  
-    Int_t photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_;      // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1
+    Int_t ele8_vstar_;                                               // HLT_Ele8_v*
+    Int_t ele8_CaloIdL_TrkIdVL_vstar_;                               // HLT_Ele8_CaloIdL_TrkIdVL_v*
+    Int_t ele8_CaloIdL_CaloIsoVL_Jet40_vstar_;                       // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v*
+    Int_t ele8_CaloIdL_CaloIsoVL_vstar_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v*
+    Int_t ele17_CaloIdL_CaloIsoVL_vstar_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v*  
+    Int_t photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_;      // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v*
 
-    Float_t dr_ele8_v1_;                                          // HLT_Ele8_v1
-    Float_t dr_ele8_CaloIdL_TrkIdVL_v1_;                          // HLT_Ele8_CaloIdL_TrkIdVL_v1
-    Float_t dr_ele8_CaloIdL_CaloIsoVL_Jet40_v1_;                  // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v1
-    Float_t dr_ele8_CaloIdL_CaloIsoVL_v1_;                        // HLT_Ele8_CaloIdL_CaloIsoVL_v1
-    Float_t dr_ele17_CaloIdL_CaloIsoVL_v1_;                       // HLT_Ele17_CaloIdL_CaloIsoVL_v1  
-    Float_t dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_; // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1
+    Int_t ele8_version_;                                               // HLT_Ele8_v*
+    Int_t ele8_CaloIdL_TrkIdVL_version_;                               // HLT_Ele8_CaloIdL_TrkIdVL_v*
+    Int_t ele8_CaloIdL_CaloIsoVL_Jet40_version_;                       // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v*
+    Int_t ele8_CaloIdL_CaloIsoVL_version_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v*
+    Int_t ele17_CaloIdL_CaloIsoVL_version_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v*  
+    Int_t photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_;      // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v*
 
-    Int_t ele8_v2_;                                               // HLT_Ele8_v2
-    Int_t ele8_CaloIdL_TrkIdVL_v2_;                               // HLT_Ele8_CaloIdL_TrkIdVL_v2
-    Int_t ele8_CaloIdL_CaloIsoVL_Jet40_v2_;                       // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v2
-    Int_t ele8_CaloIdL_CaloIsoVL_v2_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v2
-    Int_t ele17_CaloIdL_CaloIsoVL_v2_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v2  
-    Int_t photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_;      // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2
-
-    Float_t dr_ele8_v2_;                                          // HLT_Ele8_v2
-    Float_t dr_ele8_CaloIdL_TrkIdVL_v2_;                          // HLT_Ele8_CaloIdL_TrkIdVL_v2
-    Float_t dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_;                  // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v2
-    Float_t dr_ele8_CaloIdL_CaloIsoVL_v2_;                        // HLT_Ele8_CaloIdL_CaloIsoVL_v2
-    Float_t dr_ele17_CaloIdL_CaloIsoVL_v2_;                       // HLT_Ele17_CaloIdL_CaloIsoVL_v2  
-    Float_t dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_; // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2
+    Float_t dr_ele8_vstar_;                                          // HLT_Ele8_v*
+    Float_t dr_ele8_CaloIdL_TrkIdVL_vstar_;                          // HLT_Ele8_CaloIdL_TrkIdVL_v*
+    Float_t dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_;                  // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v*
+    Float_t dr_ele8_CaloIdL_CaloIsoVL_vstar_;                        // HLT_Ele8_CaloIdL_CaloIsoVL_v*
+    Float_t dr_ele17_CaloIdL_CaloIsoVL_vstar_;                       // HLT_Ele17_CaloIdL_CaloIsoVL_v*  
+    Float_t dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_; // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v*
 
     // Muons
-    Int_t mu3_v3_;                                                // HLT_Mu3_v3
-    Int_t mu5_v3_;                                                // HLT_Mu5_v3
-    Int_t mu8_v1_;                                                // HLT_Mu8_v1
-    Int_t mu12_v1_;                                               // HLT_Mu12_v1
-    Int_t mu15_v2_;                                               // HLT_Mu15_v2
-    Int_t mu20_v1_;                                               // HLT_Mu20_v1
-    Int_t mu24_v1_;                                               // HLT_Mu24_v1
-    Int_t mu30_v1_;                                               // HLT_Mu30_v1
-    Int_t mu8_Jet40_v3_;                                          // HLT_Mu8_Jet40_v3
+    Int_t mu3_vstar_;                                                // HLT_Mu3_v*
+    Int_t mu5_vstar_;                                                // HLT_Mu5_v*
+    Int_t mu8_vstar_;                                                // HLT_Mu8_v*
+    Int_t mu12_vstar_;                                               // HLT_Mu12_v*
+    Int_t mu15_vstar_;                                               // HLT_Mu15_v*
+    Int_t mu20_vstar_;                                               // HLT_Mu20_v*
+    Int_t mu24_vstar_;                                               // HLT_Mu24_v*
+    Int_t mu30_vstar_;                                               // HLT_Mu30_v*
+    Int_t mu8_Jet40_vstar_;                                          // HLT_Mu8_Jet40_v*
 
-    Float_t dr_mu3_v3_;                                           // HLT_Mu3_v3
-    Float_t dr_mu5_v3_;                                           // HLT_Mu5_v3
-    Float_t dr_mu8_v1_;                                           // HLT_Mu8_v1
-    Float_t dr_mu12_v1_;                                          // HLT_Mu12_v1
-    Float_t dr_mu15_v2_;                                          // HLT_Mu15_v2
-    Float_t dr_mu20_v1_;                                          // HLT_Mu20_v1
-    Float_t dr_mu24_v1_;                                          // HLT_Mu24_v1
-    Float_t dr_mu30_v1_;                                          // HLT_Mu30_v1
-    Float_t dr_mu8_Jet40_v3_;                                     // HLT_Mu8_Jet40_v3
+    Int_t mu3_version_;                                                // HLT_Mu3_v*
+    Int_t mu5_version_;                                                // HLT_Mu5_v*
+    Int_t mu8_version_;                                                // HLT_Mu8_v*
+    Int_t mu12_version_;                                               // HLT_Mu12_v*
+    Int_t mu15_version_;                                               // HLT_Mu15_v*
+    Int_t mu20_version_;                                               // HLT_Mu20_v*
+    Int_t mu24_version_;                                               // HLT_Mu24_v*
+    Int_t mu30_version_;                                               // HLT_Mu30_v*
+    Int_t mu8_Jet40_version_;                                          // HLT_Mu8_Jet40_v*
 
-  ///////////////////////  
-  // End 2011 Triggers //
-  ///////////////////////
+    Float_t dr_mu3_vstar_;                                           // HLT_Mu5_v*
+    Float_t dr_mu5_vstar_;                                           // HLT_Mu5_v*
+    Float_t dr_mu8_vstar_;                                           // HLT_Mu8_v*
+    Float_t dr_mu12_vstar_;                                          // HLT_Mu12_v*
+    Float_t dr_mu15_vstar_;                                          // HLT_Mu15_v*
+    Float_t dr_mu20_vstar_;                                          // HLT_Mu20_v*
+    Float_t dr_mu24_vstar_;                                          // HLT_Mu24_v*
+    Float_t dr_mu30_vstar_;                                          // HLT_Mu30_v*
+    Float_t dr_mu8_Jet40_vstar_;                                     // HLT_Mu8_Jet40_v*
+
+    ///////////////////////  
+    // End 2011 Triggers //
+    ///////////////////////
 
 
 
-  ///////////////////////  
-  // 2010 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2010 Triggers     //
+    ///////////////////////
 
     // Jet Triggers
   
@@ -374,15 +375,15 @@ class myBabyMaker {
     Float_t drmu7_;   // HLT_Mu7
     Float_t drmu5_;   // HLT_Mu5
   
-  ///////////////////////  
-  // End 2010 Triggers //
-  ///////////////////////
+    ///////////////////////  
+    // End 2010 Triggers //
+    ///////////////////////
 
 
 
-  //////////////
-  // Jets     //
-  //////////////
+    //////////////
+    // Jets     //
+    //////////////
 
     // Btag information
     Int_t nbjet_; // number of btagged jet pt>15
@@ -426,25 +427,25 @@ class myBabyMaker {
     Int_t   njptcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagjptc_; 
 
-  //////////////
-  // End Jets //
-  //////////////
+    //////////////
+    // End Jets //
+    //////////////
 
 
 
-  // transverse W mass
-  Float_t mt_;
-  Float_t pfmt_;
+    // transverse W mass
+    Float_t mt_;
+    Float_t pfmt_;
 
-  // do the 3 electron charges agree?
-  Bool_t q3_;
+    // do the 3 electron charges agree?
+    Bool_t q3_;
 
- // Missing hit info
-  Int_t els_exp_innerlayers_;
+    // Missing hit info
+    Int_t els_exp_innerlayers_;
 
-  //Some MC informatio added 16 Sep 2010
-  Int_t mcid_;        // els_mc_id or mus_mc_id
-  Int_t mcmotherid_;  // els_mc_motherid or mus_mc_motherid
+    //Some MC informatio added 16 Sep 2010
+    Int_t mcid_;        // els_mc_id or mus_mc_id
+    Int_t mcmotherid_;  // els_mc_motherid or mus_mc_motherid
 
 };
 #endif
@@ -454,9 +455,9 @@ class myBabyMaker {
 //------------------------------------------
 void myBabyMaker::InitBabyNtuple () {
 
-  /////////////////////////// 
-  // Event Information     //
-  ///////////////////////////
+    /////////////////////////// 
+    // Event Information     //
+    ///////////////////////////
     
     // 
     run_ = -1;
@@ -473,15 +474,15 @@ void myBabyMaker::InitBabyNtuple () {
     // Pileup - VertexMaker
     evt_ndavtxs_ = -1;
 
-  /////////////////////////// 
-  // End Event Information //
-  ///////////////////////////
+    /////////////////////////// 
+    // End Event Information //
+    ///////////////////////////
 
 
 
-  //////////////////////////// 
-  // Lepton Information     //
-  ////////////////////////////
+    //////////////////////////// 
+    // Lepton Information     //
+    ////////////////////////////
 
     id_               = -1;
     pt_               = -999.;
@@ -532,45 +533,45 @@ void myBabyMaker::InitBabyNtuple () {
     ht_pf_L2L3_       = -999;        
     ht_pf_L1FastL2L3_ = -999;  
 
-  //////////////////////////// 
-  // End Lepton Information //
-  ////////////////////////////
+    //////////////////////////// 
+    // End Lepton Information //
+    ////////////////////////////
 
 
 
-  //////////////////////////////////////////////////////
-  // Fake Rate Numerator & Denominator Selections     //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // Fake Rate Numerator & Denominator Selections     //
+    //////////////////////////////////////////////////////
 
     //////////
     // 2011 //
     //////////
 
-      // SS
+    // SS
 
-        // Electrons
-        num_el_ssV3_    = false;
-        v1_el_ssV3_     = false;
-        v2_el_ssV3_     = false;
-        v3_el_ssV3_     = false;
+    // Electrons
+    num_el_ssV3_    = false;
+    v1_el_ssV3_     = false;
+    v2_el_ssV3_     = false;
+    v3_el_ssV3_     = false;
 
-        // Muons
-        numNomSSv3_     = false;
-        fo_mussV3_04_   = false;
+    // Muons
+    numNomSSv3_     = false;
+    fo_mussV3_04_   = false;
 
-      // WW, HWW
+    // WW, HWW
 
-        // Electrons
-        num_el_smurfV3_ = false;
-        v1_el_smurfV1_  = false;
-        v2_el_smurfV1_  = false;
-        v3_el_smurfV1_  = false;
-        v4_el_smurfV1_  = false;
+    // Electrons
+    num_el_smurfV3_ = false;
+    v1_el_smurfV1_  = false;
+    v2_el_smurfV1_  = false;
+    v3_el_smurfV1_  = false;
+    v4_el_smurfV1_  = false;
 
-        // Muons
-        num_mu_smurfV3_ = false;
-        fo_mu_smurf_04_ = false;
-        fo_mu_smurf_10_ = false;
+    // Muons
+    num_mu_smurfV3_ = false;
+    fo_mu_smurf_04_ = false;
+    fo_mu_smurf_10_ = false;
 
     //////////
     // 2010 //
@@ -613,75 +614,66 @@ void myBabyMaker::InitBabyNtuple () {
     fo_wwV1_10_    = false;
     fo_wwV1_10_d0_ = false;
     
-  //////////////////////////////////////////////////////
-  // End Fake Rate Numerator & Denominator Selections //
-  //////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////
+    // End Fake Rate Numerator & Denominator Selections //
+    //////////////////////////////////////////////////////
 
    
   
-  ///////////////////////  
-  // 2011 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2011 Triggers     //
+    ///////////////////////
 
     // Electrons
-    ele8_v1_                                             = 0;
-    ele8_CaloIdL_TrkIdVL_v1_                             = 0;
-    ele8_CaloIdL_CaloIsoVL_Jet40_v1_                     = 0;
-    ele8_CaloIdL_CaloIsoVL_v1_                           = 0;
-    ele17_CaloIdL_CaloIsoVL_v1_                          = 0;
-    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_    = 0;
+    ele8_vstar_                                             = 0;
+    ele8_CaloIdL_TrkIdVL_vstar_                             = 0;
+    ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     = 0;
+    ele8_CaloIdL_CaloIsoVL_vstar_                           = 0;
+    ele17_CaloIdL_CaloIsoVL_vstar_                          = 0;
+    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    = 0;
 
-    dr_ele8_v1_                                          = 99.0; 
-    dr_ele8_CaloIdL_TrkIdVL_v1_                          = 99.0; 
-    dr_ele8_CaloIdL_CaloIsoVL_Jet40_v1_                  = 99.0; 
-    dr_ele8_CaloIdL_CaloIsoVL_v1_                        = 99.0; 
-    dr_ele17_CaloIdL_CaloIsoVL_v1_                       = 99.0;    
-    dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_ = 99.0; 
+    ele8_version_                                             = 0;
+    ele8_CaloIdL_TrkIdVL_version_                             = 0;
+    ele8_CaloIdL_CaloIsoVL_Jet40_version_                     = 0;
+    ele8_CaloIdL_CaloIsoVL_version_                           = 0;
+    ele17_CaloIdL_CaloIsoVL_version_                          = 0;
+    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_    = 0;
 
-    ele8_v2_                                             = 0;
-    ele8_CaloIdL_TrkIdVL_v2_                             = 0;
-    ele8_CaloIdL_CaloIsoVL_Jet40_v2_                     = 0;
-    ele8_CaloIdL_CaloIsoVL_v2_                           = 0;
-    ele17_CaloIdL_CaloIsoVL_v2_                          = 0;
-    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_    = 0;
-
-    dr_ele8_v2_                                          = 99.0; 
-    dr_ele8_CaloIdL_TrkIdVL_v2_                          = 99.0; 
-    dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_                  = 99.0; 
-    dr_ele8_CaloIdL_CaloIsoVL_v2_                        = 99.0; 
-    dr_ele17_CaloIdL_CaloIsoVL_v2_                       = 99.0;    
-    dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_ = 99.0; 
+    dr_ele8_vstar_                                          = 99.0; 
+    dr_ele8_CaloIdL_TrkIdVL_vstar_                          = 99.0; 
+    dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = 99.0; 
+    dr_ele8_CaloIdL_CaloIsoVL_vstar_                        = 99.0; 
+    dr_ele17_CaloIdL_CaloIsoVL_vstar_                       = 99.0;    
+    dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = 99.0; 
 
     // Muons
-    mu3_v3_          = 0;  
-    mu5_v3_          = 0;  
-    mu8_v1_          = 0;  
-    mu12_v1_         = 0;  
-    mu15_v2_         = 0;  
-    mu20_v1_         = 0;  
-    mu24_v1_         = 0;  
-    mu30_v1_         = 0;  
-    mu8_Jet40_v3_    = 0;    
+    mu5_vstar_          = 0;  
+    mu8_vstar_          = 0;  
+    mu12_vstar_         = 0;  
+    mu30_vstar_         = 0;  
+    mu8_Jet40_vstar_    = 0;    
 
-    dr_mu3_v3_       = 99.0;
-    dr_mu5_v3_       = 99.0;
-    dr_mu8_v1_       = 99.0;
-    dr_mu12_v1_      = 99.0; 
-    dr_mu15_v2_      = 99.0;
-    dr_mu20_v1_      = 99.0;
-    dr_mu24_v1_      = 99.0;
-    dr_mu30_v1_      = 99.0;
-    dr_mu8_Jet40_v3_ = 99.0;
+    mu5_version_          = 0;  
+    mu8_version_          = 0;  
+    mu12_version_         = 0;  
+    mu30_version_         = 0;  
+    mu8_Jet40_version_    = 0;    
 
-  ///////////////////////  
-  // End 2011 Triggers //
-  ///////////////////////
+    dr_mu5_vstar_       = 99.0;
+    dr_mu8_vstar_       = 99.0;
+    dr_mu12_vstar_      = 99.0; 
+    dr_mu30_vstar_      = 99.0;
+    dr_mu8_Jet40_vstar_ = 99.0;
+
+    ///////////////////////  
+    // End 2011 Triggers //
+    ///////////////////////
 
 
 
-  ///////////////////////  
-  // 2010 Triggers     //
-  ///////////////////////
+    ///////////////////////  
+    // 2010 Triggers     //
+    ///////////////////////
 
     // Jets
     hlt15u_ = 0;
@@ -758,15 +750,15 @@ void myBabyMaker::InitBabyNtuple () {
     drmu15_ = 99.0;
     drmu17_ = 99.0;
    
-  ///////////////////////  
-  // End 2010 Triggers //
-  ///////////////////////
+    ///////////////////////  
+    // End 2010 Triggers //
+    ///////////////////////
 
 
 
-  //////////////
-  // Jets     //
-  //////////////
+    //////////////
+    // Jets     //
+    //////////////
 
     // Calo Jets
     ptj1_       = 0.;
@@ -810,9 +802,9 @@ void myBabyMaker::InitBabyNtuple () {
     dRbpfcFar_ = -99.;
 
 
-  //////////////
-  // End Jets //
-  //////////////
+    //////////////
+    // End Jets //
+    //////////////
 
 }
 
@@ -829,15 +821,15 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Event Information     //
     ///////////////////////////
 
-      babyTree_->Branch("run"    , &run_    );
-      babyTree_->Branch("ls"     , &ls_     );
-      babyTree_->Branch("evt"    , &evt_    );
-      babyTree_->Branch("weight" , &weight_ );
+    babyTree_->Branch("run"    , &run_    );
+    babyTree_->Branch("ls"     , &ls_     );
+    babyTree_->Branch("evt"    , &evt_    );
+    babyTree_->Branch("weight" , &weight_ );
   
-      // Pileup
-      babyTree_->Branch("pu_nPUvertices" , &pu_nPUvertices_ );
-      babyTree_->Branch("evt_nvtxs"      , &evt_nvtxs_      );
-      babyTree_->Branch("evt_ndavtxs"    , &evt_ndavtxs_    );
+    // Pileup
+    babyTree_->Branch("pu_nPUvertices" , &pu_nPUvertices_ );
+    babyTree_->Branch("evt_nvtxs"      , &evt_nvtxs_      );
+    babyTree_->Branch("evt_ndavtxs"    , &evt_ndavtxs_    );
 
     /////////////////////////// 
     // End Event Information //
@@ -849,49 +841,49 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Lepton Information     //
     ////////////////////////////
 
-      babyTree_->Branch("pt"                  , &pt_                  );
-      babyTree_->Branch("eta"                 , &eta_                 );
-      babyTree_->Branch("phi"                 , &phi_                 );
-      babyTree_->Branch("scet"                , &scet_                );
-      babyTree_->Branch("tcmet"               , &tcmet_               );
-      babyTree_->Branch("tcmetphi"            , &tcmetphi_            );
-      babyTree_->Branch("pfmet"               , &pfmet_               );
-      babyTree_->Branch("pfmetphi"            , &pfmetphi_            );
-      babyTree_->Branch("iso"                 , &iso_                 );
-      babyTree_->Branch("iso_nps"             , &iso_nps_             );
-      babyTree_->Branch("nt_iso"              , &nt_iso_              );
-      babyTree_->Branch("nt_iso_nps"          , &nt_iso_nps_          );
-      babyTree_->Branch("trck_iso"            , &trck_iso_            );
-      babyTree_->Branch("trck_nt_iso"         , &trck_nt_iso_         );
-      babyTree_->Branch("ecal_iso"            , &ecal_iso_            );
-      babyTree_->Branch("ecal_iso_nps"        , &ecal_iso_nps_        );
-      babyTree_->Branch("ecal_nt_iso"         , &ecal_nt_iso_         );
-      babyTree_->Branch("ecal_nt_iso_nps"     , &ecal_nt_iso_nps_     );
-      babyTree_->Branch("hcal_iso"            , &hcal_iso_            );
-      babyTree_->Branch("hcal_nt_iso"         , &hcal_nt_iso_         );
-      babyTree_->Branch("id"                  , &id_                  );
-      babyTree_->Branch("closestMuon"         , &closestMuon_         );
-      babyTree_->Branch("el_id_smurfV3"       , &el_id_smurfV3_       );
-      babyTree_->Branch("el_id_vbtf80"        , &el_id_vbtf80_        );
-      babyTree_->Branch("el_id_vbtf90"        , &el_id_vbtf90_        );
-      babyTree_->Branch("conv0MissHits"       , &conv0MissHits_       );
-      babyTree_->Branch("convHitPattern"      , &convHitPattern_      );
-      babyTree_->Branch("convPartnerTrack"    , &convPartnerTrack_    );
-      babyTree_->Branch("convMIT"             , &convMIT_             );
-      babyTree_->Branch("mt"                  , &mt_                  );
-      babyTree_->Branch("pfmt"                , &pfmt_                );
-      babyTree_->Branch("q3"                  , &q3_                  );
-      babyTree_->Branch("els_exp_innerlayers" , &els_exp_innerlayers_ );
-      babyTree_->Branch("mcid"                , &mcid_                );
-      babyTree_->Branch("mcmotherid"          , &mcmotherid_          );
-      babyTree_->Branch("d0PV_wwV1"           , &d0PV_wwV1_           );
-      babyTree_->Branch("dzPV_wwV1"           , &dzPV_wwV1_           );
-      babyTree_->Branch("ht_calo"             , &ht_calo_             );
-      babyTree_->Branch("ht_calo_L2L3"        , &ht_calo_L2L3_        );
-      babyTree_->Branch("ht_jpt_L2L3"         , &ht_jpt_L2L3_         );
-      babyTree_->Branch("ht_pf"               , &ht_pf_               );
-      babyTree_->Branch("ht_pf_L2L3"          , &ht_pf_L2L3_          );
-      babyTree_->Branch("ht_pf_L1FastL2L3"    , &ht_pf_L1FastL2L3_    );
+    babyTree_->Branch("pt"                  , &pt_                  );
+    babyTree_->Branch("eta"                 , &eta_                 );
+    babyTree_->Branch("phi"                 , &phi_                 );
+    babyTree_->Branch("scet"                , &scet_                );
+    babyTree_->Branch("tcmet"               , &tcmet_               );
+    babyTree_->Branch("tcmetphi"            , &tcmetphi_            );
+    babyTree_->Branch("pfmet"               , &pfmet_               );
+    babyTree_->Branch("pfmetphi"            , &pfmetphi_            );
+    babyTree_->Branch("iso"                 , &iso_                 );
+    babyTree_->Branch("iso_nps"             , &iso_nps_             );
+    babyTree_->Branch("nt_iso"              , &nt_iso_              );
+    babyTree_->Branch("nt_iso_nps"          , &nt_iso_nps_          );
+    babyTree_->Branch("trck_iso"            , &trck_iso_            );
+    babyTree_->Branch("trck_nt_iso"         , &trck_nt_iso_         );
+    babyTree_->Branch("ecal_iso"            , &ecal_iso_            );
+    babyTree_->Branch("ecal_iso_nps"        , &ecal_iso_nps_        );
+    babyTree_->Branch("ecal_nt_iso"         , &ecal_nt_iso_         );
+    babyTree_->Branch("ecal_nt_iso_nps"     , &ecal_nt_iso_nps_     );
+    babyTree_->Branch("hcal_iso"            , &hcal_iso_            );
+    babyTree_->Branch("hcal_nt_iso"         , &hcal_nt_iso_         );
+    babyTree_->Branch("id"                  , &id_                  );
+    babyTree_->Branch("closestMuon"         , &closestMuon_         );
+    babyTree_->Branch("el_id_smurfV3"       , &el_id_smurfV3_       );
+    babyTree_->Branch("el_id_vbtf80"        , &el_id_vbtf80_        );
+    babyTree_->Branch("el_id_vbtf90"        , &el_id_vbtf90_        );
+    babyTree_->Branch("conv0MissHits"       , &conv0MissHits_       );
+    babyTree_->Branch("convHitPattern"      , &convHitPattern_      );
+    babyTree_->Branch("convPartnerTrack"    , &convPartnerTrack_    );
+    babyTree_->Branch("convMIT"             , &convMIT_             );
+    babyTree_->Branch("mt"                  , &mt_                  );
+    babyTree_->Branch("pfmt"                , &pfmt_                );
+    babyTree_->Branch("q3"                  , &q3_                  );
+    babyTree_->Branch("els_exp_innerlayers" , &els_exp_innerlayers_ );
+    babyTree_->Branch("mcid"                , &mcid_                );
+    babyTree_->Branch("mcmotherid"          , &mcmotherid_          );
+    babyTree_->Branch("d0PV_wwV1"           , &d0PV_wwV1_           );
+    babyTree_->Branch("dzPV_wwV1"           , &dzPV_wwV1_           );
+    babyTree_->Branch("ht_calo"             , &ht_calo_             );
+    babyTree_->Branch("ht_calo_L2L3"        , &ht_calo_L2L3_        );
+    babyTree_->Branch("ht_jpt_L2L3"         , &ht_jpt_L2L3_         );
+    babyTree_->Branch("ht_pf"               , &ht_pf_               );
+    babyTree_->Branch("ht_pf_L2L3"          , &ht_pf_L2L3_          );
+    babyTree_->Branch("ht_pf_L1FastL2L3"    , &ht_pf_L1FastL2L3_    );
 
     //////////////////////////// 
     // End Lepton Information //
@@ -903,209 +895,200 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Fake Rate Numerator & Denominator Selections     //
     //////////////////////////////////////////////////////
 
-      //////////
-      // 2011 //
-      //////////
+    //////////
+    // 2011 //
+    //////////
 
-        // SS
+    // SS
 
-          // Electrons
-          babyTree_->Branch("num_el_ssV3"   , &num_el_ssV3_    );
-          babyTree_->Branch("v1_el_ssV3"    , &v1_el_ssV3_     );
-          babyTree_->Branch("v2_el_ssV3"    , &v2_el_ssV3_     );
-          babyTree_->Branch("v3_el_ssV3"    , &v3_el_ssV3_     );
+    // Electrons
+    babyTree_->Branch("num_el_ssV3"   , &num_el_ssV3_    );
+    babyTree_->Branch("v1_el_ssV3"    , &v1_el_ssV3_     );
+    babyTree_->Branch("v2_el_ssV3"    , &v2_el_ssV3_     );
+    babyTree_->Branch("v3_el_ssV3"    , &v3_el_ssV3_     );
 
-          // Muons
-          babyTree_->Branch("numNomSSv3",   &numNomSSv3_       );
-          babyTree_->Branch("fo_mussV3_04", &fo_mussV3_04_     );
+    // Muons
+    babyTree_->Branch("numNomSSv3",   &numNomSSv3_       );
+    babyTree_->Branch("fo_mussV3_04", &fo_mussV3_04_     );
 
-        // OS
+    // OS
  
-        // WW, HWW
+    // WW, HWW
 
-          // Electrons
-          babyTree_->Branch("num_el_smurfV3", &num_el_smurfV3_ );
-          babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
-          babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
-          babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
-          babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
+    // Electrons
+    babyTree_->Branch("num_el_smurfV3", &num_el_smurfV3_ );
+    babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
+    babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
+    babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
+    babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
 
-          // Muons
-          babyTree_->Branch("num_mu_smurfV3",  &num_mu_smurfV3_ );
-          babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_ );
-          babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_ );
+    // Muons
+    babyTree_->Branch("num_mu_smurfV3",  &num_mu_smurfV3_ );
+    babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_ );
+    babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_ );
 
-      //////////
-      // 2010 //
-      //////////
+    //////////
+    // 2010 //
+    //////////
 
-      // ttbar
-      babyTree_->Branch("numOct6"       , &numOct6_       );
-      babyTree_->Branch("v1Oct6"        , &v1Oct6_        );
-      babyTree_->Branch("v2Oct6"        , &v2Oct6_        );
-      babyTree_->Branch("v3Oct6"        , &v3Oct6_        );
-      babyTree_->Branch("num"           , &num_           );
-      babyTree_->Branch("fo_04"         , &fo_04_         );
-      babyTree_->Branch("fo_10"         , &fo_10_         );
+    // ttbar
+    babyTree_->Branch("numOct6"       , &numOct6_       );
+    babyTree_->Branch("v1Oct6"        , &v1Oct6_        );
+    babyTree_->Branch("v2Oct6"        , &v2Oct6_        );
+    babyTree_->Branch("v3Oct6"        , &v3Oct6_        );
+    babyTree_->Branch("num"           , &num_           );
+    babyTree_->Branch("fo_04"         , &fo_04_         );
+    babyTree_->Branch("fo_10"         , &fo_10_         );
 
-      // SS
-      babyTree_->Branch("v1SSV2"        , &v1SSV2_        );
-      babyTree_->Branch("v2SSV2"        , &v2SSV2_        );
-      babyTree_->Branch("v3SSV2"        , &v3SSV2_        );
-      babyTree_->Branch("numSSV2"       , &numSSV2_       );
-      babyTree_->Branch("numNomSSv2"    , &numNomSSv2_    );
-      babyTree_->Branch("fo_mussV2_04"  , &fo_mussV2_04_  );
-      babyTree_->Branch("fo_mussV2_10"  , &fo_mussV2_10_  );
+    // SS
+    babyTree_->Branch("v1SSV2"        , &v1SSV2_        );
+    babyTree_->Branch("v2SSV2"        , &v2SSV2_        );
+    babyTree_->Branch("v3SSV2"        , &v3SSV2_        );
+    babyTree_->Branch("numSSV2"       , &numSSV2_       );
+    babyTree_->Branch("numNomSSv2"    , &numNomSSv2_    );
+    babyTree_->Branch("fo_mussV2_04"  , &fo_mussV2_04_  );
+    babyTree_->Branch("fo_mussV2_10"  , &fo_mussV2_10_  );
 
-      // OS
-      babyTree_->Branch("num_OSGv1"     , &num_OSGv1_     );
-      babyTree_->Branch("num_OSZv1"     , &num_OSZv1_     );
-      babyTree_->Branch("numOSOct18"    , &numOSOct18_    );
-      babyTree_->Branch("v1OSOct18"     , &v1OSOct18_     );
-      babyTree_->Branch("v2OSOct18"     , &v2OSOct18_     );
-      babyTree_->Branch("v3OSOct18"     , &v3OSOct18_     );
+    // OS
+    babyTree_->Branch("num_OSGv1"     , &num_OSGv1_     );
+    babyTree_->Branch("num_OSZv1"     , &num_OSZv1_     );
+    babyTree_->Branch("numOSOct18"    , &numOSOct18_    );
+    babyTree_->Branch("v1OSOct18"     , &v1OSOct18_     );
+    babyTree_->Branch("v2OSOct18"     , &v2OSOct18_     );
+    babyTree_->Branch("v3OSOct18"     , &v3OSOct18_     );
 
-      // WW
-      babyTree_->Branch("num_wwV1"      , &num_wwV1_      );
-      babyTree_->Branch("v1_wwV1"       , &v1_wwV1_       );
-      babyTree_->Branch("v2_wwV1"       , &v2_wwV1_       );
-      babyTree_->Branch("v3_wwV1"       , &v3_wwV1_       );
-      babyTree_->Branch("v4_wwV1"       , &v4_wwV1_       );
-      babyTree_->Branch("fo_wwV1_04"    , &fo_wwV1_04_    );
-      babyTree_->Branch("fo_wwV1_10"    , &fo_wwV1_10_    );
-      babyTree_->Branch("fo_wwV1_10_d0" , &fo_wwV1_10_d0_ );
+    // WW
+    babyTree_->Branch("num_wwV1"      , &num_wwV1_      );
+    babyTree_->Branch("v1_wwV1"       , &v1_wwV1_       );
+    babyTree_->Branch("v2_wwV1"       , &v2_wwV1_       );
+    babyTree_->Branch("v3_wwV1"       , &v3_wwV1_       );
+    babyTree_->Branch("v4_wwV1"       , &v4_wwV1_       );
+    babyTree_->Branch("fo_wwV1_04"    , &fo_wwV1_04_    );
+    babyTree_->Branch("fo_wwV1_10"    , &fo_wwV1_10_    );
+    babyTree_->Branch("fo_wwV1_10_d0" , &fo_wwV1_10_d0_ );
 
     //////////////////////////////////////////////////////
     // End Fake Rate Numerator & Denominator Selections //
     //////////////////////////////////////////////////////
 
-      // Electrons
-      babyTree_->Branch("ele8_v1_"                                            , &ele8_v1_                                             );
-      babyTree_->Branch("ele8_CaloIdL_TrkIdVL_v1_"                            , &ele8_CaloIdL_TrkIdVL_v1_                             );
-      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_v1_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_v1_                     );
-      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_v1_"                          , &ele8_CaloIdL_CaloIsoVL_v1_                           );
-      babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_v1_"                         , &ele17_CaloIdL_CaloIsoVL_v1_                          );
-      babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_    );
+    // Electrons
+    babyTree_->Branch("ele8_vstar_"                                            , &ele8_vstar_                                             );
+    babyTree_->Branch("ele8_CaloIdL_TrkIdVL_vstar_"                            , &ele8_CaloIdL_TrkIdVL_vstar_                             );
+    babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_vstar_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     );
+    babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_vstar_"                          , &ele8_CaloIdL_CaloIsoVL_vstar_                           );
+    babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_vstar_"                         , &ele17_CaloIdL_CaloIsoVL_vstar_                          );
+    babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    );
 
-      babyTree_->Branch("dr_ele8_v1_"                                         , &dr_ele8_v1_                                          );
-      babyTree_->Branch("dr_ele8_CaloIdL_TrkIdVL_v1_"                         , &dr_ele8_CaloIdL_TrkIdVL_v1_                          );
-      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_Jet40_v1_"                 , &dr_ele8_CaloIdL_CaloIsoVL_Jet40_v1_                  );
-      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_v1_"                       , &dr_ele8_CaloIdL_CaloIsoVL_v1_                        );
-      babyTree_->Branch("dr_ele17_CaloIdL_CaloIsoVL_v1_"                      , &dr_ele17_CaloIdL_CaloIsoVL_v1_                       );
-      babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_", &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v1_ );
+    babyTree_->Branch("ele8_version_"                                            , &ele8_version_                                             );
+    babyTree_->Branch("ele8_CaloIdL_TrkIdVL_version_"                            , &ele8_CaloIdL_TrkIdVL_version_                             );
+    babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_version_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_version_                     );
+    babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_version_"                          , &ele8_CaloIdL_CaloIsoVL_version_                           );
+    babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_version_"                         , &ele17_CaloIdL_CaloIsoVL_version_                          );
+    babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_    );
 
-      babyTree_->Branch("ele8_v2_"                                            , &ele8_v2_                                             );
-      babyTree_->Branch("ele8_CaloIdL_TrkIdVL_v2_"                            , &ele8_CaloIdL_TrkIdVL_v2_                             );
-      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_v2_                     );
-      babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_v2_"                          , &ele8_CaloIdL_CaloIsoVL_v2_                           );
-      babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_v2_"                         , &ele17_CaloIdL_CaloIsoVL_v2_                          );
-      babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_    );
+    babyTree_->Branch("dr_ele8_vstar_"                                         , &dr_ele8_vstar_                                          );
+    babyTree_->Branch("dr_ele8_CaloIdL_TrkIdVL_vstar_"                         , &dr_ele8_CaloIdL_TrkIdVL_vstar_                          );
+    babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_"                 , &dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  );
+    babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_vstar_"                       , &dr_ele8_CaloIdL_CaloIsoVL_vstar_                        );
+    babyTree_->Branch("dr_ele17_CaloIdL_CaloIsoVL_vstar_"                      , &dr_ele17_CaloIdL_CaloIsoVL_vstar_                       );
+    babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_", &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ );
 
-      babyTree_->Branch("dr_ele8_v2_"                                         , &dr_ele8_v2_                                          );
-      babyTree_->Branch("dr_ele8_CaloIdL_TrkIdVL_v2_"                         , &dr_ele8_CaloIdL_TrkIdVL_v2_                          );
-      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_"                 , &dr_ele8_CaloIdL_CaloIsoVL_Jet40_v2_                  );
-      babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_v2_"                       , &dr_ele8_CaloIdL_CaloIsoVL_v2_                        );
-      babyTree_->Branch("dr_ele17_CaloIdL_CaloIsoVL_v2_"                      , &dr_ele17_CaloIdL_CaloIsoVL_v2_                       );
-      babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_", &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v2_ );
+    babyTree_->Branch("mu5_vstar"          , &mu5_vstar_          );
+    babyTree_->Branch("mu8_vstar"          , &mu8_vstar_          );
+    babyTree_->Branch("mu12_vstar"         , &mu12_vstar_         );
+    babyTree_->Branch("mu30_vstar"         , &mu30_vstar_         );
+    babyTree_->Branch("mu8_Jet40_vstar"    , &mu8_Jet40_vstar_    );
 
-      babyTree_->Branch("mu3_v3"          , &mu3_v3_          );
-      babyTree_->Branch("mu5_v3"          , &mu5_v3_          );
-      babyTree_->Branch("mu8_v1"          , &mu8_v1_          );
-      babyTree_->Branch("mu12_v1"         , &mu12_v1_         );
-      babyTree_->Branch("mu15_v2"         , &mu15_v2_         );
-      babyTree_->Branch("mu20_v1"         , &mu20_v1_         );
-      babyTree_->Branch("mu24_v1"         , &mu24_v1_         );
-      babyTree_->Branch("mu30_v1"         , &mu30_v1_         );
-      babyTree_->Branch("mu8_Jet40_v3"    , &mu8_Jet40_v3_    );
+    babyTree_->Branch("mu5_version"          , &mu5_version_          );
+    babyTree_->Branch("mu8_version"          , &mu8_version_          );
+    babyTree_->Branch("mu12_version"         , &mu12_version_         );
+    babyTree_->Branch("mu30_version"         , &mu30_version_         );
+    babyTree_->Branch("mu8_Jet40_version"    , &mu8_Jet40_version_    );
 
-      babyTree_->Branch("dr_mu3_v3"       , &dr_mu3_v3_       );
-      babyTree_->Branch("dr_mu5_v3"       , &dr_mu5_v3_       );
-      babyTree_->Branch("dr_mu8_v1"       , &dr_mu8_v1_       );
-      babyTree_->Branch("dr_mu12_v1"      , &dr_mu12_v1_      );
-      babyTree_->Branch("dr_mu15_v2"      , &dr_mu15_v2_      );
-      babyTree_->Branch("dr_mu20_v1"      , &dr_mu20_v1_      );
-      babyTree_->Branch("dr_mu24_v1"      , &dr_mu24_v1_      );
-      babyTree_->Branch("dr_mu30_v1"      , &dr_mu30_v1_      );
-      babyTree_->Branch("dr_mu8_Jet40_v3" , &dr_mu8_Jet40_v3_ );
+    babyTree_->Branch("dr_mu5_vstar"       , &dr_mu5_vstar_       );
+    babyTree_->Branch("dr_mu8_vstar"       , &dr_mu8_vstar_       );
+    babyTree_->Branch("dr_mu12_vstar"      , &dr_mu12_vstar_      );
+    babyTree_->Branch("dr_mu30_vstar"      , &dr_mu30_vstar_      );
+    babyTree_->Branch("dr_mu8_Jet40_vstar" , &dr_mu8_Jet40_vstar_ );
   
     ///////////////////////  
     // End 2010 Triggers //
     ///////////////////////
 
-      // Jets
-      babyTree_->Branch("hlt15u"          , &hlt15u_         );
-      babyTree_->Branch("hlt30u"          , &hlt30u_         );
-      babyTree_->Branch("hlt50u"          , &hlt50u_         );
-      babyTree_->Branch("l16u"            , &l16u_           );
-      babyTree_->Branch("l110"            , &l110u_          );
+    // Jets
+    babyTree_->Branch("hlt15u"          , &hlt15u_         );
+    babyTree_->Branch("hlt30u"          , &hlt30u_         );
+    babyTree_->Branch("hlt50u"          , &hlt50u_         );
+    babyTree_->Branch("l16u"            , &l16u_           );
+    babyTree_->Branch("l110"            , &l110u_          );
   
-      // Electrons
-      babyTree_->Branch("ph10"            , &ph10_           );
-      babyTree_->Branch("ph15"            , &ph15_           );
-      babyTree_->Branch("ph20"            , &ph20_           );
-      babyTree_->Branch("el10_lw"         , &el10_lw_        );
-      babyTree_->Branch("el10_sw"         , &el10_sw_        );
-      babyTree_->Branch("el10_sw_v2"      , &el10_sw_v2_     );
-      babyTree_->Branch("el10_lw_id"      , &el10_lw_id_     );
-      babyTree_->Branch("el10_sw_id"      , &el10_sw_id_     );
-      babyTree_->Branch("el15_lw"         , &el15_lw_        );
-      babyTree_->Branch("el15_sw"         , &el15_sw_        );
-      babyTree_->Branch("el15_lw_id"      , &el15_lw_id_     );
-      babyTree_->Branch("el15_sw_id"      , &el15_sw_id_     );
-      babyTree_->Branch("el15_sw_cid"     , &el15_sw_cid_    );
-      babyTree_->Branch("el20_sw"         , &el20_sw_        );
-      babyTree_->Branch("el25_sw"         , &el25_sw_        );
-      babyTree_->Branch("Del10_sw"        , &Del10_sw_       );
-      babyTree_->Branch("el17_sw"         , &el17_sw_        );
-      babyTree_->Branch("el17_sw_v2"      , &el17_sw_v2_     );
-      babyTree_->Branch("el17_iso"        , &el17_iso_       );
-      babyTree_->Branch("el17_loose"      , &el17_loose_     );
-      babyTree_->Branch("el17_sw_cid"     , &el17_sw_cid_    );
-      babyTree_->Branch("el17_sw_id"      , &el17_sw_id_     );
-      babyTree_->Branch("el17_tiso"       , &el17_tiso_      );
-      babyTree_->Branch("el17_tiso_v1"    , &el17_tiso_v1_   );
+    // Electrons
+    babyTree_->Branch("ph10"            , &ph10_           );
+    babyTree_->Branch("ph15"            , &ph15_           );
+    babyTree_->Branch("ph20"            , &ph20_           );
+    babyTree_->Branch("el10_lw"         , &el10_lw_        );
+    babyTree_->Branch("el10_sw"         , &el10_sw_        );
+    babyTree_->Branch("el10_sw_v2"      , &el10_sw_v2_     );
+    babyTree_->Branch("el10_lw_id"      , &el10_lw_id_     );
+    babyTree_->Branch("el10_sw_id"      , &el10_sw_id_     );
+    babyTree_->Branch("el15_lw"         , &el15_lw_        );
+    babyTree_->Branch("el15_sw"         , &el15_sw_        );
+    babyTree_->Branch("el15_lw_id"      , &el15_lw_id_     );
+    babyTree_->Branch("el15_sw_id"      , &el15_sw_id_     );
+    babyTree_->Branch("el15_sw_cid"     , &el15_sw_cid_    );
+    babyTree_->Branch("el20_sw"         , &el20_sw_        );
+    babyTree_->Branch("el25_sw"         , &el25_sw_        );
+    babyTree_->Branch("Del10_sw"        , &Del10_sw_       );
+    babyTree_->Branch("el17_sw"         , &el17_sw_        );
+    babyTree_->Branch("el17_sw_v2"      , &el17_sw_v2_     );
+    babyTree_->Branch("el17_iso"        , &el17_iso_       );
+    babyTree_->Branch("el17_loose"      , &el17_loose_     );
+    babyTree_->Branch("el17_sw_cid"     , &el17_sw_cid_    );
+    babyTree_->Branch("el17_sw_id"      , &el17_sw_id_     );
+    babyTree_->Branch("el17_tiso"       , &el17_tiso_      );
+    babyTree_->Branch("el17_tiso_v1"    , &el17_tiso_v1_   );
   
-      babyTree_->Branch("drph10"          , &drph10_         );
-      babyTree_->Branch("drph15"          , &drph15_         );
-      babyTree_->Branch("drph20"          , drph20_          );
-      babyTree_->Branch("drel10_lw"       , &drel10_lw_      );
-      babyTree_->Branch("drel10_sw"       , &drel10_sw_      );
-      babyTree_->Branch("drel10_sw_v2"    , &drel10_sw_v2_   );
-      babyTree_->Branch("drel10_lw_id"    , &drel10_lw_id_   );
-      babyTree_->Branch("drel10_sw_id"    , &drel10_sw_id_   );
-      babyTree_->Branch("drel15_lw"       , &drel15_lw_      );
-      babyTree_->Branch("drel15_sw"       , &drel15_sw_      );
-      babyTree_->Branch("drel15_lw_id"    , &drel15_lw_id_   );
-      babyTree_->Branch("drel15_sw_id"    , &drel15_sw_id_   );
-      babyTree_->Branch("drel15_sw_cid"   , &drel15_sw_cid_  );
-      babyTree_->Branch("drel20_sw"       , &drel20_sw_      );
-      babyTree_->Branch("drel25_sw"       , &drel25_sw_      );
-      babyTree_->Branch("drDel10_sw"      , &drDel10_sw_     );
-      babyTree_->Branch("drel17_sw"       , &drel17_sw_      );
-      babyTree_->Branch("drel17_sw_v2"    , &drel17_sw_v2_   );
-      babyTree_->Branch("drel17_iso"      , &drel17_iso_     );
-      babyTree_->Branch("drel17_loose"    , &drel17_loose_   );
-      babyTree_->Branch("drel17_sw_cid"   , &drel17_sw_cid_  );
-      babyTree_->Branch("drel17_sw_id"    , &drel17_sw_id_   );
-      babyTree_->Branch("drel17_tiso"     , &drel17_tiso_    );
-      babyTree_->Branch("drel17_tiso_v1"  , &drel17_tiso_v1_ );
+    babyTree_->Branch("drph10"          , &drph10_         );
+    babyTree_->Branch("drph15"          , &drph15_         );
+    babyTree_->Branch("drph20"          , drph20_          );
+    babyTree_->Branch("drel10_lw"       , &drel10_lw_      );
+    babyTree_->Branch("drel10_sw"       , &drel10_sw_      );
+    babyTree_->Branch("drel10_sw_v2"    , &drel10_sw_v2_   );
+    babyTree_->Branch("drel10_lw_id"    , &drel10_lw_id_   );
+    babyTree_->Branch("drel10_sw_id"    , &drel10_sw_id_   );
+    babyTree_->Branch("drel15_lw"       , &drel15_lw_      );
+    babyTree_->Branch("drel15_sw"       , &drel15_sw_      );
+    babyTree_->Branch("drel15_lw_id"    , &drel15_lw_id_   );
+    babyTree_->Branch("drel15_sw_id"    , &drel15_sw_id_   );
+    babyTree_->Branch("drel15_sw_cid"   , &drel15_sw_cid_  );
+    babyTree_->Branch("drel20_sw"       , &drel20_sw_      );
+    babyTree_->Branch("drel25_sw"       , &drel25_sw_      );
+    babyTree_->Branch("drDel10_sw"      , &drDel10_sw_     );
+    babyTree_->Branch("drel17_sw"       , &drel17_sw_      );
+    babyTree_->Branch("drel17_sw_v2"    , &drel17_sw_v2_   );
+    babyTree_->Branch("drel17_iso"      , &drel17_iso_     );
+    babyTree_->Branch("drel17_loose"    , &drel17_loose_   );
+    babyTree_->Branch("drel17_sw_cid"   , &drel17_sw_cid_  );
+    babyTree_->Branch("drel17_sw_id"    , &drel17_sw_id_   );
+    babyTree_->Branch("drel17_tiso"     , &drel17_tiso_    );
+    babyTree_->Branch("drel17_tiso_v1"  , &drel17_tiso_v1_ );
   
-      // Muons
-      babyTree_->Branch("mu17"    , &mu17_ );
-      babyTree_->Branch("mu15"    , &mu15_ );
-      babyTree_->Branch("mu13"    , &mu13_ );
-      babyTree_->Branch("mu11"    , &mu11_ );
-      babyTree_->Branch("mu9"     , &mu9_  );
-      babyTree_->Branch("mu7"     , &mu7_  );
-      babyTree_->Branch("mu5"     , &mu5_  );
+    // Muons
+    babyTree_->Branch("mu17"    , &mu17_ );
+    babyTree_->Branch("mu15"    , &mu15_ );
+    babyTree_->Branch("mu13"    , &mu13_ );
+    babyTree_->Branch("mu11"    , &mu11_ );
+    babyTree_->Branch("mu9"     , &mu9_  );
+    babyTree_->Branch("mu7"     , &mu7_  );
+    babyTree_->Branch("mu5"     , &mu5_  );
   
-      babyTree_->Branch("drmu17"  , &drmu17_ );
-      babyTree_->Branch("drmu15"  , &drmu15_ );
-      babyTree_->Branch("drmu13"  , &drmu13_ );
-      babyTree_->Branch("drmu11"  , &drmu11_ );
-      babyTree_->Branch("drmu9"   , &drmu9_  );
-      babyTree_->Branch("drmu7"   , &drmu7_  );
-      babyTree_->Branch("drmu5"   , &drmu5_  );
+    babyTree_->Branch("drmu17"  , &drmu17_ );
+    babyTree_->Branch("drmu15"  , &drmu15_ );
+    babyTree_->Branch("drmu13"  , &drmu13_ );
+    babyTree_->Branch("drmu11"  , &drmu11_ );
+    babyTree_->Branch("drmu9"   , &drmu9_  );
+    babyTree_->Branch("drmu7"   , &drmu7_  );
+    babyTree_->Branch("drmu5"   , &drmu5_  );
 
     ///////////////////////  
     // End 2010 Triggers //
@@ -1117,47 +1100,47 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Jets     //
     //////////////
 
-      //
-      babyTree_->Branch("ptj1"         , &ptj1_         );
-      babyTree_->Branch("nj1"          , &nj1_          );
-      babyTree_->Branch("ptj1_b2b"     , &ptj1_b2b_     );
-      babyTree_->Branch("dphij1_b2b"   , &dphij1_b2b_   );
-      babyTree_->Branch("ptpfj1"       , &ptpfj1_       );
-      babyTree_->Branch("npfj1"        , &npfj1_        );
-      babyTree_->Branch("ptpfj1_b2b"   , &ptpfj1_b2b_   );
-      babyTree_->Branch("dphipfj1_b2b" , &dphipfj1_b2b_ );
+    //
+    babyTree_->Branch("ptj1"         , &ptj1_         );
+    babyTree_->Branch("nj1"          , &nj1_          );
+    babyTree_->Branch("ptj1_b2b"     , &ptj1_b2b_     );
+    babyTree_->Branch("dphij1_b2b"   , &dphij1_b2b_   );
+    babyTree_->Branch("ptpfj1"       , &ptpfj1_       );
+    babyTree_->Branch("npfj1"        , &npfj1_        );
+    babyTree_->Branch("ptpfj1_b2b"   , &ptpfj1_b2b_   );
+    babyTree_->Branch("dphipfj1_b2b" , &dphipfj1_b2b_ );
       
-      // PF L2L3 Corrected jets
-      babyTree_->Branch("ptpfcj1"      , &ptpfcj1_      );
-      babyTree_->Branch("npfcj1"       , &npfcj1_       );
-      babyTree_->Branch("ptpfcj1_b2b"  , &ptpfcj1_b2b_  );
-      babyTree_->Branch("dphipfcj1_b2b", &dphipfcj1_b2b_);
-      babyTree_->Branch("btagpfc"      , &btagpfc_      );
+    // PF L2L3 Corrected jets
+    babyTree_->Branch("ptpfcj1"      , &ptpfcj1_      );
+    babyTree_->Branch("npfcj1"       , &npfcj1_       );
+    babyTree_->Branch("ptpfcj1_b2b"  , &ptpfcj1_b2b_  );
+    babyTree_->Branch("dphipfcj1_b2b", &dphipfcj1_b2b_);
+    babyTree_->Branch("btagpfc"      , &btagpfc_      );
       
-      // PF L1FastL2L3 Corrected jets         
-      babyTree_->Branch("ptpfcL1Fj1"      , &ptpfcL1Fj1_       );       
-      babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );         
-      babyTree_->Branch("ptpfcL1Fj1_b2b"  , &ptpfcL1Fj1_b2b_   );       
-      babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
-      babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
+    // PF L1FastL2L3 Corrected jets         
+    babyTree_->Branch("ptpfcL1Fj1"      , &ptpfcL1Fj1_       );       
+    babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );         
+    babyTree_->Branch("ptpfcL1Fj1_b2b"  , &ptpfcL1Fj1_b2b_   );       
+    babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
+    babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
 
-      // JPT L2L3 Corrected jets
-      babyTree_->Branch("ptjptcj1"        , &ptjptcj1_         ); 
-      babyTree_->Branch("njptcj1"         , &njptcj1_          ); 
-      babyTree_->Branch("ptjptcj1_b2b"    , &ptjptcj1_b2b_     ); 
-      babyTree_->Branch("dphijptcj1_b2b"  , &dphijptcj1_b2b_   ); 
-      babyTree_->Branch("btagjptc"        , &btagjptc_         );
+    // JPT L2L3 Corrected jets
+    babyTree_->Branch("ptjptcj1"        , &ptjptcj1_         ); 
+    babyTree_->Branch("njptcj1"         , &njptcj1_          ); 
+    babyTree_->Branch("ptjptcj1_b2b"    , &ptjptcj1_b2b_     ); 
+    babyTree_->Branch("dphijptcj1_b2b"  , &dphijptcj1_b2b_   ); 
+    babyTree_->Branch("btagjptc"        , &btagjptc_         );
       
       
 
-      // B Tagging
-      babyTree_->Branch("nbjet"        , &nbjet_        );
-      babyTree_->Branch("dRNear"       , &dRbNear_      );
-      babyTree_->Branch("dRFar"        , &dRbFar_       );
+    // B Tagging
+    babyTree_->Branch("nbjet"        , &nbjet_        );
+    babyTree_->Branch("dRNear"       , &dRbNear_      );
+    babyTree_->Branch("dRFar"        , &dRbFar_       );
       
-      babyTree_->Branch("nbpfcjet"     , &nbpfcjet_     );
-      babyTree_->Branch("dRpfcNear"    , &dRbpfcNear_   );
-      babyTree_->Branch("dRpfcFar"     , &dRbpfcFar_    );
+    babyTree_->Branch("nbpfcjet"     , &nbpfcjet_     );
+    babyTree_->Branch("dRpfcNear"    , &dRbpfcNear_   );
+    babyTree_->Branch("dRpfcFar"     , &dRbpfcFar_    );
     
     //////////////
     // End Jets //
@@ -1166,7 +1149,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
 // Fill the baby
 void myBabyMaker::FillBabyNtuple() { 
-  babyTree_->Fill(); 
+    babyTree_->Fill(); 
 }
 
 // Close the baby
