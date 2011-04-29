@@ -99,11 +99,11 @@ int isGoodEMObject( const unsigned int index ){
 
     for (unsigned int ijet = 0 ; ijet < cms2.pfjets_p4().size() ; ijet++) {
           
-        LorentzVector vjet = cms2.pfjets_cor().at(ijet) * cms2.pfjets_p4().at(ijet);
+        LorentzVector vjet = cms2.pfjets_p4().at(ijet);
         LorentzVector vg   = cms2.photons_p4().at(index);
           
-        if( vjet.pt()  < 10  )       continue;
-        if( fabs(vjet.eta()) > 2.5 )       continue;
+        if( vjet.pt()  < 10  )             continue;
+        if( fabs(vjet.eta()) > 3.0 )       continue;
     
         float dr = ROOT::Math::VectorUtil::DeltaR(vjet, vg);
     
