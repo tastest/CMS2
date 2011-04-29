@@ -314,7 +314,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     // Set the JSON file
     if(isData) {
-        set_goodrun_file_json("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
+        set_goodrun_file_json("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSON.txt");
     }
 
     // Jet Corrections
