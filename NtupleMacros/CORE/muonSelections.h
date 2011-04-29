@@ -39,7 +39,8 @@ enum SelectionType {
     muonSelectionFO_mu_smurf_04 = 29,
     muonSelectionFO_mu_smurf_10 = 30,
     NominalSSv3 = 31,
-    muonSelectionFO_ssV3 = 32
+    muonSelectionFO_ssV3 = 32,
+    OSZ_v2 = 33
 }; 
 
 //
@@ -79,6 +80,11 @@ double mud0PV_wwV1(unsigned int index);
 double mudzPV_wwV1(unsigned int index);
 double mud0PV_smurfV3(unsigned int index);
 double mudzPV_smurfV3(unsigned int index);
+
+//
+// checks if muon is also pfmuon, and pfmuon pt = reco muon pt
+//
+bool isPFMuon( int index , bool requireSamePt = true , float dpt_max = 1.0 );
 
 #endif
 

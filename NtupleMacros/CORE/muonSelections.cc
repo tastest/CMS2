@@ -72,6 +72,9 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
     case OSZ_v1:
         isovalue = 0.15;
         break;
+    case OSZ_v2:
+        isovalue = 0.15;
+        break;
     case NominalTTbar_pass6:
         isovalue = 0.15;
         break;
@@ -341,6 +344,24 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         return true;
         break;
 
+    case OSZ_v2:
+        // baseline selector for 2011 Z+MET analysis
+        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
+        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
+        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
+        if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
+        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
+        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6 
+        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
+        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02)                      return false; // d0 from beamspot
+        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt 
+        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
+        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6 
+	if (!isPFMuon(index,true,1.0))                                           return false; // require muon is pfmuon with same pt
+        return true;
+        break;
+
     case NominalSSv2:
         if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
@@ -605,4 +626,32 @@ double mudzPV_wwV1(unsigned int index){
        double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
        return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
        }*/
+}
+
+
+bool isPFMuon( int index , bool requireSamePt , float dpt_max ){
+  
+  int ipf = cms2.mus_pfmusidx().at( index );
+
+  //--------------------------
+  // require matched pfmuon
+  //--------------------------
+
+  if( ipf >= cms2.pfmus_p4().size() || ipf < 0 ) return false;
+
+  //----------------------------------------------------
+  // require PFMuon pt = reco muon pt (within dpt_max)
+  //----------------------------------------------------
+
+  if( requireSamePt ){
+    
+    float pt_pf = cms2.pfmus_p4().at(ipf).pt();
+    float pt    = cms2.mus_p4().at(index).pt();
+
+    if( fabs( pt_pf - pt ) > dpt_max ) return false;
+
+  }
+
+  return true;
+
 }
