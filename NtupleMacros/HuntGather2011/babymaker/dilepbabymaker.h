@@ -56,6 +56,7 @@ private:
     Float_t rndm_;
     Int_t   evt_clean082010_;
     Int_t   evt_clean102010_;
+    Int_t   evt_clean042011_;
     Int_t   isdata_;
     Int_t   nvtx_;
     Float_t scale1fb_;
@@ -160,6 +161,8 @@ private:
     Int_t   lep2isFromW_;
 
     // muon stuff
+    Bool_t  mu1_numSSv3_;
+    Bool_t  mu1_foSSv3_;
     Bool_t  mu1_muonidfull_;
     Bool_t  mu1_muonid_;
     Bool_t  mu1_muonidfullV1_;
@@ -172,9 +175,10 @@ private:
     Float_t mu1_hadVetoDep_;
     Bool_t  mu1_isPFmuon_;
     Float_t mu1_relPtErr_;
-
     Bool_t  mu1_cosmic_;
-    Bool_t  mu2_cosmic_;
+
+    Bool_t  mu2_numSSv3_;
+    Bool_t  mu2_foSSv3_;
     Bool_t  mu2_muonidfull_;
     Bool_t  mu2_muonid_;
     Bool_t  mu2_muonidfullV1_;
@@ -187,8 +191,11 @@ private:
     Float_t mu2_hadVetoDep_;
     Bool_t  mu2_isPFmuon_;
     Float_t mu2_relPtErr_;
+    Bool_t  mu2_cosmic_;
 
     // electron stuff
+    Bool_t  e1_numSSv3_;
+    Bool_t  e1_foSSv3_;
     Bool_t  e1_vbtf90full_;
     Bool_t  e1_vbtf90_;
     Bool_t  e1_vbtf85_;
@@ -214,6 +221,8 @@ private:
     Float_t e1_fbrem_;
     Bool_t  e1_mitConv_;
 
+    Bool_t  e2_numSSv3_;
+    Bool_t  e2_foSSv3_;
     Bool_t  e2_vbtf90full_;
     Bool_t  e2_vbtf90_;
     Bool_t  e2_vbtf85_;

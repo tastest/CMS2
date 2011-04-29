@@ -365,7 +365,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
                 // check if leptons are from the same vertex
                 //
-                lepsFromSameVtx_ = hypsFromSameVtx2011(hypi);
+                int vertex_index = hypsFromSameVtx2011(hypi, 1.0, true, false);
+                lepsFromSameVtx_ = vertex_index < 0 ? false : true;
 
                 //
                 // clean jets for ALL leptons
@@ -594,6 +595,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso1_   = muonIsoValue(index1);
                     ntiso1_ = muonIsoValue(index1, false); 
                     type1_  = cms2.mus_type()[index1];
+                    mu1_numSSv3_      = muonId(index1, NominalSSv3, vertex_index);
+                    mu1_foSSv3_       = muonId(index1, muonSelectionFO_ssV3, vertex_index);
                     mu1_muonidfull_   = muonId(index1, NominalTTbarV2);
                     mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2);
                     mu1_muonidfullV1_ = muonId(index1, NominalTTbar);
@@ -628,9 +631,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     electronIdComponent_t answer_vbtf70 = electronId_VBTF(index1, VBTF_35X_70);
                     e1_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 
-                    cuts_t electron_selection = electronSelection(index1);
+                    cuts_t electron_selection = electronSelection(index1, false, false, vertex_index);
                     e1_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
                     e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
+                    e1_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
+                    e1_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
 
                     e1_scet_        = cms2.els_eSC()[index1] / cosh(cms2.els_etaSC()[index1]);
                     e1_eopin_       = cms2.els_eOverPIn()[index1];
@@ -667,6 +672,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso2_   = muonIsoValue(index2);
                     ntiso2_ = muonIsoValue(index2, false);
                     type2_  = cms2.mus_type()[index2];
+                    mu2_numSSv3_      = muonId(index2, NominalSSv3, vertex_index);
+                    mu2_foSSv3_       = muonId(index2, muonSelectionFO_ssV3, vertex_index);
                     mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
                     mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
                     mu2_muonidfullV1_ = muonId(index2, NominalTTbar);
@@ -701,9 +708,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     electronIdComponent_t answer_vbtf70   = electronId_VBTF(index2, VBTF_35X_70);
                     e2_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 
-                    cuts_t electron_selection = electronSelection(index2);
+                    cuts_t electron_selection = electronSelection(index2, false, false, vertex_index);
                     e2_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
                     e2_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
+                    e2_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
+                    e2_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
 
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
                     e2_eopin_       = cms2.els_eOverPIn()[index2];
@@ -762,6 +771,7 @@ void dilepbabymaker::InitBabyNtuple ()
     isdata_       = 1;
     evt_clean082010_ = -999999;
     evt_clean102010_ = -999999;    
+    evt_clean042011_ = -999999;    
     nvtx_         = -999999;
     scale1fb_     = -999999.;
     pthat_        = -999999.;
@@ -869,6 +879,8 @@ void dilepbabymaker::InitBabyNtuple ()
     lep2isFromW_ = -999999;
 
     // muon stuff
+    mu1_numSSv3_      = 0;
+    mu1_foSSv3_       = 0;
     mu1_muonidfull_   = 0;
     mu1_muonid_       = 0;
     mu1_muonidfullV1_ = 0;
@@ -883,6 +895,8 @@ void dilepbabymaker::InitBabyNtuple ()
     mu1_isPFmuon_     = 0;
     mu1_relPtErr_     = -999999.;
 
+    mu2_numSSv3_      = 0;
+    mu2_foSSv3_       = 0;
     mu2_muonidfull_   = 0;
     mu2_muonid_       = 0;
     mu2_muonidfullV1_ = 0;
@@ -898,6 +912,8 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_relPtErr_     = -999999.;
 
     // electron stuff
+    e1_numSSv3_     = 0;
+    e1_foSSv3_      = 0;
     e1_vbtf90full_  = 0;
     e1_vbtf90_      = 0;
     e1_vbtf85_      = 0;
@@ -923,6 +939,8 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_fbrem_       = -999999.;
     e1_mitConv_     = 0;
 
+    e2_numSSv3_     = 0;
+    e2_foSSv3_      = 0;
     e2_vbtf90full_  = 0;
     e2_vbtf90_      = 0;
     e2_vbtf85_      = 0;
@@ -984,6 +1002,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("isdata",       &isdata_,      "isdata/I"      );
     babyTree_->Branch("evt_clean082010",       &evt_clean082010_,      "evt_clean082010/I"      );
     babyTree_->Branch("evt_clean102010",       &evt_clean102010_,      "evt_clean102010/I"      );
+    babyTree_->Branch("evt_clean042011",       &evt_clean042011_,      "evt_clean042011/I"      );
     babyTree_->Branch("scale1fb",     &scale1fb_,    "scale1fb/F"    );
     babyTree_->Branch("pthat",        &pthat_,       "pthat/F"       );
     babyTree_->Branch("hyp_type",     &hyp_type_,    "hyp_type/I"    );
@@ -1088,6 +1107,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("lep2isFromW", &lep2isFromW_, "lep2isFromW/I");
 
     // Muon stuff
+    babyTree_->Branch("mu1_numSSv3",      &mu1_numSSv3_,      "mu1_numSSv3/O"     );
+    babyTree_->Branch("mu1_foSSv3",       &mu1_foSSv3_,       "mu1_foSSv3/O"      );
     babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );
     babyTree_->Branch("mu1_muonid",       &mu1_muonid_,       "mu1_muonid/O"      );
     babyTree_->Branch("mu1_muonidfullV1", &mu1_muonidfullV1_, "mu1_muonidfullV1/O");
@@ -1102,6 +1123,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu1_isPFmuon",     &mu1_isPFmuon_,     "mu1_isPFmuon/O"    );
     babyTree_->Branch("mu1_relPtErr",     &mu1_relPtErr_,     "mu1_relPtErr/F"    );
 
+    babyTree_->Branch("mu2_numSSv3",      &mu2_numSSv3_,      "mu2_numSSv3/O"     );
+    babyTree_->Branch("mu2_foSSv3",       &mu2_foSSv3_,       "mu2_foSSv3/O"      );
     babyTree_->Branch("mu2_muonidfull",   &mu2_muonidfull_,   "mu2_muonidfull/O"  );
     babyTree_->Branch("mu2_muonid",       &mu2_muonid_,       "mu2_muonid/O"      );
     babyTree_->Branch("mu2_muonidfullV1", &mu2_muonidfullV1_, "mu2_muonidfullV1/O");
@@ -1118,6 +1141,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
     // electron stuff
 
+    babyTree_->Branch("e1_numSSv3",    &e1_numSSv3_,    "e1_numSSv3/O"   );
+    babyTree_->Branch("e1_foSSv3",     &e1_foSSv3_,     "e1_foSSv3/O"    );
     babyTree_->Branch("e1_vbtf90full", &e1_vbtf90full_, "e1_vbtf90full/O");
     babyTree_->Branch("e1_vbtf90",     &e1_vbtf90_,     "e1_vbtf90/O"    );
     babyTree_->Branch("e1_vbtf85",     &e1_vbtf85_,     "e1_vbtf85/O"    );
@@ -1142,6 +1167,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_scCharge",   &e1_scCharge_,   "e1_scCharge/I"  );
     babyTree_->Branch("e1_fbrem",      &e1_fbrem_,      "e1_fbrem/F"     );
     babyTree_->Branch("e1_mitConv",    &e1_mitConv_,    "e1_mitConv/O"   );
+    babyTree_->Branch("e2_numSSv3",    &e2_numSSv3_,    "e2_numSSv3/O"   );
+    babyTree_->Branch("e2_foSSv3",     &e2_foSSv3_,     "e2_foSSv3/O"    );
     babyTree_->Branch("e2_vbtf90full", &e2_vbtf90full_, "e2_vbtf90full/O");
     babyTree_->Branch("e2_vbtf90",     &e2_vbtf90_,     "e2_vbtf90/O"    );
     babyTree_->Branch("e2_vbtf85",     &e2_vbtf85_,     "e2_vbtf85/O"    );
@@ -1226,6 +1253,7 @@ void dilepbabymaker::SetEventLevelInfo ()
 
     evt_clean082010_ = cleaning_standardAugust2010(isdata_);
     evt_clean102010_ = cleaning_standardOctober2010();
+    evt_clean042011_ = cleaning_standardApril2011();
 
     nvtx_ = 0;
     for (unsigned int i=0; i<cms2.vtxs_isFake().size(); i++) {
