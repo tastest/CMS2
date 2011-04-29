@@ -313,8 +313,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     MakeBabyNtuple(babyFilename);
 
     // Set the JSON file
-    if(isData){
-        //set_goodrun_file_json("json/Cert_TopNov5_Merged_135821-149442_allPVT.txt");
+    if(isData) {
+        set_goodrun_file_json("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
     }
 
     // Jet Corrections
