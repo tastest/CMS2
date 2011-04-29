@@ -632,12 +632,12 @@ void myBabyMaker::InitBabyNtuple () {
     ele17_CaloIdL_CaloIsoVL_vstar_                          = 0;
     photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    = 0;
 
-    ele8_version_                                             = 0;
-    ele8_CaloIdL_TrkIdVL_version_                             = 0;
-    ele8_CaloIdL_CaloIsoVL_Jet40_version_                     = 0;
-    ele8_CaloIdL_CaloIsoVL_version_                           = 0;
-    ele17_CaloIdL_CaloIsoVL_version_                          = 0;
-    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_    = 0;
+    ele8_version_                                           = -1;
+    ele8_CaloIdL_TrkIdVL_version_                           = -1;
+    ele8_CaloIdL_CaloIsoVL_Jet40_version_                   = -1;
+    ele8_CaloIdL_CaloIsoVL_version_                         = -1;
+    ele17_CaloIdL_CaloIsoVL_version_                        = -1;
+    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_  = -1;
 
     dr_ele8_vstar_                                          = 99.0; 
     dr_ele8_CaloIdL_TrkIdVL_vstar_                          = 99.0; 
@@ -657,15 +657,15 @@ void myBabyMaker::InitBabyNtuple () {
     mu30_vstar_         = 0;  
     mu8_Jet40_vstar_    = 0;    
 
-    mu3_version_          = 0;
-    mu5_version_          = 0;
-    mu8_version_          = 0;  
-    mu12_version_         = 0;  
-    mu15_version_         = 0;  
-    mu20_version_         = 0;  
-    mu24_version_         = 0;  
-    mu30_version_         = 0;  
-    mu8_Jet40_version_    = 0;    
+    mu3_version_        = -1;
+    mu5_version_        = -1;
+    mu8_version_        = -1;  
+    mu12_version_       = -1;  
+    mu15_version_       = -1;  
+    mu20_version_       = -1;  
+    mu24_version_       = -1;  
+    mu30_version_       = -1;  
+    mu8_Jet40_version_  = -1;    
 
     dr_mu3_vstar_       = 99.0;
     dr_mu5_vstar_       = 99.0;

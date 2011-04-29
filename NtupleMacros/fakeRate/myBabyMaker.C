@@ -243,7 +243,7 @@ triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, const TRegexp trig
         TString last_stoken(last_token->GetString());
         TSubString last_subtoken = last_stoken.Strip(TString::kLeading, 'v');
         TString subtoken = TString(last_subtoken);
-
+        
         int version = -1;
         if (subtoken.IsDigit())
             version = subtoken.Atoi();
@@ -719,11 +719,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ele17_CaloIdL_CaloIsoVL_vstar_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_; 
                     //photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
 
-                    ele8_version_                                              = struct_ele8_vstar.nHLTObjects_;
-                    ele8_CaloIdL_TrkIdVL_version_                              = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
-                    ele8_CaloIdL_CaloIsoVL_Jet40_version_                      = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.nHLTObjects_;
-                    ele8_CaloIdL_CaloIsoVL_version_                            = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-                    ele17_CaloIdL_CaloIsoVL_version_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_; 
+                    ele8_version_                                              = struct_ele8_vstar.version_;
+                    ele8_CaloIdL_TrkIdVL_version_                              = struct_ele8_CaloIdL_TrkIdVL_vstar.version_; 
+                    ele8_CaloIdL_CaloIsoVL_Jet40_version_                      = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.version_;
+                    ele8_CaloIdL_CaloIsoVL_version_                            = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
+                    ele17_CaloIdL_CaloIsoVL_version_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_; 
                     //photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
           
                     dr_ele8_vstar_                                           = struct_ele8_vstar.dR_;
@@ -732,7 +732,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     dr_ele8_CaloIdL_CaloIsoVL_vstar_                         = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
                     dr_ele17_CaloIdL_CaloIsoVL_vstar_                        = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
                     //dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
-
+/*
+                    if ( (ele8_vstar_ == 0) && (ele8_CaloIdL_TrkIdVL_vstar_ == 0) && (ele8_CaloIdL_CaloIsoVL_Jet40_vstar_ == 0)
+                         && (ele8_CaloIdL_CaloIsoVL_vstar_  == 0) && (ele17_CaloIdL_CaloIsoVL_vstar_ == 0) ) { continue; }
+*/
 
                     ///////////////////////  
                     // 2011 Triggers     //
@@ -867,7 +870,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // End 2010 Triggers //
                     ///////////////////////
 
-
+                    
 
                     //////////////
                     // Jets     //
@@ -1269,7 +1272,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     dr_mu24_vstar_      = struct_mu24_vstar.dR_;
                     dr_mu30_vstar_      = struct_mu30_vstar.dR_;
                     dr_mu8_Jet40_vstar_ = struct_mu8_Jet40_vstar.dR_;
-
+/*
+                    if ( (mu3_vstar_ == 0) && (mu5_vstar_ == 0) && (mu8_vstar_ == 0)
+                         && (mu12_vstar_ == 0) && (mu15_vstar_ == 0) && (mu20_vstar_ == 0)
+                         && (mu24_vstar_ == 0) && (mu30_vstar_ == 0) && (mu8_Jet40_vstar_ == 0) ) { continue; }
+*/
                     ///////////////////////  
                     // End 2011 Triggers //
                     ///////////////////////
