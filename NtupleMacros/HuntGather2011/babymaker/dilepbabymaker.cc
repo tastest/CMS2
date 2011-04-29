@@ -1256,10 +1256,10 @@ void dilepbabymaker::SetEventLevelInfo ()
     evt_clean042011_ = cleaning_standardApril2011();
 
     nvtx_ = 0;
-    for (unsigned int i=0; i<cms2.vtxs_isFake().size(); i++) {
+    for (unsigned int i=0; i<cms2.davtxs_isFake().size(); i++) {
         // isGoodVertex is defined in CORE/eventSelections.cc
         // !isFake, ndof >= 4, rho <= 2, Z <= 24.
-        if (isGoodVertex(i))
+        if (isGoodDAVertex(i))
             ++nvtx_;
     }
 
