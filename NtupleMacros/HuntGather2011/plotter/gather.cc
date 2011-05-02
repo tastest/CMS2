@@ -31,9 +31,10 @@ float GetAllLumi(TChain *c, float zPerPb)
     // which are not goodrun penalized
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
     TCut c_remove_end2010bad("remove_end2010bad", "run <= 149294 || run >= 160325");
+    TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
 
     reset_babydorkidentifier();
-    int n_new = c->GetEntries(c_goodrunplus+c_remove_end2010bad+inclusivez_dilep);
+    int n_new = c->GetEntries(c_goodrunplus+c_remove_end2010bad+inclusivez_dilep+c_notduplicate);
     reset_babydorkidentifier();
     float lumi = ((float)(n_new))/zPerPb;
     return lumi;
@@ -50,9 +51,10 @@ float GetNewLumi(TChain *c, float zPerPb)
     // which are not goodrun penalized
     TCut c_newrun(Form("(run>%i||(run==%i&&ls>%i))", erun, erun, els));
     TCut c_remove_end2010bad("remove_end2010bad", "run <= 149294 || run >= 160325");
+    TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
 
     reset_babydorkidentifier();
-    int n_new = c->GetEntries(c_newrun+c_remove_end2010bad+inclusivez_dilep);
+    int n_new = c->GetEntries(c_newrun+c_remove_end2010bad+inclusivez_dilep+c_notduplicate);
     reset_babydorkidentifier();
     float lumi = ((float)(n_new))/zPerPb;
     return lumi;
@@ -67,13 +69,14 @@ float GetZPerPb(TChain *c, float lumi)
     int erun = max_run();
     int els  = max_run_max_lumi();
     TCut c_goodrun(Form("((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls)", brun, erun, brun, bls, erun, els));
+    TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
 
     // goodrun plus events beyond range of goodrun
     // which are not goodrun penalized
 
     // brun:bls -> erun:els
     reset_babydorkidentifier();
-    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep);
+    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep+c_notduplicate);
     // total
     reset_babydorkidentifier();
     // that which is new
@@ -94,13 +97,14 @@ float GetIntLumi(TChain *c, float lumi, int brun, int bls, int erun, int els)
     // which are not goodrun penalized
     TCut c_goodrunplus(Form("(((run>%i&&run<%i)||(run==%i&&ls>=%i)||(run==%i&&ls<=%i))&&goodrun_json(run,ls))||(run>%i||(run==%i&&ls>%i))", brun, erun, brun, bls, erun, els, erun, erun, els));
     TCut c_remove_end2010bad("remove_end2010bad", "run <= 149294 || run >= 160325");
+    TCut c_notduplicate("! is_duplicate(run,evt,ls,pt1,pt2)");
 
     // brun:bls -> erun:els
     reset_babydorkidentifier();
-    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep); 
+    int n_goodrun = c->GetEntries(c_goodrun+inclusivez_dilep+c_notduplicate); 
     // total
     reset_babydorkidentifier();
-    int n_total   = c->GetEntries(c_goodrunplus+c_remove_end2010bad+inclusivez_dilep);
+    int n_total   = c->GetEntries(c_goodrunplus+c_remove_end2010bad+inclusivez_dilep+c_notduplicate);
     // that which is new
     int n_new     = n_total-n_goodrun;
 
@@ -634,14 +638,6 @@ TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
         h->SetLineWidth(2);
     }
 
-    h->SetTitle(Form("%s, ~%.2f/pb", selection.GetName(), intlumipb));
-    if (integrated) {
-        h = slideIntegrated(h);
-        h->GetXaxis()->SetTitle(Form("integrated %s", var.GetName()));
-    }
-    else
-        h->GetXaxis()->SetTitle(var.GetName());
-
     //
     // Move overflow to the last bin
     //
@@ -654,6 +650,14 @@ TH1F* Plot(BabySample *bs, TCut var, TCut selection, float intlumipb,
     h->SetBinError(nbins, sqrt(overflow+endbin));
     h->SetBinContent(nbins+1,0.);
     h->SetEntries(h->GetEntries() - overflow);
+
+    h->SetTitle(Form("%s, ~%.2f/pb", selection.GetName(), intlumipb));
+    if (integrated) {
+        h = slideIntegrated(h);
+        h->GetXaxis()->SetTitle(Form("integrated %s", var.GetName()));
+    }
+    else
+        h->GetXaxis()->SetTitle(var.GetName());
 
     return h;
 

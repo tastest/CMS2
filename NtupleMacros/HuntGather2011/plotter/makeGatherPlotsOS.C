@@ -19,6 +19,8 @@ void makeGatherPlotsOS(TString prefix, const std::vector<BabySample*> &babyVecto
     TCut os_preselection("os_preselection",os_dilep_all+os_zveto+os_kin);
 
     TCut y("y","tcmet/sqrt(sumjetpt)");
+    TCut y_sig("y_sig","(tcmet/sqrt(sumjetpt))>8.5");
+
     //
     // Apply preselection cuts to the samples in the baby vector
     // These preselection cuts will apply to all plots!
@@ -41,6 +43,12 @@ void makeGatherPlotsOS(TString prefix, const std::vector<BabySample*> &babyVecto
     DrawAll( y,                        prefix+"_os_y_int",           os_preselection, luminosity, 40, 0.,  20, 1, babyVector);
     DrawAll("sumjetpt",                prefix+"_os_sumjetpt_int",    os_preselection, luminosity ,40, 0., 800, 1, babyVector);
     DrawAll("njets",                   prefix+"_os_njets_int",       os_preselection, luminosity , 8, 0.,   8, 1, babyVector);
+
+    DrawAll("hyp_type",                prefix+"_os_hyp",            os_preselection, luminosity, 3, -1.5, 4.5, 0, babyVector);
+    DrawAll("hyp_type",                prefix+"_os_hyp_sig",        TCut("hyp_type {y>8.5 and HT>300}", y_sig+"sumjetpt>300."+os_preselection), luminosity, 3, -1.5, 4.5, 0, babyVector);
+    DrawAll( y,                        prefix+"_os_y_sig",               TCut("y {HT>300}", "sumjetpt>300."+os_preselection), luminosity, 40, 0.,  20, 0, babyVector);
+    DrawAll("sumjetpt",                prefix+"_os_sumjetpt_sig",        TCut("HT {y>8.5}", y_sig+os_preselection), luminosity ,40, 0., 800, 0, babyVector);
+
 
 }
 

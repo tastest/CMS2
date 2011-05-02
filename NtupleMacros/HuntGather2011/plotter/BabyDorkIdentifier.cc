@@ -26,12 +26,12 @@ bool BabyDorkIdentifier::operator < (const BabyDorkIdentifier &other) const
         return lumi_ < other.lumi_;
     if (event_ != other.event_)
         return event_ < other.event_;
-    if (TMath::Abs(pt1_-other.pt1_) > 1e-6*fabs(pt1_))
-      return pt1_ < other.pt1_;
-    if (TMath::Abs(pt2_-other.pt2_) > 1e-6*fabs(pt2_))
-      return pt2_ < other.pt2_;
-    if (TMath::Abs(pt3_-other.pt3_) > 1e-6*fabs(pt3_))
-      return pt3_ < other.pt3_;
+//    if (TMath::Abs(pt1_-other.pt1_) > 1e-6*fabs(pt1_))
+//      return pt1_ < other.pt1_;
+//    if (TMath::Abs(pt2_-other.pt2_) > 1e-6*fabs(pt2_))
+//      return pt2_ < other.pt2_;
+//    if (TMath::Abs(pt3_-other.pt3_) > 1e-6*fabs(pt3_))
+//      return pt3_ < other.pt3_;
     return false;
 }
 
@@ -43,12 +43,12 @@ bool BabyDorkIdentifier::operator == (const BabyDorkIdentifier &other) const
         return false;
     if (event_ != other.event_)
         return false;
-    if (TMath::Abs(pt1_-other.pt1_) > 1e-6*fabs(pt1_))
-        return false;
-    if (TMath::Abs(pt2_-other.pt2_) > 1e-6*fabs(pt2_))
-        return false;
-    if (TMath::Abs(pt3_-other.pt3_) > 1e-6*fabs(pt3_))
-        return false;
+//    if (TMath::Abs(pt1_-other.pt1_) > 1e-6*fabs(pt1_))
+//        return false;
+//    if (TMath::Abs(pt2_-other.pt2_) > 1e-6*fabs(pt2_))
+//        return false;
+//    if (TMath::Abs(pt3_-other.pt3_) > 1e-6*fabs(pt3_))
+//        return false;
     return true;
 }
 

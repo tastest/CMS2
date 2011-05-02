@@ -126,7 +126,7 @@ do
 
             # output file
             NTUPLE_NAME=`echo $INPUT_FILE | awk -F'/' '{print $NF}'`
-            OUTPUT_FILE=$OUTPUT_DATA_DIR/baby_gather_$NTUPLE_NAME
+            OUTPUT_FILE=$OUTPUT_DATA_DIR/.baby_gather_$NTUPLE_NAME
 
             # run the baby maker for this ntuple
             CMD="root -b -l -q '$GATHER_TOOL/makeGatherBaby.C(\"$INPUT_FILE\", \"$OUTPUT_FILE\")'"
@@ -141,6 +141,7 @@ do
             # if it ran correctly then write this run in the list of runs 
             # that have been successfully processed
             else
+                mv $OUTPUT_DATA_DIR/.baby_gather_$NTUPLE_NAME $OUTPUT_DATA_DIR/baby_gather_$NTUPLE_NAME
                 echo $line >> $OUTPUT_DATA_DIR/RunsProcessed.txt
             fi
 
