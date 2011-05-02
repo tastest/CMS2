@@ -637,7 +637,7 @@ bool isPFMuon( int index , bool requireSamePt , float dpt_max ){
   // require matched pfmuon
   //--------------------------
 
-  if( ipf >= cms2.pfmus_p4().size() || ipf < 0 ) return false;
+  if( ipf >= int(cms2.pfmus_p4().size()) || ipf < 0 ) return false;
 
   //----------------------------------------------------
   // require PFMuon pt = reco muon pt (within dpt_max)
