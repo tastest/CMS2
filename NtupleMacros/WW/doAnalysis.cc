@@ -1,4 +1,4 @@
-const char* config_info = "SmurfV3 selection (only baseline cuts are applied); Spring11 samples";
+const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose;FullMET); Spring11 samples";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -2533,7 +2533,8 @@ void ScanChain( TChain* chain,
 	 // find the best candidate with m(ll) closest to the Z mass
 	 unsigned int i_hyp_bestZ = bestZHyp();
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
+	   // if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
+	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) continue;
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
 	   if (hypo(i_hyp, weight, zStudy, realData)){
 	     goodEvent=true;
