@@ -239,6 +239,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 float thePFMetPhi     = cms2.evt_pfmetPhi();
                 float theCaloTCMetPhi = cms2.evt_tcmetPhi();
+                pfmetphi_ = thePFMetPhi;
+                tcmetphi_ = theCaloTCMetPhi;
 
                 float metx   = tcmet_ * cos(theTCMetPhi);
                 float mety   = tcmet_ * sin(theTCMetPhi);
@@ -448,12 +450,15 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]] : -999999.;
                 jet1eta_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].eta() : -999999.;
                 jet1phi_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].phi() : -999999.;
+                jet1cor_      = theJetIndices.size() > 0 ? cms2.pfjets_corL1FastL2L3()[theJetIndices[0]] : -999999.;
                 jet2pt_       = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].pt()*cms2.pfjets_corL1FastL2L3()[theJetIndices[1]] : -999999.;
                 jet2eta_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].eta() : -999999.;
                 jet2phi_      = theJetIndices.size() > 1 ? cms2.pfjets_p4()[theJetIndices[1]].phi() : -999999.;
+                jet2cor_      = theJetIndices.size() > 1 ? cms2.pfjets_corL1FastL2L3()[theJetIndices[1]] : -999999.;
                 jet3pt_       = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].pt()*cms2.pfjets_corL1FastL2L3()[theJetIndices[2]] : -999999.;
                 jet3eta_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].eta() : -999999.;
                 jet3phi_      = theJetIndices.size() > 2 ? cms2.pfjets_p4()[theJetIndices[2]].phi() : -999999.;
+                jet3cor_      = theJetIndices.size() > 2 ? cms2.pfjets_corL1FastL2L3()[theJetIndices[2]] : -999999.;
 
                 LorentzVector dijetP4;
                 jetmass_ = theJetIndices.size() > 1 ? sqrt((cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]] 
@@ -465,6 +470,19 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 mllj_ = theJetIndices.size() > 0 ? sqrt((cms2.hyp_p4()[hypi] 
                                                          + cms2.pfjets_p4()[theJetIndices[0]]*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]]).M2()) : -999999.;
 
+                // rescaled jet1 taking into account met
+                if (theJetIndices.size() == 1) {
+                    float dphi_jet_met = cms2.pfjets_p4()[theJetIndices[0]].phi() - thePFMetPhi;
+                    jet1fmetcor_ = (cms2.pfjets_p4()[theJetIndices[0]].pt() + pfmet_*cos(dphi_jet_met)) / cms2.pfjets_p4()[theJetIndices[0]].pt();
+                    mlljmetcor_ = sqrt((cms2.hyp_p4()[hypi] + cms2.pfjets_p4()[theJetIndices[0]]*jet1fmetcor_).M2());
+
+                    // sanity check
+                    float metx_prime = pfmet_ * cos(thePFMetPhi) - (cms2.pfjets_p4()[theJetIndices[0]].px()*jet1fmetcor_ - cms2.pfjets_p4()[theJetIndices[0]].px());
+                    float mety_prime = pfmet_ * sin(thePFMetPhi) - (cms2.pfjets_p4()[theJetIndices[0]].py()*jet1fmetcor_ - cms2.pfjets_p4()[theJetIndices[0]].py());
+                    pfmetcor_ = sqrt(metx_prime*metx_prime + mety_prime*mety_prime);
+                    pfmetphicor_ = atan2(mety_prime, metx_prime);
+
+                }
 
                 double mindphipfmet = 999999.;
                 double mindphitcmet = 999999.;
@@ -778,6 +796,8 @@ void dilepbabymaker::InitBabyNtuple ()
     hyp_type_     = -999999;
     pfmet_        = -999999.;
     tcmet_        = -999999.;
+    pfmetphi_   = -999999.;
+    tcmetphi_   = -999999.;
     calotcmet_    = -999999.;
     proj_pfmet_   = -999999.;
     proj_tcmet_   = -999999.;
@@ -791,6 +811,9 @@ void dilepbabymaker::InitBabyNtuple ()
     sumjetpt_     = -999999.;
     sumjetpt25_     = -999999.;
     sumjetptSS_   = -999999.;
+    jet1cor_        = -9999999.;
+    jet2cor_        = -9999999.;
+    jet3cor_        = -9999999.;
     jet1eta_      = -999999.;
     jet2eta_      = -999999.;
     jet3eta_      = -999999.;
@@ -808,6 +831,11 @@ void dilepbabymaker::InitBabyNtuple ()
     dphipfmetjet_ = -999999.;
     dphitcmetjet_ = -999999.;
     deltaphi_     = -999999.;
+
+    jet1fmetcor_    = -9999999.;
+    mlljmetcor_     = -9999999.;
+    pfmetcor_       = -9999999.;
+    pfmetphicor_    = -9999999.;
 
     ntchelbtags_ = -999999;
     nssvhembtags_ = -999999;
@@ -1008,6 +1036,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hyp_type",     &hyp_type_,    "hyp_type/I"    );
     babyTree_->Branch("pfmet",        &pfmet_,       "pfmet/F"       );
     babyTree_->Branch("tcmet",        &tcmet_,       "tcmet/F"       );
+    babyTree_->Branch("pfmetphi",        &pfmetphi_,       "pfmetphi/F"       );
+    babyTree_->Branch("tcmetphi",        &tcmetphi_,       "tcmetphi/F"       );
     babyTree_->Branch("calotcmet",    &calotcmet_,   "calotcmet/F"   );
     babyTree_->Branch("proj_pfmet",   &proj_pfmet_,  "proj_pfmet/F"  );
     babyTree_->Branch("proj_tcmet",   &proj_tcmet_,  "proj_tcmet/F"  );
@@ -1015,6 +1045,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("njets",        &njets_,       "njets/I"       );
     babyTree_->Branch("njets25",        &njets25_,       "njets25/I"       ); 
     babyTree_->Branch("njetsSS",      &njetsSS_,     "njetsSS/I"     );
+    babyTree_->Branch("jet1cor", &jet1cor_, "jet1cor/F");
+    babyTree_->Branch("jet2cor", &jet2cor_, "jet2cor/F");
+    babyTree_->Branch("jet3cor", &jet3cor_, "jet3cor/F");
     babyTree_->Branch("jet1pt",       &jet1pt_,      "jet1pt/F"      );
     babyTree_->Branch("jet2pt",       &jet2pt_,      "jet2pt/F"      );
     babyTree_->Branch("jet3pt",       &jet3pt_,      "jet3pt/F"      );
@@ -1036,6 +1069,12 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfmetjet", &dphipfmetjet_,"dphipfmetjet/F");
     babyTree_->Branch("dphitcmetjet", &dphitcmetjet_,"dphitcmetjet/F");
     babyTree_->Branch("deltaphi",     &deltaphi_,    "deltaphi/F"    );
+
+    babyTree_->Branch("jet1fmetcor", &jet1fmetcor_, "jet1fmetcor/F");
+    babyTree_->Branch("mlljmetcor", &mlljmetcor_, "mlljmetcor/F");
+    babyTree_->Branch("pfmetcor", &pfmetcor_, "pfmetcor/F");
+    babyTree_->Branch("pfmetphicor", &pfmetphicor_, "pfmetphicor/F");
+
 
     babyTree_->Branch("ntchelbtags",    &ntchelbtags_,      "ntchelbtags/I"   );
     babyTree_->Branch("nssvhembtags",   &nssvhembtags_,     "nssvhembtags/I"   );
@@ -1137,7 +1176,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu2_emVetoDep",    &mu2_emVetoDep_,    "mu2_emVetoDep/F"   );
     babyTree_->Branch("mu2_hadVetoDep",   &mu2_hadVetoDep_,   "mu2_hadVetoDep/F"  );
     babyTree_->Branch("mu2_isPFmuon",     &mu2_isPFmuon_,     "mu2_isPFmuon/O"    );
-    babyTree_->Branch("mu2_relPtErr",     &mu2_relPtErr_,     "mu1_relPtErr/F"    );
+    babyTree_->Branch("mu2_relPtErr",     &mu2_relPtErr_,     "mu2_relPtErr/F"    );
 
     // electron stuff
 

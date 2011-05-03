@@ -383,7 +383,7 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
 
     // make a failing histogram in order to get list of
     // failing events
-    TH1F *h1_fail = Plot(bs, var, cut_fail, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
+    //TH1F *h1_fail = Plot(bs, var, cut_fail, intlumipb, nbins, xlo, xhi, integrated, gDrawAllCount);
     //
     //
 
@@ -391,7 +391,18 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     gr_eff->SetName(TString("gr_") + h1_pass->GetName());
     gr_eff->SetTitle(TString(savename));
     gr_eff->BayesDivide(h1_pass, h1_total);
-    //PrintBins(gr_eff);
+
+    // now draw the line 
+    TGraphAsymmErrors *gr_eff_line = (TGraphAsymmErrors*)gr_eff->Clone("gr_eff_line");
+    for (unsigned int i = 0; i < gr_eff_line->GetN(); ++i) gr_eff_line->SetPointError(i, 0, 0, 0, 0);
+
+    // do zero suppression
+    for (unsigned int i = 0; i < h1_total->GetNbinsX(); ++i) {
+        if (h1_total->GetBinContent(i) < 100) {
+            gr_eff->RemovePoint(i);
+            gr_eff_line->RemovePoint(i);
+        }
+    }
 
     //
     // do the drawing
@@ -404,8 +415,16 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     // do the data histogram
     gr_eff->Draw("AP");
     gr_eff->GetXaxis()->SetTitle(var.GetTitle());
-    gr_eff->GetYaxis()->SetTitle("Efficiency");
+    gr_eff->GetYaxis()->SetTitle(trig.GetName());
     gr_eff->GetXaxis()->SetNdivisions(504);
+    gr_eff->GetYaxis()->SetRangeUser(0, 1.0);
+    gr_eff->SetMarkerStyle(6);
+
+    // now draw the line 
+    gr_eff_line->SetLineColor(kRed);
+    gr_eff_line->SetLineWidth(1);
+    gr_eff_line->Draw("L");
+
     //gr_eff->GetYaxis()->SetRangeUser(0.0, 1.10);
  
     // draw the legend and tidy up
@@ -414,7 +433,6 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     reset_babydorkidentifier();
     delete h1_pass;
     delete h1_total;
-
     return c1;
 }
 

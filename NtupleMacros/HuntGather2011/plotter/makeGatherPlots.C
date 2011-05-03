@@ -41,6 +41,7 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     gROOT->ProcessLine(".L makeGatherPlotsExotica.C");
     gROOT->ProcessLine(".L makeGatherPlotsExpress.C");
     gROOT->ProcessLine(".L makeGatherMETMonitor.C");
+    gROOT->ProcessLine(".L makeGatherPlotsSusyMon.C");
 
     //
     // define samples
@@ -307,7 +308,8 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     if (mode == EXPRESS) {
         float est_extra_lumi_express = GetAllLumi(bs_data2011max->chain(), zPerPb);
         std::cout << "[The Gathering] Estimated L in EXPRESS = " << est_extra_lumi_express << std::endl;
-        makeGatherPlotsExpress("post_techstop", babyVectorSM2011max, goodruns_lumi, est_extra_lumi_express);
+        //makeGatherPlotsExpress("post_techstop", babyVectorSM2011max, goodruns_lumi, est_extra_lumi_express);
+        makeGatherPlotsSusyMon("susymon", babyVectorSM2011max, est_extra_lumi_express);
     }
 
     if (mode == DEBUG) {
@@ -387,8 +389,14 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
 
         // log
         TPad *p_main = 0;
-        if ((p_main = (TPad*)c1->FindObject("p_main"))) p_main->SetLogy(1);
-        else c1->SetLogy(1);
+        if ((p_main = (TPad*)c1->FindObject("p_main"))) {
+            p_main->SetLogy(1);
+            p_main->RedrawAxis();
+        }
+        else {
+            c1->SetLogy(1);
+            c1->RedrawAxis();
+        }
         c1->Print(Form("../output/%s_log.png", c1->GetName()));
 
     }

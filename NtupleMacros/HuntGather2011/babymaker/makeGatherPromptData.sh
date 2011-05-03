@@ -6,20 +6,23 @@
 
 # ucsd or cern
 GATHER_SITE=$1
+# tag name
+GATHER_TAG=$2
 # location of the gathering tools
-GATHER_TOOL=$2
+GATHER_TOOL=$3
 # list of samples in input location to process
-GATHER_SAMPLE=$3
+GATHER_SAMPLE=$4
 # input ntuple prefix
-NTUPLE_PFX=$4
+NTUPLE_PFX=$5
 
 #
 # check input exists
 #
 
-if [ ! $# -eq 4 ]; then
+if [ ! $# -eq 5 ]; then
     echo "USAGE: ./makeGatherPromptData.sh GATHER_SITE GATHER_TOOL GATHER_SAMPLE 
     GATHER_SITE - UCSD or CERN: e.g. CERN
+    GATHER_TAG - name of subdir for babies
     GATHER_TOOL - location of gathering scripts: e.g. /home/username/gathering/CMS2/HuntGather2011/babymaker/
     GATHER_SAMPLE - sample: e.g. Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
     NTUPLE_PFX - ntuple prexif: e.g. if ntuples called merged_ntuple_run_n.root then 'merged_ntuple'"
@@ -35,19 +38,19 @@ export SCRAM_ARCH=slc5_amd64_gcc434
 
 if [ "$GATHER_SITE" == "HADOOP" ]; then
     INPUT_DATA_DIR=/hadoop/cms/store/user/yanjuntu/$GATHER_SAMPLE
-    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/$GATHER_TAG/$GATHER_SAMPLE
 
 elif [ "$GATHER_SITE" == "NFS3" ]; then
     INPUT_DATA_DIR=/nfs-3/userdata/cms2/$GATHER_SAMPLE
-    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/$GATHER_TAG/$GATHER_SAMPLE
 
 elif [ "$GATHER_SITE" == "NFS4" ]; then
     INPUT_DATA_DIR=/nfs-4/userdata/cms2/$GATHER_SAMPLE
-    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/data/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/$GATHER_TAG/$GATHER_SAMPLE
 
 elif [ "$GATHER_SITE" == "CERN" ]; then
     INPUT_DATA_DIR=/tas/cms2/$GATHER_SAMPLE
-    OUTPUT_DATA_DIR=/tas/cms2/gather/data/$GATHER_SAMPLE
+    OUTPUT_DATA_DIR=/tas/cms2/gather/$GATHER_TAG/$GATHER_SAMPLE
 else 
     echo "ERROR: GATHER_SITE either UCSD or CERN"
     exit 1

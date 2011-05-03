@@ -64,6 +64,8 @@ private:
     Int_t   hyp_type_;
     Float_t pfmet_;
     Float_t tcmet_;
+    Float_t pfmetphi_;
+    Float_t tcmetphi_;
     Float_t calotcmet_;
     Float_t proj_pfmet_;
     Float_t proj_tcmet_;
@@ -77,6 +79,9 @@ private:
     Float_t sumjetpt_;
     Float_t sumjetpt25_;
     Float_t sumjetptSS_;
+    Float_t jet1cor_;
+    Float_t jet2cor_;
+    Float_t jet3cor_;
     Float_t jet1eta_;
     Float_t jet2eta_;
     Float_t jet3eta_;
@@ -99,6 +104,12 @@ private:
     Float_t pfmeff_;
     Float_t tcmeff_;
     Float_t intLumiPerLS_;
+
+    // correcting jet1 for met
+    Float_t jet1fmetcor_;
+    Float_t mlljmetcor_;
+    Float_t pfmetcor_;
+    Float_t pfmetphicor_;
 
     // lepton stuff
     Int_t   ngoodlep_;
