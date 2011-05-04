@@ -72,9 +72,8 @@ enum hyp_selection {
   PASSED_Skim3                   = 1UL<<31   // one fakable object + one final
 };
 
-// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 // wwcuts_t pass_all = PASSED_Skim1;
-wwcuts_t pass_all = PASSED_Skim3;
 
 bool applyJEC = false;
 bool applyFastJetCorrection = true;
@@ -1586,7 +1585,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_ll_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
   
   // Require opposite sign
-  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) cuts_passed |= PASSED_Charge;
+  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) cuts_passed |= PASSED_Charge;
 
   // monitor.count(cms2,type,"baseline cuts",weight);
  
