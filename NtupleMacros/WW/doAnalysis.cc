@@ -1,4 +1,5 @@
-const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose;FullMET); Spring11 samples";
+// const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose;FullMET); Spring11 samples";
+const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose); Spring11 samples";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -38,38 +39,42 @@ enum jetregion { HCAL, HF, ALLJET};
 
 enum hyp_selection {
   PASSED_BaseLine                = 1UL<<0,
-  PASSED_ZVETO                   = 1UL<<1,
-  PASSED_ZControlSampleVeryTight = 1UL<<2,   // within Z mass window +/- 5GeV
-  PASSED_ZControlSampleTight     = 1UL<<3,   // within Z mass window +/- 10GeV
-  PASSED_ZControlSampleLoose     = 1UL<<4,   // within Z mass window +/- 20GeV
-  PASSED_MET                     = 1UL<<5,
-  PASSED_LT_FINAL                = 1UL<<6,
-  PASSED_LT_FO_MU1               = 1UL<<7,
-  PASSED_LT_FO_MU2               = 1UL<<8,
-  PASSED_LT_FO_ELEV1             = 1UL<<9,
-  PASSED_LT_FO_ELEV2             = 1UL<<10,
-  PASSED_LT_FO_ELEV3             = 1UL<<11,
-  PASSED_LT_FO_ELEV4             = 1UL<<12,
-  PASSED_LL_FINAL                = 1UL<<13,
-  PASSED_LL_FO_MU1               = 1UL<<14,
-  PASSED_LL_FO_MU2               = 1UL<<15,
-  PASSED_LL_FO_ELEV1             = 1UL<<16,
-  PASSED_LL_FO_ELEV2             = 1UL<<17,
-  PASSED_LL_FO_ELEV3             = 1UL<<18,
-  PASSED_LL_FO_ELEV4             = 1UL<<19,
-  PASSED_JETVETO                 = 1UL<<20,
-  PASSED_TopControlSample        = 1UL<<21,  // 2 or more jets
-  PASSED_1BJET                   = 1UL<<22,
-  PASSED_SOFTMUVETO_NotInJets    = 1UL<<23,
-  PASSED_SOFTMUVETO              = 1UL<<24,
-  PASSED_EXTRALEPTONVETO         = 1UL<<25,  
-  PASSED_TOPVETO_NotInJets       = 1UL<<26,  // exclude jets over threshold from top tagging
-  PASSED_TOPVETO                 = 1UL<<27,
-  PASSED_Skim1                   = 1UL<<28   // one fakable object + one final; full met
+  PASSED_Charge                  = 1UL<<1,
+  PASSED_ZVETO                   = 1UL<<2,
+  PASSED_ZControlSampleVeryTight = 1UL<<3,   // within Z mass window +/- 5GeV
+  PASSED_ZControlSampleTight     = 1UL<<4,   // within Z mass window +/- 10GeV
+  PASSED_ZControlSampleLoose     = 1UL<<5,   // within Z mass window +/- 20GeV
+  PASSED_MET                     = 1UL<<6,
+  PASSED_LT_FINAL                = 1UL<<7,
+  PASSED_LT_FO_MU1               = 1UL<<8,
+  PASSED_LT_FO_MU2               = 1UL<<9,
+  PASSED_LT_FO_ELEV1             = 1UL<<10,
+  PASSED_LT_FO_ELEV2             = 1UL<<11,
+  PASSED_LT_FO_ELEV3             = 1UL<<12,
+  PASSED_LT_FO_ELEV4             = 1UL<<13,
+  PASSED_LL_FINAL                = 1UL<<14,
+  PASSED_LL_FO_MU1               = 1UL<<15,
+  PASSED_LL_FO_MU2               = 1UL<<16,
+  PASSED_LL_FO_ELEV1             = 1UL<<17,
+  PASSED_LL_FO_ELEV2             = 1UL<<18,
+  PASSED_LL_FO_ELEV3             = 1UL<<19,
+  PASSED_LL_FO_ELEV4             = 1UL<<20,
+  PASSED_JETVETO                 = 1UL<<21,
+  PASSED_TopControlSample        = 1UL<<22,  // 2 or more jets
+  PASSED_1BJET                   = 1UL<<23,
+  PASSED_SOFTMUVETO_NotInJets    = 1UL<<24,
+  PASSED_SOFTMUVETO              = 1UL<<25,
+  PASSED_EXTRALEPTONVETO         = 1UL<<26,  
+  PASSED_TOPVETO_NotInJets       = 1UL<<27,  // exclude jets over threshold from top tagging
+  PASSED_TOPVETO                 = 1UL<<28,
+  PASSED_Skim1                   = 1UL<<29,  // one fakable object + one final; full met
+  PASSED_Skim2                   = 1UL<<30,  // two final state leptons
+  PASSED_Skim3                   = 1UL<<31   // one fakable object + one final
 };
 
-// wwcuts_t pass_all = PASSED_BaseLine | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
-wwcuts_t pass_all = PASSED_Skim1;
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+// wwcuts_t pass_all = PASSED_Skim1;
+wwcuts_t pass_all = PASSED_Skim3;
 
 bool applyJEC = false;
 bool applyFastJetCorrection = true;
@@ -1574,20 +1579,20 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
 
   cuts_passed = PASSED_BaseLine;
   
-  // Require opposite sign
-  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) cuts_passed &= ~PASSED_BaseLine;
-
   // Baseline cuts
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_lt_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
   if (abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_ll_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_lt_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
   if (abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elBase(cms2.hyp_ll_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
   
+  // Require opposite sign
+  if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) cuts_passed |= PASSED_Charge;
+
   // monitor.count(cms2,type,"baseline cuts",weight);
  
   if (gSystem->Getenv("Sync")) // Synchronization info
     {
-      if ( (cuts_passed & PASSED_BaseLine) == 0) return false;
+      if ( !CheckCuts( PASSED_BaseLine|PASSED_Charge, cuts_passed ) ) return false;
       if (!hypoSync(i_hyp,weight,zStudy,realData)) return false;
     }
 
@@ -1676,7 +1681,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   // -------------------------------------------------------------------//
 
   // Make some validation plots 
-  if( CheckCuts(  PASSED_MET | PASSED_BaseLine, cuts_passed)) {
+  if( CheckCuts(  PASSED_MET | PASSED_BaseLine , cuts_passed)) {
     if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU2,   cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV1, cuts_passed ) ||
@@ -1690,6 +1695,23 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
 	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV3, cuts_passed ) ||
 	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV4, cuts_passed ) )
       cuts_passed |= PASSED_Skim1;
+  }
+  if( CheckCuts(  PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_BaseLine, cuts_passed))
+    cuts_passed |= PASSED_Skim2;
+  if( CheckCuts(  PASSED_BaseLine, cuts_passed)) {
+    if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU2,   cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV1, cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV2, cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV3, cuts_passed ) ||
+	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV4, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_MU1,   cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_MU2,   cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV1, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV2, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV3, cuts_passed ) ||
+	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV4, cuts_passed ) )
+      cuts_passed |= PASSED_Skim3;
   }
   
   // NEED TO BE FIXED
@@ -2255,7 +2277,6 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   // jet1_btag_;
   // jet2_btag_;
   tree.njets_ = numberOfJets(i_hyp);
-  tree.evtype_ = SmurfTree::ZeroJet;
   tree.dilep_ = cms2.hyp_p4().at(i_hyp);
   tree.pmet_ = projectedMet(i_hyp, metValue(), metPhiValue());
   tree.dPhi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp)));
@@ -2324,10 +2345,13 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     if ( cuts_passed & PASSED_LT_FO_ELEV4 ) tree.cuts_ |= SmurfTree::Lep2LooseEleV4;
   }
   if ( cuts_passed & PASSED_BaseLine )                tree.cuts_ |= SmurfTree::BaseLine;
+  if ( cuts_passed & PASSED_Charge )                  tree.cuts_ |= SmurfTree::ChargeMatch;
   if ( cuts_passed & PASSED_MET )                     tree.cuts_ |= SmurfTree::FullMET;
   if ( cuts_passed & PASSED_ZVETO )                   tree.cuts_ |= SmurfTree::ZVeto;
-  if ( !(cuts_passed & PASSED_TOPVETO) ||
-       !(cuts_passed & PASSED_SOFTMUVETO) )           tree.cuts_ |= SmurfTree::TopTag;
+  if ( !(cuts_passed & PASSED_TOPVETO) || !(cuts_passed & PASSED_SOFTMUVETO) )           
+    tree.cuts_ |= SmurfTree::TopTag;
+  else
+    tree.cuts_ |= SmurfTree::TopVeto;
   if ( !(cuts_passed & PASSED_TOPVETO_NotInJets) ||
        !(cuts_passed & PASSED_SOFTMUVETO_NotInJets) ) tree.cuts_ |= SmurfTree::TopTagNotInJets;
   if ( cuts_passed & PASSED_1BJET )                   tree.cuts_ |= SmurfTree::OneBJet;
