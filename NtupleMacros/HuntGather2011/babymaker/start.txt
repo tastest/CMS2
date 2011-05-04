@@ -1,0 +1,9 @@
+
+nohup bash -c "./makeGatherPromptData.sh HADOOP huntgather2011_V00-01-02 /home/users/dlevans/gather/production/CMSSW_4_1_2_patch1/src/CMS2/NtupleMacros/HuntGather2011/babymaker CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/ merged_ntuple" >& log_ee.txt &
+
+nohup bash -c "./makeGatherPromptData.sh HADOOP huntgather2011_V00-01-02 /home/users/dlevans/gather/production/CMSSW_4_1_2_patch1/src/CMS2/NtupleMacros/HuntGather2011/babymaker CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/ merged_ntuple" >& log_mm.txt &
+
+nohup bash -c "./makeGatherPromptData.sh HADOOP huntgather2011_V00-01-02 /home/users/dlevans/gather/production/CMSSW_4_1_2_patch1/src/CMS2/NtupleMacros/HuntGather2011/babymaker CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/ merged_ntuple" >& log_em.txt &
+
+nohup bash -c "./makeGatherPromptData.sh NFS4 huntgather2011_V00-01-02 /home/users/dlevans/gather/production/CMSSW_4_1_2_patch1/src/CMS2/NtupleMacros/HuntGather2011/babymaker ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/ merged_ntuple" >& log_express.txt &
+

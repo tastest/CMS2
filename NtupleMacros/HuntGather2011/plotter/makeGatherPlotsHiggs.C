@@ -14,7 +14,7 @@ void makeGatherPlotsHiggs(TString prefix, const std::vector<BabySample*> &babyVe
     TCut base_hwwid2("(abs(eormu2) == 11 && e2_vbtf90full && e2_vbtf80) || (abs(eormu2) == 13 && mu2_muonidfull && ! mu2_cosmic)");
     TCut base_hwwclean("evt_clean082010 == 1");
     TCut base_hwwmet("((abs(eormu1)==abs(eormu2) && proj_tcmet > 35) || (abs(eormu1)!=abs(eormu2) && proj_tcmet > 20))");
-    TCut base_hwwnjets("njets == 0");
+    TCut base_hwwnjets("njetsSS == 0");
     TCut base_hwwnoz("(abs(eormu1)!=abs(eormu2)) || (mass < 76.0 || mass > 106.0)");
     TCut hww_incldilep("hww_incldilep", base_hwwpt+base_hwwid1+base_hwwid2+base_hwwclean+base_hwwmet+base_hwwnoz);
     TCut hww_excldilep("hww_excldilep", base_hwwpt+base_hwwid1+base_hwwid2+base_hwwclean+base_hwwmet+base_hwwnoz+base_hwwnjets);

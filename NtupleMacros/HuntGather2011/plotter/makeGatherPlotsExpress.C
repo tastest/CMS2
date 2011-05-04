@@ -25,7 +25,7 @@ void makeGatherPlotsExpress(TString prefix, const std::vector<BabySample*> &baby
     TCut express_mm ("express_mm", base_dilep+mm_dilep);
     TCut express_eemm ("express_eemm", base_dilep+sf_dilep);
 //    TCut express_zjet("express_zjet", "acos(cos(dilphi - jet1phi)) < 0.25 && njets == 1");
-    TCut express_zjet("express_zjet", "njets == 1");
+    TCut express_zjet("express_zjet", "njetsSS == 1");
     TCut express_jetbal("express_jetbal", base_dilep+express_zjet);
 
     DrawAll("mass", prefix+"_express_mass_ee", express_ee, est_newruns_lumi, 50,0., 200., 0, babyVector);

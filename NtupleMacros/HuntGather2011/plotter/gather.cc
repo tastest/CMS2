@@ -417,7 +417,7 @@ TCanvas* TriggerMonitor(const char *savename, TCut var, TCut sel, TCut trig, flo
     gr_eff->GetXaxis()->SetTitle(var.GetTitle());
     gr_eff->GetYaxis()->SetTitle(trig.GetName());
     gr_eff->GetXaxis()->SetNdivisions(504);
-    gr_eff->GetYaxis()->SetRangeUser(0, 1.0);
+    //gr_eff->GetYaxis()->SetRangeUser(0, 1.0);
     gr_eff->SetMarkerStyle(6);
 
     // now draw the line 

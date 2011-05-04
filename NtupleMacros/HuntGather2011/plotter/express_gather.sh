@@ -16,7 +16,6 @@ python ../../Tools/convertGoodRunsList_JSON.py ../runlists/dcs.txt > ../runlists
 echo $?
 
 root -q -b makeGatherPlots.C\(\"/nfs-3/userdata/cms2/gather/\",\EXPRESS\)
-cp /home/users/dlevans/gather/production/CMSSW_4_1_2_patch1/src/CMS2/NtupleMacros/HuntGather2011/output/post_techstop*.png /home/users/dlevans/public_html/gather2011/express_gather/
 cp /home/users/dlevans/gather/production/CMSSW_4_1_2_patch1/src/CMS2/NtupleMacros/HuntGather2011/output/susymon*.png /home/users/dlevans/public_html/gather2011/express_gather/
 touch /home/users/dlevans/public_html/gather2011/express_gather
 

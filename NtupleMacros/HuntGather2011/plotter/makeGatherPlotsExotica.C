@@ -9,8 +9,8 @@ void makeGatherPlotsExotica(TString prefix, const std::vector<BabySample*> &baby
     // Define specific cuts for Exotica plots
     //
 
-    TCut cut_z_dijets         ("z_dijets", inclusivez_dilep+"njets>=2");
-    TCut cut_z_highptdijets   ("z_highptdijets", inclusivez_dilep+"njets>=2&&jet1pt>150.&&jet2pt>150.");
+    TCut cut_z_dijets         ("z_dijets", inclusivez_dilep+"njetsSS>=2");
+    TCut cut_z_highptdijets   ("z_highptdijets", inclusivez_dilep+"njetsSS>=2&&jet1pt>150.&&jet2pt>150.");
 
     //
     // Apply preselection cuts to the samples in the baby vector
@@ -36,16 +36,16 @@ void makeGatherPlotsExotica(TString prefix, const std::vector<BabySample*> &baby
     //
     // Region 1 (njets >=0)
     //
-    TCut cut_r1ee("Region 1 ee", ee_dilep+inclusivez_dilep+"njets>=0");
-    TCut cut_r1mm("Region 1 mm", mm_dilep+inclusivez_dilep+"njets>=0");
+    TCut cut_r1ee("Region 1 ee", ee_dilep+inclusivez_dilep+"njetsSS>=0");
+    TCut cut_r1mm("Region 1 mm", mm_dilep+inclusivez_dilep+"njetsSS>=0");
     //TCut cut_r1ll("Region 1 ll", inclusivez_dilep+"njets>=0");
     DrawAll("dilpt",prefix+"_exotica_R1_zee_pt", cut_r1ee, luminosity, 32, 40., 200., 0, babyVector);
     DrawAll("dilpt",prefix+"_exotica_R1_zmm_pt", cut_r1mm, luminosity, 32, 40., 200., 0, babyVector);
     //DrawAll("dilpt",prefix+"_exotica_R1_zll_pt", cut_r1ll, luminosity, 32, 40., 200., 0, babyVector);
  
     // mll-j mass distributions for 60 < pTZ < 140
-    TCut cut_r1ee_1("Region 1 ee 60<pTZ<140", ee_dilep+inclusivez_dilep+"njets>=0 && dilpt>60&&dilpt<140");
-    TCut cut_r1mm_1("Region 1 mm 60<pTZ<140", mm_dilep+inclusivez_dilep+"njets>=0 && dilpt>60&&dilpt<140");
+    TCut cut_r1ee_1("Region 1 ee 60<pTZ<140", ee_dilep+inclusivez_dilep+"njetsSS>=0 && dilpt>60&&dilpt<140");
+    TCut cut_r1mm_1("Region 1 mm 60<pTZ<140", mm_dilep+inclusivez_dilep+"njetsSS>=0 && dilpt>60&&dilpt<140");
     //TCut cut_r1ll_1("Region 1 ll 60<pTZ<140", inclusivez_dilep+"njets>=0 && dilpt>60&&dilpt<140");
     DrawAll("mllj",prefix+"_exotica_R1_zee_mllj", cut_r1ee_1, luminosity, 40, 0., 500., 0, babyVector);
     DrawAll("mllj",prefix+"_exotica_R1_zmm_mllj", cut_r1mm_1, luminosity, 40, 0., 500., 0, babyVector);
@@ -56,23 +56,23 @@ void makeGatherPlotsExotica(TString prefix, const std::vector<BabySample*> &baby
     //
 
     // z pT distributions 
-    TCut cut_r2ee("Region 2 ee", ee_dilep+inclusivez_dilep+"njets==1 && abs(dileta) < 1.0");
-    TCut cut_r2mm("Region 2 mm", mm_dilep+inclusivez_dilep+"njets==1 && abs(dileta) < 1.0");
+    TCut cut_r2ee("Region 2 ee", ee_dilep+inclusivez_dilep+"njetsSS==1 && abs(dileta) < 1.0");
+    TCut cut_r2mm("Region 2 mm", mm_dilep+inclusivez_dilep+"njetsSS==1 && abs(dileta) < 1.0");
     //TCut cut_r2ll("Region 2 ll", inclusivez_dilep+"njets==1 && abs(dileta) < 1.0");
     DrawAll("dilpt",prefix+"_exotica_R2_zee_pt", cut_r2ee,luminosity,32,40.,200.,0, babyVector);
     DrawAll("dilpt",prefix+"_exotica_R2_zmm_pt", cut_r2mm,luminosity,32,40.,200.,0, babyVector);
     //DrawAll("dilpt",prefix+"_exotica_R2_zll_pt", cut_r2ll,luminosity,32,40.,200.,0, babyVector);
 
     // mll-j mass distributions for 60 < pTZ < 140
-    TCut cut_r2ee_1("Region 2 ee 60<pTZ<140", ee_dilep+inclusivez_dilep+"njets==1 && abs(dileta) < 1.0 && dilpt>60&&dilpt<140");
-    TCut cut_r2mm_1("Region 2 mm 60<pTZ<140", mm_dilep+inclusivez_dilep+"njets==1 && abs(dileta) < 1.0 && dilpt>60&&dilpt<140");
+    TCut cut_r2ee_1("Region 2 ee 60<pTZ<140", ee_dilep+inclusivez_dilep+"njetsSS==1 && abs(dileta) < 1.0 && dilpt>60&&dilpt<140");
+    TCut cut_r2mm_1("Region 2 mm 60<pTZ<140", mm_dilep+inclusivez_dilep+"njetsSS==1 && abs(dileta) < 1.0 && dilpt>60&&dilpt<140");
     //TCut cut_r2ll_1("Region 2 ll 60<pTZ<140", inclusivez_dilep+"njets==1 && abs(dileta) < 1.0 && dilpt>60&&dilpt<140");
     DrawAll("mllj",prefix+"_exotica_R2_zee_mllj", cut_r2ee_1, luminosity, 40, 0., 500., 0, babyVector);
     DrawAll("mllj",prefix+"_exotica_R2_zmm_mllj", cut_r2mm_1, luminosity, 40, 0., 500., 0, babyVector);
     //DrawAll("mllj",prefix+"_exotica_R2_zll_mllj", cut_r2ll_1, luminosity, 40, 0., 500., 0, babyVector);
 
     // Slavas special Z massage
-    TCut cut_r3("Region 3 Slavas cuts", "eormu1*eormu2==-169&& mu1_muonidfull && mu2_muonidfull && abs(mass-91)<10 && njets==1 && abs(dileta)<1 && pt1>15 && pt2>15 && acos(cos(phi2-phi1))>1 &&acos(cos(phi2-phi1))<2.25 && pfmet<20 && mu1_emVetoDep<4&&mu2_emVetoDep<4 &&mu1_hadVetoDep<6&&mu2_hadVetoDep<6 && mu1_saHits>10&&mu2_saHits>10 && ecalIso1<2 && ecalIso2<2 && hcalIso1<2 && hcalIso2<2 && trkIso1<3 && trkIso2<3");
+    TCut cut_r3("Region 3 Slavas cuts", "eormu1*eormu2==-169&& mu1_muonidfull && mu2_muonidfull && abs(mass-91)<10 && njetsSS==1 && abs(dileta)<1 && pt1>15 && pt2>15 && acos(cos(phi2-phi1))>1 &&acos(cos(phi2-phi1))<2.25 && pfmet<20 && mu1_emVetoDep<4&&mu2_emVetoDep<4 &&mu1_hadVetoDep<6&&mu2_hadVetoDep<6 && mu1_saHits>10&&mu2_saHits>10 && ecalIso1<2 && ecalIso2<2 && hcalIso1<2 && hcalIso2<2 && trkIso1<3 && trkIso2<3");
 
     DrawAll("dilpt",prefix+"_exotica_R3_zmm", cut_r3, luminosity, 32, 40., 200., 0, babyVector);
 
