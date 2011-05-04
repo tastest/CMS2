@@ -364,38 +364,63 @@ int getZZType()
 // Not a selection function per se, but useful nonetheless:
 // dumps the documentation lines for this event
 //------------------------------------------------------------
-int dumpDocLines() 
-{
-  int size = cms2.genps_id().size();
-  // Initialize particle database
-  // static TDatabasePDG *pdg = new TDatabasePDG();
+int dumpDocLines() {
+
+  //////////////////////////////////
+  // Initialize particle database //
+  //////////////////////////////////
   TDatabasePDG *pdg = new TDatabasePDG();
-  cout << "                " << "   pt    " << "  phi  " << "      eta   " << "    mass  " 
-       << "status " << "Mother  " << endl;     
+
+  //////////////////
+  // Print Header //
+  ////////////////// 
+  cout << "                " << "   pt    " << "  phi  " << "      eta   " << "    mass  " << "status " << "Mother  " << endl;     
   std::cout << "---------------------------------------------------------------------" << std::endl;
+
+  /////////////////////////////
+  // Loop over gen particles //
+  /////////////////////////////
+  int size = cms2.genps_id().size();
   for (int j=0; j<size; j++) {
+
+    // mass
     float m2 = cms2.genps_p4().at(j).M2();
-    float m = m2 >= 0 ? sqrt(m2) : 0.0;
-    cout << setw(4) << left << j << " "
-         << setw(10) << left << pdg->GetParticle(cms2.genps_id().at(j))->GetName() << " "
-	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).pt() << "  "
-	 << setw(7) << right << setprecision(4) << cms2.genps_p4().at(j).phi() << "  "
-	 << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta() << "  "
-	 << setw(7) << right << setprecision(4) << m << "  "
-         << setw(4) << right << cms2.genps_status().at(j) << " "
-         << setw(10) << left << pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() 
-	 << " " << endl;
+    float m  = m2 >= 0 ? sqrt(m2) : 0.0;
+
+    //////////////////////////////////////////////////
+    // Print information about the jth gen particle //
+    //////////////////////////////////////////////////
+    cout << setw(4)  << left  <<                    j << " "
+         << setw(10) << left  <<                    pdg->GetParticle(cms2.genps_id().at(j))->GetName()        << " "
+	       << setw(7)  << right << setprecision(4) << cms2.genps_p4().at(j).pt()                                << "  "
+	       << setw(7)  << right << setprecision(4) << cms2.genps_p4().at(j).phi()                               << "  "
+	       << setw(10) << right << setprecision(4) << cms2.genps_p4().at(j).eta()                               << "  "
+	       << setw(7)  << right << setprecision(4) << m                                                         << "  "
+         << setw(4)  << right <<                    cms2.genps_status().at(j)                                 << " "
+         << setw(10) << left  <<                    pdg->GetParticle(cms2.genps_id_mother().at(j))->GetName() << " " 
+         << endl;
+
+    //////////////////////////////////////////////
+    // Lepton daughters of the jth gen particle //
+    //////////////////////////////////////////////
     if(cms2.genps_lepdaughter_id()[j].size() > 0) {
       cout << "Daughters:" << endl;
       for(unsigned int i = 0; i < cms2.genps_lepdaughter_id()[j].size(); i++) {
-        float m2 = cms2.genps_lepdaughter_p4().at(j).at(i).M2();
-	float m = m2 >= 0 ? sqrt(m2) : 0.0;
-	cout << "  " << setw(2) << left << i 
-	     << setw(10) << left << pdg->GetParticle(cms2.genps_lepdaughter_id().at(j).at(i))->GetName() << " "
-	     << setw(7) << right<< setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).pt() << "  "
-	     << setw(7) << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).phi() << "  "
-	     << setw(10) << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).eta() << "  "
-	     << setw(7) << right << setprecision(4) << m << "  " << endl;
+
+        // mass
+        float m2_daught = cms2.genps_lepdaughter_p4().at(j).at(i).M2();
+	      float m_daught  = m2_daught >= 0 ? sqrt(m2_daught) : 0.0;
+
+        ///////////////////////////////////////////
+        // Print information about the daughters //
+        ///////////////////////////////////////////
+	      cout << setw(2)  << left  <<                    "  " << i 
+	           << setw(10) << left  <<                    pdg->GetParticle(cms2.genps_lepdaughter_id().at(j).at(i))->GetName() << " "
+	           << setw(7)  << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).pt()                         << "  "
+	           << setw(7)  << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).phi()                        << "  "
+	           << setw(10) << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).eta()                        << "  "
+	           << setw(7)  << right << setprecision(4) << m_daught                                                             << "  " 
+             << endl;
       
       }
     }
