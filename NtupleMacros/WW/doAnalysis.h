@@ -12,6 +12,7 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 typedef UInt_t wwcuts_t; // 32 bits only!
+typedef std::pair<LorentzVector,unsigned int> JetPair;
 
 //
 // Electron Id
@@ -44,7 +45,7 @@ bool   ww_mud0PV(unsigned int i);
 bool   ww_mudZPV(unsigned int i);
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
-			       const std::vector<LorentzVector>& = std::vector<LorentzVector>());
+			       const std::vector<JetPair>& = std::vector<JetPair>());
 
 // combined analysis selectors
 bool goodMuonWithoutIsolation(unsigned int i);
@@ -82,12 +83,12 @@ double nearestDeltaPhi(double Phi, int i_hyp);
 // Jets
 //
 enum WWJetType { CaloJet, jptJet, pfJet, TrkJet, GenJet };
-std::vector<LorentzVector> getJets(WWJetType type, 
-				   int i_hyp, 
-				   double etThreshold,
-				   double maxEta,
-				   bool sorted = false,
-				   bool btag = false);
+std::vector<JetPair> getJets(WWJetType type, 
+			     int i_hyp, 
+			     double etThreshold,
+			     double maxEta,
+			     bool sorted = false,
+			     bool btag = false);
 
 // analysis jet type is set here.
 WWJetType jetType();

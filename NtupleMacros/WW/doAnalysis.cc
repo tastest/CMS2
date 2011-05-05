@@ -1,5 +1,5 @@
-// const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose;FullMET); Spring11 samples";
-const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose); Spring11 samples";
+const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose;FullMET); Spring11 samples"; //Skim1
+// const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose); Spring11 samples";
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -146,7 +146,7 @@ WWJetType jetType(){
   // return jptJet;
 }
 
-std::vector<LorentzVector> getDefaultJets(unsigned int i_hyp, bool btagged=false){
+std::vector<JetPair> getDefaultJets(unsigned int i_hyp, bool btagged=false){
   return getJets(jetType(), i_hyp, 30, 5.0, false, btagged); // V1
 }
 
@@ -156,6 +156,7 @@ unsigned int numberOfJets(unsigned int i_hyp){
 
 double metValue(){    return cms2.evt_pfmet(); }
 double metPhiValue(){ return cms2.evt_pfmetPhi(); }
+double sumetValue(){    return cms2.evt_pfsumet(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
@@ -337,7 +338,7 @@ bool ww_muIso(unsigned int index){
   return ww_muIsoVal(index)<0.15;
 }
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
-			       const std::vector<LorentzVector>& vetojets)
+			       const std::vector<JetPair>& vetojets)
 {
   unsigned int nMuons = 0;
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
@@ -352,43 +353,40 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
     if ( nonisolated && ww_muIsoVal(imu)<0.1 && cms2.mus_p4()[imu].pt()>20 ) continue;
     bool skip = false;
-    for ( std::vector<LorentzVector>::const_iterator ijet = vetojets.begin();
+    for ( std::vector<JetPair>::const_iterator ijet = vetojets.begin();
 	  ijet != vetojets.end(); ++ijet )
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.mus_p4()[imu])) < 0.3 ) skip=true;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ijet->first,cms2.mus_p4()[imu])) < 0.3 ) skip=true;
     if ( skip ) continue;
     ++nMuons;
   }
   return nMuons;
 }
 
-unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
-  unsigned int nMuons = 0;
+typedef std::pair<bool, unsigned int> LeptonPair; // first bool(true-muon, false-electron) , second index
+
+std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt){
+  std::vector<LeptonPair> leptons;
   for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
-    // printf("Muon: %u, pt: %0.2f\n",i,cms2.mus_p4().at(i).pt());
     if ( cms2.mus_p4()[i].pt() < minPt ) continue;
-    // printf("\tpassed minPt\n");
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) continue;
-    // printf("\tpassed hyp letpons\n");
     if ( ! (ww_mud0PV(i) && ww_muId(i) && ww_muIso(i)&&
 	    fabs(cms2.mus_p4().at(i).eta()) <2.4) ) continue;
-    // printf("\tpassed all\n");
-    ++nMuons;
+    leptons.push_back(LeptonPair(true,i));
   }
-  unsigned int nElectrons = 0;
   for (int i=0; i < int(cms2.els_charge().size()); ++i) {
-    // printf("Electron: %u, pt: %0.2f\n",i,cms2.els_p4().at(i).pt());
     if ( cms2.els_p4()[i].pt() < minPt ) continue;
-    // printf("\tpassed minPt\n");
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
-    // printf("\tpassed hyp letpons\n");
     if ( !(ww_elId(i) && ww_eld0PV(i) && ww_elIso(i) && 
 	   fabs(cms2.els_p4().at(i).eta()) < 2.5) ) continue;
-    // printf("\tpassed all\n");
-    ++nElectrons;
+    leptons.push_back(LeptonPair(false,i));
   }
-  return nMuons+nElectrons;
+  return leptons;
+}
+
+unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
+  return getExtraLeptons(i_hyp, minPt).size();
 }
 
 
@@ -467,84 +465,84 @@ bool ww2009_met(unsigned int i_hyp){
 // Jets
 //
 
-Bool_t comparePt(LorentzVector lv1, LorentzVector lv2) {
-   return lv1.pt() > lv2.pt();
+Bool_t comparePt(JetPair lv1, JetPair lv2) {
+   return lv1.first.pt() > lv2.first.pt();
 }
 
-std::vector<LorentzVector> 
+std::vector<JetPair> 
 getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag)
 {
-     std::vector<LorentzVector> jets;
-     const double vetoCone = 0.3;
-     double jec = 1.0;
-     
-     switch ( type ){
-     case jptJet:
-        for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-	  if(applyJEC)
-	    jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
-	 if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
-	 if ( btag && !defaultBTag(type,i) ) continue;
-	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.jpts_p4()[i] * jec);
-       }
-       break;
-     case pfJet:
-       for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-	  if(applyJEC)
-	    jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
-	  if(applyFastJetCorrection)
-	    // jec *= 1 - 0.5*0.5*M_PI*cms2.evt_rho()/cms2.pfjets_p4().at(i).pt();
-	    // jec *= cms2.pfjets_corL1FastL2L3().at(i)/cms2.pfjets_corL1L2L3().at(i);
-	    // jec *= cms2.pfjets_corL1FastL2L3().at(i);
-	    jec = (1-cms2.evt_rho()*M_PI*0.5*0.5/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
-	  if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
-	  if ( btag && !defaultBTag(type,i) ) continue;
-	  if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
-	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-	  jets.push_back(cms2.pfjets_p4()[i] * jec);
-       }
-       break;
-     case GenJet:
-       for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
-	 if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
-	 if ( btag && !defaultBTag(type,i) ) continue;
-	 if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.genjets_p4()[i]);
-       }
-       break;
-//      case CaloJet:
-//        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-// 	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
-// 	 if ( btag && !defaultBTag(type,i) ) continue;
-// 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
-// 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
-// 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
-// 	 jets.push_back(cms2.jets_pat_jet_p4()[i]);
-//        }
-//        break;
-     case TrkJet:
-       for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
-	 if(applyJEC)
-	   jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
-	 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
-	 if ( btag && !defaultBTag(type,i) ) continue;
-	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
-	 jets.push_back(cms2.trkjets_p4()[i] * jec);
-       }
-       break;
-     default:
-       std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
-     }
-     if ( sortJets ) std::sort(jets.begin(), jets.end(), comparePt);
-     return jets;
+  std::vector<JetPair> jets;
+  const double vetoCone = 0.3;
+  double jec = 1.0;
+  
+  switch ( type ){
+  case jptJet:
+    for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+      if(applyJEC)
+	jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+      if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
+      if ( btag && !defaultBTag(type,i) ) continue;
+      if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
+      jets.push_back(JetPair(cms2.jpts_p4()[i] * jec,i));
+    }
+    break;
+  case pfJet:
+    for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
+      if(applyJEC)
+	jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+      if(applyFastJetCorrection)
+	// jec *= 1 - 0.5*0.5*M_PI*cms2.evt_rho()/cms2.pfjets_p4().at(i).pt();
+	// jec *= cms2.pfjets_corL1FastL2L3().at(i)/cms2.pfjets_corL1L2L3().at(i);
+	// jec *= cms2.pfjets_corL1FastL2L3().at(i);
+	jec = (1-cms2.evt_rho()*M_PI*0.5*0.5/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
+      if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
+      if ( btag && !defaultBTag(type,i) ) continue;
+      if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+      jets.push_back(JetPair(cms2.pfjets_p4()[i] * jec,i));
+    }
+    break;
+  case GenJet:
+    for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
+      if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
+      if ( btag && !defaultBTag(type,i) ) continue;
+      if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
+      jets.push_back(JetPair(cms2.genjets_p4()[i],i));
+    }
+    break;
+    //      case CaloJet:
+    //        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
+    // 	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
+    // 	 if ( btag && !defaultBTag(type,i) ) continue;
+    // 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
+    // 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
+    // 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
+    // 	 jets.push_back(cms2.jets_pat_jet_p4()[i]);
+    //        }
+    //        break;
+  case TrkJet:
+    for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
+      if(applyJEC)
+	jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
+      if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
+      if ( btag && !defaultBTag(type,i) ) continue;
+      if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
+      jets.push_back(JetPair(cms2.trkjets_p4()[i] * jec,i));
+    }
+    break;
+  default:
+    std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+  }
+  if ( sortJets ) std::sort(jets.begin(), jets.end(), comparePt);
+  return jets;
 }
 
 //
@@ -556,13 +554,23 @@ bool inZmassWindow(float mass, double delta=15.0){
   return fabs(mass - 91.1876) < delta;
 }
 
+double BTag(LorentzVector jetP4){
+  int refJet = -1;
+  for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
+    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.pfjets_p4()[i])) > 0.3 ) continue;
+    refJet = i;
+  }
+  if (refJet == -1){
+    // std::cout << "Warning: failed to find a matching jet for b-tagging." << std::endl; 
+    return 0.0;
+  }
+  return cms2.pfjets_trackCountingHighEffBJetTag().at(refJet);
+}
+
 double BTag(WWJetType type, unsigned int iJet){
-  // find a jet in the jets list
-  // that matches the current type jet
-  LorentzVector jetP4;
   switch ( type ) {
   case jptJet:
-    jetP4 = cms2.jpts_p4().at(iJet);
+    return BTag(cms2.jpts_p4().at(iJet));
     break;
   case CaloJet:
     return cms2.jets_trackCountingHighEffBJetTag()[iJet];
@@ -574,17 +582,7 @@ double BTag(WWJetType type, unsigned int iJet){
     std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
     assert(0);
   }
-
-  int refJet = -1;
-  for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
-    if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(jetP4,cms2.jets_p4()[i])) > 0.3 ) continue;
-    refJet = i;
-  }
-  if (refJet == -1){
-    // std::cout << "Warning: failed to find a matching jet for b-tagging." << std::endl; 
-    return 0.0;
-  }
-  return cms2.jets_trackCountingHighEffBJetTag().at(refJet);
+  return 0;
 }
 
 bool defaultBTag(WWJetType type, unsigned int iJet){
@@ -1074,7 +1072,7 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
   jetregion jet = ALLJET;
   if( etaMin <= 0.0 && etaMax <= 3.0) jet = HCAL;
   if( etaMin >= 3.0 && etaMax <= 5.0) jet = HF;
-  
+
   double vetoCone = 0.3;
   
   if(!realData)
@@ -1409,46 +1407,46 @@ void countFakableObjectsAfterAllSelections(unsigned int i_hyp,
 
 bool 
 toptag(WWJetType type, int i_hyp, double minPt,
-       std::vector<LorentzVector> ignoreJets=std::vector<LorentzVector>())
+       std::vector<JetPair> ignoreJets=std::vector<JetPair>())
 {
-     std::vector<LorentzVector> jets;
-     const double vetoCone    = 0.3;
+  //std::vector<LorentzVector> jets;
+  const double vetoCone    = 0.3;
 
-     switch ( type ){
-     case pfJet:
-       for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-	 if ( cms2.pfjets_p4()[i].pt() < minPt ) continue;
-	 bool ignoreJet = false;
-	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
-	       ijet != ignoreJets.end(); ++ijet )
-	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.pfjets_p4()[i])) < vetoCone ) ignoreJet=true;
-	 if ( ignoreJet ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-	 if ( defaultBTag(type,i) ) return true;
-       }
-       break;
-     case CaloJet:
-       for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
-	 if ( cms2.jets_p4()[i].pt() < minPt ) continue;
-	 bool ignoreJet = false;
-	 for ( std::vector<LorentzVector>::const_iterator ijet = ignoreJets.begin();
-	       ijet != ignoreJets.end(); ++ijet )
-	   if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(*ijet,cms2.jets_p4()[i])) < vetoCone ) ignoreJet=true;
-	 if ( ignoreJet ) continue;
-	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ||
-	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ) continue;
-// 	 if ( defaultBTag(type,i) && ignoreJets.size()==1 ){
-// 	   cout << "b-tagged jet pt: " << cms2.jets_p4()[i].pt() << " \teta: " << cms2.jets_p4()[i].eta() <<
-// 	     " \tphi: " << cms2.jets_p4()[i].phi() << endl;
-// 	 }
-	 if ( defaultBTag(type,i) ) return true;
-       }
-       break;
-     default:
-       std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
-     }
-     return false;
+  switch ( type ){
+  case pfJet:
+    for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
+      if ( cms2.pfjets_p4()[i].pt() < minPt ) continue;
+      bool ignoreJet = false;
+      for ( std::vector<JetPair>::const_iterator ijet = ignoreJets.begin();
+	    ijet != ignoreJets.end(); ++ijet )
+	if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ijet->first,cms2.pfjets_p4()[i])) < vetoCone ) ignoreJet=true;
+      if ( ignoreJet ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+      if ( defaultBTag(type,i) ) return true;
+    }
+    break;
+  case CaloJet:
+    for ( unsigned int i=0; i < cms2.jets_p4().size(); ++i) {
+      if ( cms2.jets_p4()[i].pt() < minPt ) continue;
+      bool ignoreJet = false;
+      for ( std::vector<JetPair>::const_iterator ijet = ignoreJets.begin();
+	    ijet != ignoreJets.end(); ++ijet )
+	if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ijet->first,cms2.jets_p4()[i])) < vetoCone ) ignoreJet=true;
+      if ( ignoreJet ) continue;
+      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ||
+	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_p4()[i])) < vetoCone ) continue;
+      // 	 if ( defaultBTag(type,i) && ignoreJets.size()==1 ){
+      // 	   cout << "b-tagged jet pt: " << cms2.jets_p4()[i].pt() << " \teta: " << cms2.jets_p4()[i].eta() <<
+      // 	     " \tphi: " << cms2.jets_p4()[i].phi() << endl;
+      // 	 }
+      if ( defaultBTag(type,i) ) return true;
+    }
+    break;
+  default:
+    std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+  }
+  return false;
 }
 
 bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData) 
@@ -1533,7 +1531,7 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
   
   if (!passedMetRequirements(i_hyp)) return false;
   monitor.count(cms2,type,"Full MET cuts",weight);
-    
+
   if ( numberOfJets(i_hyp)>0 ) return false;
   monitor.count(cms2,type,"JetVeto cuts",weight);
 
@@ -1655,7 +1653,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   // if ( passedLTFinalRequirements || passedLLFinalRequirements ) cuts_passed |= (1<<PASS_PROBE);
 
   // == Jet-veto
-  const std::vector<LorentzVector>& vetojets(getDefaultJets(i_hyp, false));
+  const std::vector<JetPair>& vetojets(getDefaultJets(i_hyp, false));
   unsigned int nJets = vetojets.size();
   if (nJets==0) cuts_passed |= PASSED_JETVETO;
   if (nJets>1)  cuts_passed |= PASSED_TopControlSample;
@@ -1802,7 +1800,6 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if(! CheckCuts(pass_all, cuts_passed)) return false;
   monitor.count(cms2,type,"all cuts (including soft and extra lepton veto)",weight);
   
-  
   // if ( toptag(jetType(),i_hyp,0) ) return false;
   // if (nExtraVetoMuons) return false;
   // if ( toptag(CaloJet,i_hyp,0) ) return false;
@@ -1920,23 +1917,23 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
      hmetOverPtVsDphi[3]->Fill(metValue()/cms2.hyp_p4()[i_hyp].pt(), dphi2, weight);
     
      // get a vector of sorted jets, fill jet histograms
-     std::vector<LorentzVector> sortedJets = getJets(jetType(), i_hyp, 0, 5.0, true);
+     std::vector<JetPair> sortedJets = getJets(jetType(), i_hyp, 0, 5.0, true);
      if ( !sortedJets.empty() ) {
-	  hptJet1[type]->Fill(sortedJets[0].Pt(), weight);
-	  hptJet1[3]->Fill(sortedJets[0].Pt(), weight);
-	  hetaJet1[type]->Fill(sortedJets[0].Eta(), weight);
-	  hetaJet1[3]->Fill(sortedJets[0].Eta(), weight);
+	  hptJet1[type]->Fill(sortedJets[0].first.Pt(), weight);
+	  hptJet1[3]->Fill(sortedJets[0].first.Pt(), weight);
+	  hetaJet1[type]->Fill(sortedJets[0].first.Eta(), weight);
+	  hetaJet1[3]->Fill(sortedJets[0].first.Eta(), weight);
 	  if (sortedJets.size() > 1) {
-	    hptJet2[type]->Fill(sortedJets[0].Pt(), weight);
-	    hptJet2[3]->Fill(sortedJets[0].Pt(), weight);
-	    hetaJet2[type]->Fill(sortedJets[0].Eta(), weight);
-	    hetaJet2[3]->Fill(sortedJets[0].Eta(), weight);
+	    hptJet2[type]->Fill(sortedJets[0].first.Pt(), weight);
+	    hptJet2[3]->Fill(sortedJets[0].first.Pt(), weight);
+	    hetaJet2[type]->Fill(sortedJets[0].first.Eta(), weight);
+	    hetaJet2[3]->Fill(sortedJets[0].first.Eta(), weight);
 	  }
 	  if (sortedJets.size() > 2) {
-	    hptJet3[type]->Fill(sortedJets[0].Pt(), weight);
-	    hptJet3[3]->Fill(sortedJets[0].Pt(), weight);
-	    hetaJet3[type]->Fill(sortedJets[0].Eta(), weight);
-	    hetaJet3[3]->Fill(sortedJets[0].Eta(), weight);
+	    hptJet3[type]->Fill(sortedJets[0].first.Pt(), weight);
+	    hptJet3[3]->Fill(sortedJets[0].first.Pt(), weight);
+	    hetaJet3[type]->Fill(sortedJets[0].first.Eta(), weight);
+	    hetaJet3[3]->Fill(sortedJets[0].first.Eta(), weight);
 	  }
      }
      return true;
@@ -2241,19 +2238,19 @@ double mt(double pt1, double pt2, double dphi){
 void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, 
 		     double weight, enum SmurfTree::DataType sample, wwcuts_t cuts_passed){
   tree.InitVariables();
-  tree.run_   = cms2.evt_run();
-  tree.event_ = cms2.evt_event();
-  tree.lumi_  = cms2.evt_lumiBlock();
-  tree.nvtx_  = nGoodVertex();
-  tree.scale1fb_ = weight;
-  tree.met_    = metValue();
-  tree.metPhi_ = metPhiValue();
-  metStruct trkMET = trackerMET(i_hyp,0.2);
-  tree.trackMet_ = trkMET.met;
+  tree.run_         = cms2.evt_run();
+  tree.event_       = cms2.evt_event();
+  tree.lumi_        = cms2.evt_lumiBlock();
+  tree.nvtx_        = nGoodVertex();
+  tree.scale1fb_    = weight;
+  tree.met_         = metValue();
+  tree.sumet_       = sumetValue();
+  tree.metPhi_      = metPhiValue();
+  metStruct trkMET  = trackerMET(i_hyp,0.2);
+  tree.trackMet_    = trkMET.met;
   tree.trackMetPhi_ = trkMET.metphi;
-  tree.pTrackMet_ = projectedMet(i_hyp, trkMET.met, trkMET.metphi);
+  tree.pTrackMet_   = projectedMet(i_hyp, trkMET.met, trkMET.metphi);
 
-  // sumet_;
   bool ltIsFirst = true;
   if ( cms2.hyp_lt_p4().at(i_hyp).pt()<cms2.hyp_ll_p4().at(i_hyp).pt() ) ltIsFirst = false;
   tree.type_ = SmurfTree::Type(cms2.hyp_type().at(i_hyp));
@@ -2263,29 +2260,36 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     else
       tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::me : SmurfTree::em;
   }
-  tree.lep1_ = ltIsFirst ? cms2.hyp_lt_p4().at(i_hyp) : cms2.hyp_ll_p4().at(i_hyp);
-  tree.lep2_ = ltIsFirst ? cms2.hyp_ll_p4().at(i_hyp) : cms2.hyp_lt_p4().at(i_hyp);
+  tree.lep1_  = ltIsFirst ? cms2.hyp_lt_p4().at(i_hyp) : cms2.hyp_ll_p4().at(i_hyp);
+  tree.lep2_  = ltIsFirst ? cms2.hyp_ll_p4().at(i_hyp) : cms2.hyp_lt_p4().at(i_hyp);
   tree.lq1_   = ltIsFirst ? cms2.hyp_lt_charge().at(i_hyp) : cms2.hyp_ll_charge().at(i_hyp);
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
-  const std::vector<LorentzVector>& jets = getJets(jetType(), i_hyp, 0, 5.0, false, false);
-  if (jets.size()>0) tree.jet1_ = jets.at(0);
-  if (jets.size()>1) tree.jet2_ = jets.at(1);
-  if (jets.size()>2) tree.jet3_ = jets.at(2);
-  // jet1_btag_;
-  // jet2_btag_;
+  const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 5.0, false, false);
+  if (jets.size()>0){
+    tree.jet1_ = jets.at(0).first;
+    tree.jet1Btag_ = BTag(jetType(),jets.at(0).second);
+  }
+  if (jets.size()>1){
+    tree.jet2_ = jets.at(1).first;
+    tree.jet2Btag_ = BTag(jetType(),jets.at(1).second);
+  }
+  if (jets.size()>2){
+    tree.jet3_ = jets.at(2).first;
+    tree.jet3Btag_ = BTag(jetType(),jets.at(2).second);
+  }
   tree.njets_ = numberOfJets(i_hyp);
   tree.dilep_ = cms2.hyp_p4().at(i_hyp);
   tree.pmet_ = projectedMet(i_hyp, metValue(), metPhiValue());
   tree.dPhi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp)));
   tree.dR_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp));
   if (jets.size()>0) {
-    tree.dPhiLep1Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),jets.at(0)));
-    tree.dRLep1Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),jets.at(0));
-    tree.dPhiLep2Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),jets.at(0)));
-    tree.dRLep2Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4().at(i_hyp),jets.at(0));
-    tree.dPhiDiLepJet1_= fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0)));
+    tree.dPhiLep1Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),jets.at(0).first));
+    tree.dRLep1Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),jets.at(0).first);
+    tree.dPhiLep2Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),jets.at(0).first));
+    tree.dRLep2Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4().at(i_hyp),jets.at(0).first);
+    tree.dPhiDiLepJet1_= fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0).first));
     if (!ltIsFirst){
       std::swap(tree.dPhiLep1Jet1_,tree.dPhiLep2Jet1_);
       std::swap(tree.dRLep1Jet1_,tree.dRLep2Jet1_);
@@ -2306,8 +2310,6 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     tree.lep2McId_ = ltIsFirst ? cms2.hyp_ll_mc_id().at(i_hyp) : cms2.hyp_lt_mc_id().at(i_hyp);
   }
 
-  // jet1McId_;
-  // jet2McId_;
   tree.dstype_ = sample;
 
   // fill cuts
@@ -2355,6 +2357,39 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
        !(cuts_passed & PASSED_SOFTMUVETO_NotInJets) ) tree.cuts_ |= SmurfTree::TopTagNotInJets;
   if ( cuts_passed & PASSED_1BJET )                   tree.cuts_ |= SmurfTree::OneBJet;
   if ( cuts_passed & PASSED_EXTRALEPTONVETO )         tree.cuts_ |= SmurfTree::ExtraLeptonVeto;
+
+  // find third lepton and fill its information
+  tree.nSoftMuons_ = numberOfSoftMuons(i_hyp,true);
+
+  // highest Btag for soft jets (jets below the threshold)
+  tree.jetLowBtag_ = -999.;
+  for (unsigned int i=tree.njets_; i<jets.size(); ++i)
+    if ( tree.jetLowBtag_ < BTag(jetType(),jets.at(i).second) )
+      tree.jetLowBtag_ = BTag(jetType(),jets.at(i).second);
+
+  // third lepton
+  const std::vector<LeptonPair>& leptons(getExtraLeptons(i_hyp,0));
+  for (std::vector<LeptonPair>::const_iterator lep=leptons.begin();
+       lep!=leptons.end(); ++lep){
+    if (lep->first){
+      // muons
+      if ( tree.lep3_.pt() < cms2.mus_p4().at(lep->second).pt() ){
+	tree.lep3_ = cms2.mus_p4().at(lep->second);
+	tree.lq3_   = cms2.mus_charge().at(lep->second);
+	tree.lid3_ = tree.lq3_>0?-13:13;
+      }
+    } else {
+      if ( tree.lep3_.pt() < cms2.els_p4().at(lep->second).pt() ){
+	tree.lep3_ = cms2.els_p4().at(lep->second);
+	tree.lq3_   = cms2.els_charge().at(lep->second);
+	tree.lid3_ = tree.lq3_>0?-11:11;
+      }
+    }
+  }
+  if (tree.lep3_.pt()>0 && jets.size()>0) {
+    tree.dPhiLep3Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(tree.lep3_,jets.at(0).first));
+    tree.dRLep3Jet1_   = ROOT::Math::VectorUtil::DeltaR(tree.lep3_,jets.at(0).first);
+  }
 }
 
 void ScanChain( TChain* chain, 
