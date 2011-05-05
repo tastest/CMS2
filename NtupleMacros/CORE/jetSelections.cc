@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.14 2010/10/21 21:06:56 fgolf Exp $
+// $Id: jetSelections.cc,v 1.16 2011/04/07 00:11:43 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -29,7 +29,7 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
      case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
 	  jets = &cms2.jets_p4();
 	  break;
-     case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_UNCORR:
+     case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_FAST_CORR:
 	  jets = &cms2.pfjets_p4();
 	  break;
 #if haveGEN	  
@@ -53,6 +53,8 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  case JETS_TYPE_PF_CORR:
 	       corr = cms2.pfjets_cor().at(i);
 	       break;
+      case JETS_TYPE_PF_FAST_CORR:
+          corr = cms2.pfjets_corL1FastL2L3().at(i);
 	  case JETS_TYPE_JPT: 
 	       corr = cms2.jpts_cor().at(i);
 	       break;
@@ -102,6 +104,13 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  case JETS_CLEAN_SINGLE_E:
 	  {
 	       const LorentzVector &e = cms2.els_p4().at(i_hyp);
+	       if (ROOT::Math::VectorUtil::DeltaR(jets->at(i), e) < deltaR)
+		    goto conti;
+	       break;
+	  }
+	  case JETS_CLEAN_SINGLE_MU:
+	  {
+	       const LorentzVector &e = cms2.mus_p4().at(i_hyp);
 	       if (ROOT::Math::VectorUtil::DeltaR(jets->at(i), e) < deltaR)
 		    goto conti;
 	       break;
@@ -239,11 +248,11 @@ class FactorizedJetCorrector *makeJetCorrector (const std::vector<std::string> &
      return new FactorizedJetCorrector(vParam);
 }
 
-double jetCorrection (const LorentzVector &jet, FactorizedJetCorrector *jetCorrector)
+double jetCorrection (const LorentzVector &jet, FactorizedJetCorrector *jc)
 {
-     jetCorrector->setJetPt(jet.pt());
-     jetCorrector->setJetEta(jet.eta());
-     return jetCorrector->getCorrection();
+     jc->setJetPt(jet.pt());
+     jc->setJetEta(jet.eta());
+     return jc->getCorrection();
 }
 
 double jetCorrection (const LorentzVector &jet)

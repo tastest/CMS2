@@ -54,6 +54,20 @@ bool cleaning_standardOctober2010()
 }
 
 //
+// 26 April 2011
+// standard event cleaning
+// for 2011 OS analysis
+//
+bool cleaning_standardApril2011()
+{
+    if (!cleaning_goodDAVertexApril2011()) return false;
+    if (!cleaning_goodTracks())            return false;
+    
+    return true;
+}
+
+
+//
 // 5 August 2010
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
@@ -128,6 +142,23 @@ bool cleaning_goodVertexAugust2010()
 }
 
 //
+// 26 April 2011
+// at least 1 good DA vertex
+// 
+bool cleaning_goodDAVertexApril2011()
+{             
+    int nGoodDAVertex = 0;
+    for (size_t v = 0; v < cms2.davtxs_position().size(); ++v) 
+    {
+
+      if(isGoodDAVertex(v))
+        nGoodDAVertex ++;
+    }
+    if (nGoodDAVertex == 0) return false;
+    return true;
+}
+
+//
 // if >= 10 tracks, require at least 25% high purity
 //
 bool cleaning_goodTracks()
@@ -193,9 +224,9 @@ bool hypsFromSameVtx(size_t hypIdx) {
   for (size_t v = 0; v < cms2.vtxs_position().size(); ++v)  {
     if(!isGoodVertex(v))
       continue;
-    if(fabs(lt_vz - cms2.vtxs_position()[v].Z()) > 1)
+    if(fabs(lt_vz - cms2.vtxs_position()[v].Z()) > 1.)
       continue;
-    if(fabs(ll_vz - cms2.vtxs_position()[v].Z()) > 1)
+    if(fabs(ll_vz - cms2.vtxs_position()[v].Z()) > 1.)
       continue;
 
     //if we've gotten here, then the vertex is good
@@ -206,3 +237,117 @@ bool hypsFromSameVtx(size_t hypIdx) {
   return false;
 }
 
+//----------------------------------------------------------------
+// checks whether the leptons of a given
+// hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 0.2 cm of the same PV and if that PV is
+// the closest vertex to each lepton
+//----------------------------------------------------------------
+int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClosest)
+{
+    int lt_trkidx = -1;
+    int ll_trkidx = -1;
+    bool lt_isGsf = false;
+    bool ll_isGsf = false;
+
+    if (abs(cms2.hyp_lt_id()[hypIdx]) == 13)
+        lt_trkidx = cms2.mus_trkidx()[cms2.hyp_lt_index()[hypIdx]];
+    if (abs(cms2.hyp_lt_id()[hypIdx]) == 11) {
+        lt_trkidx = cms2.els_trkidx()[cms2.hyp_lt_index()[hypIdx]] > -1 ? cms2.els_trkidx()[cms2.hyp_lt_index()[hypIdx]] : cms2.els_gsftrkidx()[cms2.hyp_lt_index()[hypIdx]];
+        lt_isGsf  = cms2.els_trkidx()[cms2.hyp_lt_index()[hypIdx]] > -1 ? false : true;
+    }
+    if (abs(cms2.hyp_ll_id()[hypIdx]) == 13)
+        ll_trkidx = cms2.mus_trkidx()[cms2.hyp_ll_index()[hypIdx]];
+    if (abs(cms2.hyp_ll_id()[hypIdx]) == 11) {
+        ll_trkidx = cms2.els_trkidx()[cms2.hyp_ll_index()[hypIdx]] > -1 ? cms2.els_trkidx()[cms2.hyp_ll_index()[hypIdx]] : cms2.els_gsftrkidx()[cms2.hyp_ll_index()[hypIdx]];
+        ll_isGsf  = cms2.els_trkidx()[cms2.hyp_ll_index()[hypIdx]] > -1 ? false : true;
+    }
+
+    if (lt_trkidx < 0 || ll_trkidx < 0)
+        return false;
+
+    // figure out which vertex collection to use
+    std::vector<LorentzVector> vtxP4s = useDAvtxs ? cms2.davtxs_position() : cms2.vtxs_position();
+
+    if (!requireClosest) {
+        for (size_t v = 0; v < vtxP4s.size(); ++v)  {
+
+            bool vertexIsGood = useDAvtxs ? isGoodDAVertex(v) : isGoodVertex(v);
+            if (!vertexIsGood)
+                continue;
+            if (lt_isGsf) {
+                if (gsftrks_dz_pv(lt_trkidx, v, useDAvtxs).first > dz)
+                    continue;
+            }
+            else {
+                if (trks_dz_pv(lt_trkidx, v, useDAvtxs).first > dz)
+                    continue;
+            }
+            if (ll_isGsf) {
+                if (gsftrks_dz_pv(ll_trkidx, v, useDAvtxs).first > dz)
+                    continue;
+            }
+            else {
+                if (trks_dz_pv(ll_trkidx, v, useDAvtxs).first > dz)
+                    continue;
+            }
+            //if we've gotten here, then the vertex is good
+            //and both leptons belong to it
+            return v;
+        }
+
+        return -1;
+    }
+
+    float lt_dz = 999.;
+    float ll_dz = 999.;
+    int lt_vidx = -999;
+    int ll_vidx = -999;
+
+    for (unsigned int vtxi = 0; vtxi < vtxP4s.size(); vtxi++) {
+        
+        bool vertexIsGood = useDAvtxs ? isGoodDAVertex(vtxi) : isGoodVertex(vtxi);
+        if (!vertexIsGood)
+            continue;
+
+        // first take care of lt
+        if (lt_isGsf) {
+            if (fabs(gsftrks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first) < lt_dz) {
+                lt_dz = fabs(gsftrks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first);
+                lt_vidx = vtxi;
+            }            
+        }
+        else {
+            if (fabs(trks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first) < lt_dz) {
+                lt_dz = fabs(trks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first);
+                lt_vidx = vtxi;
+            }
+        }
+
+        // now same thing for ll
+        if (ll_isGsf) {
+            if (fabs(gsftrks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first) < ll_dz) {
+                ll_dz = fabs(gsftrks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first);
+                ll_vidx = vtxi;
+            }            
+        }
+        else {
+            if (fabs(trks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first) < ll_dz) {
+                ll_dz = fabs(trks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first);
+                ll_vidx = vtxi;
+            }
+        }
+    } // end loop over vertices
+
+    if (lt_vidx < 0 || ll_vidx < 0)
+        return -1;
+
+    if (lt_vidx != ll_vidx)
+        return -1;
+
+    if (fabs(lt_dz) > dz || fabs(ll_dz) > dz)
+        return -1;
+
+    return lt_vidx;
+}

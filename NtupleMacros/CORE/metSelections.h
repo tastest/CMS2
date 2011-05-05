@@ -1,7 +1,11 @@
 #ifndef METSELECTIONS_H
 #define METSELECTIONS_H
 
-typedef std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
+#include "electronSelections.h"
+
+//typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+typedef std::vector<LorentzVector> VofP4;
+
 //
 // met selections
 //
@@ -78,6 +82,10 @@ metStruct correctedTCMET(bool printout = false, ostream& ostr = std::cout);
 //function to perform custom Type1 correction
 //---------------------------------------------
 metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , std::vector<float> cors );
+
+//
+metStruct trackerMET( int hyp_index, double deltaZCut = 0.2, 
+                      const VofP4* jets = 0 );
 
 #endif
 

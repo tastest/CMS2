@@ -19,6 +19,13 @@ bool cleaning_standard(bool isData);
 //----------------------------------------------------------------
 bool cleaning_standardOctober2010();
 
+
+//----------------------------------------------------------------
+// 26 April 2011
+// standard event cleaning used for OS analysis
+//----------------------------------------------------------------
+bool cleaning_standardApril2011();
+
 //----------------------------------------------------------------
 // 5 August 2010
 // standard event cleaning
@@ -55,6 +62,12 @@ bool cleaning_beamHalo();
 // ----------------------------------------------------------------
 bool cleaning_goodVertexAugust2010();
 
+// ----------------------------------------------------------------
+// 26 April 2011
+// at least 1 good DA vertex
+// ----------------------------------------------------------------
+bool cleaning_goodDAVertexApril2011();
+
 //----------------------------------------------------------------
 // if >= 10 tracks, require at least 25% high purity
 //----------------------------------------------------------------
@@ -69,11 +82,19 @@ bool isGoodDAVertex(size_t ivtx);
 //----------------------------------------------------------------
 // checks whether the leptons of a given
 // hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 1cm of the same PV
 //----------------------------------------------------------------
 bool hypsFromSameVtx(size_t hypIdx);
 
-
-
+//----------------------------------------------------------------
+// checks whether the leptons of a given
+// hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 0.2 cm of the same PV and if that PV is
+// the closest vertex to each lepton
+//----------------------------------------------------------------
+int hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool useDAvtxs = false, bool requireClosest = false);
 
 #endif
 

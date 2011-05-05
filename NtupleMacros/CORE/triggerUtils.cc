@@ -84,6 +84,41 @@ LorentzVector p4HLTObject(const char* arg, int objNumber){
   return cms2.hlt_trigObjs_p4().at(trigIndx).at(objNumber);
 
 }
+
+// trigger id
+int idHLTObject(const char* arg, int objNumber){
+
+  TString HLTTrigger( arg );
+  int trigIndx = -1;
+  vector<TString>::const_iterator begin_it = cms2.hlt_trigNames().begin();
+  vector<TString>::const_iterator end_it = cms2.hlt_trigNames().end();
+  vector<TString>::const_iterator found_it = find(begin_it, end_it, HLTTrigger );
+  if( (found_it != end_it) ){
+    trigIndx = found_it - begin_it;
+    //cout << "idHLTObject: Found Trigger: " << arg << endl;
+  }
+  else {
+    cout << "idHLTObject: Cannot find Trigger: " << arg << endl;
+    gSystem->Exit(1);
+  }
+
+  int nobj = cms2.hlt_trigObjs_id().at(trigIndx).size();
+  if (nobj == 0 ) {
+    cout << "ERROR: nobj == 0" << endl;
+    gSystem->Exit(1);
+  }
+
+  if (objNumber > (nobj-1)) {
+    cout << "ERROR: requested object number " << objNumber << " but we only have " << nobj <<endl;
+    gSystem->Exit(1);
+  }
+
+  return cms2.hlt_trigObjs_id().at(trigIndx).at(objNumber);
+
+}
+
+
+
 //--------------------------------------------------------
 // Returns the number of objects passing a given trigger
 // Returns zero if the trigger failed

@@ -11,213 +11,91 @@
 #include "metSelections.h"
 #include "triggerUtils.h"
 #include "eventSelections.h"
-#include "CMS2.h"
 
 #include "ssSelections.h"
 
-using namespace tas;
+
+/****************************************************************
+***                                                           ***
+***                                                           ***
+***                                                           ***
+***          2011 Selections                                  ***
+***                                                           ***
+***                                                           ***
+***                                                           ***
+****************************************************************/
 
 /******************************************************************************************/     
-// good lepton (either mu or electron, no isolation cuts)
-/******************************************************************************************/
-bool isGoodLeptonNoIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+// 2011 good lepton
+/******************************************************************************************/     
+bool isGoodLepton(int id, int idx, int vidx)
 {
-	 // electrons
-	 if (abs(id) == 11)
-		  return (pass_electronSelection(lepIdx, electronSelection_ssV2_NoIso, applyAlignmentCorrection, removedEtaCutInEndcap));
+    // electrons
+    if (abs(id) == 11)
+        return (pass_electronSelection(idx, electronSelection_ssV3_noIso, false, false, vidx));
 
-	 // muons
-	 if (abs(id) == 13)
-		  return (muonIdNotIsolated(lepIdx, NominalSS)) ;
+    // muons
+    if (abs(id) == 13)
+        return (muonIdNotIsolated(idx, NominalSSv3, vidx));
 
-	 return false;
+    return false;
 }
 
 
 /******************************************************************************************/     
-// isolated lepton (either mu or electron), no other cuts applied
-/******************************************************************************************/
-bool isGoodLeptonwIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+// 2011 isolated lepton
+/******************************************************************************************/     
+bool isIsolatedLepton(int id, int idx, int vidx)
 {
-	 // electrons
-	 if (abs(id)== 11)
-		  return (pass_electronSelection(lepIdx, electronSelection_ss_Iso, applyAlignmentCorrection, removedEtaCutInEndcap));
+    // electrons
+    if (abs(id) == 11)
+        return (pass_electronSelection(idx, electronSelection_ssV3_iso));
 
-	 // muons
-	 if (abs(id) == 13) 
-		  return (muonIsoValue(lepIdx) < 0.1);
+    // muons
+    if (abs(id) == 13)
+        return (muonIsoValue(idx, true) < 0.15);
 
-	 return false;
+    return false;
 }
 
 
 /******************************************************************************************/     
-// are the leptons in the hypothesis good (all cuts but isolation?)
-/******************************************************************************************/
-bool isGoodHypNoIsoSS (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+// 2011 numerator lepton
+/******************************************************************************************/     
+bool isNumeratorLepton(int id, int idx, int vidx)
 {
-	 if(!isGoodLeptonNoIsoSS(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
-		  return false;
-	 if(!isGoodLeptonNoIsoSS(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
-		  return false;
-
-	 return true;
+    return (isGoodLepton(id, idx, vidx) && isIsolatedLepton(id, idx, vidx));
 }
 
 
 /******************************************************************************************/     
-// are the leptons in the hypothesis isolated? (no other cuts applied)
+// 2011 numerator hypothesis
 /******************************************************************************************/     
-bool isGoodHypwIsoSS (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+bool isNumeratorHypothesis(int idx, int vidx)
 {
-	 if(!isGoodLeptonwIsoSS(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
-		  return false;
-	 if(!isGoodLeptonwIsoSS(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
-		  return false;
+    if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), vidx))
+        return false;
+    if (!isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), vidx))
+        return false;
 
-	 return true;
+    return true;
 }
 
-/*****************************************************************************************/
-//passes the EGamma triggers
-/*****************************************************************************************/
-bool passEGTriggerSS (unsigned int hypIdx, bool mc)
+
+/******************************************************************************************/     
+// 2011 denominator lepton
+/******************************************************************************************/     
+bool isDenominatorLepton(int id, int idx, int vidx)
 {
-	 unsigned int hypType = cms2.hyp_type()[hypIdx];	 
+    // electrons
+    if (abs(id) == 11)
+        return (pass_electronSelection(idx, electronSelectionFOV3_ssVBTF80_v3, false, false, vidx));
 
-	 if (mc)
-	 {
-		  if (passHLTTrigger("HLT_Ele10_LW_L1R"))
-			   return true;
+    // muons
+    if (abs(id) == 13)
+        return (muonId(idx, muonSelectionFO_ssV3, vidx));
 
-		  if (passHLTTrigger("HLT_Ele10_SW_L1R"))
-			   return true;
-
-		  if (passHLTTrigger("HLT_Ele17_SW_L1R"))
-			   return true;
-
-		  if (passHLTTrigger("HLT_Ele10_LW_EleId_L1R"))
-			   return true;
-
-		  if (passHLTTrigger("HLT_Ele15_LW_L1R"))
-			   return true;
-
-		  if (passHLTTrigger("HLT_DoubleEle5_SW_L1R"))
-			   return true;
-	 } 
-	 else // data now
-	 {
-		  if(evt_run() < 138000)
-		  {
-			   if (passHLTTrigger("HLT_Ele10_LW_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele15_LW_L1R"))
-					return true;
-
-			   if (hypType == 3)
-					if (passHLTTrigger("HLT_DoubleEle5_SW_L1R"))
-						 return true;
-		  }
-
-		  if(evt_run() >= 138000 && evt_run() < 141900)
-		  {
-			   if (passHLTTrigger("HLT_Ele10_LW_EleId_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele15_LW_L1R"))
-					return true;
-
-			   if (hypType == 3)
-					if (passHLTTrigger("HLT_DoubleEle5_SW_L1R"))
-						 return true;
-		  }
-
-		  if (cms2.evt_run() >= 141900)
-		  {
-			   if (passHLTTrigger("HLT_Ele10_SW_EleId_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele15_SW_EleId_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele17_SW_LooseEleId_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele17_SW_EleId_L1R"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1"))
-					return true;
-
-			   if (passHLTTrigger("HLT_Ele17_SW_TightEleIdIsol_L1R_v1"))
-					return true;
-
-			   if (hypType == 3)
-			   {
-					if (passHLTTrigger("HLT_DoubleEle10_SW_L1R"))
-						 return true;
-
-					if (passHLTTrigger("HLT_DoubleEle15_SW_L1R_v1"))
-						 return true;
-			   }
-		  }
-	 }
-
-	 return false;
-}
-
-/*****************************************************************************************/
-//passes the muon triggers
-/*****************************************************************************************/
-bool passMuTriggerSS(unsigned int hypIdx, bool mc)
-{
-	 if (mc)
-	 {
-		  if (passHLTTrigger("HLT_Mu9"))
-			   return true;
-
-		  if (passHLTTrigger("HLT_Mu11"))
-			   return true;
-
-		  if (cms2.hyp_type()[hypIdx] == 0)
-			   if (passHLTTrigger("HLT_DoubleMu3"))
-					return true;
-	 }
-	 else {
-		  if (passHLTTrigger("HLT_Mu9"))
-			   return true;
-
-		  if (passHLTTrigger("HLT_Mu11"))
-			   return true;
-
-		  if (passHLTTrigger("HLT_Mu15_v1"))
-			   return true;
-
-		  if (cms2.hyp_type()[hypIdx] == 0)
-		  {
-			   if (passHLTTrigger("HLT_DoubleMu3"))
-					return true;
-			   if (passHLTTrigger("HLT_DoubleMu5_v1"))
-					return true;
-		  }
-	 
-		  if (cms2.hyp_type()[hypIdx] == 1 || cms2.hyp_type()[hypIdx] == 2)
-		  {
-			   if (passHLTTrigger("HLT_Mu5_Ele9_v1"))
-					return true;
-			   if (passHLTTrigger("HLT_Mu8_Ele8_v1"))
-					return true;
-		  }
-	 }
-
-	 return false;
+    return false;
 }
 
 
@@ -244,6 +122,12 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 			   if (!isGoodLeptonwIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap) || !isGoodLeptonNoIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap))
 					continue;
 
+               if (ltid == 13 && imu == cms2.hyp_lt_index()[hypIdx])
+                   continue;
+
+               if (llid == 13 && imu == cms2.hyp_ll_index()[hypIdx])
+                   continue;
+
 			   if (ltid == 13 && ltch * cms2.mus_charge()[imu] < 0)
 			   {
 					LorentzVector temp = ltp4 + cms2.mus_p4()[imu];
@@ -269,6 +153,12 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 
 			   if (!isGoodLeptonwIsoSS(11, iel, applyAlignmentCorrection, removedEtaCutInEndcap) || !isGoodLeptonNoIsoSS(11, iel, applyAlignmentCorrection, removedEtaCutInEndcap))
 					continue;
+
+               if (ltid == 11 && iel == cms2.hyp_lt_index()[hypIdx])
+                   continue;
+
+               if (llid == 11 && iel == cms2.hyp_ll_index()[hypIdx])
+                   continue;
 
 			   if (ltid == 11 && ltch * cms2.els_charge()[iel] < 0)
 			   {
@@ -364,6 +254,224 @@ bool isGoodJet(LorentzVector jetp4, int hypIdx, double ptCut, double absEtaCut, 
 
 
 
+
+
+
+
+
+/****************************************************************
+***                                                           ***
+***                                                           ***
+***                                                           ***
+***          2010 Selections                                  ***
+***                                                           ***
+***                                                           ***
+***                                                           ***
+****************************************************************/
+
+/******************************************************************************************/     
+// good lepton (either mu or electron, no isolation cuts)
+/******************************************************************************************/
+bool isGoodLeptonNoIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+{
+	 // electrons
+	 if (abs(id) == 11)
+		  return (pass_electronSelection(lepIdx, electronSelection_ssV2_NoIso, applyAlignmentCorrection, removedEtaCutInEndcap));
+
+	 // muons
+	 if (abs(id) == 13)
+		  return (muonIdNotIsolated(lepIdx, NominalSS)) ;
+
+	 return false;
+}
+
+
+/******************************************************************************************/     
+// isolated lepton (either mu or electron), no other cuts applied
+/******************************************************************************************/
+bool isGoodLeptonwIsoSS (int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+{
+	 // electrons
+	 if (abs(id)== 11)
+		  return (pass_electronSelection(lepIdx, electronSelection_ss_Iso, applyAlignmentCorrection, removedEtaCutInEndcap));
+
+	 // muons
+	 if (abs(id) == 13) 
+		  return (muonIsoValue(lepIdx) < 0.1);
+
+	 return false;
+}
+
+
+/******************************************************************************************/     
+// are the leptons in the hypothesis good (all cuts but isolation?)
+/******************************************************************************************/
+bool isGoodHypNoIsoSS (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+{
+	 if(!isGoodLeptonNoIsoSS(cms2.hyp_lt_id()[hypIdx], cms2.hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+		  return false;
+	 if(!isGoodLeptonNoIsoSS(cms2.hyp_ll_id()[hypIdx], cms2.hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+		  return false;
+
+	 return true;
+}
+
+
+/******************************************************************************************/     
+// are the leptons in the hypothesis isolated? (no other cuts applied)
+/******************************************************************************************/     
+bool isGoodHypwIsoSS (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+{
+	 if(!isGoodLeptonwIsoSS(cms2.hyp_lt_id()[hypIdx], cms2.hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+		  return false;
+	 if(!isGoodLeptonwIsoSS(cms2.hyp_ll_id()[hypIdx], cms2.hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+		  return false;
+
+	 return true;
+}
+
+/*****************************************************************************************/
+//passes the EGamma triggers
+/*****************************************************************************************/
+bool passEGTriggerSS (unsigned int hypIdx, bool mc)
+{
+	 unsigned int hypType = cms2.hyp_type()[hypIdx];	 
+
+	 if (mc)
+	 {
+		  if (cms2.passHLTTrigger("HLT_Ele10_LW_L1R"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_Ele10_SW_L1R"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_Ele17_SW_L1R"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_Ele10_LW_EleId_L1R"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_Ele15_LW_L1R"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_DoubleEle5_SW_L1R"))
+			   return true;
+	 } 
+	 else // data now
+	 {
+		  if(cms2.evt_run() < 138000)
+		  {
+			   if (cms2.passHLTTrigger("HLT_Ele10_LW_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele15_LW_L1R"))
+					return true;
+
+			   if (hypType == 3)
+					if (cms2.passHLTTrigger("HLT_DoubleEle5_SW_L1R"))
+						 return true;
+		  }
+
+		  if(cms2.evt_run() >= 138000 && cms2.evt_run() < 141900)
+		  {
+			   if (cms2.passHLTTrigger("HLT_Ele10_LW_EleId_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele15_LW_L1R"))
+					return true;
+
+			   if (hypType == 3)
+					if (cms2.passHLTTrigger("HLT_DoubleEle5_SW_L1R"))
+						 return true;
+		  }
+
+		  if (cms2.evt_run() >= 141900)
+		  {
+			   if (cms2.passHLTTrigger("HLT_Ele10_SW_EleId_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele15_SW_CaloEleId_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele15_SW_EleId_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele17_SW_LooseEleId_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele17_SW_CaloEleId_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele17_SW_EleId_L1R"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele17_SW_TightCaloEleId_SC8HE_L1R_v1"))
+					return true;
+
+			   if (cms2.passHLTTrigger("HLT_Ele17_SW_TightEleIdIsol_L1R_v1"))
+					return true;
+
+			   if (hypType == 3)
+			   {
+					if (cms2.passHLTTrigger("HLT_DoubleEle10_SW_L1R"))
+						 return true;
+
+					if (cms2.passHLTTrigger("HLT_DoubleEle15_SW_L1R_v1"))
+						 return true;
+			   }
+		  }
+	 }
+
+	 return false;
+}
+
+/*****************************************************************************************/
+//passes the muon triggers
+/*****************************************************************************************/
+bool passMuTriggerSS(unsigned int hypIdx, bool mc)
+{
+	 if (mc)
+	 {
+		  if (cms2.passHLTTrigger("HLT_Mu9"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_Mu11"))
+			   return true;
+
+		  if (cms2.hyp_type()[hypIdx] == 0)
+			   if (cms2.passHLTTrigger("HLT_DoubleMu3"))
+					return true;
+	 }
+	 else {
+		  if (cms2.passHLTTrigger("HLT_Mu9"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_Mu11"))
+			   return true;
+
+		  if (cms2.passHLTTrigger("HLT_Mu15_v1"))
+			   return true;
+
+		  if (cms2.hyp_type()[hypIdx] == 0)
+		  {
+			   if (cms2.passHLTTrigger("HLT_DoubleMu3"))
+					return true;
+			   if (cms2.passHLTTrigger("HLT_DoubleMu5_v1"))
+					return true;
+		  }
+	 
+		  if (cms2.hyp_type()[hypIdx] == 1 || cms2.hyp_type()[hypIdx] == 2)
+		  {
+			   if (cms2.passHLTTrigger("HLT_Mu5_Ele9_v1"))
+					return true;
+			   if (cms2.passHLTTrigger("HLT_Mu8_Ele8_v1"))
+					return true;
+		  }
+	 }
+
+	 return false;
+}
+
 /******************************************************************************************/     
 // good lepton (either mu or electron, no isolation cuts), d0 corrected for PV
 /******************************************************************************************/
@@ -386,9 +494,9 @@ bool isGoodLeptonNoIsoSSd0PV (int id, int lepIdx, bool applyAlignmentCorrection,
 /******************************************************************************************/
 bool isGoodHypNoIsoSSd0PV (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-	 if(!isGoodLeptonNoIsoSSd0PV(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+	 if(!isGoodLeptonNoIsoSSd0PV(cms2.hyp_lt_id()[hypIdx], cms2.hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
-	 if(!isGoodLeptonNoIsoSSd0PV(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+	 if(!isGoodLeptonNoIsoSSd0PV(cms2.hyp_ll_id()[hypIdx], cms2.hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
 
 	 return true;
@@ -419,9 +527,9 @@ bool isGoodLeptonNoIsoSSnod0 (int id, int lepIdx, bool applyAlignmentCorrection,
 /******************************************************************************************/
 bool isGoodHypNoIsoSSnod0 (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-	 if(!isGoodLeptonNoIsoSSnod0(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+	 if(!isGoodLeptonNoIsoSSnod0(cms2.hyp_lt_id()[hypIdx], cms2.hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
-	 if(!isGoodLeptonNoIsoSSnod0(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+	 if(!isGoodLeptonNoIsoSSnod0(cms2.hyp_ll_id()[hypIdx], cms2.hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
 
 	 return true;
@@ -452,9 +560,9 @@ bool isGoodLeptonNoIsoSSnoTripleChargeReq (int id, int lepIdx, bool applyAlignme
 /******************************************************************************************/
 bool isGoodHypNoIsoSSnoTripleChargeReq (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
-	 if(!isGoodLeptonNoIsoSSnoTripleChargeReq(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+	 if(!isGoodLeptonNoIsoSSnoTripleChargeReq(cms2.hyp_lt_id()[hypIdx], cms2.hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
-	 if(!isGoodLeptonNoIsoSSnoTripleChargeReq(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
+	 if(!isGoodLeptonNoIsoSSnoTripleChargeReq(cms2.hyp_ll_id()[hypIdx], cms2.hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
 		  return false;
 
 	 return true;

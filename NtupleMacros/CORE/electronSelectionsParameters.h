@@ -40,6 +40,12 @@ enum vbtf_tightness {
     VBTF_35X_60,
     VBTF_35Xr2_70,
     VBTF_35Xr2_60,
+    VBTF_80_NOHOEEND,
+    VBTF_85_NOHOEEND,
+    VBTF_85,
+    VBTF_70_NOHOEEND,
+    VBTF_90_HLT,
+    VBTF_90_HLT_CALOIDT_TRKIDVL
 };
 //--------------------------------
 

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.10 2010/08/09 06:39:43 kalavase Exp $
+// $Id: jetSelections.h,v 1.11 2011/04/07 00:11:35 fgolf Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -13,6 +13,7 @@
 
 enum JetType {
      JETS_TYPE_JPT,
+     JETS_TYPE_PF_FAST_CORR,
      JETS_TYPE_PF_CORR,
      JETS_TYPE_PF_UNCORR,
      JETS_TYPE_CALO_CORR,
@@ -27,6 +28,7 @@ enum CleaningType {
      JETS_CLEAN_HYP_E_MU,		// e or mu from hypothesis
      JETS_CLEAN_HYP_E,			// e only from hypothesis
      JETS_CLEAN_SINGLE_E,		// e in single-lepton final state (QCD)
+     JETS_CLEAN_SINGLE_MU,      // mu in single-lepton final state (QCD)
 };
 
 #define JET_DEFAULT_TYPE 	JETS_TYPE_JPT

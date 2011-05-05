@@ -4,8 +4,9 @@
 
 // CMS2 includes
 #include "electronSelections.h"
-#include "CMS2.h"
-
+#include "eventSelections.h"
+#include "MITConversionUtilities.h"
+#include "trackSelections.h"
 
 
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
@@ -14,28 +15,30 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
     return false;
 }
 
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index)
 {
-    cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap);
+  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) 
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index) 
 {
-
-    //
     // keep track of which cuts passed
-    //
-
     cuts_t cuts_passed = 0;
 
-    //
     // isolation
-    //
 
-    //relative isolation non truncated
-    if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_RELNT010);
+    // relative isolation non truncated
+    if( electronIsolation_rel_v1(index, true ) < 0.10) cuts_passed |= (1ll<<ELEISO_RELNT010);       // Relative Isolation
+    if( electronIsolation_rel_v1(index, true ) < 0.15) cuts_passed |= (1ll<<ELEISO_RELNT015);       //
+    if( electronIsolation_rel_v1(index, true ) < 0.40) cuts_passed |= (1ll<<ELEISO_RELNT040);       //
+    if( electronIsolation_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_TRK_RELNT020);   // Tracker Relative Isolation
+    if( electronIsolation_ECAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020);  // ECAL    Relative Isolation
+    if( electronIsolation_HCAL_rel_v1(index)   < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_RELNT020);  // HCAL    Relative Isolation
+    if (electronIsolation_ECAL_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020_NPS); // ECAL Relative Isolation, no ped sub in EB
+    if( electronIsolation_ECAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_REL020);    // ECAL    Relative Isolation (truncated)
+    if( electronIsolation_HCAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_REL020);    // HCAL    Relative Isolation (truncated)
 
     //relative isolation truncated
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
@@ -51,26 +54,44 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     else if( cms2.els_p4()[index].pt() < 20.0 && electronIsolation_rel_v1(index, true) < 0.07) cuts_passed |= (1ll<<ELEISO_SMURFV1);
     else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
 
-    //
     // ip
-    //
 
     if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
     if (fabs(electron_d0PV_wwV1(index)) < 0.02 && fabs(electron_dzPV_wwV1(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_wwV1);
+    if (fabs(electron_d0PV_smurfV3(index)) < 0.02 && fabs(electron_dzPV_smurfV3(index)) < 0.2 ) cuts_passed |= (1ll<<ELEIP_PV_SMURFV3);
+    if (fabs(electron_d0PV_smurfV3(index)) < 0.04 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2);
 
 
-    //
+    if (vertex_index < 0) {
+        if (fabs(cms2.els_d0corr()[index]) < 0.02)
+            cuts_passed |= (1ll<<ELEIP_SS200);  
+        if (fabs(cms2.els_d0corr()[index]) < 0.20)
+            cuts_passed |= (1ll<<ELEIP_SS2000);  
+    }
+    else {
+        if (cms2.els_trkidx()[index] < 0) {
+            if (fabs(cms2.els_d0corr()[index]) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
+            if (fabs(cms2.els_d0corr()[index]) < 0.20)
+                cuts_passed |= (1ll<<ELEIP_SS2000);
+        }
+        else {
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.20)
+                cuts_passed |= (1ll<<ELEIP_SS2000);
+        }
+    }
+
     // id
-    //
 
-
-    //
     // SMURF ID
-    //
     if (electronId_smurf_v1(index)) cuts_passed |= (1ll<<ELEID_SMURFV1_EXTRA);
     if (electronId_smurf_v2(index)) cuts_passed |= (1ll<<ELEID_SMURFV2_EXTRA);
+    if (electronId_smurf_v3(index)) cuts_passed |= (1ll<<ELEID_SMURFV3_EXTRA);
+    if (electronId_smurf_v1ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV1SS_EXTRA);
 
     // 
     // "CAND" ID
@@ -97,6 +118,24 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // VBTF70 (optimised in 35X)
     answer_vbtf = electronId_VBTF(index, VBTF_35Xr2_70, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_35X_70);
+    // VBTF85 no H/E in endcap
+    answer_vbtf = electronId_VBTF(index, VBTF_85_NOHOEEND, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_85_NOHOEEND);
+    // VBTF85
+    answer_vbtf = electronId_VBTF(index, VBTF_85 , applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_85);
+    // VBTF80 no H/E in endcap
+    answer_vbtf = electronId_VBTF(index, VBTF_80_NOHOEEND, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_80_NOHOEEND);
+    // VBTF70 no H/E in endcap
+    answer_vbtf = electronId_VBTF(index, VBTF_70_NOHOEEND, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_70_NOHOEEND);
+    // VBTF90 with H/E and dPhiIn tuned to match HLT
+    answer_vbtf = electronId_VBTF(index, VBTF_90_HLT, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_90_HLT);
+    // VBTF90 with H/E and dPhiIn tuned to match HLT (CaloIdT+TrkIdVL)
+    answer_vbtf = electronId_VBTF(index, VBTF_90_HLT_CALOIDT_TRKIDVL, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL);
     //
     // CIC ID  
     //
@@ -111,7 +150,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
-    //if (cms2.els_exp_innerlayers39X().at(index) == 0 ) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN39X_0MHITS);
+    if(!isFromConversionMIT(index)) cuts_passed |= (1ll<<ELENOTCONV_MIT);
 
     //
     // fiduciality/other cuts
@@ -232,19 +271,60 @@ bool electronId_smurf_v1(const unsigned int index)
   return false;
 }
 
-bool electronId_smurf_v2(const unsigned int index)
-{
+bool electronId_smurf_v2(const unsigned int index)	 
+ {	 
+ 	 
+   if (cms2.els_p4()[index].pt() > 20.0) return true;	 
+ 	 
+   if (cms2.els_fbrem()[index] > 0.15) return true;	 
+ 	 
+   if (fabs(cms2.els_etaSC()[index]) < 1.) {	 
+     if (cms2.els_eOverPIn()[index] > 0.95) return true;	 
+   }	 
+ 	 
+   return false;	 
+ }	 
+ 	 
+ bool electronId_smurf_v3(const unsigned int index)	 
+ {	 
+ 	 
+   if (cms2.els_p4()[index].pt() > 20.0) return true;	 
+ 	 
+   electronIdComponent_t answer_vbtf = 0;	 
+   answer_vbtf = electronId_VBTF(index, VBTF_70_NOHOEEND, false, false);	 
+   if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) {	 
+ 	 
+     if (cms2.els_fbrem()[index] > 0.15) return true;	 
+ 	 
+     if (fabs(cms2.els_etaSC()[index]) < 1.) {	 
+       if (cms2.els_eOverPIn()[index] > 0.95) return true;	 
+     }	 
+ 	 
+   }	 
+ 	 
+   return false;	 
+ }
 
-  if (cms2.els_p4()[index].pt() > 20.0) return true;
+ bool electronId_smurf_v1ss(const unsigned int index)
+ {
 
-  if (cms2.els_fbrem()[index] > 0.15) return true;
-  
-  if (fabs(cms2.els_etaSC()[index]) < 1.) {
-    if (cms2.els_eOverPIn()[index] > 0.95) return true; 
-  }
+   if (cms2.els_p4()[index].pt() > 20.0) return true;
 
-  return false;
-}
+   electronIdComponent_t answer_vbtf = 0;
+   answer_vbtf = electronId_VBTF(index, VBTF_80_NOHOEEND, false, false);
+   if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) {
+
+     if (cms2.els_fbrem()[index] > 0.15) return true;
+
+     if (fabs(cms2.els_etaSC()[index]) < 1.) {
+       if (cms2.els_eOverPIn()[index] > 0.95) return true;
+     }
+
+   }
+
+   return false;
+ }
+
 
 
 //
@@ -747,8 +827,9 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
     return sum/max(pt, 20.);
 }
 
+/*
 //relative non-truncated
-float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
+float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso)
 {
     float sum = cms2.els_tkIso().at(index);
     if (use_calo_iso) {
@@ -759,6 +840,63 @@ float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso)
     double pt = cms2.els_p4().at(index).pt();
     return sum/pt;
 }
+*/
+
+// Relative Isolation, Non-Truncated
+float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso){
+    float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
+    float TRCK_sum_over_pt = cms2.els_tkIso().at(index) / pt;       // Tracker Relative Isolation, Non-Truncated
+    float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v1(index);  // ECAL    Relative Isolation, Non-Truncated
+    float HCAL_sum_over_pt = electronIsolation_HCAL_rel_v1(index);  // HCAL    Relative Isolation, Non-Truncated
+
+    float sum_over_pt      = TRCK_sum_over_pt;                      // Combined Subdetector Relative Isolation, Non-Truncated
+    if(use_calo_iso){
+      sum_over_pt += ECAL_sum_over_pt;
+      sum_over_pt += HCAL_sum_over_pt;
+    }
+    return sum_over_pt;
+}
+
+// ECAL Relative Isolation, Non-Truncated
+float electronIsolation_ECAL_rel_v1(const unsigned int index, bool useEBps){
+  float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
+  float ecal_sum_over_pt = 0.0;                                                                                           // ECAL Relative Isolation, NT
+  if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap  
+  if( fabs(cms2.els_etaSC().at(index)) <= 1.479 ) {
+      if (useEBps)
+          ecal_sum_over_pt += max( 0.0, ( cms2.els_ecalIso().at(index) - 1.0 ) ); // EB: Ecal Barrel
+      else
+          ecal_sum_over_pt += cms2.els_ecalIso().at(index); // EB: Ecal Barrel
+  }
+  ecal_sum_over_pt /= pt;
+  return ecal_sum_over_pt;
+}
+
+// HCAL Relative Isolation, Non-Truncated
+float electronIsolation_HCAL_rel_v1(const unsigned int index){
+  float pt               = cms2.els_p4().at(index).pt();      // Electron Pt
+  float hcal_sum_over_pt = cms2.els_hcalIso().at(index) / pt; // HCAL Relative Isolation, NT
+  return hcal_sum_over_pt;
+}
+
+
+// ECAL Relative Isolation, Truncated
+float electronIsolation_ECAL_rel(const unsigned int index){
+  float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
+  float ecal_sum_over_pt = 0.0;                                                                                           // ECAL Relative Isolation
+  if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap
+  if( fabs(cms2.els_etaSC().at(index)) <= 1.479 ) ecal_sum_over_pt += max( 0.0, ( cms2.els_ecalIso().at(index) - 1.0 ) ); // EB: Ecal Barrel
+  ecal_sum_over_pt /= max(pt,(float)20.0);
+  return ecal_sum_over_pt;
+}
+
+// HCAL Relative Isolation, Truncated
+float electronIsolation_HCAL_rel(const unsigned int index){
+  float pt               = max( cms2.els_p4().at(index).pt() , (float) 20.0 ) ;      // Electron Pt
+  float hcal_sum_over_pt = cms2.els_hcalIso().at(index) / pt;                        // HCAL Relative Isolation, NT
+  return hcal_sum_over_pt;
+}
+
 
 
 //
@@ -925,17 +1063,30 @@ double electron_d0PV(unsigned int index){
 }
 
 
+double electron_d0PV_smurfV3(unsigned int index){
+  int vtxIndex = 0;
+  double dxyPV = cms2.els_d0()[index]-
+    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
+  return dxyPV;
+}
+
+double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
+  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+}
+double electron_dzPV_smurfV3(unsigned int index){
+  int vtxIndex = 0;
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  return dzpv;
+}
+
+
 double electron_dzPV_wwV1(unsigned int index){ 
     if ( cms2.vtxs_sumpt().empty() ) return 9999.;
     double sumPtMax = -1;
     int iMax = -1;
     for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-        // if (!isGoodVertex(i)) continue;
-        // Copied from eventSelections.cc 
-        if (cms2.vtxs_isFake()[i]) continue;
-        if (cms2.vtxs_ndof()[i] < 4.) continue;
-        if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
-        if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+        if (!isGoodVertex(i)) continue;
         if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
             iMax = i;
             sumPtMax = cms2.vtxs_sumpt().at(i);
@@ -960,12 +1111,7 @@ double electron_d0PV_wwV1(unsigned int index){
     double sumPtMax = -1;
     int iMax = -1;
     for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-        // if (!isGoodVertex(i)) continue;
-        // Copied from eventSelections.cc 
-        if (cms2.vtxs_isFake()[i]) continue;
-        if (cms2.vtxs_ndof()[i] < 4.) continue;
-        if (cms2.vtxs_position()[i].Rho() > 2.0) continue;
-        if (fabs(cms2.vtxs_position()[i].Z()) > 24.0) continue;
+        if (!isGoodVertex(i)) continue;
         if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
             iMax = i;
             sumPtMax = cms2.vtxs_sumpt().at(i);
@@ -976,4 +1122,32 @@ double electron_d0PV_wwV1(unsigned int index){
         cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
         cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
     return dxyPV;
+}
+
+double electron_d0PV_mindz(unsigned int index){ 
+    if ( cms2.vtxs_sumpt().empty() ) return 9999.;
+    double minDz = 999.;
+    int iMin = -1;
+    for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+        if (!isGoodVertex(i)) continue;
+      
+      const LorentzVector& vtx = cms2.gsftrks_vertex_p4().at(cms2.els_gsftrkidx()[index]);
+      const LorentzVector& p4 = cms2.gsftrks_p4().at(cms2.els_gsftrkidx()[index]);
+      const LorentzVector& pv = cms2.vtxs_position()[i]; 
+      float dz = fabs((vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt()); 
+      
+      if ( dz < minDz ){
+	iMin = i;
+	minDz = dz;
+      }
+    }
+    if (iMin<0) return 9999.;
+    double dxyPV = cms2.els_d0()[index]-
+        cms2.vtxs_position()[iMin].x()*sin(cms2.els_trk_p4()[index].phi())+
+        cms2.vtxs_position()[iMin].y()*cos(cms2.els_trk_p4()[index].phi());
+    return dxyPV;
+}
+
+bool isFromConversionMIT(const unsigned int index){
+  return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
 }
