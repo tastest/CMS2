@@ -1,6 +1,7 @@
 // C++ includes
 #include <iostream>
 #include <set>
+#include <exception>
 #include <string>
 
 // ROOT includes
@@ -398,7 +399,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             if (!cleaning_goodVertexAugust2010()) continue;
             if (!cleaning_goodTracks()) continue;
 
-            // Loop over jets and see what is btagged
+	  		// Loop over jets and see what is btagged
             // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
             int this_nbjet = 0;
             vector<unsigned int> bindex;
@@ -948,6 +949,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // L1FastL2L3 PF Jets
                     // Find the highest Pt PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
                     ptpfcL1Fj1_       = -999.0;
+                    dphipfcL1Fj1_ 	  = -999.0;
                     ptpfcL1Fj1_b2b_   = -999.0;
                     dphipfcL1Fj1_b2b_ = -999.0;
                     npfcL1Fj1_        = 0;
@@ -963,15 +965,39 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             ptpfcL1Fj1_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+                            dphipfcL1Fj1_ = dphi;
 
                             // back to back in phi
-                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
                             if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1_b2b_ ){
                                 ptpfcL1Fj1_b2b_   = jp4cor.pt();
                                 dphipfcL1Fj1_b2b_ = dphi;
                             }
                         }
                     }
+
+					// *** Doing B-tagging correctly ***
+                    // B-tagged L1FastL2L3 PF Jets
+                    // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    ptbtagpfcL1Fj1_       = -999.0;
+                    dphibtagpfcL1Fj1_       = -999.0;
+                    for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                        if ( !passesPFJetID(iJet)) continue;
+                        LorentzVector jp4 = pfjets_p4()[iJet];
+//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        LorentzVector jp4cor = jp4 * jet_cor;
+                        if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74 ) continue;
+                        double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                        if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
+                            ptbtagpfcL1Fj1_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+							dphibtagpfcL1Fj1_ = dphi; 
+                        }
+                    }
+					// ****************************
+
+
 
                     // L2L3 JPT Jets
                     // Find the highest Pt JPT L2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
@@ -1427,6 +1453,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // L1FastL2L3 PF Jets
                     // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
                     ptpfcL1Fj1_       = -999.0;
+                    dphipfcL1Fj1_ 	  = -999.0;
                     ptpfcL1Fj1_b2b_   = -999.0;
                     dphipfcL1Fj1_b2b_ = -999.0;
                     npfcL1Fj1_        = 0;
@@ -1443,9 +1470,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             ptpfcL1Fj1_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+                            dphipfcL1Fj1_ = dphi;
 
                             // back to back in phi
-                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
                             if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1_b2b_ ){
                                 ptpfcL1Fj1_b2b_   = jp4cor.pt();
                                 dphipfcL1Fj1_b2b_ = dphi;
@@ -1453,6 +1481,26 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         }
                     }
 
+					//***  Doing B-tagging correctly ***
+                    // B-tagged L1FastL2L3 PF Jets
+                    // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    ptbtagpfcL1Fj1_       = -999.0;
+                    dphibtagpfcL1Fj1_       = -999.0;
+                    for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                        if ( !passesPFJetID(iJet)) continue;
+                        LorentzVector jp4 = pfjets_p4()[iJet];
+//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        LorentzVector jp4cor = jp4 * jet_cor;
+                        if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74 ) continue;
+                        double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                        if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
+                            ptbtagpfcL1Fj1_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+							dphibtagpfcL1Fj1_ = dphi; 
+                        }
+                    }
+					//****************************
 
                     // L2L3 JPT Jets
                     // Find the highest Pt JPT corrected jet separated by at least dRcut from this lepton and fill the jet Pt

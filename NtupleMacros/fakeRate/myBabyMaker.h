@@ -405,20 +405,24 @@ private:
     Float_t dphipfj1_b2b_;  // dphi between lepton and pfjet for pfjets away from lepton by dR >= 1.0
     Int_t   npfj1_;         // number of pfjets above 10 GeV and away from lepton by dR >= 1.0
   
-    // Same for PF Corrected jets
+    // Same for PF Corrected jets L2L3
     Float_t ptpfcj1_;       // highest pt jet well separated from the lepton
     Float_t ptpfcj1_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
     Float_t dphipfcj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
     Int_t   npfcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagpfc_; 
 
-    // Same for PF Corrected jets
+    // Same for PF Corrected jets L1FastL2L3
     Float_t ptpfcL1Fj1_;       // highest pt jet well separated from the lepton
+    Float_t dphipfcL1Fj1_;     // dphi between highest pt jet well separated from the lepton and lepton
     Float_t ptpfcL1Fj1_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
     Float_t dphipfcL1Fj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
     Int_t   npfcL1Fj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagpfcL1F_;
 
+    // Same for btagged PF Corrected jets L1FastL2L3
+    Float_t ptbtagpfcL1Fj1_;       // highest pt btagged jet well separated from the lepton
+    Float_t dphibtagpfcL1Fj1_;     // dphi between highest pt btagged jet well separated from the lepton and lepton
 
     // Same for PF Corrected jets
     Float_t ptjptcj1_;       // highest pt jet well separated from the lepton
@@ -793,12 +797,17 @@ void myBabyMaker::InitBabyNtuple () {
 
     // PF L1FastL2L3 Corrected jets
     ptpfcL1Fj1_        = 0.;
+    dphipfcL1Fj1_      = -999.;
     ptpfcL1Fj1_b2b_    = -999.;
     dphipfcL1Fj1_b2b_  = -999.;
     npfcL1Fj1_         = 0;
     btagpfcL1F_        = false;
 
-    // JPT L2L3 Corrected jets
+    // btag PF L1FastL2L3 Corrected jets
+    ptbtagpfcL1Fj1_        = 0.;
+    dphibtagpfcL1Fj1_      = -999.;
+    
+	// JPT L2L3 Corrected jets
     ptjptcj1_        = 0.;
     ptjptcj1_b2b_    = -999.;
     dphijptcj1_b2b_  = -999.;
@@ -1143,12 +1152,17 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       
     // PF L1FastL2L3 Corrected jets         
     babyTree_->Branch("ptpfcL1Fj1"      , &ptpfcL1Fj1_       );       
+    babyTree_->Branch("dphipfcL1Fj1"    , &dphipfcL1Fj1_       );       
     babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );         
     babyTree_->Branch("ptpfcL1Fj1_b2b"  , &ptpfcL1Fj1_b2b_   );       
     babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
     babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
 
-    // JPT L2L3 Corrected jets
+    // B-tagged PF L1FastL2L3 Corrected jets         
+    babyTree_->Branch("ptbtagpfcL1Fj1"      , &ptbtagpfcL1Fj1_       );       
+    babyTree_->Branch("dphibtagpfcL1Fj1"    , &dphibtagpfcL1Fj1_       );       
+    
+	// JPT L2L3 Corrected jets
     babyTree_->Branch("ptjptcj1"        , &ptjptcj1_         ); 
     babyTree_->Branch("njptcj1"         , &njptcj1_          ); 
     babyTree_->Branch("ptjptcj1_b2b"    , &ptjptcj1_b2b_     ); 
