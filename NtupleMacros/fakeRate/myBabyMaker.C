@@ -220,34 +220,25 @@ struct triggerMatchStruct {
 };
 
 // wrapper around TriggerMatch that takes a TRegExp for matching a class of triggers
-triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, const TRegexp trigClass, double dR_cut = 0.4, int pid = 11)
+triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, TPMERegexp* regexp, int pid = 11, double dR_cut = 0.4)
 {
     std::pair<int, float> triggerMatchValues = make_pair (0, 99.);
     triggerMatchStruct triggerMatchInfo = triggerMatchStruct(triggerMatchValues.first, triggerMatchValues.second, -1);
     
     unsigned int loopCounts = 0;
     for (unsigned int tidx = 0; tidx < cms2.hlt_trigNames().size(); tidx++) {
-        int length = -1;
-        if (trigClass.Index(cms2.hlt_trigNames().at(tidx), &length) != 0)
+        if (!(regexp->Match(cms2.hlt_trigNames().at(tidx))))
             continue;
+
+        int version = -1;
+        TString tversion = (*regexp)[regexp->NMatches()-1];
+        if (tversion.IsDigit())
+            version = tversion.Atoi();
 
         ++loopCounts;
 
         // get lepton-trigger matching information
-        triggerMatchValues = TriggerMatch(lepton_p4, cms2.hlt_trigNames().at(tidx).Data(), dR_cut, pid);        
-
-        // now, figure out which version of the trigger we're dealing with
-        const TString delimeter = "_";
-        TObjArray* tokens = cms2.hlt_trigNames().at(tidx).Tokenize(delimeter);
-
-        TObjString* last_token = (TObjString*)tokens->Last();
-        TString last_stoken(last_token->GetString());
-        TSubString last_subtoken = last_stoken.Strip(TString::kLeading, 'v');
-        TString subtoken = TString(last_subtoken);
-        
-        int version = -1;
-        if (subtoken.IsDigit())
-            version = subtoken.Atoi();
+        triggerMatchValues = TriggerMatch(lepton_p4, cms2.hlt_trigNames().at(tidx).Data(), dR_cut, pid);
 
         triggerMatchInfo = triggerMatchStruct(triggerMatchValues.first, triggerMatchValues.second, version);
     }
@@ -315,7 +306,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     // Set the JSON file
     if(isData) {
-        set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
+//        set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
+        set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
     }
 
     // Jet Corrections
@@ -371,8 +363,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
             if(isData){
                 // Good  Runs
-                if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-                //if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+                //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+                if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
 
 
                 // check for duplicated
@@ -396,8 +388,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             // Event cleaning (careful, it requires technical bits)
             //if (!cleaning_BPTX(isData))   continue;
             //if (!cleaning_beamHalo())   continue;
-            if (!cleaning_goodVertexAugust2010()) continue;
-            if (!cleaning_goodTracks()) continue;
+            //if (!cleaning_goodVertexAugust2010()) continue;
+            //if (!cleaning_goodTracks()) continue;
+            if (!cleaning_standardApril2011()) continue;
 
 	  		// Loop over jets and see what is btagged
             // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
@@ -532,7 +525,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         (!v1_wwV1_)       && (!v2_wwV1_)       && (!v3_wwV1_)       && (!v4_wwV1_)       && // WW 2010
                         (!v1_el_smurfV1_) && (!v1_el_smurfV1_) && (!v3_el_smurfV1_) && (!v4_el_smurfV1_)    // WW 2011
                         ){ 
-                        //continue;
+                        continue;
                     }
  
                     //////////////////////////////////////////////////////
@@ -706,12 +699,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ///////////////////////
 
                     // Electrons
-                    triggerMatchStruct struct_ele8_vstar                                           = MatchTriggerClass( els_p4().at(iLep), TRegexp("^HLT_Ele8_v[0-9]+$"                                         ));
-                    triggerMatchStruct struct_ele8_CaloIdL_TrkIdVL_vstar                           = MatchTriggerClass( els_p4().at(iLep), TRegexp("^HLT_Ele8_CaloIdL_TrkIdVL_v[0-9]+$"                         ));
-                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                   = MatchTriggerClass( els_p4().at(iLep), TRegexp("^HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v[0-9]+$"                 ));
-                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                         = MatchTriggerClass( els_p4().at(iLep), TRegexp("^HLT_Ele8_CaloIdL_CaloIsoVL_v[0-9]+$"                       ));
-                    triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                        = MatchTriggerClass( els_p4().at(iLep), TRegexp("^HLT_Ele17_CaloIdL_CaloIsoVL_v[0-9]+$"                      ));  
-                    //struct<int, float> struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar  = MatchTriggerClass( els_p4().at(iLep), TRegexp("^HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v[0-9]+$"));
+                    triggerMatchStruct struct_ele8_vstar                                           = MatchTriggerClass( els_p4().at(iLep), ele8_regexp);
+                    triggerMatchStruct struct_ele8_CaloIdL_TrkIdVL_vstar                           = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_TrkIdVL_regexp);
+                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                   = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_Jet40_regexp);
+                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                         = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_regexp);
+                    triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                        = MatchTriggerClass( els_p4().at(iLep), ele17_CaloIdL_CaloIsoVL_regexp);  
+                    //struct<int, float> struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar  = MatchTriggerClass( els_p4().at(iLep), photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
   
                     ele8_vstar_                                              = struct_ele8_vstar.nHLTObjects_;
                     ele8_CaloIdL_TrkIdVL_vstar_                              = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
@@ -1241,11 +1234,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // 
                     if( 
                         !fo_04_ && !fo_10_ &&                                      // ttbar
-                        !fo_mussV2_04_   && !fo_mussV2_10_   &&                    // SS
+                        !fo_mussV2_04_   && !fo_mussV2_10_   && !fo_mussV3_04_  && // SS
                         !fo_wwV1_04_     && !fo_wwV1_10_     && !fo_wwV1_10_d0_ && // WW
                         !fo_mu_smurf_04_ && !fo_mu_smurf_10_                       // WW
                         ){ 
-                        //continue;
+                        continue;
                     }
   
                     //////////////////////////////////////////////////////
@@ -1259,15 +1252,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ///////////////////////
   
                     // Muons
-                    triggerMatchStruct struct_mu3_vstar       = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu3_v[0-9]+$"       ));
-                    triggerMatchStruct struct_mu5_vstar       = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu5_v[0-9]+$"       ));
-                    triggerMatchStruct struct_mu8_vstar       = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu8_v[0-9]+$"       ));
-                    triggerMatchStruct struct_mu12_vstar      = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu12_v[0-9]+$"      ));
-                    triggerMatchStruct struct_mu15_vstar      = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu15_v[0-9]+$"      ));
-                    triggerMatchStruct struct_mu20_vstar      = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu20_v[0-9]+$"      ));
-                    triggerMatchStruct struct_mu24_vstar      = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu24_v[0-9]+$"      ));
-                    triggerMatchStruct struct_mu30_vstar      = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu30_v[0-9]+$"      ));
-                    triggerMatchStruct struct_mu8_Jet40_vstar = MatchTriggerClass( mus_p4().at(iLep), TRegexp("^HLT_Mu8_Jet40_v[0-9]+$" ));
+                    triggerMatchStruct struct_mu3_vstar       = MatchTriggerClass( mus_p4().at(iLep), mu3_regexp, 13);
+                    triggerMatchStruct struct_mu5_vstar       = MatchTriggerClass( mus_p4().at(iLep), mu5_regexp, 13);
+                    triggerMatchStruct struct_mu8_vstar       = MatchTriggerClass( mus_p4().at(iLep), mu8_regexp, 13);
+                    triggerMatchStruct struct_mu12_vstar      = MatchTriggerClass( mus_p4().at(iLep), mu12_regexp, 13);
+                    triggerMatchStruct struct_mu15_vstar      = MatchTriggerClass( mus_p4().at(iLep), mu15_regexp, 13);
+                    triggerMatchStruct struct_mu20_vstar      = MatchTriggerClass( mus_p4().at(iLep), mu20_regexp, 13);
+                    triggerMatchStruct struct_mu24_vstar      = MatchTriggerClass( mus_p4().at(iLep), mu24_regexp, 13);
+                    triggerMatchStruct struct_mu30_vstar      = MatchTriggerClass( mus_p4().at(iLep), mu30_regexp, 13);
+                    triggerMatchStruct struct_mu8_Jet40_vstar = MatchTriggerClass( mus_p4().at(iLep), mu8_Jet40_regexp, 13);
 
                     mu3_vstar_         = struct_mu3_vstar.nHLTObjects_;
                     mu5_vstar_         = struct_mu5_vstar.nHLTObjects_;
