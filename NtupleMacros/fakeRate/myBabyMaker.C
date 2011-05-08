@@ -13,13 +13,7 @@
 #include "TH2F.h"
 #include "Math/VectorUtil.h"
 #include "TObjArray.h"
-
-#if 1
-#define private public
 #include "TString.h"
-#endif
-
-#include "TRegexp.h"
 
 // TAS includes
 #include "myBabyMaker.h"
@@ -231,7 +225,7 @@ triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, TPMERegexp* regexp
             continue;
 
         int version = -1;
-        TString tversion = (*regexp)[regexp->NMatches()-1];
+        TString tversion = (*regexp)[1];
         if (tversion.IsDigit())
             version = tversion.Atoi();
 
@@ -306,8 +300,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     // Set the JSON file
     if(isData) {
-//        set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
-        set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
+        set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
+//        set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
     }
 
     // Jet Corrections
@@ -363,8 +357,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
             if(isData){
                 // Good  Runs
-                //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-                if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+                if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+                //if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
 
 
                 // check for duplicated

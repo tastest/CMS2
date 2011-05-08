@@ -11,8 +11,6 @@
 // TAS Includes
 #include "CMS2.cc"
 
-//class TPMERegexp;
-
 class myBabyMaker {
 
 public:
@@ -1217,19 +1215,19 @@ void myBabyMaker::CloseBabyNtuple() {
 
 // constructor
 myBabyMaker::myBabyMaker () {
-    ele8_regexp = new TPMERegexp("HLT_Ele8_v = new TPMERegexp(\\d+)", "o");
-    ele8_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_CaloIsoVL_v = new TPMERegexp(\\d+)", "o");
-    ele8_CaloIdL_CaloIsoVL_Jet40_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v = new TPMERegexp(\\d+)", "o");
-    ele8_CaloIdL_TrkIdVL_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_TrkIdVL_v = new TPMERegexp(\\d+)", "o");
-    ele17_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Ele17_CaloIdL_CaloIsoVL_v = new TPMERegexp(\\d+)", "o");
-    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v = new TPMERegexp(\\d+)", "o");
-    mu3_regexp = new TPMERegexp("HLT_Mu3_v = new TPMERegexp(\\d+)", "o");
-    mu5_regexp = new TPMERegexp("HLT_Mu5_v = new TPMERegexp(\\d+)", "o");          
-    mu8_regexp = new TPMERegexp("HLT_Mu8_v = new TPMERegexp(\\d+)", "o");      
-    mu12_regexp = new TPMERegexp("HLT_Mu12_v = new TPMERegexp(\\d+)", "o");     
-    mu15_regexp = new TPMERegexp("HLT_Mu15_v = new TPMERegexp(\\d+)", "o");     
-    mu20_regexp = new TPMERegexp("HLT_Mu20_v = new TPMERegexp(\\d+)", "o");     
-    mu24_regexp = new TPMERegexp("HLT_Mu24_v = new TPMERegexp(\\d+)", "o");     
-    mu30_regexp = new TPMERegexp("HLT_Mu30_v = new TPMERegexp(\\d+)", "o");     
-    mu8_Jet40_regexp = new TPMERegexp("HLT_Mu8_Jet40_v = new TPMERegexp(\\d+)", "o");
+    ele8_regexp = new TPMERegexp("HLT_Ele8_v(\\d+)", "o");
+    ele8_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)", "o");
+    ele8_CaloIdL_CaloIsoVL_Jet40_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v(\\d+)", "o");
+    ele8_CaloIdL_TrkIdVL_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)", "o");
+    ele17_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Ele17_CaloIdL_CaloIsoVL_v(\\d+)", "o");
+    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)", "o");
+    mu3_regexp = new TPMERegexp("HLT_Mu3_v(\\d+)", "o");
+    mu5_regexp = new TPMERegexp("HLT_Mu5_v(\\d+)", "o");          
+    mu8_regexp = new TPMERegexp("HLT_Mu8_v(\\d+)", "o");      
+    mu12_regexp = new TPMERegexp("HLT_Mu12_v(\\d+)", "o");     
+    mu15_regexp = new TPMERegexp("HLT_Mu15_v(\\d+)", "o");     
+    mu20_regexp = new TPMERegexp("HLT_Mu20_v(\\d+)", "o");     
+    mu24_regexp = new TPMERegexp("HLT_Mu24_v(\\d+)", "o");     
+    mu30_regexp = new TPMERegexp("HLT_Mu30_v(\\d+)", "o");     
+    mu8_Jet40_regexp = new TPMERegexp("HLT_Mu8_Jet40_v(\\d+)", "o");
 }
