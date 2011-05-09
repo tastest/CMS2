@@ -221,18 +221,18 @@ triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, TPMERegexp* regexp
     
     unsigned int loopCounts = 0;
     for (unsigned int tidx = 0; tidx < cms2.hlt_trigNames().size(); tidx++) {
-        if (!(regexp->Match(cms2.hlt_trigNames().at(tidx))))
+        if (regexp->Match(cms2.hlt_trigNames().at(tidx)) == 0)
             continue;
-
-        int version = -1;
-        TString tversion = (*regexp)[1];
-        if (tversion.IsDigit())
-            version = tversion.Atoi();
 
         ++loopCounts;
 
         // get lepton-trigger matching information
         triggerMatchValues = TriggerMatch(lepton_p4, cms2.hlt_trigNames().at(tidx).Data(), dR_cut, pid);
+
+        int version = -1;
+        TString tversion = (*regexp)[1];
+        if (tversion.IsDigit())
+            version = tversion.Atoi();
 
         triggerMatchInfo = triggerMatchStruct(triggerMatchValues.first, triggerMatchValues.second, version);
     }
