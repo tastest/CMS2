@@ -5,6 +5,15 @@
 REV=edm06May11
 PDFS=/afs/cern.ch/user/e/emanuele/public/4Likelihood/PDFsSQLite/CMSSW_4_1_X/pdfs_MC.root
 
+# make include dir
+if [ ! -d EgammaAnalysisTools/include ]; then
+    mkdir -p EgammaAnalysisTools/include
+fi
+# make source dir
+if [ ! -d EgammaAnalysisTools/src ]; then
+    mkdir -p EgammaAnalysisTools/src
+fi
+
 # likelihood id
 cvs co -r $REV -p UserCode/emanuele/EgammaAnalysisTools/src/LikelihoodPdf.cc             > EgammaAnalysisTools/src/LikelihoodPdf.cc
 cvs co -r $REV -p UserCode/emanuele/EgammaAnalysisTools/include/LikelihoodPdf.h          > EgammaAnalysisTools/include/LikelihoodPdf.h
