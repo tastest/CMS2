@@ -1,11 +1,20 @@
 //-------------------------------------------------------------------------------
 // Use this utility to reweight MC to match the nvtx distribution in data.
 // This requires a root file with a histogram named "hratio" whose bin contents 
-// specify the weight for each nvtx bin. A sample file can be found at:
-// /tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root
+// specify the weight for each nvtx bin. This weight is determined by plotting
+// the nvtx distribution for a data sample and a MC sample and taking the ratio.
 //
-// You can produce your own root file using the macro:
+// A sample file can be found at:
+// /tas/benhoob/vtxreweight/vtxreweight_Spring11MC_153pb_Zselection.root
 //
+// This root file was made with this macro: 
+// /tas/benhoob/vtxreweight/make_vtxreweight_Spring11MC_153pb_Zselection.cc
+//
+// and was produced after applying a Z selection.
+//
+// You can make your own root file by modifying this macro
+//
+// 
 // usage:
 //   
 //    //include header
@@ -13,15 +22,19 @@
 //
 //    //initialize
 //    bool verbose = true;
-//    set_vtxreweight_rootfile("vtxreweight.root",verbose);
+//    char* vtxfile = "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_153pb_Zselection.root";
+//    set_vtxreweight_rootfile( vtxfile , verbose );
 //
 //    //in the event loop
 //    float myvtxweight = vtxweight();
 //
 // 
+// PLEASE NOTE: ALWAYS CHECK THAT THE WEIGHTING HAS BEEN DONE PROPERLY
+// BY COMPARING THE DATA NVTX DIST WITH THE WEIGHTED MC NVTX DISTRIBUTION,
+// WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
+//------------------------------------------------------------------------------
 
-
-// $Id: vtxreweight.cc,v 1.1 2011/04/27 18:28:20 benhoob Exp $
+// $Id: vtxreweight.cc,v 1.2 2011/05/11 18:19:17 benhoob Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
