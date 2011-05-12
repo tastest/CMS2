@@ -8,7 +8,8 @@ void doMC() {
     gSystem->Load("libPhysics.so");
     gSystem->Load("libEG.so");
     gSystem->Load("libMathCore.so");
-    gSystem->Load("/tas07/disk00/jribnik/lhapdf-5.8.3/lib/.libs/libLHAPDF.so");
+    //gSystem->Load("/tas07/disk00/jribnik/lhapdf-5.8.3/lib/.libs/libLHAPDF.so");
+    gSystem->Load("/tas03/home/dlevans/lhapdf-5.8.6b2/lib/.libs/libLHAPDF.so");
 
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
@@ -26,11 +27,10 @@ void doMC() {
     // specify the PDF set to use
     // this should be a valid LHgrid file
     //
-    //looper->specifyPDF("/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq61");
-    //looper->specifyPDF("pdfs/MSTW2008nlo90cl");
-    looper->specifyPDF("/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq61", "/tas07/disk00/jribnik/lhapdf/share/lhapdf/PDFsets/cteq66");
-    //looper->specifyPDF("pdfs/cteq61", "pdfs/MSTW2008nlo68cl");
-    //looper->specifyPDF("pdfs/cteq61", "pdfs/NNPDF20_100");
+    std::string pdfDir = "/tas03/home/dlevans/lhapdf-5.8.6b2/PDFsets";
+    //looper->specifyPDF(pdfDir+"/cteq61", pdfDir+"/NNPDF20_100");
+    looper->specifyPDF(pdfDir+"/cteq61", pdfDir+"/MSTW2008nlo68cl");
+
 
     //
     // chains for input files
@@ -96,9 +96,9 @@ void doMC() {
     looper->ScanChain("dyee", chain_zee, (1666.0/1300.0));
     looper->ScanChain("dymm", chain_zmumu, (1666.0/1300.0));
 
-    looper->ScanChain("ttbarfall10pu", chain_ttbarfall10pu, 1.0);
-    looper->ScanChain("dyeefall10pu", chain_zeefall10pu, 1.0);
-    looper->ScanChain("dymmfall10pu", chain_zmumufall10pu, 1.0);
+    //looper->ScanChain("ttbarfall10pu", chain_ttbarfall10pu, 1.0);
+    //looper->ScanChain("dyeefall10pu", chain_zeefall10pu, 1.0);
+    //looper->ScanChain("dymmfall10pu", chain_zmumufall10pu, 1.0);
 
     //
     // write histograms

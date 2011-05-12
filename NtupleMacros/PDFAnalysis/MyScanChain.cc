@@ -21,7 +21,7 @@
 #include "../CORE/utilities.h"
 
 // LHAPDF
-#include "/tas07/disk00/jribnik/lhapdf/include/LHAPDF/LHAPDF.h"
+#include "/tas03/home/dlevans/lhapdf-5.8.6b2/include/LHAPDF/LHAPDF.h"
 
 //
 // Namespaces
@@ -244,6 +244,7 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
         histArr[i] = new TH1F(Form("h1_pass_%i", i), Form("pass_%i", i), nbins_meff, min_meff, max_meff);
     }
 
+    TH1F *h1_centre_2nd   = new TH1F(Form("%s_h1_centre_2nd_all", sampleName.c_str()),  "centre_2nd", nbins_meff, min_meff, max_meff);
     TH1F *h1_centre   = new TH1F(Form("%s_h1_centre_all", sampleName.c_str()),  "centre", nbins_meff, min_meff, max_meff);
     TH1F *h1_up   = new TH1F(Form("%s_h1_up_all", sampleName.c_str()),  "up", nbins_meff, min_meff, max_meff);
     TH1F *h1_down  = new TH1F(Form("%s_h1_down_all", sampleName.c_str()), "down", nbins_meff, min_meff, max_meff);
@@ -372,6 +373,8 @@ int MyScanChain::ScanChain(std::string sampleName, TChain *chain, float kFactor,
 
             bool passAnalysisSelection = PassAnalysisSelection();
             float genmeff = GetGenMeff();
+
+            if (passAnalysisSelection) h1_centre_2nd->Fill(genmeff, pdfWeightOther*weight);
 
             for (unsigned int subset = 0; subset < nsets; ++subset) 
             {

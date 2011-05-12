@@ -18,7 +18,9 @@ endif
 
 CC = g++
 CMSROOT = ../
-LHAPDF = /tas07/disk00/jribnik/lhapdf
+#LHAPDF = /tas07/disk00/jribnik/lhapdf
+LHAPDF = /tas03/home/dlevans/lhapdf-5.8.6b2/
+
 #ROOFITINCLUDE = 
 #ifdef CMSSW_VERSION
 #	ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
