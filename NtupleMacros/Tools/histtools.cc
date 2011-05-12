@@ -12,6 +12,7 @@ H cumulate (const H &in, bool increasing)
      h_out.SetFillStyle(in.GetFillStyle());
      h_out.SetLineStyle(in.GetLineStyle());
      h_out.SetLineColor(in.GetLineColor());
+     h_out.SetLineWidth(in.GetLineWidth());
      double sum = 0;
      double err2 = 0;
      if (increasing) {
