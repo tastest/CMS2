@@ -53,7 +53,9 @@ enum EleSelectionType {
 	 ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
 	 ELEISO_ECAL_REL020,    // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
 	 ELEISO_HCAL_REL020,    // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
-
+	 ELEISO_FASTJET_REL005, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+	 ELEISO_FASTJET_REL010, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+	 ELEISO_FASTJET_REL015, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
 
 	 //
 	 // ip cuts
@@ -1236,6 +1238,10 @@ float electronIsolation_ECAL_rel_v1(const unsigned int, bool useEBps = true);
 float electronIsolation_HCAL_rel_v1(const unsigned int);
 float electronIsolation_ECAL_rel(const unsigned int);
 float electronIsolation_HCAL_rel(const unsigned int);
+
+float electronIsolation_rel_FastJet(const unsigned int, bool);
+float electronIsolation_rel_v1_FastJet(const unsigned int, bool);
+float el_fastjet_rel_offset(const unsigned int);
 
 // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);

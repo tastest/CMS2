@@ -41,6 +41,11 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if( electronIsolation_HCAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_REL020);    // HCAL    Relative Isolation (truncated)
 
     //relative isolation truncated
+    if (electronIsolation_rel_FastJet(index, true) < 0.05) cuts_passed |= (1ll<<ELEISO_FASTJET_REL005); // ADDED
+    if (electronIsolation_rel_FastJet(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_FASTJET_REL010); // ADDED
+    if (electronIsolation_rel_FastJet(index, true) < 0.15) cuts_passed |= (1ll<<ELEISO_FASTJET_REL015); // ADDED
+
+    //relative isolation truncated
     if (electronIsolation_rel(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_REL010);
     if (electronIsolation_rel(index, true) < 0.15) cuts_passed |= (1ll<<ELEISO_REL015);
     if (electronIsolation_rel(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040);
@@ -827,6 +832,28 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
     return sum/max(pt, 20.);
 }
 
+//relative truncated, fast-jet corrected
+float electronIsolation_rel_FastJet(const unsigned int index, bool use_calo_iso)
+{
+    float sum = cms2.els_tkIso().at(index);
+
+    float offset = cms2.evt_rho() * TMath::Pi() * pow( 0.3 , 2 );
+    
+    if (use_calo_iso) {
+        float caloiso = 0.;
+
+        if (fabs(cms2.els_etaSC().at(index)) >  1.479) caloiso += cms2.els_ecalIso().at(index);
+        if (fabs(cms2.els_etaSC().at(index)) <= 1.479) caloiso += max(0., (cms2.els_ecalIso().at(index) -1.));
+        caloiso += cms2.els_hcalIso().at(index);
+        
+        caloiso -= offset;
+        if( caloiso > 0 ) sum += caloiso;
+    }
+    double pt = cms2.els_p4().at(index).pt();
+    return sum/max(pt, 20.);
+}
+
+
 /*
 //relative non-truncated
 float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso)
@@ -857,6 +884,21 @@ float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso){
     return sum_over_pt;
 }
 
+// Relative Isolation, Non-Truncated, FastJet-corrected
+float electronIsolation_rel_v1_FastJet(const unsigned int index, bool use_calo_iso){
+    float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
+    float TRCK_sum_over_pt = cms2.els_tkIso().at(index) / pt;       // Tracker Relative Isolation, Non-Truncated
+    float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v1(index);  // ECAL    Relative Isolation, Non-Truncated
+    float HCAL_sum_over_pt = electronIsolation_HCAL_rel_v1(index);  // HCAL    Relative Isolation, Non-Truncated
+    float offset           = el_fastjet_rel_offset(index);          // fastjet offset = pi X dR^2 X rho
+    float sum_over_pt      = TRCK_sum_over_pt;                      // Combined Subdetector Relative Isolation, Non-Truncated
+    if(use_calo_iso){
+      float calo_iso = ECAL_sum_over_pt + HCAL_sum_over_pt - offset;
+      if( calo_iso > 0 ) sum_over_pt += calo_iso;
+    }
+    return sum_over_pt;
+}
+
 // ECAL Relative Isolation, Non-Truncated
 float electronIsolation_ECAL_rel_v1(const unsigned int index, bool useEBps){
   float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
@@ -879,6 +921,11 @@ float electronIsolation_HCAL_rel_v1(const unsigned int index){
   return hcal_sum_over_pt;
 }
 
+float el_fastjet_rel_offset(const unsigned int index){
+  double pt     = cms2.els_p4().at(index).pt();
+  double offset = TMath::Pi() * pow( 0.3 , 2 ) * cms2.evt_rho();
+  return offset / pt;
+}
 
 // ECAL Relative Isolation, Truncated
 float electronIsolation_ECAL_rel(const unsigned int index){
