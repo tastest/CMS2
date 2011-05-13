@@ -495,9 +495,17 @@ double muonIsoValueOriginal(unsigned int index){
     double pt  = cms2.mus_p4().at(index).pt();
     return sum/max(pt,20.);
 }
-
 double muonIsoValue(unsigned int index, bool truncated ){
     return ( muonIsoValue_TRK( index, truncated ) + muonIsoValue_ECAL( index, truncated ) + muonIsoValue_HCAL( index, truncated ) );
+}
+double muonIsoValue_FastJet(unsigned int index, bool truncated ){
+  return ( muonIsoValue_TRK( index, truncated ) + TMath::Max( muonIsoValue_ECAL( index, truncated ) + muonIsoValue_HCAL( index, truncated ) - mu_fastjet_rel_offset(index,truncated) , 0.0 ) );
+}
+double mu_fastjet_rel_offset(unsigned int index, bool truncated ){
+  double pt        = cms2.mus_p4().at(index).pt();
+  if(truncated) pt = max( pt, 20.0 );
+  double offset = TMath::Pi() * pow( 0.3 , 2 ) * cms2.evt_rho();
+  return offset / pt;
 }
 double muonIsoValue_TRK(unsigned int index, bool truncated ){
     double pt        = cms2.mus_p4().at(index).pt();
