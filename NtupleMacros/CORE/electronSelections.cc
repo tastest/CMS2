@@ -7,6 +7,7 @@
 #include "eventSelections.h"
 #include "MITConversionUtilities.h"
 #include "trackSelections.h"
+#include "utilities.h"
 
 
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
@@ -958,6 +959,73 @@ float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso)
     double pt = cms2.els_p4().at(index).pt();
     return sum/max(pt, 20.);
 }
+
+
+float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, 
+			 float footprintdr, float gammastripveto, float elestripveto){
+
+  int elgsftkid = cms2.els_gsftrkidx().at(iel);
+  int eltkid = cms2.els_trkidx().at(iel);
+  //take dz from gsf, and if it does not exist (should always exist) take it from ctf track
+  float eldz = elgsftkid>=0 ? gsftrks_dz_dapv( elgsftkid,idavtx ).first : trks_dz_dapv(eltkid,idavtx).first;
+  float eleta = cms2.els_p4().at(iel).eta();
+
+  float pfciso = 0.;
+  float pfniso = 0.;
+  float pffootprint = 0.;
+  float pfjurveto = 0.;
+  float pfjurvetoq = 0.;
+  for (unsigned int ipf=0; ipf<cms2.pfcands_p4().size(); ++ipf){
+
+    float dR = dRbetweenVectors(cms2.pfcands_p4().at(ipf),cms2.els_p4().at(iel));
+    if (dR>coner) continue;
+
+    float pfpt = cms2.pfcands_p4().at(ipf).pt();    
+    float pfeta = cms2.pfcands_p4().at(ipf).eta();    
+    float deta = fabs(pfeta - eleta);
+    int pfid = abs(cms2.pfcands_particleId().at(ipf));
+    if (cms2.pfcands_charge().at(ipf)==0) {
+      //neutrals
+      if (pfpt>minptn) {
+	pfniso+=pfpt;
+	if (dR<footprintdr && pfid==130) pffootprint+=pfpt;
+	if (deta<gammastripveto && pfid==22)  pfjurveto+=pfpt;
+      }
+    } else {
+      //charged  
+      //avoid double counting of electron itself
+      //if either the gsf or the ctf track are shared with the candidate, skip it
+      int pftkid = cms2.pfcands_trkidx().at(ipf);
+      if (eltkid>=0 && pftkid>=0 && eltkid==pftkid) continue;
+      if (pfid==11) {
+	int pfgsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
+	if (elgsftkid>=0 && pfgsfid>=0 && elgsftkid==pfgsfid) continue;
+      }
+      //check electrons with gsf track
+      if (pfid==11) {
+	int gsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
+	if (gsfid>=0) { 
+	  if(fabs(gsftrks_dz_dapv( gsfid,idavtx ).first - eldz )<dzcut) {//dz cut
+	    pfciso+=pfpt;
+	    if (deta<elestripveto && pfid==11) pfjurvetoq+=pfpt;
+	  }   
+	  continue;//and avoid double counting
+	}
+      }      
+      //then check anything that has a ctf track
+      if (pftkid>=0) {//charged (with a ctf track)
+	if(fabs( trks_dz_dapv(cms2.pfcands_trkidx().at(ipf),idavtx).first - eldz )<dzcut) {//dz cut
+	  pfciso+=pfpt;
+	  if (deta<elestripveto && pfid==11) pfjurvetoq+=pfpt;
+	}
+      }
+    } 
+  }
+
+  return (pfciso+pfniso-pffootprint-pfjurveto-pfjurvetoq)/cms2.els_p4().at(iel).pt();
+
+}
+
 
 
 //

@@ -1,5 +1,7 @@
 #include "CMS2.h"
 #include "muonSelections.h"
+#include "trackSelections.h"
+#include "utilities.h"
 #include <iostream>
 #include "eventSelections.h"
 #include "trackSelections.h"
@@ -523,6 +525,43 @@ double muonIsoValue_HCAL(unsigned int index, bool truncated){
     return cms2.mus_iso03_hadEt().at(index) / pt;
 }
 
+double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
+  float pfciso = 0;
+  float pfniso = 0;
+  int mutkid = cms2.mus_trkidx().at(imu);
+  float mudz = trks_dz_dapv(mutkid,idavtx).first;
+  for (unsigned int ipf=0; ipf<cms2.pfcands_p4().size(); ++ipf){
+    float dR = dRbetweenVectors(cms2.pfcands_p4().at(ipf),cms2.mus_p4().at(imu));
+    if (dR>coner) continue;
+    float pfpt = cms2.pfcands_p4().at(ipf).pt();
+    if (cms2.pfcands_charge().at(ipf)==0) {
+      //neutrals
+      if (pfpt>minptn) pfniso+=pfpt;
+    } else {
+      //charged
+      //first check electrons with gsf track
+      if (abs(cms2.pfcands_particleId().at(ipf))==11) {
+	int gsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
+	if (gsfid>=0) { 
+	  if(fabs(gsftrks_dz_dapv( gsfid,idavtx ).first - mudz )<dzcut) {//dz cut
+	    pfciso+=pfpt;
+	  }   
+	  continue;//and avoid double counting
+	}
+      }
+      //then check anything that has a ctf track
+      if (cms2.pfcands_trkidx().at(ipf)>=0) {//charged (with a ctf track)
+	//do not count the muon itself
+	if (cms2.mus_trkidx().at(imu)==cms2.pfcands_trkidx().at(ipf)) continue;
+	//count all other charged candidates
+	if(fabs( trks_dz_dapv(cms2.pfcands_trkidx().at(ipf),idavtx).first - mudz )<dzcut) {//dz cut
+	  pfciso+=pfpt;
+	}
+      } 
+    }
+  } 
+  return (pfciso+pfniso)/cms2.mus_p4().at(imu).pt();
+}
 
 
 //--------------------------------------------------------------
