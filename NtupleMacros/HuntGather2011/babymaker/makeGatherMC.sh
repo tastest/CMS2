@@ -34,6 +34,11 @@ elif [ "$GATHER_SITE" == "UCSD" ]; then
     GATHER_OUTPUT=/nfs-3/userdata/cms2/gather/$GATHER_TAG/
     export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
     source /code/osgcode/cmssoft/cms/cmsset_default.sh
+elif [ "$GATHER_SITE" == "NFS4" ]; then
+    GATHER_INPUT=/nfs-4/userdata/cms2/
+    GATHER_OUTPUT=/nfs-3/userdata/cms2/gather/$GATHER_TAG/
+    export ROOTSYS=/code/osgcode/UCSD_root/root_v5.24.00
+    source /code/osgcode/cmssoft/cms/cmsset_default.sh
 elif [ "$GATHER_SITE" == "CERN" ]; then
     GATHER_INPUT=/tas/cms2/
     GATHER_OUTPUT=/tas/cms2/gather/$GATHER_TAG/
