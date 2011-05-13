@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.16 2011/04/07 00:11:43 fgolf Exp $
+// $Id: jetSelections.cc,v 1.17 2011/05/13 15:21:17 cerati Exp $
 
 #include <algorithm>
 #include <utility>
@@ -7,6 +7,7 @@
 #include "jetcorr/JetCorrectorParameters.icc"
 #include "jetcorr/FactorizedJetCorrector.icc"
 #include "jetcorr/SimpleJetCorrector.icc"
+#include "utilities.h"
 
 using std::vector;
 using std::pair;
@@ -336,3 +337,42 @@ bool passesPFJetID(unsigned int pfJetIdx) {
 
   return true;
 }  
+
+
+
+
+float randomConeEventDensity(){
+
+  //define the eta bins
+  vector<float> etabins;
+  for (int i=0;i<8;++i) etabins.push_back(-2.1+0.6*i);
+  //define the phi bins
+  vector<float> phibins;
+  for (int i=0;i<10;i++) phibins.push_back(-TMath::Pi()+(2*i+1)*TMath::TwoPi()/20.);
+  
+  float etadist = etabins[1]-etabins[0];
+  float phidist = phibins[1]-phibins[0];
+  float etahalfdist = (etabins[1]-etabins[0])/2.;
+  float phihalfdist = (phibins[1]-phibins[0])/2.;
+
+  vector<float> sumPFNallSMDQ;
+  sumPFNallSMDQ.reserve(80);
+  for (unsigned int ieta=0;ieta<etabins.size();++ieta) {
+    for (unsigned int iphi=0;iphi<phibins.size();++iphi) {
+      float pfniso_ieta_iphi = 0;
+      for (unsigned int ipf=0; ipf<cms2.pfcands_p4().size(); ++ipf){
+	if (fabs(etabins[ieta]-cms2.pfcands_p4().at(ipf).eta())>etahalfdist) continue;
+	if (fabs(deltaPhi(phibins[iphi],cms2.pfcands_p4().at(ipf).phi()))>phihalfdist) continue;
+	pfniso_ieta_iphi+=cms2.pfcands_p4().at(ipf).pt();
+      }
+      sumPFNallSMDQ.push_back(pfniso_ieta_iphi);
+    }
+  }
+
+  float evt_smdq = 0;
+  sort(sumPFNallSMDQ.begin(),sumPFNallSMDQ.end());
+  
+  if (sumPFNallSMDQ.size()%2) evt_smdq = sumPFNallSMDQ[(sumPFNallSMDQ.size()-1)/2];
+  else evt_smdq = (sumPFNallSMDQ[sumPFNallSMDQ.size()/2]+sumPFNallSMDQ[(sumPFNallSMDQ.size()-2)/2])/2.;
+  return evt_smdq/(etadist*phidist);
+}
