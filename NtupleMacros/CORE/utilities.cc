@@ -35,6 +35,12 @@ double dRbetweenVectors(const LorentzVector &vec1,
   return sqrt(dphi*dphi + deta*deta);
 }
 
+float deltaPhi( float phi1 , float phi2 ) {
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  return dphi;
+}
+
 int match4vector(const LorentzVector &lvec, 
 		 const vector<LorentzVector> &vec, 
 		 double cut=10.0 ){

@@ -16,11 +16,7 @@ double dRbetweenVectors(const LorentzVector & vec1,
 			const LorentzVector & vec2 );
 bool   sortByPt(const LorentzVector & vec1, const LorentzVector & vec2 );
 
-float deltaPhi( float phi1 , float phi2 ) {
-  float dphi = fabs( phi1 - phi2 );
-  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
-  return dphi;
-}
+float deltaPhi( float phi1 , float phi2 ) ;
 
 class DorkyEvent;
 class DorkyEventIdentifier;
