@@ -72,12 +72,19 @@ enum hyp_selection {
   PASSED_Skim3                   = 1UL<<31   // one fakable object + one final
 };
 
+// DEFAULT
 wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+
+//wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_Skim1;
+// wwcuts_t pass_all = PASSED_BaseLine;
+
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL;
 
 bool applyJEC = false;
 bool applyFastJetCorrection = true;
 bool lockToCoreSelectors = true;
+bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_jpt;
@@ -401,19 +408,11 @@ bool passedTrigger(TString trigName) {
 }
 
 bool passedTriggerRequirements(HypTypeInNtuples type) {
-  if ( passedTrigger("HLT_Mu9") ) return true;
-  if ( passedTrigger("HLT_Mu15_v1") ) return true;
-  if ( passedTrigger("HLT_Ele10_LW_L1R") ) return true;
-  if ( passedTrigger("HLT_Ele15_LW_L1R") ) return true;
-  if ( passedTrigger("HLT_Ele15_SW_L1R") ) return true;
-  if ( passedTrigger("HLT_Ele15_SW_CaloEleId_L1R") ) return true;
-  if ( passedTrigger("HLT_Ele17_SW_CaloEleId_L1R") ) return true;
-  if ( passedTrigger("HLT_Ele17_SW_TightEleId_L1R") ) return true;
-  if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v2") ) return true;
-  if ( passedTrigger("HLT_Ele17_SW_TighterEleIdIsol_L1R_v3") ) return true;
-  if ( passedTrigger("HLT_DoubleEle17_SW_L1R_v1") ) return true;
-  if ( passedTrigger("HLT_DoubleEle15_SW_L1R_v1") ) return true;
-  if ( passedTrigger("HLT_DoubleEle10_SW_L1R") ) return true;
+  return true; // no trigger requirements
+  return cms2.filter_ele10mu10IsoId_passed();
+  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ) return true;
+  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ) return true;
+  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ) return true;
   return false;
 }
 
@@ -1656,7 +1655,9 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   const std::vector<JetPair>& vetojets(getDefaultJets(i_hyp, false));
   unsigned int nJets = vetojets.size();
   if (nJets==0) cuts_passed |= PASSED_JETVETO;
-  if (nJets>1)  cuts_passed |= PASSED_TopControlSample;
+  if (nJets>1 && 
+      getDefaultJets(i_hyp,true).size()>0 )  
+    cuts_passed |= PASSED_TopControlSample;
   if (nJets==1){
     if ( getDefaultJets(i_hyp,true).size()==1 ){
       cuts_passed |= PASSED_1BJET;
@@ -2391,6 +2392,22 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     tree.dRLep3Jet1_   = ROOT::Math::VectorUtil::DeltaR(tree.lep3_,jets.at(0).first);
   }
 }
+int bestHypothesis(const std::vector<unsigned int>& candidates){
+  int best = -1;
+  for( unsigned int i = 0; i < candidates.size(); ++i ) {
+    unsigned int i_hyp = candidates.at(i);
+    if (best<0){
+      best = i_hyp;
+      continue;
+    }
+    if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(), cms2.hyp_ll_p4().at(i_hyp).pt()) > 
+	 std::max(cms2.hyp_lt_p4().at(best).pt(),  cms2.hyp_ll_p4().at(best).pt()) &&
+	 std::min(cms2.hyp_lt_p4().at(i_hyp).pt(), cms2.hyp_ll_p4().at(i_hyp).pt()) > 
+	 std::min(cms2.hyp_lt_p4().at(best).pt(),  cms2.hyp_ll_p4().at(best).pt()) )
+      best = i_hyp;
+  }
+  return best;
+}
 
 void ScanChain( TChain* chain, 
 		enum SmurfTree::DataType sample, 
@@ -2587,17 +2604,22 @@ void ScanChain( TChain* chain,
 	 cuts_passed = 0;
 	 // loop over hypothesis candidates
 	 unsigned int nHyps = cms2.hyp_type().size();
-	 bool goodEvent = false;
 	 // find the best candidate with m(ll) closest to the Z mass
 	 unsigned int i_hyp_bestZ = bestZHyp();
+	 std::vector<unsigned int> candidates;
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-	   // if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) continue;
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
-	   if (hypo(i_hyp, weight, zStudy, realData)){
-	     goodEvent=true;
-	     FillSmurfNtuple(smurfTree,i_hyp,weight,sample,cuts_passed);
-	     smurfTree.tree_->Fill();
+	   if ( hypo(i_hyp, weight, zStudy, realData) ) candidates.push_back(i_hyp);
+	 }
+	 if ( !candidates.empty() ){
+	   int best = bestHypothesis(candidates);
+	   for ( unsigned int i=0; i<candidates.size(); ++i){
+	     unsigned int i_hyp = candidates.at(i);
+	     if (!selectBestCandidate|| int(i_hyp)==best){
+	       FillSmurfNtuple(smurfTree,i_hyp,weight,sample,cuts_passed);
+	       smurfTree.tree_->Fill();
+	     }
 	   }
 	 }
        }
@@ -2880,6 +2902,62 @@ bool passedSkimSelection2()
   return false;
 }
 
+bool passedSkimSelection_TTbar()
+{
+  unsigned int nHyps = cms2.hyp_type().size();
+  for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+    HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+    const double min1 = 20;
+    const double min2 = 20;
+    if ( !( cms2.hyp_lt_p4().at(i_hyp).pt() > min1 && cms2.hyp_ll_p4().at(i_hyp).pt() > min2 ) &&
+	 !( cms2.hyp_lt_p4().at(i_hyp).pt() > min2 && cms2.hyp_ll_p4().at(i_hyp).pt() > min1 ) ) continue;
+
+    
+    // charge
+    if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] > 0 ) continue;
+    
+    // id & iso
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+
+    if ( type == EE || type == MM) {
+      if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
+    }
+    
+    if (!passedMetRequirements(i_hyp)) return false;
+    if ( numberOfJets(i_hyp)<2 ) return false;
+    if (getDefaultJets(i_hyp,true).empty()) return false;
+
+    return true;
+  }
+  return false;
+}
+
+bool passedSkimSelection_emu()
+{
+  unsigned int nHyps = cms2.hyp_type().size();
+  for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+    const double min1 = 20;
+    const double min2 = 20;
+    if ( !( cms2.hyp_lt_p4().at(i_hyp).pt() > min1 && cms2.hyp_ll_p4().at(i_hyp).pt() > min2 ) &&
+	 !( cms2.hyp_lt_p4().at(i_hyp).pt() > min2 && cms2.hyp_ll_p4().at(i_hyp).pt() > min1 ) ) continue;
+
+    // charge
+    if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] != -143 ) continue;
+    
+    // id & iso
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) continue;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) continue;
+
+    return true;
+  }
+  return false;
+}
+
 void SkimChain(TChain* chain,bool mergeFiles){
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
@@ -2944,7 +3022,9 @@ void SkimChain(TChain* chain,bool mergeFiles){
       }
       cms2.GetEntry(event);
       //set condition to skip event
-      if ( not passedSkimSelection() ) continue;
+      // if ( not passedSkimSelection() ) continue;
+      // if ( not passedSkimSelection_TTbar() ) continue;
+      if ( not passedSkimSelection_emu() ) continue;
       
       ++nEventsSelected;
       cms2.LoadAllBranches();
@@ -3015,6 +3095,8 @@ void SkimChain(TChain* chain,bool mergeFiles){
 	  aChain->Add((file->outputDir + "/" + file->fileName).c_str());
 	  rmCommand += " " + file->outputDir + "/" + file->fileName;
 	}
+	aChain->SetBranchStatus("*",0);
+	aChain->SetBranchStatus("*_CMS2*",1);
 	aChain->Merge((aSet->front().outputDir + "/merged.root").c_str());
 	cout << "Merging is done, remove intermediate files.\n" << endl;
 	assert(::system(rmCommand.c_str())==0);
@@ -3051,7 +3133,6 @@ bool passedSkimSelection()
   }
   return false;
 }
-
 
 bool CheckCutsNM1(wwcuts_t apply, wwcuts_t remove, wwcuts_t passed)
 {           
