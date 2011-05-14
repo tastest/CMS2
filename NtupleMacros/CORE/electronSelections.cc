@@ -997,12 +997,12 @@ float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float cone
       //if either the gsf or the ctf track are shared with the candidate, skip it
       int pftkid = cms2.pfcands_trkidx().at(ipf);
       if (eltkid>=0 && pftkid>=0 && eltkid==pftkid) continue;
-      if (pfid==11) {
+      if (pfid==11 && cms2.pfcands_pfelsidx().at(ipf)>=0 && cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))>=0) {
 	int pfgsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
 	if (elgsftkid>=0 && pfgsfid>=0 && elgsftkid==pfgsfid) continue;
       }
       //check electrons with gsf track
-      if (pfid==11) {
+      if (pfid==11 && cms2.pfcands_pfelsidx().at(ipf)>=0 && cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))>=0) {
 	int gsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
 	if (gsfid>=0) { 
 	  if(fabs(gsftrks_dz_dapv( gsfid,idavtx ).first - eldz )<dzcut) {//dz cut
