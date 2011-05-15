@@ -73,41 +73,19 @@ TH2F* eff2(const char* name1, const char* name2, const char* name="eff"){
 }
 
 void makeWWFakeRates(bool doels, bool domus) {
-    gStyle->SetOptStat(0);
-
-    //--------------------------------------------------------------------------
-    // Load lepton data that you want to use to
-    // make your fake rate. It should be a baby
-    // ntuple.  
-    //--------------------------------------------------------------------------
-
     TChain *ch_el = new TChain("tree");
-    TChain *ch_egmon = new TChain("tree");
     TFile* fout_el(0);
     if (doels) {
-        ch_el   ->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/EG.root");
-        ch_egmon->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/EGMon.root");
-        fout_el = TFile::Open("ww_el_fr_EGandEGMon.root","RECREATE");
-        //ch_el->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/qcd_pt_30to50_fall10.root");
-        //fout_el = TFile::Open("ww_el_fr_qcd_pt_30to50_fall10.root","RECREATE");
+      ch_el   ->Add("/smurf/dmytro/samples/fake_ntuples/FakeRates8May2011/DoubleElectron.root");
+      fout_el = TFile::Open("ww_el_fr.root","RECREATE");
     }
 
     TChain *ch_mu = new TChain("tree");
     TFile* fout_mu(0);
     if (domus) {
-        ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/Mu.root");
-        fout_mu = TFile::Open("ww_mu_fr_Mu.root","RECREATE");
-        //ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/mu15.root");
-        //ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/mu15_1.root");
-        //fout_mu = TFile::Open("ww_mu_fr_mu15.root","RECREATE");
-        //ch_mu->Add("/tas/cms2/FRBabies/FakeRates10November2010-v2/mu10.root");
-        //fout_mu = TFile::Open("ww_mu_fr_mu10.root","RECREATE");
+        ch_mu->Add("/smurf/dmytro/samples/fake_ntuples/FakeRates8May2011/SingleMu.root");
+        fout_mu = TFile::Open("ww_mu_fr.root","RECREATE");
     }
-
-    //--------------------------------------------------------------------------
-    // Define numerator and denominator cuts
-    //--------------------------------------------------------------------------
-
     // A cut against Ws
     TCut notWCut  = "tcmet<20 && mt<25"; 
 
@@ -123,28 +101,20 @@ void makeWWFakeRates(bool doels, bool domus) {
     //
     // The trigger selections
     //
-
-    // For EG
-    TCut trgCutEl_eg = "((el10_lw>1 || el10_sw>1 || el15_lw>1) && run < 141956) ||\
-                        ((el15_sw>1 || el20_sw>1) && run <= 145761)";
-    // For EGMon
-    TCut trgCutEl_egmon = "((el10_sw>1 || el17_sw>1) && run < 149181) ||\
-                           (el10_sw_v2>1 || el17_sw_v2>1)";
-    // For Mu
-    TCut trgCutMu = "mu9>1 || mu11>1 || mu15>1";
+    TCut trgCutEl = "ele8_vstar>1 || ele8_CaloIdL_CaloIsoVL_vstar>1 || ele17_CaloIdL_CaloIsoVL_vstar>1";
+    TCut trgCutMu = "mu5_vstar>1 || mu8_vstar>1 || mu12_vstar>1 || mu15_vstar>1";
 
     // Numerator selections
-    TCut is_el_num_wwV1 = "num_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
-    TCut is_mu_num_wwV1 = "num_wwV1&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
+    TCut is_el_num = "num_el_smurfV3&&abs(id)==11"+trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_mu_num = "num_mu_smurfV3&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
 
     // Denominator selections
-    TCut is_el_v1_wwV1    = "v1_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
-    TCut is_el_v2_wwV1    = "v2_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
-    TCut is_el_v3_wwV1    = "v3_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
-    TCut is_el_v4_wwV1    = "v4_wwV1&&abs(id)==11"+jetCut+ptCut+notWCut;
-    TCut is_mu_fo_wwV1_04 = "fo_wwV1_04&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
-    TCut is_mu_fo_wwV1_10 = "fo_wwV1_10&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
-    TCut is_mu_fo_wwV1_10_d0 = "fo_wwV1_10_d0&&abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
+    TCut is_el_fo_v1 = "v1_el_smurfV1 && abs(id)==11" +trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_fo_v2 = "v2_el_smurfV1 && abs(id)==11" +trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_fo_v3 = "v3_el_smurfV1 && abs(id)==11" +trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_el_fo_v4 = "v4_el_smurfV1 && abs(id)==11" +trgCutEl+jetCut+ptCut+notWCut;
+    TCut is_mu_fo_m1 = "fo_mu_smurf_10 && abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
+    TCut is_mu_fo_m2 = "fo_mu_smurf_04 && abs(id)==13"+trgCutMu+jetCut+ptCut+notWCut;
 
     //--------------------------------------------------------------------------
     // Define pt and eta bins of fake rate histograms
@@ -152,8 +122,6 @@ void makeWWFakeRates(bool doels, bool domus) {
 
     double ybin[6]={10.,15.,20.,25.,30.,35.};
     int nbinsy = 5;
-    //double ybin[4]={20.,25.,30.,35.};
-    //int nbinsy = 3;
     double xbin[5]={0.0,1.0,1.479,2.0,2.5};
     int nbinsx = 4;
 
@@ -162,17 +130,16 @@ void makeWWFakeRates(bool doels, bool domus) {
     //--------------------------------------------------------------------------
 
     if (doels) fout_el->cd();
-    TH2F* el_num_wwV1   = new TH2F("el_num_wwV1","el_num_wwV1",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v1_wwV1    = new TH2F("el_v1_wwV1","el_v1_wwV1",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v2_wwV1    = new TH2F("el_v2_wwV1","el_v2_wwV1",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v3_wwV1    = new TH2F("el_v3_wwV1","el_v3_wwV1",nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v4_wwV1    = new TH2F("el_v4_wwV1","el_v4_wwV1",nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_num   = new TH2F("el_num","Electrons passed final selection", nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v1    = new TH2F("el_v1", "Electrons passed V1 selection",    nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v2    = new TH2F("el_v2", "Electrons passed V2 selection",    nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v3    = new TH2F("el_v3", "Electrons passed V3 selection",    nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v4    = new TH2F("el_v4", "Electrons passed V4 selection",    nbinsx,xbin,nbinsy,ybin);
 
     if (domus) fout_mu->cd();
-    TH2F* mu_num_wwV1   = new TH2F("mu_num_wwV1","mu_num_wwV1",nbinsx,xbin,nbinsy,ybin);
-    TH2F* mu_fo_wwV1_04 = new TH2F("mu_fo_wwV1_04","mu_fo_wwV1_04",nbinsx,xbin,nbinsy,ybin);
-    TH2F* mu_fo_wwV1_10 = new TH2F("mu_fo_wwV1_10","mu_fo_wwV1_10",nbinsx,xbin,nbinsy,ybin);
-    TH2F* mu_fo_wwV1_10_d0 = new TH2F("mu_fo_wwV1_10_d0","mu_fo_wwV1_10_d0",nbinsx,xbin,nbinsy,ybin);
+    TH2F* mu_num   = new TH2F("mu_num","Muons passed final selection",     nbinsx,xbin,nbinsy,ybin);
+    TH2F* mu_m1    = new TH2F("mu_m1", "Muons passed M1 selection",        nbinsx,xbin,nbinsy,ybin);
+    TH2F* mu_m2    = new TH2F("mu_m2", "Muons passed M2 selection",        nbinsx,xbin,nbinsy,ybin);
 
     //--------------------------------------------------------------------------
     // Fill Histograms
@@ -180,24 +147,18 @@ void makeWWFakeRates(bool doels, bool domus) {
 
     if (doels) {
         fout_el->cd();
-        ch_el->Draw("pt:abs(eta)>>el_num_wwV1",trgCutEl_eg&&is_el_num_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v1_wwV1",trgCutEl_eg&&is_el_v1_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v2_wwV1",trgCutEl_eg&&is_el_v2_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v3_wwV1",trgCutEl_eg&&is_el_v3_wwV1);
-        ch_el->Draw("pt:abs(eta)>>el_v4_wwV1",trgCutEl_eg&&is_el_v4_wwV1);
-        ch_egmon->Draw("pt:abs(eta)>>+el_num_wwV1",trgCutEl_egmon&&is_el_num_wwV1);
-        ch_egmon->Draw("pt:abs(eta)>>+el_v1_wwV1",trgCutEl_egmon&&is_el_v1_wwV1);
-        ch_egmon->Draw("pt:abs(eta)>>+el_v2_wwV1",trgCutEl_egmon&&is_el_v2_wwV1);
-        ch_egmon->Draw("pt:abs(eta)>>+el_v3_wwV1",trgCutEl_egmon&&is_el_v3_wwV1);
-        ch_egmon->Draw("pt:abs(eta)>>+el_v4_wwV1",trgCutEl_egmon&&is_el_v4_wwV1);
+        ch_el->Draw("pt:abs(eta)>>el_num", is_el_num);
+        ch_el->Draw("pt:abs(eta)>>el_v1",  is_el_fo_v1);
+        ch_el->Draw("pt:abs(eta)>>el_v2",  is_el_fo_v2);
+        ch_el->Draw("pt:abs(eta)>>el_v3",  is_el_fo_v3);
+        ch_el->Draw("pt:abs(eta)>>el_v4",  is_el_fo_v4);
     }
 
     if (domus) {
         fout_mu->cd();
-        ch_mu->Draw("pt:abs(eta)>>mu_num_wwV1",is_mu_num_wwV1);
-        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_04",is_mu_fo_wwV1_04);
-        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_10",is_mu_fo_wwV1_10);
-        ch_mu->Draw("pt:abs(eta)>>mu_fo_wwV1_10_d0",is_mu_fo_wwV1_10_d0);
+        ch_mu->Draw("pt:abs(eta)>>mu_num", is_mu_num);
+        ch_mu->Draw("pt:abs(eta)>>mu_m1",  is_mu_fo_m1);
+        ch_mu->Draw("pt:abs(eta)>>mu_m2",  is_mu_fo_m2);
     }
 
     //--------------------------------------------------------------------------
@@ -207,19 +168,18 @@ void makeWWFakeRates(bool doels, bool domus) {
 
     if (doels){
       fout_el->cd();
-      eff2(el_v1_wwV1,el_num_wwV1,"el_fr_v1_wwV1");
-      eff2(el_v2_wwV1,el_num_wwV1,"el_fr_v2_wwV1");
-      eff2(el_v3_wwV1,el_num_wwV1,"el_fr_v3_wwV1");
-      eff2(el_v4_wwV1,el_num_wwV1,"el_fr_v4_wwV1");
+      eff2(el_v1, el_num, "el_fr_v1");
+      eff2(el_v2, el_num, "el_fr_v2");
+      eff2(el_v3, el_num, "el_fr_v3");
+      eff2(el_v4, el_num, "el_fr_v4");
       fout_el->Write();
       fout_el->Close();
     }
 
     if (domus){
       fout_mu->cd();
-      eff2(mu_fo_wwV1_04,mu_num_wwV1,"mu_fr_fo_wwV1_04");
-      eff2(mu_fo_wwV1_10,mu_num_wwV1,"mu_fr_fo_wwV1_10");
-      eff2(mu_fo_wwV1_10_d0,mu_num_wwV1,"mu_fr_fo_wwV1_10_d0");
+      eff2(mu_m1, mu_num, "mu_fr_m1");
+      eff2(mu_m2, mu_num, "mu_fr_m2");
       fout_mu->Write();
       fout_mu->Close();
     }
