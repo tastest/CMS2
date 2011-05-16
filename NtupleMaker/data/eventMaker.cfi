@@ -1,0 +1,10 @@
+module eventMaker = EventMaker {
+
+
+ untracked double inclusiveCrossSection = 0
+  untracked double exclusiveCrossSection = 0
+  untracked double kfactor = 1
+
+  untracked bool haveTriggerInfo = true  
+
+}
