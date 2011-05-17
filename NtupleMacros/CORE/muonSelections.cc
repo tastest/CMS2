@@ -435,6 +435,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
             return true;
             break;
         case NominalSmurfV3:
+        case NominalSmurfV4:
         case muonSelectionFO_mu_smurf_04:
         case muonSelectionFO_mu_smurf_10:
             if (type == NominalSmurfV3 ){
