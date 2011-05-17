@@ -146,12 +146,13 @@ int nHLTObjects(const char* arg ){
     return 0;
   }
 
-  int nobj = 0;
-  for( unsigned int i=0; i < cms2.hlt_trigObjs_p4().at(trigIndx).size(); i++ ){
-    nobj++;
-    //cout << "\t" << i << ", (pt, eta, phi): " << hlt_trigObjs_p4().at(trigIndx).at(i).pt() << " "
-    //              << hlt_trigObjs_p4().at(trigIndx).at(i).eta() << " " << hlt_trigObjs_p4().at(trigIndx).at(i).phi() << endl;
+  int nobj = cms2.hlt_trigObjs_p4().at(trigIndx).size();
+  /*
+  for( unsigned int i=0; i < nobj; i++ ){
+    cout << "\t" << i << ", (pt, eta, phi): " << cms2.hlt_trigObjs_p4().at(trigIndx).at(i).pt() << " "
+                  << cms2.hlt_trigObjs_p4().at(trigIndx).at(i).eta() << " " << cms2.hlt_trigObjs_p4().at(trigIndx).at(i).phi() << endl;
   }
+  */
 
   // cout << " Number of jets = " << njets << endl;
 
