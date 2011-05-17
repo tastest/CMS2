@@ -43,6 +43,8 @@ enum EleSelectionType {
 	 ELEISO_REL100_WW,
 	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
 	 ELEISO_SMURFV1,
+	 // pfIso
+	 ELEISO_SMURFV4,
 
 	 ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
 	 ELEISO_RELNT015,       // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
@@ -854,6 +856,32 @@ static const cuts_t electronSelection_smurfV3  =
          electronSelection_smurfV3_iso |
          electronSelection_smurfV3_id;
 //--------end of SMURF V3 cuts--------------------------------
+
+//--------SMURF V4 cuts--------------------------------
+static const cuts_t electronSelection_smurfV4_ip  = 
+         (1ll<<ELEIP_PV_SMURFV4);
+static const cuts_t electronSelection_smurfV4_baseline  = 
+	 electronSelection_wwV1_base |
+	 electronSelection_smurfV4_ip;
+static const cuts_t electronSelection_smurfV4_convrej  = 
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+         (1ll<<ELENOTCONV_MIT);
+static const cuts_t electronSelection_smurfV4_iso  = 
+         (1ll<<ELEISO_SMURFV4);
+static const cuts_t electronSelection_smurfV4_id  = 
+	 (1ll<<ELEID_VBTF_80_NOHOEEND) |
+         (1ll<<ELEID_SMURFV4_EXTRA);
+
+static const cuts_t electronSelection_smurfV1ss_id  =
+         (1ll<<ELEID_VBTF_80_NOHOEEND) |
+         (1ll<<ELEID_SMURFV1SS_EXTRA);
+
+static const cuts_t electronSelection_smurfV4  = 
+         electronSelection_smurfV4_baseline |
+         electronSelection_smurfV4_convrej |
+         electronSelection_smurfV4_iso |
+         electronSelection_smurfV4_id;
+//--------end of SMURF V4 cuts--------------------------------
 
 //--------SMURF FakableObject cuts--------------------------------
 static const cuts_t electronSelectionFO_el_smurf_base =

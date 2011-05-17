@@ -60,6 +60,10 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     else if( cms2.els_p4()[index].pt() < 20.0 && electronIsolation_rel_v1(index, true) < 0.07) cuts_passed |= (1ll<<ELEISO_SMURFV1);
     else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
 
+    //pf iso
+    if (fabs(cms2.els_p4()[index].eta()) < 1.479 && electronIsoValuePF(index,0)<0.15) cuts_passed |= (1ll<<ELEISO_SMURFV4);
+    else if (electronIsoValuePF(index,0)<0.09) cuts_passed |= (1ll<<ELEISO_SMURFV4);
+
     // ip
 
     if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
