@@ -17,6 +17,7 @@
 
 // TAS includes
 #include "myBabyMaker.h"
+#include "../CORE/utilities.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/electronSelectionsParameters.cc"
 #include "../CORE/eventSelections.cc"
@@ -445,6 +446,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v2_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v2    );
                     v3_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v3    );
                     v4_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v4    );
+
+                    
+                    //OS
+                    num_el_OSV2_   = electronSelection( iLep, electronSelection_el_OSV2          );
+                    fo_el_OSV2_    = electronSelection( iLep, electronSelection_el_OSV2_FO       );
+
 
                     //////////
                     // 2010 //
@@ -1195,6 +1202,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     numNomSSv3_   = muonId(iLep, NominalSSv3          );
                     fo_mussV3_04_ = muonId(iLep, muonSelectionFO_ssV3 );
 
+                    //OS
+                    num_mu_OSGV2_     = muonId(iLep, OSGeneric_v2);
+                    num_mu_OSZV2_     = muonId(iLep, OSZ_v2);
+                    fo_mu_OSGV2_      = muonId(iLep, OSGeneric_v2_FO);
+
                     //////////
                     // 2010 //
                     //////////
@@ -1224,6 +1236,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     fo_mu_smurf_04_    = muonId(iLep, muonSelectionFO_mu_smurf_04       );
                     fo_mu_smurf_10_    = muonId(iLep, muonSelectionFO_mu_smurf_10       );
 
+
+    
  
                     // 
                     if( 
