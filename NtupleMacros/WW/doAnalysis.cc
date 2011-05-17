@@ -75,8 +75,9 @@ enum hyp_selection {
 // DEFAULT
 wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
-//wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_Skim1;
+
+//wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
 
 // wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL;
@@ -110,7 +111,7 @@ bool goodElectronWithoutIsolation(unsigned int i){
 
 bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
-  bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV3);
+  bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV4);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
   assert(!lockToCoreSelectors || core==internal);
   return internal;
@@ -133,7 +134,7 @@ bool goodMuonWithoutIsolation(unsigned int i){
 
 bool goodMuonIsolated(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  bool core = ptcut && muonId(i, NominalSmurfV3);
+  bool core = ptcut && muonId(i, NominalSmurfV4);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
   assert(!lockToCoreSelectors || core==internal);
   return internal;
@@ -169,7 +170,7 @@ bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   // std::vector<LorentzVector> jets = getDefaultJets(i_hyp);
-  metStruct trkMET = trackerMET(i_hyp,0.2); //,&jets);
+  metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
   double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
 			 projectedMet(i_hyp, trkMET.met, trkMET.metphi));
   // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
@@ -271,7 +272,7 @@ bool ww_eldZPV(unsigned int index){
   if (vtxIndex<0) return false;
   // double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
-  return fabs(dzpv)<0.2;
+  return fabs(dzpv)<0.1;
 }
 
 double ww_elIsoVal(unsigned int index){
@@ -287,7 +288,8 @@ double ww_elIsoVal(unsigned int index){
 }
 
 bool ww_elIso(unsigned int index){
-  return ww_elIsoVal(index)<0.1;
+  return pass_electronSelection(index, electronSelection_smurfV4_iso);
+  //return ww_elIsoVal(index)<0.1;
 }
 
 //
@@ -318,7 +320,7 @@ bool ww_mudZPV(unsigned int index){
   if (vtxIndex<0) return false;
   // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
-  return fabs(dzpv)<0.2;
+  return fabs(dzpv)<0.1;
 }
 bool ww_muId(unsigned int index){
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
@@ -340,9 +342,15 @@ double ww_muIsoVal(unsigned int index){
   return sum/pt;
 }
 bool ww_muIso(unsigned int index){
-  if ( cms2.mus_p4().at(index).pt() < 20. )
-    return ww_muIsoVal(index)<0.1;
-  return ww_muIsoVal(index)<0.15;
+  if (cms2.mus_p4().at(index).pt()>20) {
+    if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) return muonIsoValuePF(index,0) < 0.22;
+    else return muonIsoValuePF(index,0) < 0.20;
+  } else {
+    return muonIsoValuePF(index,0) < 0.11;
+  }
+//   if ( cms2.mus_p4().at(index).pt() < 20. )
+//     return ww_muIsoVal(index)<0.1;
+//   return ww_muIsoVal(index)<0.15;
 }
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
 			       const std::vector<JetPair>& vetojets)
@@ -2462,18 +2470,18 @@ void ScanChain( TChain* chain,
   // declare and create array of histograms
   initializeHistograms(prefix.c_str(),qcdBackground);
 
-  if ( !externalElFakeRates ){
-    TFile* f = TFile::Open("files/ww_el_fr_EGandEGMon.root");
-    assert(f);
-    externalElFakeRates = dynamic_cast<TH2F*>( f->Get("el_fr_v2_wwV1") );
-    assert(externalElFakeRates);
-  }      
-  if ( !externalMuFakeRates ){
-    TFile* f = TFile::Open("files/ww_mu_fr_Mu.root");
-    assert(f);
-    externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10_d0") );
-    assert(externalMuFakeRates);
-  }      
+//   if ( !externalElFakeRates ){
+//     TFile* f = TFile::Open("files/ww_el_fr_EGandEGMon.root");
+//     assert(f);
+//     externalElFakeRates = dynamic_cast<TH2F*>( f->Get("el_fr_v2_wwV1") );
+//     assert(externalElFakeRates);
+//   }      
+//   if ( !externalMuFakeRates ){
+//     TFile* f = TFile::Open("files/ww_mu_fr_Mu.root");
+//     assert(f);
+//     externalMuFakeRates = dynamic_cast<TH2F*>( f->Get("mu_fr_fo_wwV1_10_d0") );
+//     assert(externalMuFakeRates);
+//   }      
 
   // clear list of duplicates
   already_seen.clear();
@@ -2574,7 +2582,7 @@ void ScanChain( TChain* chain,
 
 	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
 	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
-	 EventIdentifier id = { cms2.evt_run(), cms2.evt_event(), cms2.evt_lumiBlock(), cms2.trks_d0()[0], cms2.hyp_lt_p4()[0].pt(), cms2.hyp_lt_p4()[0].eta(), cms2.hyp_lt_p4()[0].phi() };
+	 EventIdentifier id(cms2,realData);
 	 if (is_duplicate(id)) {
 	   duplicates_total_n++;
 	   if(!realData) duplicates_total_weight += cms2.evt_scale1fb();
@@ -2712,46 +2720,29 @@ void ScanChain( TChain* chain,
       json2.close();
   }
 }
-
+EventIdentifier::EventIdentifier(CMS2& cms2, bool isData){
+  data = isData;
+  run = cms2.evt_run();
+  event = cms2.evt_event();
+  lumi = cms2.evt_lumiBlock();
+  trks_d0 = cms2.trks_d0().empty() ? 0 : cms2.trks_d0().front();
+}
+   
 bool EventIdentifier::operator < (const EventIdentifier &other) const
 {
-     if (run != other.run)
-	  return run < other.run;
-     if (event != other.event)
-	  return event < other.event;
-     // the floating point numbers are not easy, because we're
-     // comapring ones that are truncated (because they were written
-     // to file and read back in) with ones that are not truncated.
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-	  return trks_d0 < other.trks_d0;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-	  return hyp_lt_pt < other.hyp_lt_pt;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-	  return hyp_lt_eta < other.hyp_lt_eta;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-	  return hyp_lt_phi < other.hyp_lt_phi;
-     // if the records are exactly the same, then r1 is not less than
-     // r2.  Duh!
+     if (run != other.run)  return run < other.run;
+     if (event != other.event) return event < other.event;
+     if (data) return false;
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0) return trks_d0 < other.trks_d0;
      return false;
 }
 
 bool EventIdentifier::operator == (const EventIdentifier &other) const
 {
-     if (run != other.run)
-	  return false;
-     if (event != other.event)
-	  return false;
-     // the floating point numbers are not easy, because we're
-     // comapring ones that are truncated (because they were written
-     // to file and read back in) with ones that are not truncated.
-     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)
-	  return false;
-     if (fabs(hyp_lt_pt - other.hyp_lt_pt) > 1e-6 * hyp_lt_pt)
-       return false;
-     if (fabs(hyp_lt_eta - other.hyp_lt_eta) > 1e-6 * hyp_lt_eta)
-       return false;
-     if (fabs(hyp_lt_phi - other.hyp_lt_phi) > 1e-6 * hyp_lt_phi)
-       return false;
+     if (run != other.run) return false;
+     if (event != other.event) return false;
+     if (data) return true;
+     if (fabs(trks_d0 - other.trks_d0) > 1e-6 * trks_d0)  return false;
      return true;
 }
 
@@ -2935,6 +2926,23 @@ bool passedSkimSelection_TTbar()
   return false;
 }
 
+bool passedSkimSelection_debug()
+{
+  unsigned int event  = cms2.evt_event();
+  if (event==96545084) return true;
+  if (event==78249319) return true;
+  if (event==79448375) return true;
+  if (event==28110974) return true;
+  if (event==39201149) return true;
+  if (event==143535867) return true;
+  if (event==949396) return true;
+  if (event==53238645) return true;
+  if (event==126965428) return true;
+  if (event==501269551) return true;
+  
+  return false;
+}
+
 bool passedSkimSelection_emu()
 {
   unsigned int nHyps = cms2.hyp_type().size();
@@ -3024,7 +3032,7 @@ void SkimChain(TChain* chain,bool mergeFiles){
       //set condition to skip event
       // if ( not passedSkimSelection() ) continue;
       // if ( not passedSkimSelection_TTbar() ) continue;
-      if ( not passedSkimSelection_emu() ) continue;
+      if ( not passedSkimSelection_debug() ) continue;
       
       ++nEventsSelected;
       cms2.LoadAllBranches();
