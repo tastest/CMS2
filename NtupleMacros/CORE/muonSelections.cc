@@ -38,15 +38,21 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
             break;
         case muonSelectionFO_mu_wwV1:
         case muonSelectionFO_mu_ww:
+	  isovalue = 0.40;
+	  break;
         case muonSelectionFO_mu_smurf_04:
-            isovalue = 0.40;
-            break;
+	  if (!muonIdNotIsolated( index, type )) return false;
+	  return muonIsoValuePF(index,0) < 0.40;
+	  break;
         case muonSelectionFO_mu_wwV1_iso10_d0:
         case muonSelectionFO_mu_wwV1_iso10:
         case muonSelectionFO_mu_ww_iso10:
-        case muonSelectionFO_mu_smurf_10:
             isovalue = 1.0;
             break;
+        case muonSelectionFO_mu_smurf_10:
+	  if (!muonIdNotIsolated( index, type )) return false;
+	  return muonIsoValuePF(index,0) < 1.0;
+	  break;
         case NominalSS:
         case NominalSSv2:
             isovalue = 0.1;
