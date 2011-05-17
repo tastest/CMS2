@@ -74,6 +74,8 @@ enum EleSelectionType {
 	 ELEIP_PV_SMURFV3,
 	 // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
 	 ELEIP_PV_OSV2,
+	 // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
+	 ELEIP_PV_OSV2_FO,
 	 // 2011 SS numerator d0 cut
 	 ELEIP_SS200,
 	 // 2011 SS potential denominator d0 cut
@@ -508,6 +510,16 @@ static const cuts_t electronSelection_el_OSV2_iso =
 
 static const cuts_t electronSelection_el_OSV2 = 
   electronSelection_el_OSV2_iso | electronSelection_el_OSV2_noiso;
+
+static const cuts_t electronSelection_el_OSV2_FO = 
+  (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
+  (1ll<<ELEIP_PV_OSV2_FO)                  | // d0(PV) < 0.2 cm, dz(PV) < 1.0 cm
+  (1ll<<ELENOMUON_010)                     | // no muon dR < 0.1
+  (1ll<<ELENOTCONV_HITPATTERN)             | // <=1 missing hits
+  (1ll<<ELENOTCONV_MIT)                    | // MIT conversion rejection
+  (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
+  (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
+  (1ll<<ELEETA_250);                         // |eta| < 2.5
 
 
 //
