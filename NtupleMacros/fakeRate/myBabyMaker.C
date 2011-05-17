@@ -442,6 +442,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                     // WW
                     num_el_smurfV3_ = pass_electronSelection( iLep, electronSelection_smurfV3          );
+                    num_el_smurfV4_ = pass_electronSelection( iLep, electronSelection_smurfV4          );
                     v1_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v1    );
                     v2_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v2    );
                     v3_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v3    );
@@ -647,6 +648,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     */
 
                     el_id_smurfV3_  = pass_electronSelection( iLep, electronSelection_smurfV3_id );
+                    el_id_smurfV4_  = pass_electronSelection( iLep, electronSelection_smurfV4_id );
                     el_id_vbtf80_   = electronId_VBTF(iLep, VBTF_35X_80, false, false);
                     el_id_vbtf90_   = electronId_VBTF(iLep, VBTF_35X_90, false, false);
                     if( els_closestMuon().at(iLep) == -1 ) closestMuon_ = true;
@@ -1233,6 +1235,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
  
                     // WW
                     num_mu_smurfV3_    = muonId(iLep, NominalSmurfV3                    );
+                    num_mu_smurfV4_    = muonId(iLep, NominalSmurfV4                    );
                     fo_mu_smurf_04_    = muonId(iLep, muonSelectionFO_mu_smurf_04       );
                     fo_mu_smurf_10_    = muonId(iLep, muonSelectionFO_mu_smurf_10       );
 
