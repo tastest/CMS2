@@ -859,7 +859,7 @@ static const cuts_t electronSelection_smurfV3  =
 
 //--------SMURF V4 cuts--------------------------------
 static const cuts_t electronSelection_smurfV4_ip  = 
-         (1ll<<ELEIP_PV_SMURFV4);
+         (1ll<<ELEIP_PV_SMURFV3);
 static const cuts_t electronSelection_smurfV4_baseline  = 
 	 electronSelection_wwV1_base |
 	 electronSelection_smurfV4_ip;
@@ -870,12 +870,7 @@ static const cuts_t electronSelection_smurfV4_iso  =
          (1ll<<ELEISO_SMURFV4);
 static const cuts_t electronSelection_smurfV4_id  = 
 	 (1ll<<ELEID_VBTF_80_NOHOEEND) |
-         (1ll<<ELEID_SMURFV4_EXTRA);
-
-static const cuts_t electronSelection_smurfV1ss_id  =
-         (1ll<<ELEID_VBTF_80_NOHOEEND) |
-         (1ll<<ELEID_SMURFV1SS_EXTRA);
-
+         (1ll<<ELEID_SMURFV3_EXTRA);
 static const cuts_t electronSelection_smurfV4  = 
          electronSelection_smurfV4_baseline |
          electronSelection_smurfV4_convrej |
