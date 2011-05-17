@@ -519,6 +519,7 @@ static const cuts_t electronSelection_el_OSV2_FO =
   (1ll<<ELENOTCONV_MIT)                    | // MIT conversion rejection
   (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
   (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
+  (1ll<<ELEISO_REL040)                     | // reliso < 0.4, truncated, 1 GeV EB PS
   (1ll<<ELEETA_250);                         // |eta| < 2.5
 
 
