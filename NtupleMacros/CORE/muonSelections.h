@@ -40,7 +40,8 @@ enum SelectionType {
     muonSelectionFO_mu_smurf_10 = 30,
     NominalSSv3 = 31,
     muonSelectionFO_ssV3 = 32,
-    OSZ_v2 = 33
+    OSZ_v2 = 33,
+    NominalSmurfV4 = 34
 }; 
 
 //

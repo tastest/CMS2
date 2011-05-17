@@ -100,6 +100,15 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
             return false;
         return (muonIsoValue(index, false) < 0.40);
         break;
+    case NominalSmurfV4:
+        if (!muonIdNotIsolated( index, type )) return false;
+        if (cms2.mus_p4().at(index).pt()<20) {
+	  if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) return muonIsoValuePF(index,0) < 0.22;
+	  else return muonIsoValuePF(index,0) < 0.20;
+	} else {
+	  return muonIsoValuePF(index,0) < 0.11;
+	}
+        break;
     default:
         std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
         exit(1);
@@ -529,7 +538,7 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
   float pfciso = 0;
   float pfniso = 0;
   int mutkid = cms2.mus_trkidx().at(imu);
-  float mudz = trks_dz_dapv(mutkid,idavtx).first;
+  float mudz = mutkid>=0 ? trks_dz_dapv(mutkid,idavtx).first : cms2.mus_sta_z0corr().at(imu);
   for (unsigned int ipf=0; ipf<cms2.pfcands_p4().size(); ++ipf){
     float dR = dRbetweenVectors(cms2.pfcands_p4().at(ipf),cms2.mus_p4().at(imu));
     if (dR>coner) continue;
@@ -539,8 +548,11 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
       if (pfpt>minptn) pfniso+=pfpt;
     } else {
       //charged
+      //avoid double counting of muon itself
+      int pftkid = cms2.pfcands_trkidx().at(ipf);
+      if (mutkid>=0 && pftkid>=0 && mutkid==pftkid) continue;
       //first check electrons with gsf track
-      if (abs(cms2.pfcands_particleId().at(ipf))==11) {
+      if (abs(cms2.pfcands_particleId().at(ipf))==11 && cms2.pfcands_pfelsidx().at(ipf)>=0 && cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))>=0) {
 	int gsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
 	if (gsfid>=0) { 
 	  if(fabs(gsftrks_dz_dapv( gsfid,idavtx ).first - mudz )<dzcut) {//dz cut
@@ -551,9 +563,6 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
       }
       //then check anything that has a ctf track
       if (cms2.pfcands_trkidx().at(ipf)>=0) {//charged (with a ctf track)
-	//do not count the muon itself
-	if (cms2.mus_trkidx().at(imu)==cms2.pfcands_trkidx().at(ipf)) continue;
-	//count all other charged candidates
 	if(fabs( trks_dz_dapv(cms2.pfcands_trkidx().at(ipf),idavtx).first - mudz )<dzcut) {//dz cut
 	  pfciso+=pfpt;
 	}
