@@ -71,6 +71,9 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         case OSGeneric_v2:
             isovalue  = 0.15;
             break;
+        case OSGeneric_v2_FO:
+            isovalue  = 0.4;
+            break;
         case OSZ_v1:
             isovalue = 0.15;
             break;
@@ -340,6 +343,20 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
             if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
             return true;
 
+        case OSGeneric_v2_FO:
+	    //baseline FO for 2011 OS analysis
+	    //relax cuts: chi2/ndf < 50, d0 < 0.2, reliso < 0.4
+            if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
+            if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
+            if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
+            if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
+            if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
+            if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
+            if (TMath::Abs(mud0PV_smurfV3(index)) > 0.2)                             return false; // d0(PV) < 0.2 cm
+            if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
+            if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
+            return true;
+
         case OSZ_v1:
             //this selector is Nominal + eta < 2.4 + dpt/pt < 0.1
             if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
@@ -418,7 +435,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
             return true;
             break;
         case NominalSmurfV3:
-        case NominalSmurfV4:
         case muonSelectionFO_mu_smurf_04:
         case muonSelectionFO_mu_smurf_10:
             if (type == NominalSmurfV3 ){
