@@ -42,7 +42,7 @@ enum EleSelectionType {
 	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
 	 ELEISO_REL100_WW,
 	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
-	 ELEISO_SMURFV1,
+	 // ELEISO_SMURFV1,
 	 // pfIso
 	 ELEISO_SMURFV4,
 
@@ -72,6 +72,8 @@ enum EleSelectionType {
 	 ELEIP_PV_wwV1,
 	 // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
 	 ELEIP_PV_SMURFV3,
+	 // d0 (PV) < 0.02 and dz (PV) < 0.1, using first DA PV
+	 ELEIP_PV_SMURFV4,
 	 // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
 	 ELEIP_PV_OSV2,
 	 // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
@@ -813,6 +815,7 @@ static const cuts_t electronSelectionFO_el_wwV1_v4 =
 //--------end of WW V1 cuts--------------------------------
 
 //--------SMURF V1 cuts--------------------------------
+/*
 static const cuts_t electronSelection_smurfV1_baseline  = 
 	 electronSelection_wwV1_base |
 	 electronSelection_wwV1_convrej |
@@ -826,6 +829,7 @@ static const cuts_t electronSelection_smurfV1  =
          electronSelection_smurfV1_baseline |
          electronSelection_smurfV1_iso |
          electronSelection_smurfV1_id;
+*/
 //--------end of SMURF V1 cuts--------------------------------
 
 //--------SMURF V2 cuts--------------------------------
@@ -872,7 +876,7 @@ static const cuts_t electronSelection_smurfV3  =
 
 //--------SMURF V4 cuts--------------------------------
 static const cuts_t electronSelection_smurfV4_ip  = 
-         (1ll<<ELEIP_PV_SMURFV3);
+         (1ll<<ELEIP_PV_SMURFV4);
 static const cuts_t electronSelection_smurfV4_baseline  = 
 	 electronSelection_wwV1_base |
 	 electronSelection_smurfV4_ip;

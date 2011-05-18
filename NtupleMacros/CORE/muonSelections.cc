@@ -444,7 +444,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         case NominalSmurfV4:
         case muonSelectionFO_mu_smurf_04:
         case muonSelectionFO_mu_smurf_10:
-            if (type == NominalSmurfV3 ){
+            if (type == NominalSmurfV3 || type == NominalSmurfV4){
                 if (cms2.mus_p4().at(index).pt()<20){
                     if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.01)    return false; // d0 from pvtx
                 } else {
@@ -459,7 +459,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
             if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
             if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits  
             if (cms2.mus_gfit_validSTAHits().at(index)==0 )     return false; // Glb fit must have hits in mu chambers
-            if (TMath::Abs(mudzPV_smurfV3(index)) >= 0.2)       return false; // dz from pvtx
+            if (TMath::Abs(mudzPV_smurfV3(index)) >= 0.1)       return false; // dz from pvtx
             if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
             if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
             if (cms2.mus_nmatches().at(index)<2) return false;
