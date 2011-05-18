@@ -34,7 +34,7 @@
 // WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
 //------------------------------------------------------------------------------
 
-// $Id: vtxreweight.cc,v 1.2 2011/05/11 18:19:17 benhoob Exp $
+// $Id: vtxreweight.cc,v 1.3 2011/05/18 17:40:42 benhoob Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
@@ -57,7 +57,7 @@
 
 bool loaded_vtxreweight_hist = false;
 
-float vtxweight( bool isData ){
+float vtxweight( bool isData , bool useDAVertices ){
 
   if( isData ) return 1;
 
@@ -71,20 +71,39 @@ float vtxweight( bool isData ){
     exit(2);
   }
 
-  int ndavtx = 0;
-    
-  for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-    if(isGoodDAVertex(v)) ++ndavtx;
+  int nvtx = 0;
+  
+  //---------------------
+  // count DA vertices
+  //---------------------
+
+  if( useDAVertices ){
+    //cout << "Counting DA vertices" << endl;
+    for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+      if(isGoodDAVertex(v)) ++nvtx;
+    }
   }
 
-  if( ndavtx == 0 ){
+  //---------------------
+  // count DA vertices
+  //---------------------
+
+  else{
+    //cout << "Counting standard vertices" << endl;
+    for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+      if(isGoodVertex(v)) ++nvtx;
+    }
+  }
+
+  if( nvtx == 0 ){
     cout << "vtxreweight.cc: warning 0 good vertices found, returning 0 weight" << endl;
     return 0;
   }
 
-  if( ndavtx > vtxreweight_hist->GetNbinsX() ) ndavtx = vtxreweight_hist->GetNbinsX();
+  if( nvtx > vtxreweight_hist->GetNbinsX() ) nvtx = vtxreweight_hist->GetNbinsX();
 
-  return vtxreweight_hist->GetBinContent(ndavtx);
+  //cout << "nvtx " << nvtx << " weight " << vtxreweight_hist->GetBinContent(nvtx) << endl;
+  return vtxreweight_hist->GetBinContent(nvtx);
 
 }
 
