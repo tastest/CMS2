@@ -298,6 +298,7 @@ bool electronId_smurf_v2(const unsigned int index)
  	 
  bool electronId_smurf_v3(const unsigned int index)	 
  {	 
+   if (fabs(cms2.els_etaSC()[index]) > 1.479 && cms2.els_hOverE()[index] > 0.1) return false;
  	 
    if (cms2.els_p4()[index].pt() > 20.0) return true;	 
  	 
