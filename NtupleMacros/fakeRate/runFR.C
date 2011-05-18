@@ -1,4 +1,7 @@
 #include "ChainFromText.cc"
+
+#include "TChain.h"
+
 void runFR(){
 
 gROOT->LoadMacro("myBabyMaker.C++");
@@ -9,27 +12,28 @@ gROOT->LoadMacro("myBabyMaker.C++");
 
   // Data
 
+/*
     // Double Electron
     TChain *chain1 = new TChain("Events");
-    //chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-02/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-01-02_merged/V04-01-02/*.root");
-    chain1->Add("/home/users/dbarge/ntuple_production/devel_CMSSW_4_1_2_patch1_V04-01-03/crab/DoubleElectron/DoubleElectron_vOriginal.root");
+    chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root");
+    chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-02/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-01-02_merged/V04-01-02/*.root");
     myBabyMaker* baby1 = new myBabyMaker();
-    baby1->ScanChain(chain1, "triggerStudy/DoubleElectron_triggerStudy_27Apr11_v1.root", true, -1);
-    return;
+    baby1->ScanChain(chain1, "DoubleElectron_18May2011.root", true, -1);
+*/
 
     // Single Muon
     TChain *chain3 = new TChain("Events");
-    //chain3->Add("/nfs-4/userdata/cms2/SingleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/*.root");
-    chain3->Add("/home/users/dbarge/ntuple_production/devel_CMSSW_4_1_2_patch1_V04-01-03/crab/SingleMu/F41C615E-5C50-E011-99CA-0030487CD716.root");
+    chain3->Add("/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-01-03/SingleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root");
+    chain3->Add("/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-00-13/SingleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/*.root");
     myBabyMaker* baby3 = new myBabyMaker();
-    baby3->ScanChain(chain3, "triggerStudy/SingleMu_triggerStudy_27Apr11_v1.root", true, -1);
+    baby3->ScanChain(chain3, "SingleMu_18May2011.root", true, -1);
 
     // Double Muon
     TChain *chain2 = new TChain("Events");
-    //chain2->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/*.root");
-    chain2->Add("/home/users/dbarge/ntuple_production/devel_CMSSW_4_1_2_patch1_V04-01-03/crab/DoubleMu/E4DB0E07-E355-E011-BFE6-003048F11C58.root");
+    chain2->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root")
+    chain2->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/*.root");
     myBabyMaker* baby2 = new myBabyMaker();
-    baby2->ScanChain(chain2, "triggerStudy/DoubleMu_triggerStudy_27Apr11_v1.root", true, -1);
+    baby2->ScanChain(chain2, "DoubleMu_18May2011.root", true, -1);
 
     return;
 

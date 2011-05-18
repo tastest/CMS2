@@ -301,25 +301,25 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     // Set the JSON file
     if(isData) {
-//        set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
-        set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
+      //set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
+      set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
     }
 
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
-    jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
-    jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
+    jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
+    jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 /*
     std::vector<std::string> jetcorr_pf_L1FastL2L3_filenames;
     //jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Jec10V1_L1FastJet_AK5PF.txt");
-    jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5PF.txt");
-    jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5PF.txt");
+    jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
+    jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
     FactorizedJetCorrector *jet_pf_L1FastL2L3corrector = makeJetCorrector(jetcorr_pf_L1FastL2L3_filenames);
 */
     std::vector<std::string> jetcorr_jpt_L2L3_filenames;
-    jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5JPT.txt");
-    jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5JPT.txt");
+    jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5JPT.txt");
+    jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5JPT.txt");
     FactorizedJetCorrector *jet_jpt_L2L3corrector = makeJetCorrector(jetcorr_jpt_L2L3_filenames);
 
 
