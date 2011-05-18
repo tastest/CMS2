@@ -112,11 +112,13 @@ bool isGoodVertex(size_t ivtx);
 bool defaultBTag(WWJetType type, unsigned int iJet);
 
 HypTypeInNtuples hypType(unsigned int i_hyp);
-
-struct EventIdentifier {
+class CMS2;
+class EventIdentifier {
   unsigned long int run, event, lumi;
   float trks_d0;
-  float hyp_lt_pt, hyp_lt_eta, hyp_lt_phi;
+  bool data;
+ public:
+  EventIdentifier(CMS2& cms2, bool isData);
   bool operator < (const EventIdentifier &) const;
   bool operator == (const EventIdentifier &) const;
 };
