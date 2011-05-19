@@ -989,13 +989,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("num_mu_smurfV4",  &num_mu_smurfV4_ );
     babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_ );
     babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_ );
-    
+  
     // OS
     babyTree_->Branch("num_el_OSV2"  , &num_el_OSV2_      );
     babyTree_->Branch("num_mu_OSGV2" , &num_mu_OSGV2_     );
     babyTree_->Branch("num_mu_OSZV2" , &num_mu_OSZV2_     );
-    babyTree_->Branch("fo_el_OSV2"   , &num_el_OSV2_      );
-    babyTree_->Branch("fo_mu_OSGV2"  , &num_mu_OSGV2_      );
+    babyTree_->Branch("fo_el_OSV2"   , &fo_el_OSV2_       );
+    babyTree_->Branch("fo_mu_OSGV2"  , &fo_mu_OSGV2_      );
 
     //////////
     // 2010 //

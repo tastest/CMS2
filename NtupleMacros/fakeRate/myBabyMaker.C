@@ -356,10 +356,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         for( z = 0; z < nLoop; z++) { // Event Loop
             cms2.GetEntry(z);
 
+      
             if(isData){
                 // Good  Runs
                 //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-                if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+	          if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
 
 
                 // check for duplicated
@@ -370,7 +371,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                 }
             }
 
-      
+
             // looper progress
             ++nEventsTotal;
             int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
@@ -379,6 +380,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                 fflush(stdout);
                 i_permilleOld = i_permille;
             }
+
       
             // Event cleaning (careful, it requires technical bits)
             //if (!cleaning_BPTX(isData))   continue;
@@ -447,12 +449,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v2_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v2    );
                     v3_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v3    );
                     v4_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v4    );
-
                     
                     //OS
-                    num_el_OSV2_   = electronSelection( iLep, electronSelection_el_OSV2          );
-                    fo_el_OSV2_    = electronSelection( iLep, electronSelection_el_OSV2_FO       );
-
+                    num_el_OSV2_   = pass_electronSelection( iLep, electronSelection_el_OSV2          );
+                    fo_el_OSV2_    = pass_electronSelection( iLep, electronSelection_el_OSV2_FO       );
 
                     //////////
                     // 2010 //
