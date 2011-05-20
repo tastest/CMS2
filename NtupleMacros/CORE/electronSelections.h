@@ -150,9 +150,7 @@ inline void checkElectronSelections(void){
 }
 
 // ===================== FAKERATES ========================
-//
 // The Fakeable Objects
-//
 // These cuts are applied in all
 // fakeable object denominators
 //---------------------------------------------------------
@@ -162,8 +160,6 @@ static const cuts_t electronSelectionFO_baseline =
 	 (1ll<<ELESEED_ECAL) |             // not only tracker seeded
 	 (1ll<<ELENOTCONV_DISTDCOT002);    // dist/dcot conv. rejection
 //---------------------------------------------------------
-
-//  
 // V1 fakeable object for cand01
 // extrapolating in iso and id
 // NOTE - this is the same as el_ttbar_v1
@@ -172,7 +168,6 @@ static const cuts_t electronSelectionFO_el_v1_cand01 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
-//  
 // V1 fakeable object for cand02 + extra
 // extrapolating in iso and id
 // NOTE - this is the same as el_ttbar_v1
@@ -181,7 +176,6 @@ static const cuts_t electronSelectionFO_el_v1_cand02 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
-//  
 // V1 fakeable object for cand02 + extra + flipveto
 // extrapolating in iso and id with charge flip veto
 //---------------------------------------------------------
@@ -190,7 +184,6 @@ static const cuts_t electronSelectionFO_el_v1_cand02flip =
 	 (1ll<<ELEISO_REL040) |
 	 (1ll<<ELECHARGE_NOTFLIP);
 //---------------------------------------------------------
-//  
 // V2 fakeable object for cand01
 // extrapolating in id
 //---------------------------------------------------------
@@ -198,7 +191,6 @@ static const cuts_t electronSelectionFO_el_v2_cand01 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL010);
 //---------------------------------------------------------
-//  
 // V2 fakeable object for cand02 + extra
 // extrapolating in id
 // NOTE: this is the same as above
@@ -207,7 +199,6 @@ static const cuts_t electronSelectionFO_el_v2_cand02 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL010);
 //---------------------------------------------------------
-//  
 // V2 fakeable object for cand02 + extra + flipveto
 // extrapolating in id with charge flip veto
 //---------------------------------------------------------
@@ -216,7 +207,6 @@ static const cuts_t electronSelectionFO_el_v2_cand02flip =
 	 (1ll<<ELEISO_REL010) |
 	 (1ll<<ELECHARGE_NOTFLIP);
 //---------------------------------------------------------
-//  
 // V3 fakeable object for cand01
 // extrapolating in isolation
 //---------------------------------------------------------
@@ -225,7 +215,6 @@ static const cuts_t electronSelectionFO_el_v3_cand01 =
 	 (1ll<<ELEISO_REL040) |
 	 (1ll<<ELEID_CAND01);
 //---------------------------------------------------------
-//  
 // V3 fakeable object for cand02 + extra
 // extrapolating in isolation
 //---------------------------------------------------------
@@ -235,7 +224,6 @@ static const cuts_t electronSelectionFO_el_v3_cand02 =
 	 (1ll<<ELEID_CAND02) |
 	 (1ll<<ELEID_EXTRA);
 //---------------------------------------------------------
-//  
 // V3 fakeable object for cand02 + extra + flipveto
 // extrapolating in isolation with charge flip veto
 //---------------------------------------------------------
@@ -257,7 +245,6 @@ static const cuts_t electronSelectionFO_el_v3_cand02flip =
 
 
 // ===================== TTBar ============================
-//
 // The standard TTBar selection without isolation
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbar_noiso =
@@ -268,13 +255,11 @@ static const cuts_t electronSelection_ttbar_noiso =
 	 (1ll<<ELENOMUON_010) |
 	 (1ll<<ELESEED_ECAL);
 //---------------------------------------------------------
-//
 // The standard TTBar isolation cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbar_iso =
 	 (1ll<<ELEISO_REL010);
 //---------------------------------------------------------
-//
 // The standard TTBar selection with isolation
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbar =
@@ -1170,73 +1155,61 @@ static const cuts_t electronSelection_cand02flip = electronSelection_ss;
 
 
 
-//
-// other enums for internal use
-//
+////////////////////////////
+// enums for internal use //
+////////////////////////////
 
 enum EgammaFiduciality {
-	 ISEB,
-	 ISEBEEGAP,
-	 ISEE,
-	 ISEEGAP,
-	 ISEBETAGAP,
-	 ISEBPHIGAP,
-	 ISEEDEEGAP,
-	 ISEERINGGAP,
-	 ISGAP
+  ISEB,
+  ISEBEEGAP,
+  ISEE,
+  ISEEGAP,
+  ISEBETAGAP,
+  ISEBPHIGAP,
+  ISEEDEEGAP,
+  ISEERINGGAP,
+  ISGAP
 };
 
 enum EgammaElectronType {
-	 ISECALENERGYCORRECTED,  // if false, the electron "ecalEnergy" is just the supercluster energy 
-	 ISMOMENTUMCORRECTED,    // has E-p combination been applied
-	 ISECALDRIVEN,
-	 ISTRACKERDRIVEN
+  ISECALENERGYCORRECTED,  // if false, the electron "ecalEnergy" is just the supercluster energy 
+  ISMOMENTUMCORRECTED,    // has E-p combination been applied
+  ISECALDRIVEN,
+  ISTRACKERDRIVEN
 };
 
 enum ElectronIDComponent {
-	 ELEID_ID,
-	 ELEID_ISO,
-	 ELEID_CONV,
-	 ELEID_IP,
+  ELEID_ID,
+  ELEID_ISO,
+  ELEID_CONV,
+  ELEID_IP,
 };
 
-// 
 // master selection function
-//
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
 bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, int vertex_index = -1);
 cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, int vertex_index = -1);
 
-//
 // "smurf" electron id
 // WARNING!!! this is not the full smurf selection, just the additional ID on top of VBTF80 for low pt guys
-//
 bool electronId_smurf_v1(const unsigned int index);
 bool electronId_smurf_v2(const unsigned int index);
 bool electronId_smurf_v3(const unsigned int index);
 bool electronId_smurf_v1ss(const unsigned int index);
 
-//
 // "cand" electron id
-//
 bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 bool electronId_extra(const unsigned int index);
 
-
-//
 // "VBTF" id
-//
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 
-//
 // "CIC" id
-//
 electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap =false);
 
 unsigned int eidClassify(const unsigned int version, const unsigned int index);
 bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn=false);
 
-//
 // relative isolation 
 // - standard track isolation from CMSSW
 // --- CMSSW >= 3_5_X track jurassic strip half width 0.015
@@ -1251,54 +1224,35 @@ float electronIsolation_ECAL_rel_v1(const unsigned int, bool useEBps = true);
 float electronIsolation_HCAL_rel_v1(const unsigned int);
 float electronIsolation_ECAL_rel(const unsigned int);
 float electronIsolation_HCAL_rel(const unsigned int);
-
 float electronIsolation_rel_FastJet(const unsigned int, bool);
 float electronIsolation_rel_v1_FastJet(const unsigned int, bool);
 float el_fastjet_rel_offset(const unsigned int);
-
-// the difference from above is that the pedestal sub is applied on both EB/EE
-float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);
-
+float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);  // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, 
-			 float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=0.025);
+float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=0.025);
 
-
-//
 // remove electrons that are overlapping with a muon
-//
 bool electronId_noMuon(const unsigned int index);
 
-//
 // conversion rejection
-//
 bool isFromConversionHitPattern(const unsigned int index);
 bool isFromConversionPartnerTrack(const unsigned int index);
 bool isFromConversionMIT(const unsigned int index);
 
-//
 //electron charge using the majority logic of the egamma group
-//
 int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
 
-//
 //charge flip rejection
-//
 bool isChargeFlip(int elIndex);
 bool isChargeFlip3agree(int elIndex); 
-//
+
 // spike rejection for electrons
-//
 bool isSpikeElectron(const unsigned int index);
 
-//
 // position correction for electrons
-//
-
 void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhiIn);
 
-//
 // d0 corrected by the primary vertex
-//
 double electron_d0PV(unsigned int index);
 double electron_d0PV_wwV1(unsigned int index);
 double electron_d0PV_mindz(unsigned int index);
@@ -1306,6 +1260,7 @@ double electron_dzPV_wwV1(unsigned int index);
 double electron_d0PV_smurfV3(unsigned int index);
 double electron_dzPV_smurfV3(unsigned int index);
 
+// dz
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv);
 
 #endif
