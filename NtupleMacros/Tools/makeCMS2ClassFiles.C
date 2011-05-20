@@ -38,6 +38,20 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile);
 void makeBranchFile(std::string branchNamesFile);
 void makeDriverFile(std::string fname);
 
+struct hltcompare {
+  bool operator() (const TString& lhs, const TString& rhs) const {
+    string s_match = "hlt_bits";
+    string s_lhs   = (string) lhs;
+    string s_rhs   = (string) rhs;
+    s_lhs          = s_lhs.replace( s_lhs.find(s_match), s_match.length(), "" );
+    s_rhs          = s_rhs.replace( s_rhs.find(s_match), s_match.length(), "" );
+    int i_lhs      = atoi( s_lhs.c_str() );
+    int i_rhs      = atoi( s_rhs.c_str() );
+    return i_lhs < i_rhs;
+  }
+};
+
+
 
 //-------------------------------------------------------------------------------------------------
 void makeCMS2ClassFiles (std::string fname, bool paranoid = true, 
@@ -413,28 +427,26 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t\t"   << "}" << endl << endl;
     //get the list of branches that hold the HLT bitmasks
     //store in a set 'cause its automatically sorted
-    set<TString> s_HLTbitmasks;
+    //set<TString> s_HLTbitmasks;
+    set<TString, hltcompare> s_HLTbitmasks;
     set<TString> s_L1bitmasks;
     for(int j = 0; j < aliasarray->GetSize(); j++) {
       TString aliasname(aliasarray->At(j)->GetName());
       TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
       TString classname = branch->GetClassName();
       if(aliasname.Contains("hlt_bits") && classname.Contains("int")) {
-	s_HLTbitmasks.insert(aliasname);
+	      s_HLTbitmasks.insert(aliasname);
       }
-     
     }
     int i = 0;
-    for(set<TString>::const_iterator s_it = s_HLTbitmasks.begin();
-	s_it != s_HLTbitmasks.end(); s_it++, i++) {
-      
+    for( set<TString>::const_iterator s_it = s_HLTbitmasks.begin(); s_it != s_HLTbitmasks.end(); s_it++, i++ ) {
       if(i==0) {
-	headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
-	headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-	headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
-	headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
-	headerf << "\t\t" << "}" << endl;
-	continue;
+	      headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
+	      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+	      headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
+	      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+	      headerf << "\t\t" << "}" << endl;
+	      continue;
       }
       headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
       headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
@@ -692,7 +704,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "      ++nEventsTotal;" << endl;
   codef << "    " << endl;
   codef << "      // Progress" << endl;
-  codef << "      progress( nEventsTotal, nEventsChain );" << endl;
+  codef << "      CMS2::progress( nEventsTotal, nEventsChain );" << endl;
   codef << "    }" << endl;
   codef << "  " << endl;
   codef << "    delete tree;" << endl;
