@@ -27,26 +27,26 @@ enum EleSelectionType {
 // Isolation //
 ///////////////
  
-	 ELEISO_REL010,             // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL015,             // rel iso (fixed below 20 GeV) < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL040,             // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL100,             // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL010_WW,          // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL040_WW,          // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL100_WW,          // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_SMURFV4,            // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
-	 ELEISO_RELNT010,           // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_RELNT015,           // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_RELNT040,           // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_TRK_RELNT020,       // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
-	 ELEISO_ECAL_RELNT020,      // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_ECAL_RELNT020_NPS,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, no pedestal sub in EB
-	 ELEISO_HCAL_RELNT020,      // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
-	 ELEISO_ECAL_REL020,        // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_HCAL_REL020,        // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
-	 ELEISO_FASTJET_REL005,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
-	 ELEISO_FASTJET_REL010,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
-	 ELEISO_FASTJET_REL015,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+  ELEISO_REL010,             // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL015,             // rel iso (fixed below 20 GeV) < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL040,             // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL100,             // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL010_WW,          // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+  ELEISO_REL040_WW,          // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+  ELEISO_REL100_WW,          // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+  ELEISO_SMURFV4,            // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
+  ELEISO_RELNT010,           // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_RELNT015,           // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_RELNT040,           // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_TRK_RELNT020,       // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
+  ELEISO_ECAL_RELNT020,      // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_ECAL_RELNT020_NPS,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, no pedestal sub in EB
+  ELEISO_HCAL_RELNT020,      // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+  ELEISO_ECAL_REL020,        // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_HCAL_REL020,        // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+  ELEISO_FASTJET_REL005,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+  ELEISO_FASTJET_REL010,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+  ELEISO_FASTJET_REL015,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
 
 //////////////////////
 // Impact Parameter //
@@ -74,18 +74,18 @@ enum EleSelectionType {
   ELEID_SMURFV1SS_EXTRA,              // electron ID with VBTF80
   ELEID_CAND01,                       // pass "CAND01" electron ID
   ELEID_CAND02,                       // pass "CAND02" electron ID
-	ELEID_EXTRA,                        // pass "EXTRA" electron ID
-	ELEID_VBTF_35X_95,                  // VBTF95 electron ID (35X)
-	ELEID_VBTF_35X_90,                  // VBTF90 electron ID (35X)
-	ELEID_VBTF_35X_80,                  // VBTF80 electron ID (35X)
+  ELEID_EXTRA,                        // pass "EXTRA" electron ID
+  ELEID_VBTF_35X_95,                  // VBTF95 electron ID (35X)
+  ELEID_VBTF_35X_90,                  // VBTF90 electron ID (35X)
+  ELEID_VBTF_35X_80,                  // VBTF80 electron ID (35X)
   ELEID_VBTF_35X_70,                  // VBTF70 electron ID (35X)
   ELEID_VBTF_80_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
-	ELEID_VBTF_85_NOHOEEND,             // VBTF85 electron ID no HoE in endcap
-	ELEID_VBTF_85,                      // VBTF85 electron ID
-	ELEID_VBTF_70_NOHOEEND,             // VBTF70 electron ID no HoE in endcap
+  ELEID_VBTF_85_NOHOEEND,             // VBTF85 electron ID no HoE in endcap
+  ELEID_VBTF_85,                      // VBTF85 electron ID
+  ELEID_VBTF_70_NOHOEEND,             // VBTF70 electron ID no HoE in endcap
   ELEID_VBTF_90_HLT,                  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdL_TrkIdVL
   ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdT_TrkIdVL
-	ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
+  ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
 
 //////////////////////////
 // Conversion Rejection //
@@ -103,9 +103,9 @@ enum EleSelectionType {
   ELEETA_250,               // |eta| < 2.50
   ELEETA_240,               // |eta| < 2.40 
 
-	ELEPT_010,                // Pt > 10
-	ELEPT_015,                // Pt > 15
-	ELEPT_020,                // Pt > 20
+  ELEPT_010,                // Pt > 10
+  ELEPT_015,                // Pt > 15
+  ELEPT_020,                // Pt > 20
 
   ELESCET_010,              // SC Et > 10
   ELESCET_015,              // SC Et > 20
