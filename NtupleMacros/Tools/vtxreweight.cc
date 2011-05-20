@@ -34,7 +34,7 @@
 // WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
 //------------------------------------------------------------------------------
 
-// $Id: vtxreweight.cc,v 1.3 2011/05/18 17:40:42 benhoob Exp $
+// $Id: vtxreweight.cc,v 1.4 2011/05/20 14:24:22 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
@@ -130,15 +130,15 @@ void set_vtxreweight_rootfile ( const char* filename , bool verbose ){
     cout << "|" << setw(10) << "nvtx"   << setw(4) 
 	 << "|" << setw(10) << "weight" << setw(4) << "|" << endl;
 
-    for(unsigned int ibin = 1 ; ibin <= vtxreweight_hist->GetNbinsX() ; ++ibin ){
+    for(unsigned int ibin = 1 ; ibin <= (unsigned int)vtxreweight_hist->GetNbinsX() ; ++ibin ){
 
       cout << "|" << setw(10) << ibin                                   << setw(4) 
 	   << "|" << setw(10) << vtxreweight_hist->GetBinContent(ibin) << setw(4) << "|" << endl;
 
     }
-
-  loaded_vtxreweight_hist = true;
   }
+  loaded_vtxreweight_hist = true;
+
 }
 
 #endif // __CUNT__
