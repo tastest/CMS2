@@ -175,11 +175,11 @@ enum EleSelectionType {
 
 
  
-  /////////////////////////////////////////////////////////////////////////////////////////
+  //*************************************************************************************//
   // This is the last enumerator element                                                 //
   // The electron selection bitmask will not work with more than 63 element in this enum //
-  // DO NOT ADD ANY ELEMENTS AFTER THIS!                                                  //
-  /////////////////////////////////////////////////////////////////////////////////////////
+  // DO NOT ADD ANY ELEMENTS AFTER THIS!                                                 //
+  //*************************************************************************************//
 
   ELENOSPIKE_SWISS005, // swiss variable should be > 0.05 to not be a spike
 
