@@ -1,11 +1,20 @@
 //-------------------------------------------------------------------------------
 // Use this utility to reweight MC to match the nvtx distribution in data.
 // This requires a root file with a histogram named "hratio" whose bin contents 
-// specify the weight for each nvtx bin. A sample file can be found at:
-// /tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root
+// specify the weight for each nvtx bin. This weight is determined by plotting
+// the nvtx distribution for a data sample and a MC sample and taking the ratio.
 //
-// You can produce your own root file using the macro:
+// A sample file can be found at:
+// /tas/benhoob/vtxreweight/vtxreweight_Spring11MC_153pb_Zselection.root
 //
+// This root file was made with this macro: 
+// /tas/benhoob/vtxreweight/make_vtxreweight_Spring11MC_153pb_Zselection.cc
+//
+// and was produced after applying a Z selection.
+//
+// You can make your own root file by modifying this macro
+//
+// 
 // usage:
 //   
 //    //include header
@@ -13,15 +22,19 @@
 //
 //    //initialize
 //    bool verbose = true;
-//    set_vtxreweight_rootfile("vtxreweight.root",verbose);
+//    char* vtxfile = "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_153pb_Zselection.root";
+//    set_vtxreweight_rootfile( vtxfile , verbose );
 //
 //    //in the event loop
 //    float myvtxweight = vtxweight();
 //
 // 
+// PLEASE NOTE: ALWAYS CHECK THAT THE WEIGHTING HAS BEEN DONE PROPERLY
+// BY COMPARING THE DATA NVTX DIST WITH THE WEIGHTED MC NVTX DISTRIBUTION,
+// WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
+//------------------------------------------------------------------------------
 
-
-// $Id: vtxreweight.cc,v 1.1 2011/04/27 18:28:20 benhoob Exp $
+// $Id: vtxreweight.cc,v 1.4 2011/05/20 14:24:22 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
@@ -44,7 +57,7 @@
 
 bool loaded_vtxreweight_hist = false;
 
-float vtxweight( bool isData ){
+float vtxweight( bool isData , bool useDAVertices ){
 
   if( isData ) return 1;
 
@@ -58,20 +71,39 @@ float vtxweight( bool isData ){
     exit(2);
   }
 
-  int ndavtx = 0;
-    
-  for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-    if(isGoodDAVertex(v)) ++ndavtx;
+  int nvtx = 0;
+  
+  //---------------------
+  // count DA vertices
+  //---------------------
+
+  if( useDAVertices ){
+    //cout << "Counting DA vertices" << endl;
+    for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+      if(isGoodDAVertex(v)) ++nvtx;
+    }
   }
 
-  if( ndavtx == 0 ){
+  //---------------------
+  // count DA vertices
+  //---------------------
+
+  else{
+    //cout << "Counting standard vertices" << endl;
+    for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+      if(isGoodVertex(v)) ++nvtx;
+    }
+  }
+
+  if( nvtx == 0 ){
     cout << "vtxreweight.cc: warning 0 good vertices found, returning 0 weight" << endl;
     return 0;
   }
 
-  if( ndavtx > vtxreweight_hist->GetNbinsX() ) ndavtx = vtxreweight_hist->GetNbinsX();
+  if( nvtx > vtxreweight_hist->GetNbinsX() ) nvtx = vtxreweight_hist->GetNbinsX();
 
-  return vtxreweight_hist->GetBinContent(ndavtx);
+  //cout << "nvtx " << nvtx << " weight " << vtxreweight_hist->GetBinContent(nvtx) << endl;
+  return vtxreweight_hist->GetBinContent(nvtx);
 
 }
 
@@ -98,15 +130,15 @@ void set_vtxreweight_rootfile ( const char* filename , bool verbose ){
     cout << "|" << setw(10) << "nvtx"   << setw(4) 
 	 << "|" << setw(10) << "weight" << setw(4) << "|" << endl;
 
-    for(unsigned int ibin = 1 ; ibin <= vtxreweight_hist->GetNbinsX() ; ++ibin ){
+    for(unsigned int ibin = 1 ; ibin <= (unsigned int)vtxreweight_hist->GetNbinsX() ; ++ibin ){
 
       cout << "|" << setw(10) << ibin                                   << setw(4) 
 	   << "|" << setw(10) << vtxreweight_hist->GetBinContent(ibin) << setw(4) << "|" << endl;
 
     }
-
-  loaded_vtxreweight_hist = true;
   }
+  loaded_vtxreweight_hist = true;
+
 }
 
 #endif // __CUNT__
