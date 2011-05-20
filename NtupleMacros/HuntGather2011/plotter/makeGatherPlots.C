@@ -122,6 +122,10 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     bs_data2011->add(base+"/babies/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
     bs_data2011->add(base+"/babies/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
     bs_data2011->add(base+"/babies/CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/baby_gather*.root");
+    // post may tech stop
+    bs_data2011->add(base+"/babies/CMSSW_4_2_3_patch1_V04-02-10/DoubleElectron_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/baby_gather*.root");
+    bs_data2011->add(base+"/babies/CMSSW_4_2_3_patch1_V04-02-10/DoubleMu_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/baby_gather*.root");
+    bs_data2011->add(base+"/babies/CMSSW_4_2_3_patch1_V04-02-10/MuEG_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_3_patch1_V04-02-10_merged/V04-02-10/baby_gather*.root");
 
     // 2010 only
     BabySample *bs_data2010 = new BabySample("data", "data", base+"/data2010/Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/baby_gather.root", c_datapresel, 1.0, DATA, kBlack);
@@ -131,7 +135,13 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
 
     // 2011 express pre and post tech stop
     BabySample *bs_data2011max = new BabySample("data", "data", base+"babies/ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/baby_gather.root", c_datapresel, 1.0, DATA, kBlack);
+    // post feb tech stop
     bs_data2011max->add(base+"/babies/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/baby_gather_merged_ntuple*.root");
+    // post may tech stop
+    bs_data2011max->add(base+"/babies/ExpressPhysics_Run2011A-Express-v4_FEVT/V04-02-09/baby_gather_merged_ntuple*.root");
+
+    // 2011 express post may tech stop
+    BabySample *bs_data2011expressv4 = new BabySample("data", "data", base+"babies/ExpressPhysics_Run2011A-Express-v4_FEVT/V04-02-09/baby_gather_merged_ntuple*.root", c_datapresel, 1.0, DATA, kBlack);
 
     //
     // Standard Model
@@ -160,6 +170,18 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     babyVectorSM2011max.push_back(bs_dilep_ttbar);
     babyVectorSM2011max.push_back(bs_dilep_tw);
     babyVectorSM2011max.push_back(bs_dilep_wjets);
+
+    std::vector<BabySample*> babyVectorSM2011expressv4;
+    babyVectorSM2011expressv4.push_back(bs_data2011expressv4);
+    babyVectorSM2011expressv4.push_back(bs_dilep_ww);
+    babyVectorSM2011expressv4.push_back(bs_dilep_wz);
+    babyVectorSM2011expressv4.push_back(bs_dilep_zz);
+    babyVectorSM2011expressv4.push_back(bs_dilep_dyeemm);
+    babyVectorSM2011expressv4.push_back(bs_dilep_dytt);
+    babyVectorSM2011expressv4.push_back(bs_dilep_vgammajets);
+    babyVectorSM2011expressv4.push_back(bs_dilep_ttbar);
+    babyVectorSM2011expressv4.push_back(bs_dilep_tw);
+    babyVectorSM2011expressv4.push_back(bs_dilep_wjets);
 
     std::vector<BabySample*> babyVectorSM2010;
     babyVectorSM2010.push_back(bs_data2010);
@@ -209,12 +231,12 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     // Luminosity determination
     //
 
-    const char *goodrunlist = "../runlists/top_nov22.txt";
-    float goodruns_lumi = 36.1; // (I missed 2010A for the time being)
+    const char *goodrunlist = "../runlists/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.jmu";
+    float goodruns_lumi = 191.0; // (I missed 2010A for the time being)
     std::cout << "[The Gathering] Determining luminosity" << std::endl;
     std::cout << "[The Gathering] Z Norm determined using: " << goodrunlist << std::endl;
     set_goodrun_file(goodrunlist);
-    float zPerPb = GetZPerPb(bs_data2010->chain(), goodruns_lumi);
+    float zPerPb = GetZPerPb(bs_data2011->chain(), goodruns_lumi);
 
     // now set the dcs good run list for 2011A
     const char *goodrunlist = "../runlists/dcs_jmu.txt";
@@ -226,9 +248,9 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     //
 
     if (mode == EXPRESS) {
-        float est_extra_lumi_express = GetAllLumi(bs_data2011max->chain(), zPerPb);
+        float est_extra_lumi_express = GetAllLumi(bs_data2011expressv4->chain(), zPerPb);
         std::cout << "[The Gathering] Estimated L in EXPRESS = " << est_extra_lumi_express << std::endl;
-        makeGatherPlotsSusyMon("susymon", babyVectorSM2011max, est_extra_lumi_express);
+        makeGatherPlotsSusyMon("susymonv4", babyVectorSM2011expressv4, est_extra_lumi_express);
     }
 
     if (mode == DEBUG) {
@@ -327,6 +349,6 @@ void makeGatherPlots(TString base, Mode mode = PROMPT) {
     delete bs_data2010;
     delete bs_data2011;
     delete bs_data2011max;
-
+    delete bs_data2011expressv4;
 }
 

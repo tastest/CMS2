@@ -8,7 +8,7 @@ void makeGatherPlotsSusyMon(TString prefix, const std::vector<BabySample*> &baby
     //
     // Define specific cuts for OS plots
     //
-    TCut os_pt2010("(pt1 > 25 && pt2 > 10) || (pt1 > 10 && pt2 > 25)");
+    TCut os_pt2010("(pt1 > 30 && pt2 > 10) || (pt1 > 10 && pt2 > 30)");
     TCut os_dilep2("(abs(eormu1) == 11 && e1_vbtf90full) || (abs(eormu1) == 13 && mu1_muonidfull && ! mu1_cosmic)");
     TCut os_dilep3("(abs(eormu2) == 11 && e2_vbtf90full) || (abs(eormu2) == 13 && mu2_muonidfull && ! mu2_cosmic)");
     TCut os_dilep4("ntrks > 2");
