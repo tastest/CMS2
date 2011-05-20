@@ -1,25 +1,32 @@
 #ifndef ELECTRONSELECTIONS_H
 #define ELECTRONSELECTIONS_H
 
+// C++
 #include <stdint.h>
 #include <vector>
+
+// Root
 #include "TMath.h"
 #include "CMS2.h"
 
+// Header
 #include "electronSelectionsParameters.h"
 
+//
 typedef ULong64_t   uint64;
 typedef uint64      cuts_t;
 typedef uint64      electronIdComponent_t;
 
-//
-// This is the menu of electron selections
-//
+/////////////////////////////////////////////
+// This is the menu of electron selections //
+/////////////////////////////////////////////
 
 enum EleSelectionType {
-	 //
-	 // iso cuts
-	 //
+
+///////////////
+// Isolation //
+///////////////
+ 
 	 // rel iso (fixed below 20 GeV) < 0.10
 	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
 	 ELEISO_REL010,
@@ -46,22 +53,23 @@ enum EleSelectionType {
 	 // pfIso
 	 ELEISO_SMURFV4,
 
-	 ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_RELNT015,       // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_RELNT040,       // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_TRK_RELNT020,   // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
-	 ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_RELNT010,           // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_RELNT015,           // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_RELNT040,           // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_TRK_RELNT020,       // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
+	 ELEISO_ECAL_RELNT020,      // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
 	 ELEISO_ECAL_RELNT020_NPS,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, no pedestal sub in EB
-	 ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
-	 ELEISO_ECAL_REL020,    // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_HCAL_REL020,    // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
-	 ELEISO_FASTJET_REL005, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
-	 ELEISO_FASTJET_REL010, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
-	 ELEISO_FASTJET_REL015, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+	 ELEISO_HCAL_RELNT020,      // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+	 ELEISO_ECAL_REL020,        // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_HCAL_REL020,        // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+	 ELEISO_FASTJET_REL005,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+	 ELEISO_FASTJET_REL010,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+	 ELEISO_FASTJET_REL015,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
 
-	 //
-	 // ip cuts
-	 //
+//////////////////////
+// Impact Parameter //
+//////////////////////
+
 	 // d0 corrected for beamspot < 0.02
 	 ELEIP_200,
 	 // d0 corrected for beamspot < 0.04
@@ -83,16 +91,17 @@ enum EleSelectionType {
 	 // 2011 SS potential denominator d0 cut
 	 ELEIP_SS2000,
 
-	 //
-	 // id cuts
-	 //
+/////////////////////////////
+// Electron Identification //
+/////////////////////////////
+
 	 // pass smurf v1 electron ID
 	 ELEID_SMURFV1_EXTRA,
 	 // pass smurf v2 electron ID
 	 ELEID_SMURFV2_EXTRA,
 	 // pass smurf v2 electron ID
 	 ELEID_SMURFV3_EXTRA,
-         ELEID_SMURFV1SS_EXTRA, // electron ID with VBTF80
+  ELEID_SMURFV1SS_EXTRA, // electron ID with VBTF80
 	 // pass "CAND01" electron ID
 	 ELEID_CAND01,
 	 // pass "CAND02" electron ID
@@ -123,9 +132,11 @@ enum EleSelectionType {
  	 ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,
 	 // CIC_MEDIUM electron ID (V03)
 	 ELEID_CIC_V03_MEDIUM,
-	 //
-	 // conv rej cuts
-	 //
+
+//////////////////////////
+// Conversion Rejection //
+//////////////////////////
+
 	 // mit conversion rejection v11 
 	 //(maxhitsbeforevtx, minprob, minlxy, allowckfmatch, requirearbitratedmerged) = (0,   1e-6,   2.0,   true,  false)
 	 ELENOTCONV_MIT,
@@ -136,41 +147,32 @@ enum EleSelectionType {
 	 // < 1 missing hits
 	 ELENOTCONV_HITPATTERN_0MHITS,
 	 //ELENOTCONV_HITPATTERN39X_0MHITS,
-	 //
-	 // eta cuts
-	 //
+
+//////////////////////
+// Basic Selections //
+//////////////////////
+
 	 // |eta| < 2.50 where eta is the ecal eta
 	 ELEETA_250,
 	 ELEETA_240,
-	 //
-	 // Pt
-	 //
+
 	 ELEPT_010,
 	 ELEPT_015,
 	 ELEPT_020,
-	 //
-	 // Super Cluster Et
-	 //
+
 	 ELESCET_010,
 	 ELESCET_015,
 	 // no muon cuts
 	 //
 	 // no muon within dR < 0.1
 	 ELENOMUON_010,
-	 //
-	 // ecal driven requirement
-	 //
+
 	 // seed must have been found by at least the ecal algo
 	 ELESEED_ECAL,
-	 //
-	 // charge flipping
-	 //
+
 	 // is not a charge flip
 	 ELECHARGE_NOTFLIP,
 	 ELECHARGE_NOTFLIP3AGREE,
-	 //
-	 // spike rejection
-	 //
 
 
 
@@ -181,7 +183,7 @@ enum EleSelectionType {
   // DO NOT ADD ANY ELEMENTS AFTER THIS!                                                 //
   //*************************************************************************************//
 
-  ELENOSPIKE_SWISS005, // swiss variable should be > 0.05 to not be a spike
+  ELENOSPIKE_SWISS005, // Spike Rejection, swiss variable should be > 0.05 to not be a spike
 
 };
 
