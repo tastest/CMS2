@@ -5,6 +5,7 @@
 // CMS2 includes
 #include "electronSelections.h"
 #include "eventSelections.h"
+//#include "MITConversionUtilities.cc"
 #include "MITConversionUtilities.h"
 #include "trackSelections.h"
 #include "utilities.h"
@@ -18,6 +19,7 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
 
 bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index)
 {
+  checkElectronSelections();
   cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;

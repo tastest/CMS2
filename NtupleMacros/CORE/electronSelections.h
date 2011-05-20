@@ -171,10 +171,40 @@ enum EleSelectionType {
 	 //
 	 // spike rejection
 	 //
-	 // swiss variable should be > 0.05 to not be a spike
-	 ELENOSPIKE_SWISS005,
+
+
+
+ 
+  /////////////////////////////////////////////////////////////////////////////////////////
+  // This is the last enumerator element                                                 //
+  // The electron selection bitmask will not work with more than 63 element in this enum //
+  // DO NOT ADD ANY ELEMENTS AFTER THIS!                                                  //
+  /////////////////////////////////////////////////////////////////////////////////////////
+
+  ELENOSPIKE_SWISS005, // swiss variable should be > 0.05 to not be a spike
 
 };
+
+// Assuming the constants in EleSelectionType have default numeric values ( 0, 1, 2, ... N ),
+// the last enum constant will have integer value N
+// For the bitmasks to work, N must be <= 63
+static bool shown = false;
+inline void checkElectronSelections(void){
+  int n    = (int) EleSelectionType(ELENOSPIKE_SWISS005);
+  int nMax = (int) 8*sizeof(1ll) - 1;
+  if( n > nMax ){
+    cout << endl << "ERROR at line " << __LINE__ << " in " << __FILE__ << ":" << endl;
+    cout << "enum \"EleSelectionType\" has " << n << " elements but cannot have more than " << nMax << " elements... Exiting." << endl << endl;
+    exit(1);
+  }
+  else{
+    if( !shown ){
+      cout << endl << "There are " << ( nMax - n ) << " available selectors left in enum EleSelectionType" << endl;
+      cout << "\t( " << __FILE__ << " )" << endl << endl;
+    }
+    shown = true;
+  }
+}
 
 // ===================== FAKERATES ========================
 //
