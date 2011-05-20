@@ -27,32 +27,14 @@ enum EleSelectionType {
 // Isolation //
 ///////////////
  
-	 // rel iso (fixed below 20 GeV) < 0.10
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL010,
-	 // rel iso (fixed below 20 GeV) < 0.15
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL015,
-	 // rel iso (fixed below 20 GeV) < 0.40
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL040,
-	 // rel iso (fixed below 20 GeV) < 1.0
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL100,
-	 // rel iso (fixed below 20 GeV) < 0.10
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL010_WW,
-	 // rel iso (fixed below 20 GeV) < 0.40
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL040_WW,
-	 // rel iso (fixed below 20 GeV) < 1.00
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL100_WW,
-	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
-	 // ELEISO_SMURFV1,
-	 // pfIso
-	 ELEISO_SMURFV4,
-
+	 ELEISO_REL010,             // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_REL015,             // rel iso (fixed below 20 GeV) < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_REL040,             // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_REL100,             // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB
+	 ELEISO_REL010_WW,          // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+	 ELEISO_REL040_WW,          // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+	 ELEISO_REL100_WW,          // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+	 ELEISO_SMURFV4,            // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
 	 ELEISO_RELNT010,           // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
 	 ELEISO_RELNT015,           // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
 	 ELEISO_RELNT040,           // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
@@ -70,111 +52,70 @@ enum EleSelectionType {
 // Impact Parameter //
 //////////////////////
 
-	 // d0 corrected for beamspot < 0.02
-	 ELEIP_200,
-	 // d0 corrected for beamspot < 0.04
-	 ELEIP_400,
-	 // d0 corrected for primary vertex < 0.02
-	 ELEIP_PV_200,
-	 // d0 (PV) < 0.02 and dz (PV) < 1.0
-	 ELEIP_PV_wwV1,
-	 // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
-	 ELEIP_PV_SMURFV3,
-	 // d0 (PV) < 0.02 and dz (PV) < 0.1, using first DA PV
-	 ELEIP_PV_SMURFV4,
-	 // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
-	 ELEIP_PV_OSV2,
-	 // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
-	 ELEIP_PV_OSV2_FO,
-	 // 2011 SS numerator d0 cut
-	 ELEIP_SS200,
-	 // 2011 SS potential denominator d0 cut
-	 ELEIP_SS2000,
+  ELEIP_200,         // d0 corrected for beamspot < 0.02
+  ELEIP_400,         // d0 corrected for beamspot < 0.04
+  ELEIP_PV_200,      // d0 corrected for primary vertex < 0.02
+  ELEIP_PV_wwV1,     // d0 (PV) < 0.02 and dz (PV) < 1.0
+  ELEIP_PV_SMURFV3,  // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
+  ELEIP_PV_SMURFV4,  // d0 (PV) < 0.02 and dz (PV) < 0.1, using first DA PV
+  ELEIP_PV_OSV2,     // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
+  ELEIP_PV_OSV2_FO,  // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
+  ELEIP_SS200,       // 2011 SS numerator d0 cut
+  ELEIP_SS2000,      // 2011 SS potential denominator d0 cut
+
 
 /////////////////////////////
 // Electron Identification //
 /////////////////////////////
 
-	 // pass smurf v1 electron ID
-	 ELEID_SMURFV1_EXTRA,
-	 // pass smurf v2 electron ID
-	 ELEID_SMURFV2_EXTRA,
-	 // pass smurf v2 electron ID
-	 ELEID_SMURFV3_EXTRA,
-  ELEID_SMURFV1SS_EXTRA, // electron ID with VBTF80
-	 // pass "CAND01" electron ID
-	 ELEID_CAND01,
-	 // pass "CAND02" electron ID
-	 ELEID_CAND02,
-	 // pass "EXTRA" electron ID
-	 ELEID_EXTRA,
-	 // VBTF95 electron ID (35X)
-	 ELEID_VBTF_35X_95,
-	 // VBTF90 electron ID (35X)
-	 ELEID_VBTF_35X_90,
-	 // VBTF80 electron ID (35X)
-	 ELEID_VBTF_35X_80,
-	 // VBTF70 electron ID (35X)
-	 ELEID_VBTF_35X_70,
-	 // VBTF80 electron ID no HoE in endcap
-	 ELEID_VBTF_80_NOHOEEND,
-	 // VBTF85 electron ID no HoE in endcap
-	 ELEID_VBTF_85_NOHOEEND,
-	 // VBTF85 electron ID
-	 ELEID_VBTF_85,
-	 // VBTF70 electron ID no HoE in endcap
-	 ELEID_VBTF_70_NOHOEEND,
-	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
-	 // represent HLT requirements for CaloIdL_TrkIdVL
-	 ELEID_VBTF_90_HLT,
- 	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
- 	 // represent HLT requirements for CaloIdT_TrkIdVL
- 	 ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,
-	 // CIC_MEDIUM electron ID (V03)
-	 ELEID_CIC_V03_MEDIUM,
+  ELEID_SMURFV1_EXTRA,                // pass smurf v1 electron ID
+  ELEID_SMURFV2_EXTRA,                // pass smurf v2 electron ID
+  ELEID_SMURFV3_EXTRA,                // pass smurf v3 electron ID
+  ELEID_SMURFV1SS_EXTRA,              // electron ID with VBTF80
+  ELEID_CAND01,                       // pass "CAND01" electron ID
+  ELEID_CAND02,                       // pass "CAND02" electron ID
+	ELEID_EXTRA,                        // pass "EXTRA" electron ID
+	ELEID_VBTF_35X_95,                  // VBTF95 electron ID (35X)
+	ELEID_VBTF_35X_90,                  // VBTF90 electron ID (35X)
+	ELEID_VBTF_35X_80,                  // VBTF80 electron ID (35X)
+  ELEID_VBTF_35X_70,                  // VBTF70 electron ID (35X)
+  ELEID_VBTF_80_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
+	ELEID_VBTF_85_NOHOEEND,             // VBTF85 electron ID no HoE in endcap
+	ELEID_VBTF_85,                      // VBTF85 electron ID
+	ELEID_VBTF_70_NOHOEEND,             // VBTF70 electron ID no HoE in endcap
+  ELEID_VBTF_90_HLT,                  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdL_TrkIdVL
+  ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdT_TrkIdVL
+	ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
 
 //////////////////////////
 // Conversion Rejection //
 //////////////////////////
 
-	 // mit conversion rejection v11 
-	 //(maxhitsbeforevtx, minprob, minlxy, allowckfmatch, requirearbitratedmerged) = (0,   1e-6,   2.0,   true,  false)
-	 ELENOTCONV_MIT,
-	 // dist < 0.02 && dcot(theta) < 0.02
-	 ELENOTCONV_DISTDCOT002,
-	 // < 2 missing hits
-	 ELENOTCONV_HITPATTERN,
-	 // < 1 missing hits
-	 ELENOTCONV_HITPATTERN_0MHITS,
-	 //ELENOTCONV_HITPATTERN39X_0MHITS,
+  ELENOTCONV_MIT,                // mit conversion rejection v11 
+  ELENOTCONV_DISTDCOT002,        // dist < 0.02 && dcot(theta) < 0.02
+  ELENOTCONV_HITPATTERN,         // < 2 missing hits
+  ELENOTCONV_HITPATTERN_0MHITS,  // < 1 missing hits
 
 //////////////////////
 // Basic Selections //
 //////////////////////
 
-	 // |eta| < 2.50 where eta is the ecal eta
-	 ELEETA_250,
-	 ELEETA_240,
+  ELEETA_250,               // |eta| < 2.50
+  ELEETA_240,               // |eta| < 2.40 
 
-	 ELEPT_010,
-	 ELEPT_015,
-	 ELEPT_020,
+	ELEPT_010,                // Pt > 10
+	ELEPT_015,                // Pt > 15
+	ELEPT_020,                // Pt > 20
 
-	 ELESCET_010,
-	 ELESCET_015,
-	 // no muon cuts
-	 //
-	 // no muon within dR < 0.1
-	 ELENOMUON_010,
+  ELESCET_010,              // SC Et > 10
+  ELESCET_015,              // SC Et > 20
 
-	 // seed must have been found by at least the ecal algo
-	 ELESEED_ECAL,
+  ELENOMUON_010,            // no muon within dR < 0.1
 
-	 // is not a charge flip
-	 ELECHARGE_NOTFLIP,
-	 ELECHARGE_NOTFLIP3AGREE,
+  ELESEED_ECAL,             // seed must have been found by at least the ecal algo
 
-
+  ELECHARGE_NOTFLIP,        // Not a charge flip
+  ELECHARGE_NOTFLIP3AGREE,  // Not a charge flip and CTF, GSF, and Pixel-SuperCluster charges agree
 
  
   //*************************************************************************************//
