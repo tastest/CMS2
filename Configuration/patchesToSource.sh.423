@@ -3,6 +3,11 @@ cvs co -r V031411 -d DataFormats/AnomalousEcalDataFormats  UserCode/gebbert/Data
 cvs co -r V031411 -d PhysicsTools/EcalAnomalousEventFilter UserCode/gebbert/PhysicsTools/EcalAnomalousEventFilter
 cvs co -r V031411 -d UserCode/EcalDeadCellEventFilter      UserCode/KHatakeyama/EcalDeadCellEventFilter
 
+#PF fast jet tags
+cvs co -r V02-04-16      RecoJets/Configuration                           
+cvs co -r V04-01-00      RecoJets/JetAlgorithms                           
+cvs co -r V05-05-03      RecoJets/JetProducers                            
+
 # add the annoying, missing reco::
 sed '576 s/CaloMETCollection/reco::CaloMETCollection/' <$CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/src/EcalAnomalousEventFilter.cc >blah
 mv blah $CMSSW_BASE/src/PhysicsTools/EcalAnomalousEventFilter/src/EcalAnomalousEventFilter.cc
