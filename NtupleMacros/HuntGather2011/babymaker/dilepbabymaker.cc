@@ -150,52 +150,64 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 if (isdata_) {
 
                     // do electrons (single)
-                    if (abs(lt_id) == 11)
-                        PassTriggerGroup(triggers_e_, cms2.hyp_lt_p4()[hypi], trg_single_e1_);
-                    if (abs(ll_id) == 11)
-                        PassTriggerGroup(triggers_e_, cms2.hyp_ll_p4()[hypi], trg_single_e2_);
+                    if (abs(lt_id) == 11) {
+                        PassTriggerGroup(triggers_e_, pass_trg_single_e1_);
+                        PassTriggerGroup(triggers_e_, cms2.hyp_lt_p4()[hypi], match_trg_single_e1_);
+                    }
+                    if (abs(ll_id) == 11) {
+                        PassTriggerGroup(triggers_e_, pass_trg_single_e2_);
+                        PassTriggerGroup(triggers_e_, cms2.hyp_ll_p4()[hypi], match_trg_single_e2_);
+                    }
 
                     // do muons (single)
-                    if (abs(lt_id) == 13)
-                        PassTriggerGroup(triggers_m_, cms2.hyp_lt_p4()[hypi], trg_single_mu1_);
-                    if (abs(ll_id) == 13) 
-                        PassTriggerGroup(triggers_m_, cms2.hyp_ll_p4()[hypi], trg_single_mu2_);
+                    if (abs(lt_id) == 13) {
+                        PassTriggerGroup(triggers_m_, pass_trg_single_mu1_);
+                        PassTriggerGroup(triggers_m_, cms2.hyp_lt_p4()[hypi], match_trg_single_mu1_);
+                    }
+                    if (abs(ll_id) == 13) {
+                        PassTriggerGroup(triggers_m_, pass_trg_single_mu2_);
+                        PassTriggerGroup(triggers_m_, cms2.hyp_ll_p4()[hypi], match_trg_single_mu2_);
+                    }
 
                     // do double electron
                     if (abs(lt_id) == 11 && abs(ll_id) == 11) {
-                        PassTriggerGroup(triggers_ee_, cms2.hyp_lt_p4()[hypi], trg_double_e1_);
-                        PassTriggerGroup(triggers_ee_, cms2.hyp_ll_p4()[hypi], trg_double_e2_);
+                        PassTriggerGroup(triggers_ee_, pass_trg_double_e1_);
+                        PassTriggerGroup(triggers_ee_, cms2.hyp_lt_p4()[hypi], match_trg_double_e1_);
+
+                        PassTriggerGroup(triggers_ee_, pass_trg_double_e2_);
+                        PassTriggerGroup(triggers_ee_, cms2.hyp_ll_p4()[hypi], match_trg_double_e2_);
 
                         // for now, don't require matching of leptons and trigger legs due to bug in CMS2
                         // however, once the bug is fixed, revert back to matching
-/*
-                        PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_lt_p4()[hypi], trg_had_double_e1_);
-                        PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_ll_p4()[hypi], trg_had_double_e2_);                        
-*/  
-                        PassTriggerGroup(triggers_ehad_ee_, trg_had_double_e1_);
-                        PassTriggerGroup(triggers_ehad_ee_, trg_had_double_e2_);
+                        PassTriggerGroup(triggers_ehad_ee_, pass_trg_had_double_e1_);
+                        PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_lt_p4()[hypi], match_trg_had_double_e1_);
+
+                        PassTriggerGroup(triggers_ehad_ee_, pass_trg_had_double_e2_);
+                        PassTriggerGroup(triggers_ehad_ee_, cms2.hyp_ll_p4()[hypi], match_trg_had_double_e2_);
                     }
 
                     // do double muon
                     if (abs(lt_id) == 13 && abs(ll_id) == 13) {
-                        PassTriggerGroup(triggers_mm_, cms2.hyp_lt_p4()[hypi], trg_double_mu1_);
-                        PassTriggerGroup(triggers_mm_, cms2.hyp_ll_p4()[hypi], trg_double_mu2_);
+                        PassTriggerGroup(triggers_mm_, pass_trg_double_mu1_);
+                        PassTriggerGroup(triggers_mm_, cms2.hyp_lt_p4()[hypi], match_trg_double_mu1_);
+
+                        PassTriggerGroup(triggers_mm_, pass_trg_double_mu2_);
+                        PassTriggerGroup(triggers_mm_, match_trg_double_mu2_);
 
                         // for now, don't require matching of leptons and trigger legs due to bug in CMS2
                         // however, once the bug is fixed, revert back to matching
-/*
-                        PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_lt_p4()[hypi], trg_had_double_mu1_);
-                        PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_ll_p4()[hypi], trg_had_double_mu2_);                    
-*/
-                        PassTriggerGroup(triggers_mhad_mm_, trg_had_double_mu1_);
-                        PassTriggerGroup(triggers_mhad_mm_, trg_had_double_mu2_);                    
+                        PassTriggerGroup(triggers_mhad_mm_, pass_trg_had_double_mu1_);
+                        PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_lt_p4()[hypi], match_trg_had_double_mu1_);
+
+                        PassTriggerGroup(triggers_mhad_mm_, pass_trg_had_double_mu2_);
+                        PassTriggerGroup(triggers_mhad_mm_, cms2.hyp_ll_p4()[hypi], match_trg_had_double_mu2_);
 
                     }
 
                     // do cross trigger (e-mu)
                     if (abs(lt_id) != abs(ll_id)) {
-                        PassTriggerGroup(triggers_em_, trg_cross_emu_);
-                        PassTriggerGroup(triggers_mhad_em_, trg_had_cross_emu_);
+                        PassTriggerGroup(triggers_em_, pass_trg_cross_emu_);
+                        PassTriggerGroup(triggers_mhad_em_, pass_trg_had_cross_emu_);
                     }
 
 
@@ -205,20 +217,34 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         intLumiPerLS_ = cms2.ls_lumiSectionLength() * cms2.ls_avgInsRecLumi();
 
                 } else {
-                    trg_single_e1_      = 1;
-                    trg_single_e2_      = 1;
-                    trg_single_mu1_     = 1;
-                    trg_single_mu2_     = 1;
-                    trg_double_e1_      = 1;
-                    trg_double_e2_      = 1;
-                    trg_double_mu1_     = 1;
-                    trg_double_mu2_     = 1;
-                    trg_cross_emu_      = 1;
-                    trg_had_double_e1_  = 1;
-                    trg_had_double_e2_  = 1;
-                    trg_had_double_mu1_ = 1;
-                    trg_had_double_mu2_ = 1;
-                    trg_had_cross_emu_  = 1;
+                    pass_trg_single_e1_      = 1;
+                    pass_trg_single_e2_      = 1;
+                    pass_trg_single_mu1_     = 1;
+                    pass_trg_single_mu2_     = 1;
+                    pass_trg_double_e1_      = 1;
+                    pass_trg_double_e2_      = 1;
+                    pass_trg_double_mu1_     = 1;
+                    pass_trg_double_mu2_     = 1;
+                    pass_trg_cross_emu_      = 1;
+                    pass_trg_had_double_e1_  = 1;
+                    pass_trg_had_double_e2_  = 1;
+                    pass_trg_had_double_mu1_ = 1;
+                    pass_trg_had_double_mu2_ = 1;
+                    pass_trg_had_cross_emu_  = 1;
+                    match_trg_single_e1_      = 1;
+                    match_trg_single_e2_      = 1;
+                    match_trg_single_mu1_     = 1;
+                    match_trg_single_mu2_     = 1;
+                    match_trg_double_e1_      = 1;
+                    match_trg_double_e2_      = 1;
+                    match_trg_double_mu1_     = 1;
+                    match_trg_double_mu2_     = 1;
+                    match_trg_cross_emu_      = 1;
+                    match_trg_had_double_e1_  = 1;
+                    match_trg_had_double_e2_  = 1;
+                    match_trg_had_double_mu1_ = 1;
+                    match_trg_had_double_mu2_ = 1;
+                    match_trg_had_cross_emu_  = 1;
                 }
 
                 // 
@@ -280,6 +306,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 std::vector<unsigned int> goodMuonIndicesTTBarV2;
                 std::vector<unsigned int> goodElectronIndicesSSV2;
                 std::vector<unsigned int> goodMuonIndicesSSV2;
+                std::vector<unsigned int> goodElectronIndicesSShighPt;
 
                 // muon loop
                 for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
@@ -302,10 +329,13 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     cuts_t cuts_passed = electronSelection(eli);
                     // for SS
                     if (cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV4) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
-                        if (fabs(cms2.els_etaSC()[eli]) < 1.47 || fabs(cms2.els_etaSC()[eli] > 1.567)) {
+                        if (fabs(cms2.els_etaSC()[eli]) < 1.4442 || fabs(cms2.els_etaSC()[eli] > 1.566)) {
                             goodElectronIndicesSSV2.push_back(eli);
                             ++ngoodlepSS_;
                             ++ngoodelsSS_;
+                            if (cms2.els_ecalIso()[eli]/cms2.els_p4()[eli].pt() < 0.2) {
+                                goodElectronIndicesSShighPt.push_back(eli);
+                            }
                         }
                     }
                     // for TTBarV2
@@ -382,9 +412,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 sumjetpt25_ = 0.;
                 sumjetptSS30_ = 0.;
                 sumjetptSS_ = 0.;
+                sumjetptSShighPt_ = 0.;
                 njets25_    = 0;
                 njetsSS30_    = 0;
                 njetsSS_    = 0;
+                njetsSShighPt_    = 0;
                 njets_      = 0;
 
                 for (unsigned int jeti = 0; jeti < cms2.pfjets_p4().size(); ++jeti)
@@ -393,6 +425,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     LorentzVector vjet = cms2.pfjets_p4()[jeti]*cms2.pfjets_corL1FastL2L3()[jeti];
                     bool jetIsLepTTBarV2 = false;
                     bool jetIsLepSSV2 = false;
+                    bool jetIsLepSShighPt = false;
                     
                     // we previously weren't performing jet-lepton overlap removal with the hypothesis leptons
                     // but we should have been; fixing this now
@@ -443,6 +476,23 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (!jetIsLepSSV2 && vjet.Pt() > 40. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         sumjetptSS_ += vjet.Pt();
                         njetsSS_++;
+                    }
+
+
+                    // check if jet is a lepton that passes the ss selection with offline isolation mockup
+                    for (unsigned int muj = 0; muj < goodMuonIndicesSSV2.size(); ++muj) {
+                        LorentzVector vlep = cms2.mus_p4()[goodMuonIndicesSSV2[muj]];
+                        if (!jetIsLepSShighPt && dRbetweenVectors(vjet, vlep) < 0.4)
+                            jetIsLepSShighPt = true;
+                    }
+                    for (unsigned int elj = 0; elj < goodElectronIndicesSShighPt.size(); ++elj) {
+                        LorentzVector vlep = cms2.els_p4()[goodElectronIndicesSShighPt[elj]];
+                        if (!jetIsLepSShighPt && dRbetweenVectors(vjet, vlep) < 0.4)
+                            jetIsLepSShighPt = true;
+                    }
+                    if (!jetIsLepSShighPt && vjet.Pt() > 40. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
+                        sumjetptSShighPt_ += vjet.Pt();
+                        njetsSShighPt_++;
                     }
 
                 }
@@ -818,15 +868,17 @@ void dilepbabymaker::InitBabyNtuple ()
     ntrks_        = -999999;
     njets_        = -999999;
     njets25_      = -999999;
-    njetsSS_      = -999999;
     njetsSS30_      = -999999;
+    njetsSS_      = -999999;
+    njetsSShighPt_      = -999999;
     jet1pt_       = -999999.;
     jet2pt_       = -999999.;
     jet3pt_       = -999999.;
     sumjetpt_     = -999999.;
     sumjetpt25_     = -999999.;
-    sumjetptSS_   = -999999.;
     sumjetptSS30_   = -999999.;
+    sumjetptSS_   = -999999.;
+    sumjetptSShighPt_   = -999999.;
     jet1cor_        = -9999999.;
     jet2cor_        = -9999999.;
     jet3cor_        = -9999999.;
@@ -1016,21 +1068,37 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_fbrem_       = -999999.;
     e2_mitConv_     = 0;
 
-    trg_single_e1_ = 0;
-    trg_single_e2_ = 0;
-    trg_single_mu1_ = 0;
-    trg_single_mu2_ = 0;
-    trg_double_e1_ = 0;
-    trg_double_e2_ = 0;
-    trg_double_mu1_ = 0;
-    trg_double_mu2_ = 0;
-    trg_cross_emu_ = 0;
+    pass_trg_single_e1_ = 0;
+    pass_trg_single_e2_ = 0;
+    pass_trg_single_mu1_ = 0;
+    pass_trg_single_mu2_ = 0;
+    pass_trg_double_e1_ = 0;
+    pass_trg_double_e2_ = 0;
+    pass_trg_double_mu1_ = 0;
+    pass_trg_double_mu2_ = 0;
+    pass_trg_cross_emu_ = 0;
 
-    trg_had_double_e1_  = 0;
-    trg_had_double_e2_  = 0;
-    trg_had_double_mu1_ = 0;
-    trg_had_double_mu2_ = 0;
-    trg_had_cross_emu_ = 0;
+    pass_trg_had_double_e1_  = 0;
+    pass_trg_had_double_e2_  = 0;
+    pass_trg_had_double_mu1_ = 0;
+    pass_trg_had_double_mu2_ = 0;
+    pass_trg_had_cross_emu_ = 0;
+
+    match_trg_single_e1_ = 0;
+    match_trg_single_e2_ = 0;
+    match_trg_single_mu1_ = 0;
+    match_trg_single_mu2_ = 0;
+    match_trg_double_e1_ = 0;
+    match_trg_double_e2_ = 0;
+    match_trg_double_mu1_ = 0;
+    match_trg_double_mu2_ = 0;
+    match_trg_cross_emu_ = 0;
+
+    match_trg_had_double_e1_  = 0;
+    match_trg_had_double_e2_  = 0;
+    match_trg_had_double_mu1_ = 0;
+    match_trg_had_double_mu2_ = 0;
+    match_trg_had_cross_emu_ = 0;
 }
 
 void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
@@ -1066,8 +1134,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ntrks",        &ntrks_,       "ntrks/I"       );
     babyTree_->Branch("njets",        &njets_,       "njets/I"       );
     babyTree_->Branch("njets25",        &njets25_,       "njets25/I"       ); 
-    babyTree_->Branch("njetsSS",      &njetsSS_,     "njetsSS/I"     );
     babyTree_->Branch("njetsSS30",      &njetsSS30_,     "njetsSS30/I"     );
+    babyTree_->Branch("njetsSS",      &njetsSS_,     "njetsSS/I"     );
+    babyTree_->Branch("njetsSShighPt",      &njetsSShighPt_,     "njetsSShighPt/I"     );
     babyTree_->Branch("jet1cor", &jet1cor_, "jet1cor/F");
     babyTree_->Branch("jet2cor", &jet2cor_, "jet2cor/F");
     babyTree_->Branch("jet3cor", &jet3cor_, "jet3cor/F");
@@ -1078,6 +1147,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("sumjetpt25",     &sumjetpt25_,    "sumjetpt25/F"    );
     babyTree_->Branch("sumjetptSS30",   &sumjetptSS30_,  "sumjetptSS30/F"  );
     babyTree_->Branch("sumjetptSS",   &sumjetptSS_,  "sumjetptSS/F"  );
+    babyTree_->Branch("sumjetptSShighPt",   &sumjetptSShighPt_,  "sumjetptSShighPt/F"  );
     babyTree_->Branch("jet1eta",      &jet1eta_,     "jet1eta/F"     );
     babyTree_->Branch("jet2eta",      &jet2eta_,     "jet2eta/F"     );
     babyTree_->Branch("jet3eta",      &jet3eta_,     "jet3eta/F"     );
@@ -1264,27 +1334,48 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_mitConv",    &e2_mitConv_,    "e2_mitConv/O"   );
 
     // trigger stuff
-    babyTree_->Branch("trg_single_mu1",   &trg_single_mu1_,   "trg_single_mu1/I"  );
-    babyTree_->Branch("trg_single_mu2",   &trg_single_mu2_,   "trg_single_mu2/I"  );
+    babyTree_->Branch("pass_trg_single_mu1",   &pass_trg_single_mu1_,   "pass_trg_single_mu1/I"  );
+    babyTree_->Branch("pass_trg_single_mu2",   &pass_trg_single_mu2_,   "pass_trg_single_mu2/I"  );
 
-    babyTree_->Branch("trg_single_e1",   &trg_single_e1_,   "trg_single_e1/I"  );
-    babyTree_->Branch("trg_single_e2",   &trg_single_e2_,   "trg_single_e2/I"  );
+    babyTree_->Branch("pass_trg_single_e1",   &pass_trg_single_e1_,   "pass_trg_single_e1/I"  );
+    babyTree_->Branch("pass_trg_single_e2",   &pass_trg_single_e2_,   "pass_trg_single_e2/I"  );
 
-    babyTree_->Branch("trg_double_mu1",   &trg_double_mu1_,   "trg_double_mu1/I"  );
-    babyTree_->Branch("trg_double_mu2",   &trg_double_mu2_,   "trg_double_mu2/I"  );
+    babyTree_->Branch("pass_trg_double_mu1",   &pass_trg_double_mu1_,   "pass_trg_double_mu1/I"  );
+    babyTree_->Branch("pass_trg_double_mu2",   &pass_trg_double_mu2_,   "pass_trg_double_mu2/I"  );
 
-    babyTree_->Branch("trg_double_e1",   &trg_double_e1_,   "trg_double_e1/I"  );
-    babyTree_->Branch("trg_double_e2",   &trg_double_e2_,   "trg_double_e2/I"  );
+    babyTree_->Branch("pass_trg_double_e1",   &pass_trg_double_e1_,   "pass_trg_double_e1/I"  );
+    babyTree_->Branch("pass_trg_double_e2",   &pass_trg_double_e2_,   "pass_trg_double_e2/I"  );
 
-    babyTree_->Branch("trg_cross_emu",   &trg_cross_emu_,   "trg_cross_emu/I"  );
+    babyTree_->Branch("pass_trg_cross_emu",   &pass_trg_cross_emu_,   "pass_trg_cross_emu/I"  );
 
-    babyTree_->Branch("trg_had_double_e1" , &trg_had_double_e1_ , "trg_had_double_e1/I" );
-    babyTree_->Branch("trg_had_double_e2" , &trg_had_double_e2_ , "trg_had_double_e2/I" );
+    babyTree_->Branch("pass_trg_had_double_e1" , &pass_trg_had_double_e1_ , "pass_trg_had_double_e1/I" );
+    babyTree_->Branch("pass_trg_had_double_e2" , &pass_trg_had_double_e2_ , "pass_trg_had_double_e2/I" );
 
-    babyTree_->Branch("trg_had_double_mu1", &trg_had_double_mu1_, "trg_had_double_mu1/I");
-    babyTree_->Branch("trg_had_double_mu2", &trg_had_double_mu2_, "trg_had_double_mu2/I");
-    babyTree_->Branch("trg_had_cross_emu", &trg_had_cross_emu_, "trg_had_cross_emu/I");
+    babyTree_->Branch("pass_trg_had_double_mu1", &pass_trg_had_double_mu1_, "pass_trg_had_double_mu1/I");
+    babyTree_->Branch("pass_trg_had_double_mu2", &pass_trg_had_double_mu2_, "pass_trg_had_double_mu2/I");
+    babyTree_->Branch("pass_trg_had_cross_emu", &pass_trg_had_cross_emu_, "pass_trg_had_cross_emu/I");
 
+    // trigger stuff
+    babyTree_->Branch("match_trg_single_mu1",   &match_trg_single_mu1_,   "match_trg_single_mu1/I"  );
+    babyTree_->Branch("match_trg_single_mu2",   &match_trg_single_mu2_,   "match_trg_single_mu2/I"  );
+
+    babyTree_->Branch("match_trg_single_e1",   &match_trg_single_e1_,   "match_trg_single_e1/I"  );
+    babyTree_->Branch("match_trg_single_e2",   &match_trg_single_e2_,   "match_trg_single_e2/I"  );
+
+    babyTree_->Branch("match_trg_double_mu1",   &match_trg_double_mu1_,   "match_trg_double_mu1/I"  );
+    babyTree_->Branch("match_trg_double_mu2",   &match_trg_double_mu2_,   "match_trg_double_mu2/I"  );
+
+    babyTree_->Branch("match_trg_double_e1",   &match_trg_double_e1_,   "match_trg_double_e1/I"  );
+    babyTree_->Branch("match_trg_double_e2",   &match_trg_double_e2_,   "match_trg_double_e2/I"  );
+
+    babyTree_->Branch("match_trg_cross_emu",   &match_trg_cross_emu_,   "match_trg_cross_emu/I"  );
+
+    babyTree_->Branch("match_trg_had_double_e1" , &match_trg_had_double_e1_ , "match_trg_had_double_e1/I" );
+    babyTree_->Branch("match_trg_had_double_e2" , &match_trg_had_double_e2_ , "match_trg_had_double_e2/I" );
+
+    babyTree_->Branch("match_trg_had_double_mu1", &match_trg_had_double_mu1_, "match_trg_had_double_mu1/I");
+    babyTree_->Branch("match_trg_had_double_mu2", &match_trg_had_double_mu2_, "match_trg_had_double_mu2/I");
+    babyTree_->Branch("match_trg_had_cross_emu", &match_trg_had_cross_emu_, "match_trg_had_cross_emu/I");
 }
 
 bool dilepbabymaker::PassTriggerGroup(const std::vector<std::pair<std::string, unsigned int> > &triggers, const LorentzVector &obj)

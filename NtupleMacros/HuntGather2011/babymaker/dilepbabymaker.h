@@ -74,6 +74,7 @@ private:
     Int_t   njets25_;
     Int_t   njetsSS30_;
     Int_t   njetsSS_;
+    Int_t   njetsSShighPt_;
     Float_t jet1pt_;
     Float_t jet2pt_;
     Float_t jet3pt_;
@@ -81,6 +82,7 @@ private:
     Float_t sumjetpt25_;
     Float_t sumjetptSS30_;
     Float_t sumjetptSS_;
+    Float_t sumjetptSShighPt_;
     Float_t jet1cor_;
     Float_t jet2cor_;
     Float_t jet3cor_;
@@ -268,30 +270,54 @@ private:
     Bool_t  e2_mitConv_;
 
     // triggers
-    Int_t trg_single_mu1_;
-    Int_t trg_single_mu2_;
+    Int_t pass_trg_single_mu1_;
+    Int_t pass_trg_single_mu2_;
 
-    Int_t trg_single_e1_;
-    Int_t trg_single_e2_;
-
-    // need to distinguish legs
-    Int_t trg_double_mu1_;
-    Int_t trg_double_mu2_;
+    Int_t pass_trg_single_e1_;
+    Int_t pass_trg_single_e2_;
 
     // need to distinguish legs
-    Int_t trg_double_e1_;
-    Int_t trg_double_e2_;
-    Int_t trg_cross_emu_;
+    Int_t pass_trg_double_mu1_;
+    Int_t pass_trg_double_mu2_;
 
     // need to distinguish legs
-    Int_t trg_had_double_e1_;
-    Int_t trg_had_double_e2_;
+    Int_t pass_trg_double_e1_;
+    Int_t pass_trg_double_e2_;
+    Int_t pass_trg_cross_emu_;
+
+    // need to distinguish legs
+    Int_t pass_trg_had_double_e1_;
+    Int_t pass_trg_had_double_e2_;
     
     // need to distinguish legs
-    Int_t trg_had_double_mu1_;
-    Int_t trg_had_double_mu2_;
-    Int_t trg_had_cross_emu_;
+    Int_t pass_trg_had_double_mu1_;
+    Int_t pass_trg_had_double_mu2_;
+    Int_t pass_trg_had_cross_emu_;
 
+    // triggers
+    Int_t match_trg_single_mu1_;
+    Int_t match_trg_single_mu2_;
+
+    Int_t match_trg_single_e1_;
+    Int_t match_trg_single_e2_;
+
+    // need to distinguish legs
+    Int_t match_trg_double_mu1_;
+    Int_t match_trg_double_mu2_;
+
+    // need to distinguish legs
+    Int_t match_trg_double_e1_;
+    Int_t match_trg_double_e2_;
+    Int_t match_trg_cross_emu_;
+
+    // need to distinguish legs
+    Int_t match_trg_had_double_e1_;
+    Int_t match_trg_had_double_e2_;
+    
+    // need to distinguish legs
+    Int_t match_trg_had_double_mu1_;
+    Int_t match_trg_had_double_mu2_;
+    Int_t match_trg_had_cross_emu_;
 };
 
 #endif
