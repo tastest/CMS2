@@ -64,6 +64,7 @@ private:
     // Lepton pt and eta and phi
     Float_t pt_;
     Float_t eta_;
+    Float_t sceta_;
     Float_t phi_;
     Float_t scet_;
     Int_t   id_;  // \pm 11 or \pm 13
@@ -135,6 +136,12 @@ private:
     Bool_t v1_el_ssV3_;
     Bool_t v2_el_ssV3_;
     Bool_t v3_el_ssV3_;
+
+    // Electrons
+    Bool_t num_el_ssV4_;
+    Bool_t v1_el_ssV4_;
+    Bool_t v2_el_ssV4_;
+    Bool_t v3_el_ssV4_;
     
     // Muons
     Bool_t numNomSSv3_;   // NominalSSv3
@@ -518,6 +525,7 @@ void myBabyMaker::InitBabyNtuple () {
     id_               = -1;
     pt_               = -999.;
     eta_              = -999.;
+    sceta_            = -999.;
     phi_              = -999.;
     scet_             = -999.;
     tcmet_            = -999.;
@@ -586,6 +594,11 @@ void myBabyMaker::InitBabyNtuple () {
     v1_el_ssV3_     = false;
     v2_el_ssV3_     = false;
     v3_el_ssV3_     = false;
+
+    num_el_ssV4_    = false;
+    v1_el_ssV4_     = false;
+    v2_el_ssV4_     = false;
+    v3_el_ssV4_     = false;
 
     // Muons
     numNomSSv3_     = false;
@@ -904,6 +917,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
     babyTree_->Branch("pt"                  , &pt_                  );
     babyTree_->Branch("eta"                 , &eta_                 );
+    babyTree_->Branch("sceta"               , &sceta_               );
     babyTree_->Branch("phi"                 , &phi_                 );
     babyTree_->Branch("scet"                , &scet_                );
     babyTree_->Branch("tcmet"               , &tcmet_               );
@@ -968,6 +982,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v1_el_ssV3"    , &v1_el_ssV3_     );
     babyTree_->Branch("v2_el_ssV3"    , &v2_el_ssV3_     );
     babyTree_->Branch("v3_el_ssV3"    , &v3_el_ssV3_     );
+
+    babyTree_->Branch("num_el_ssV4"   , &num_el_ssV4_    );
+    babyTree_->Branch("v1_el_ssV4"    , &v1_el_ssV4_     );
+    babyTree_->Branch("v2_el_ssV4"    , &v2_el_ssV4_     );
+    babyTree_->Branch("v3_el_ssV4"    , &v3_el_ssV4_     );
 
     // Muons
     babyTree_->Branch("numNomSSv3",   &numNomSSv3_       );

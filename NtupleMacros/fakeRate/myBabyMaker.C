@@ -443,6 +443,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v2_el_ssV3_     = pass_electronSelection( iLep, electronSelectionFOV3_ssVBTF80_v2  );
                     v3_el_ssV3_     = pass_electronSelection( iLep, electronSelectionFOV3_ssVBTF80_v3  );
 
+                    num_el_ssV4_    = pass_electronSelection( iLep, electronSelection_ssV4             );
+                    v1_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v1  );
+                    v2_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v2  );
+                    v3_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v3  );
+
                     // WW
                     num_el_smurfV3_ = pass_electronSelection( iLep, electronSelection_smurfV3          );
                     num_el_smurfV4_ = pass_electronSelection( iLep, electronSelection_smurfV4          );
@@ -597,6 +602,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // Basic Quantities
                     pt_             = els_p4().at(iLep).pt();
                     eta_            = els_p4().at(iLep).eta();
+                    sceta_          = els_etaSC().at(iLep);
                     phi_            = els_p4().at(iLep).phi();
                     scet_           = els_eSC()[iLep] / cosh( els_etaSC()[iLep] );
                     id_             = 11*els_charge().at(iLep);
