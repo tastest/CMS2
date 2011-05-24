@@ -81,21 +81,15 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (vertex_index < 0) {
         if (fabs(cms2.els_d0corr()[index]) < 0.02)
             cuts_passed |= (1ll<<ELEIP_SS200);  
-        if (fabs(cms2.els_d0corr()[index]) < 0.20)
-            cuts_passed |= (1ll<<ELEIP_SS2000);  
     }
     else {
         if (cms2.els_trkidx()[index] < 0) {
             if (fabs(cms2.els_d0corr()[index]) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
-            if (fabs(cms2.els_d0corr()[index]) < 0.20)
-                cuts_passed |= (1ll<<ELEIP_SS2000);
         }
         else {
             if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
-            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.20)
-                cuts_passed |= (1ll<<ELEIP_SS2000);
         }
     }
 
@@ -106,6 +100,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronId_smurf_v2(index)) cuts_passed |= (1ll<<ELEID_SMURFV2_EXTRA);
     if (electronId_smurf_v3(index)) cuts_passed |= (1ll<<ELEID_SMURFV3_EXTRA);
     if (electronId_smurf_v1ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV1SS_EXTRA);
+    if (electronId_smurf_v2ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV2SS_EXTRA);
 
     // 
     // "CAND" ID
@@ -328,6 +323,29 @@ bool electronId_smurf_v2(const unsigned int index)
    electronIdComponent_t answer_vbtf = 0;
    answer_vbtf = electronId_VBTF(index, VBTF_80_NOHOEEND, false, false);
    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) {
+
+     if (cms2.els_fbrem()[index] > 0.15) return true;
+
+     if (fabs(cms2.els_etaSC()[index]) < 1.) {
+       if (cms2.els_eOverPIn()[index] > 0.95) return true;
+     }
+
+   }
+
+   return false;
+ }
+
+ bool electronId_smurf_v2ss(const unsigned int index)
+ {
+
+   if (cms2.els_p4()[index].pt() > 20.0) return true;
+
+   electronIdComponent_t answer_vbtf = 0;
+   answer_vbtf = electronId_VBTF(index, VBTF_80_NOHOEEND, false, false);
+   if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) {
+
+       if (fabs(cms2.els_etaSC()[index]) > 1.479)
+           if (cms2.els_hOverE()[index] < 0.15) return true;
 
      if (cms2.els_fbrem()[index] > 0.15) return true;
 
