@@ -61,7 +61,6 @@ enum EleSelectionType {
   ELEIP_PV_OSV2,     // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
   ELEIP_PV_OSV2_FO,  // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
   ELEIP_SS200,       // 2011 SS numerator d0 cut
-  ELEIP_SS2000,      // 2011 SS potential denominator d0 cut
 
 
 /////////////////////////////
@@ -72,6 +71,7 @@ enum EleSelectionType {
   ELEID_SMURFV2_EXTRA,                // pass smurf v2 electron ID
   ELEID_SMURFV3_EXTRA,                // pass smurf v3 electron ID
   ELEID_SMURFV1SS_EXTRA,              // electron ID with VBTF80
+  ELEID_SMURFV2SS_EXTRA,              // electron ID with VBTF80
   ELEID_CAND01,                       // pass "CAND01" electron ID
   ELEID_CAND02,                       // pass "CAND02" electron ID
   ELEID_EXTRA,                        // pass "EXTRA" electron ID
@@ -825,6 +825,10 @@ static const cuts_t electronSelection_smurfV1ss_id  =
          (1ll<<ELEID_VBTF_80_NOHOEEND) |
          (1ll<<ELEID_SMURFV1SS_EXTRA);
 
+static const cuts_t electronSelection_smurfV2ss_id  =
+         (1ll<<ELEID_VBTF_80_NOHOEEND) |
+         (1ll<<ELEID_SMURFV2SS_EXTRA);
+
 static const cuts_t electronSelection_smurfV3  = 
          electronSelection_smurfV3_baseline |
          electronSelection_smurfV3_convrej |
@@ -1017,6 +1021,7 @@ static const cuts_t electronSelection_ssV3 =
                        electronSelection_ssV3_noIso |
                        electronSelection_ssV3_iso;
 
+
 // Loose "Fakeable Object" Selection (fake rate denominators)
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
@@ -1033,13 +1038,60 @@ static const cuts_t electronSelectionFOV3_ssVBTF80_v2 =       // V2 - relaxed Id
                  (1ll<<ELEISO_RELNT015)             |
                  (1ll<<ELEISO_ECAL_RELNT020_NPS);
 
-static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation 
                  electronSelectionFO_SS_baseline    |
                  electronSelection_smurfV3_convrej  |
                  electronSelection_smurfV1ss_id     |              
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)     |
                  (1ll<<ELEISO_ECAL_RELNT020_NPS)    |
                  (1ll<<ELEISO_HCAL_RELNT020);
+
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+// Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_ssV4_noIso = 
+           electronSelectionFO_SS_baseline     |
+           (1ll<<ELENOTCONV_DISTDCOT002)       |
+           (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+           electronSelection_smurfV2ss_id      |
+           (1ll<<ELEIP_SS200)                  |
+           (1ll<<ELESEED_ECAL)                 |
+           (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+static const cuts_t electronSelection_ssV4_iso =
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelection_ssV4 = 
+                       electronSelection_ssV4_noIso |
+                       electronSelection_ssV4_iso;
+
+// Loose "Fakeable Object" Selection (fake rate denominators)
+
+static const cuts_t electronSelectionFOV4_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
+                 electronSelectionFO_SS_baseline     |
+                 (1ll<<ELENOTCONV_DISTDCOT002)       |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
+
+static const cuts_t electronSelectionFOV4_ssVBTF80_v2 =       // V2 - relaxed Id
+                 electronSelectionFO_SS_baseline     |
+                 (1ll<<ELENOTCONV_DISTDCOT002)       |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL)                 |
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelectionFOV4_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+                 electronSelectionFO_SS_baseline     |
+                 (1ll<<ELENOTCONV_DISTDCOT002)       |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 electronSelection_smurfV2ss_id      |              
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
 
 /////////////////////////////////////
 // End 2011 SS Selections          //
@@ -1196,6 +1248,7 @@ bool electronId_smurf_v1(const unsigned int index);
 bool electronId_smurf_v2(const unsigned int index);
 bool electronId_smurf_v3(const unsigned int index);
 bool electronId_smurf_v1ss(const unsigned int index);
+bool electronId_smurf_v2ss(const unsigned int index);
 
 // "cand" electron id
 bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
