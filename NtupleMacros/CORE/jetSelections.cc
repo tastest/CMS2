@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.17 2011/05/13 15:21:17 cerati Exp $
+// $Id: jetSelections.cc,v 1.18 2011/05/24 20:40:15 slava77 Exp $
 
 #include <algorithm>
 #include <utility>
@@ -54,8 +54,9 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  case JETS_TYPE_PF_CORR:
 	       corr = cms2.pfjets_cor().at(i);
 	       break;
-      case JETS_TYPE_PF_FAST_CORR:
-          corr = cms2.pfjets_corL1FastL2L3().at(i);
+	  case JETS_TYPE_PF_FAST_CORR:
+	    corr = cms2.pfjets_corL1FastL2L3().at(i);
+	    break;
 	  case JETS_TYPE_JPT: 
 	       corr = cms2.jpts_cor().at(i);
 	       break;
