@@ -1,185 +1,156 @@
 #ifndef ELECTRONSELECTIONS_H
 #define ELECTRONSELECTIONS_H
 
+// C++
 #include <stdint.h>
 #include <vector>
+
+// Root
 #include "TMath.h"
 #include "CMS2.h"
 
+// Header
 #include "electronSelectionsParameters.h"
 
+//
 typedef ULong64_t   uint64;
 typedef uint64      cuts_t;
 typedef uint64      electronIdComponent_t;
 
-//
-// This is the menu of electron selections
-//
+/////////////////////////////////////////////
+// This is the menu of electron selections //
+/////////////////////////////////////////////
 
 enum EleSelectionType {
-	 //
-	 // iso cuts
-	 //
-	 // rel iso (fixed below 20 GeV) < 0.10
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL010,
-	 // rel iso (fixed below 20 GeV) < 0.15
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL015,
-	 // rel iso (fixed below 20 GeV) < 0.40
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL040,
-	 // rel iso (fixed below 20 GeV) < 1.0
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_REL100,
-	 // rel iso (fixed below 20 GeV) < 0.10
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL010_WW,
-	 // rel iso (fixed below 20 GeV) < 0.40
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL040_WW,
-	 // rel iso (fixed below 20 GeV) < 1.00
-	 // 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-	 ELEISO_REL100_WW,
-	 // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
-	 // ELEISO_SMURFV1,
-	 // pfIso
-	 ELEISO_SMURFV4,
 
-	 ELEISO_RELNT010,       // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_RELNT015,       // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_RELNT040,       // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_TRK_RELNT020,   // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
-	 ELEISO_ECAL_RELNT020,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_ECAL_RELNT020_NPS,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, no pedestal sub in EB
-	 ELEISO_HCAL_RELNT020,  // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
-	 ELEISO_ECAL_REL020,    // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
-	 ELEISO_HCAL_REL020,    // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
-	 ELEISO_FASTJET_REL005, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
-	 ELEISO_FASTJET_REL010, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
-	 ELEISO_FASTJET_REL015, // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+///////////////
+// Isolation //
+///////////////
+ 
+  ELEISO_REL010,             // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL015,             // rel iso (fixed below 20 GeV) < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL040,             // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL100,             // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_REL010_WW,          // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+  ELEISO_REL040_WW,          // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+  ELEISO_REL100_WW,          // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
+  ELEISO_SMURFV4,            // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
+  ELEISO_RELNT010,           // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_RELNT015,           // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_RELNT040,           // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_TRK_RELNT020,       // non-truncated relative Tracker iso < 0.20, 0.3 cone size for all
+  ELEISO_ECAL_RELNT020,      // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_ECAL_RELNT020_NPS,  // non-truncated relative ECAL    iso < 0.20, 0.3 cone size for all, no pedestal sub in EB
+  ELEISO_HCAL_RELNT020,      // non-truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+  ELEISO_ECAL_REL020,        // truncated relative ECAL    iso < 0.20, 0.3 cone size for all, 1 GeV pedestal sub in EB
+  ELEISO_HCAL_REL020,        // truncated relative HCAL    iso < 0.20, 0.3 cone size for all
+  ELEISO_FASTJET_REL005,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+  ELEISO_FASTJET_REL010,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+  ELEISO_FASTJET_REL015,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
 
-	 //
-	 // ip cuts
-	 //
-	 // d0 corrected for beamspot < 0.02
-	 ELEIP_200,
-	 // d0 corrected for beamspot < 0.04
-	 ELEIP_400,
-	 // d0 corrected for primary vertex < 0.02
-	 ELEIP_PV_200,
-	 // d0 (PV) < 0.02 and dz (PV) < 1.0
-	 ELEIP_PV_wwV1,
-	 // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
-	 ELEIP_PV_SMURFV3,
-	 // d0 (PV) < 0.02 and dz (PV) < 0.1, using first DA PV
-	 ELEIP_PV_SMURFV4,
-	 // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
-	 ELEIP_PV_OSV2,
-	 // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
-	 ELEIP_PV_OSV2_FO,
-	 // 2011 SS numerator d0 cut
-	 ELEIP_SS200,
-	 // 2011 SS potential denominator d0 cut
-	 ELEIP_SS2000,
+//////////////////////
+// Impact Parameter //
+//////////////////////
 
-	 //
-	 // id cuts
-	 //
-	 // pass smurf v1 electron ID
-	 ELEID_SMURFV1_EXTRA,
-	 // pass smurf v2 electron ID
-	 ELEID_SMURFV2_EXTRA,
-	 // pass smurf v2 electron ID
-	 ELEID_SMURFV3_EXTRA,
-         ELEID_SMURFV1SS_EXTRA, // electron ID with VBTF80
-	 // pass "CAND01" electron ID
-	 ELEID_CAND01,
-	 // pass "CAND02" electron ID
-	 ELEID_CAND02,
-	 // pass "EXTRA" electron ID
-	 ELEID_EXTRA,
-	 // VBTF95 electron ID (35X)
-	 ELEID_VBTF_35X_95,
-	 // VBTF90 electron ID (35X)
-	 ELEID_VBTF_35X_90,
-	 // VBTF80 electron ID (35X)
-	 ELEID_VBTF_35X_80,
-	 // VBTF70 electron ID (35X)
-	 ELEID_VBTF_35X_70,
-	 // VBTF80 electron ID no HoE in endcap
-	 ELEID_VBTF_80_NOHOEEND,
-	 // VBTF85 electron ID no HoE in endcap
-	 ELEID_VBTF_85_NOHOEEND,
-	 // VBTF85 electron ID
-	 ELEID_VBTF_85,
-	 // VBTF70 electron ID no HoE in endcap
-	 ELEID_VBTF_70_NOHOEEND,
-	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
-	 // represent HLT requirements for CaloIdL_TrkIdVL
-	 ELEID_VBTF_90_HLT,
- 	 // VBTF90 electron ID with HoE and dPhiIn cuts tuned to 
- 	 // represent HLT requirements for CaloIdT_TrkIdVL
- 	 ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,
-	 // CIC_MEDIUM electron ID (V03)
-	 ELEID_CIC_V03_MEDIUM,
-	 //
-	 // conv rej cuts
-	 //
-	 // mit conversion rejection v11 
-	 //(maxhitsbeforevtx, minprob, minlxy, allowckfmatch, requirearbitratedmerged) = (0,   1e-6,   2.0,   true,  false)
-	 ELENOTCONV_MIT,
-	 // dist < 0.02 && dcot(theta) < 0.02
-	 ELENOTCONV_DISTDCOT002,
-	 // < 2 missing hits
-	 ELENOTCONV_HITPATTERN,
-	 // < 1 missing hits
-	 ELENOTCONV_HITPATTERN_0MHITS,
-	 //ELENOTCONV_HITPATTERN39X_0MHITS,
-	 //
-	 // eta cuts
-	 //
-	 // |eta| < 2.50 where eta is the ecal eta
-	 ELEETA_250,
-	 ELEETA_240,
-	 //
-	 // Pt
-	 //
-	 ELEPT_010,
-	 ELEPT_015,
-	 ELEPT_020,
-	 //
-	 // Super Cluster Et
-	 //
-	 ELESCET_010,
-	 ELESCET_015,
-	 // no muon cuts
-	 //
-	 // no muon within dR < 0.1
-	 ELENOMUON_010,
-	 //
-	 // ecal driven requirement
-	 //
-	 // seed must have been found by at least the ecal algo
-	 ELESEED_ECAL,
-	 //
-	 // charge flipping
-	 //
-	 // is not a charge flip
-	 ELECHARGE_NOTFLIP,
-	 ELECHARGE_NOTFLIP3AGREE,
-	 //
-	 // spike rejection
-	 //
-	 // swiss variable should be > 0.05 to not be a spike
-	 ELENOSPIKE_SWISS005,
+  ELEIP_200,         // d0 corrected for beamspot < 0.02
+  ELEIP_400,         // d0 corrected for beamspot < 0.04
+  ELEIP_PV_200,      // d0 corrected for primary vertex < 0.02
+  ELEIP_PV_wwV1,     // d0 (PV) < 0.02 and dz (PV) < 1.0
+  ELEIP_PV_SMURFV3,  // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
+  ELEIP_PV_SMURFV4,  // d0 (PV) < 0.02 and dz (PV) < 0.1, using first DA PV
+  ELEIP_PV_OSV2,     // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
+  ELEIP_PV_OSV2_FO,  // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
+  ELEIP_SS200,       // 2011 SS numerator d0 cut
+
+
+/////////////////////////////
+// Electron Identification //
+/////////////////////////////
+
+  ELEID_SMURFV1_EXTRA,                // pass smurf v1 electron ID
+  ELEID_SMURFV2_EXTRA,                // pass smurf v2 electron ID
+  ELEID_SMURFV3_EXTRA,                // pass smurf v3 electron ID
+  ELEID_SMURFV1SS_EXTRA,              // electron ID with VBTF80
+  ELEID_SMURFV2SS_EXTRA,              // electron ID with VBTF80
+  ELEID_CAND01,                       // pass "CAND01" electron ID
+  ELEID_CAND02,                       // pass "CAND02" electron ID
+  ELEID_EXTRA,                        // pass "EXTRA" electron ID
+  ELEID_VBTF_35X_95,                  // VBTF95 electron ID (35X)
+  ELEID_VBTF_35X_90,                  // VBTF90 electron ID (35X)
+  ELEID_VBTF_35X_80,                  // VBTF80 electron ID (35X)
+  ELEID_VBTF_35X_70,                  // VBTF70 electron ID (35X)
+  ELEID_VBTF_80_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
+  ELEID_VBTF_85_NOHOEEND,             // VBTF85 electron ID no HoE in endcap
+  ELEID_VBTF_85,                      // VBTF85 electron ID
+  ELEID_VBTF_70_NOHOEEND,             // VBTF70 electron ID no HoE in endcap
+  ELEID_VBTF_90_HLT,                  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdL_TrkIdVL
+  ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdT_TrkIdVL
+  ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
+
+//////////////////////////
+// Conversion Rejection //
+//////////////////////////
+
+  ELENOTCONV_MIT,                // mit conversion rejection v11 
+  ELENOTCONV_DISTDCOT002,        // dist < 0.02 && dcot(theta) < 0.02
+  ELENOTCONV_HITPATTERN,         // < 2 missing hits
+  ELENOTCONV_HITPATTERN_0MHITS,  // < 1 missing hits
+
+//////////////////////
+// Basic Selections //
+//////////////////////
+
+  ELEETA_250,               // |eta| < 2.50
+  ELEETA_240,               // |eta| < 2.40 
+
+  ELEPT_010,                // Pt > 10
+  ELEPT_015,                // Pt > 15
+  ELEPT_020,                // Pt > 20
+
+  ELESCET_010,              // SC Et > 10
+  ELESCET_015,              // SC Et > 20
+
+  ELENOMUON_010,            // no muon within dR < 0.1
+
+  ELESEED_ECAL,             // seed must have been found by at least the ecal algo
+
+  ELECHARGE_NOTFLIP,        // Not a charge flip
+  ELECHARGE_NOTFLIP3AGREE,  // Not a charge flip and CTF, GSF, and Pixel-SuperCluster charges agree
+
+ 
+  //*************************************************************************************//
+  // This is the last enumerator element                                                 //
+  // The electron selection bitmask will not work with more than 63 element in this enum //
+  // DO NOT ADD ANY ELEMENTS AFTER THIS!                                                 //
+  //*************************************************************************************//
+
+  ELENOSPIKE_SWISS005, // Spike Rejection, swiss variable should be > 0.05 to not be a spike
 
 };
 
+// Assuming the constants in EleSelectionType have default numeric values ( 0, 1, 2, ... N ),
+// the last enum constant will have integer value N
+// For the bitmasks to work, N must be <= 63
+static bool shown = false;
+inline void checkElectronSelections(void){
+  int n    = (int) EleSelectionType(ELENOSPIKE_SWISS005);
+  int nMax = (int) 8*sizeof(1ll) - 1;
+  if( n > nMax ){
+    cout << endl << "ERROR at line " << __LINE__ << " in " << __FILE__ << ":" << endl;
+    cout << "enum \"EleSelectionType\" has " << n << " elements but cannot have more than " << nMax << " elements... Exiting." << endl << endl;
+    exit(1);
+  }
+  else{
+    if( !shown ){
+      cout << endl << "There are " << ( nMax - n ) << " available selectors left in enum EleSelectionType" << endl;
+      cout << "\t( " << __FILE__ << " )" << endl << endl;
+    }
+    shown = true;
+  }
+}
+
 // ===================== FAKERATES ========================
-//
 // The Fakeable Objects
-//
 // These cuts are applied in all
 // fakeable object denominators
 //---------------------------------------------------------
@@ -189,8 +160,6 @@ static const cuts_t electronSelectionFO_baseline =
 	 (1ll<<ELESEED_ECAL) |             // not only tracker seeded
 	 (1ll<<ELENOTCONV_DISTDCOT002);    // dist/dcot conv. rejection
 //---------------------------------------------------------
-
-//  
 // V1 fakeable object for cand01
 // extrapolating in iso and id
 // NOTE - this is the same as el_ttbar_v1
@@ -199,7 +168,6 @@ static const cuts_t electronSelectionFO_el_v1_cand01 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
-//  
 // V1 fakeable object for cand02 + extra
 // extrapolating in iso and id
 // NOTE - this is the same as el_ttbar_v1
@@ -208,7 +176,6 @@ static const cuts_t electronSelectionFO_el_v1_cand02 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL040);
 //---------------------------------------------------------
-//  
 // V1 fakeable object for cand02 + extra + flipveto
 // extrapolating in iso and id with charge flip veto
 //---------------------------------------------------------
@@ -217,7 +184,6 @@ static const cuts_t electronSelectionFO_el_v1_cand02flip =
 	 (1ll<<ELEISO_REL040) |
 	 (1ll<<ELECHARGE_NOTFLIP);
 //---------------------------------------------------------
-//  
 // V2 fakeable object for cand01
 // extrapolating in id
 //---------------------------------------------------------
@@ -225,7 +191,6 @@ static const cuts_t electronSelectionFO_el_v2_cand01 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL010);
 //---------------------------------------------------------
-//  
 // V2 fakeable object for cand02 + extra
 // extrapolating in id
 // NOTE: this is the same as above
@@ -234,7 +199,6 @@ static const cuts_t electronSelectionFO_el_v2_cand02 =
 	 electronSelectionFO_baseline |
 	 (1ll<<ELEISO_REL010);
 //---------------------------------------------------------
-//  
 // V2 fakeable object for cand02 + extra + flipveto
 // extrapolating in id with charge flip veto
 //---------------------------------------------------------
@@ -243,7 +207,6 @@ static const cuts_t electronSelectionFO_el_v2_cand02flip =
 	 (1ll<<ELEISO_REL010) |
 	 (1ll<<ELECHARGE_NOTFLIP);
 //---------------------------------------------------------
-//  
 // V3 fakeable object for cand01
 // extrapolating in isolation
 //---------------------------------------------------------
@@ -252,7 +215,6 @@ static const cuts_t electronSelectionFO_el_v3_cand01 =
 	 (1ll<<ELEISO_REL040) |
 	 (1ll<<ELEID_CAND01);
 //---------------------------------------------------------
-//  
 // V3 fakeable object for cand02 + extra
 // extrapolating in isolation
 //---------------------------------------------------------
@@ -262,7 +224,6 @@ static const cuts_t electronSelectionFO_el_v3_cand02 =
 	 (1ll<<ELEID_CAND02) |
 	 (1ll<<ELEID_EXTRA);
 //---------------------------------------------------------
-//  
 // V3 fakeable object for cand02 + extra + flipveto
 // extrapolating in isolation with charge flip veto
 //---------------------------------------------------------
@@ -284,7 +245,6 @@ static const cuts_t electronSelectionFO_el_v3_cand02flip =
 
 
 // ===================== TTBar ============================
-//
 // The standard TTBar selection without isolation
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbar_noiso =
@@ -295,13 +255,11 @@ static const cuts_t electronSelection_ttbar_noiso =
 	 (1ll<<ELENOMUON_010) |
 	 (1ll<<ELESEED_ECAL);
 //---------------------------------------------------------
-//
 // The standard TTBar isolation cut
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbar_iso =
 	 (1ll<<ELEISO_REL010);
 //---------------------------------------------------------
-//
 // The standard TTBar selection with isolation
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbar =
@@ -867,6 +825,10 @@ static const cuts_t electronSelection_smurfV1ss_id  =
          (1ll<<ELEID_VBTF_80_NOHOEEND) |
          (1ll<<ELEID_SMURFV1SS_EXTRA);
 
+static const cuts_t electronSelection_smurfV2ss_id  =
+         (1ll<<ELEID_VBTF_80_NOHOEEND) |
+         (1ll<<ELEID_SMURFV2SS_EXTRA);
+
 static const cuts_t electronSelection_smurfV3  = 
          electronSelection_smurfV3_baseline |
          electronSelection_smurfV3_convrej |
@@ -1059,6 +1021,7 @@ static const cuts_t electronSelection_ssV3 =
                        electronSelection_ssV3_noIso |
                        electronSelection_ssV3_iso;
 
+
 // Loose "Fakeable Object" Selection (fake rate denominators)
 
 static const cuts_t electronSelectionFOV3_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
@@ -1075,13 +1038,60 @@ static const cuts_t electronSelectionFOV3_ssVBTF80_v2 =       // V2 - relaxed Id
                  (1ll<<ELEISO_RELNT015)             |
                  (1ll<<ELEISO_ECAL_RELNT020_NPS);
 
-static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+static const cuts_t electronSelectionFOV3_ssVBTF80_v3 =       // V3 - relaxed isolation 
                  electronSelectionFO_SS_baseline    |
                  electronSelection_smurfV3_convrej  |
                  electronSelection_smurfV1ss_id     |              
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)     |
                  (1ll<<ELEISO_ECAL_RELNT020_NPS)    |
                  (1ll<<ELEISO_HCAL_RELNT020);
+
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+// Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_ssV4_noIso = 
+           electronSelectionFO_SS_baseline     |
+           (1ll<<ELENOTCONV_DISTDCOT002)       |
+           (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+           electronSelection_smurfV2ss_id      |
+           (1ll<<ELEIP_SS200)                  |
+           (1ll<<ELESEED_ECAL)                 |
+           (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+static const cuts_t electronSelection_ssV4_iso =
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelection_ssV4 = 
+                       electronSelection_ssV4_noIso |
+                       electronSelection_ssV4_iso;
+
+// Loose "Fakeable Object" Selection (fake rate denominators)
+
+static const cuts_t electronSelectionFOV4_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
+                 electronSelectionFO_SS_baseline     |
+                 (1ll<<ELENOTCONV_DISTDCOT002)       |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
+
+static const cuts_t electronSelectionFOV4_ssVBTF80_v2 =       // V2 - relaxed Id
+                 electronSelectionFO_SS_baseline     |
+                 (1ll<<ELENOTCONV_DISTDCOT002)       |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL)                 |
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelectionFOV4_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+                 electronSelectionFO_SS_baseline     |
+                 (1ll<<ELENOTCONV_DISTDCOT002)       |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 electronSelection_smurfV2ss_id      |              
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
 
 /////////////////////////////////////
 // End 2011 SS Selections          //
@@ -1197,73 +1207,62 @@ static const cuts_t electronSelection_cand02flip = electronSelection_ss;
 
 
 
-//
-// other enums for internal use
-//
+////////////////////////////
+// enums for internal use //
+////////////////////////////
 
 enum EgammaFiduciality {
-	 ISEB,
-	 ISEBEEGAP,
-	 ISEE,
-	 ISEEGAP,
-	 ISEBETAGAP,
-	 ISEBPHIGAP,
-	 ISEEDEEGAP,
-	 ISEERINGGAP,
-	 ISGAP
+  ISEB,
+  ISEBEEGAP,
+  ISEE,
+  ISEEGAP,
+  ISEBETAGAP,
+  ISEBPHIGAP,
+  ISEEDEEGAP,
+  ISEERINGGAP,
+  ISGAP
 };
 
 enum EgammaElectronType {
-	 ISECALENERGYCORRECTED,  // if false, the electron "ecalEnergy" is just the supercluster energy 
-	 ISMOMENTUMCORRECTED,    // has E-p combination been applied
-	 ISECALDRIVEN,
-	 ISTRACKERDRIVEN
+  ISECALENERGYCORRECTED,  // if false, the electron "ecalEnergy" is just the supercluster energy 
+  ISMOMENTUMCORRECTED,    // has E-p combination been applied
+  ISECALDRIVEN,
+  ISTRACKERDRIVEN
 };
 
 enum ElectronIDComponent {
-	 ELEID_ID,
-	 ELEID_ISO,
-	 ELEID_CONV,
-	 ELEID_IP,
+  ELEID_ID,
+  ELEID_ISO,
+  ELEID_CONV,
+  ELEID_IP,
 };
 
-// 
 // master selection function
-//
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
 bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, int vertex_index = -1);
 cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, int vertex_index = -1);
 
-//
 // "smurf" electron id
 // WARNING!!! this is not the full smurf selection, just the additional ID on top of VBTF80 for low pt guys
-//
 bool electronId_smurf_v1(const unsigned int index);
 bool electronId_smurf_v2(const unsigned int index);
 bool electronId_smurf_v3(const unsigned int index);
 bool electronId_smurf_v1ss(const unsigned int index);
+bool electronId_smurf_v2ss(const unsigned int index);
 
-//
 // "cand" electron id
-//
 bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 bool electronId_extra(const unsigned int index);
 
-
-//
 // "VBTF" id
-//
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 
-//
 // "CIC" id
-//
 electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap =false);
 
 unsigned int eidClassify(const unsigned int version, const unsigned int index);
 bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn=false);
 
-//
 // relative isolation 
 // - standard track isolation from CMSSW
 // --- CMSSW >= 3_5_X track jurassic strip half width 0.015
@@ -1278,54 +1277,35 @@ float electronIsolation_ECAL_rel_v1(const unsigned int, bool useEBps = true);
 float electronIsolation_HCAL_rel_v1(const unsigned int);
 float electronIsolation_ECAL_rel(const unsigned int);
 float electronIsolation_HCAL_rel(const unsigned int);
-
 float electronIsolation_rel_FastJet(const unsigned int, bool);
 float electronIsolation_rel_v1_FastJet(const unsigned int, bool);
 float el_fastjet_rel_offset(const unsigned int);
-
-// the difference from above is that the pedestal sub is applied on both EB/EE
-float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);
-
+float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);  // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, 
-			 float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=0.025);
+float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=0.025);
 
-
-//
 // remove electrons that are overlapping with a muon
-//
 bool electronId_noMuon(const unsigned int index);
 
-//
 // conversion rejection
-//
 bool isFromConversionHitPattern(const unsigned int index);
 bool isFromConversionPartnerTrack(const unsigned int index);
 bool isFromConversionMIT(const unsigned int index);
 
-//
 //electron charge using the majority logic of the egamma group
-//
 int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits = 0.45);
 
-//
 //charge flip rejection
-//
 bool isChargeFlip(int elIndex);
 bool isChargeFlip3agree(int elIndex); 
-//
+
 // spike rejection for electrons
-//
 bool isSpikeElectron(const unsigned int index);
 
-//
 // position correction for electrons
-//
-
 void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhiIn);
 
-//
 // d0 corrected by the primary vertex
-//
 double electron_d0PV(unsigned int index);
 double electron_d0PV_wwV1(unsigned int index);
 double electron_d0PV_mindz(unsigned int index);
@@ -1333,6 +1313,7 @@ double electron_dzPV_wwV1(unsigned int index);
 double electron_d0PV_smurfV3(unsigned int index);
 double electron_dzPV_smurfV3(unsigned int index);
 
+// dz
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv);
 
 #endif
