@@ -301,10 +301,12 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 for (unsigned eli = 0; eli < cms2.els_p4().size(); ++eli) {
                     cuts_t cuts_passed = electronSelection(eli);
                     // for SS
-                    if (cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV3) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
-                        goodElectronIndicesSSV2.push_back(eli);
-                        ++ngoodlepSS_;
-                        ++ngoodelsSS_;
+                    if (cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV4) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
+                        if (fabs(cms2.els_etaSC()[eli]) < 1.47 || fabs(cms2.els_etaSC()[eli] > 1.567)) {
+                            goodElectronIndicesSSV2.push_back(eli);
+                            ++ngoodlepSS_;
+                            ++ngoodelsSS_;
+                        }
                     }
                     // for TTBarV2
                     if(cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ttbarV2)) {
@@ -378,8 +380,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 std::vector<unsigned int> theJetIndices;
                 sumjetpt_   = 0.;
                 sumjetpt25_ = 0.;
+                sumjetptSS30_ = 0.;
                 sumjetptSS_ = 0.;
                 njets25_    = 0;
+                njetsSS30_    = 0;
                 njetsSS_    = 0;
                 njets_      = 0;
 
@@ -434,7 +438,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (!jetIsLepSSV2 && vjet.Pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         theJets.push_back(cms2.pfjets_p4()[jeti]);
                         theJetIndices.push_back(jeti);
+                        sumjetptSS30_ += vjet.Pt();
+                    }
+                    if (!jetIsLepSSV2 && vjet.Pt() > 40. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         sumjetptSS_ += vjet.Pt();
+                        njetsSS_++;
                     }
 
                 }
@@ -446,7 +454,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // for TTBarV2 selection cleaning
                 // 
 
-                njetsSS_      = theJetIndices.size();
+                njetsSS30_    = theJetIndices.size();
                 jet1pt_       = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].pt()*cms2.pfjets_corL1FastL2L3()[theJetIndices[0]] : -999999.;
                 jet1eta_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].eta() : -999999.;
                 jet1phi_      = theJetIndices.size() > 0 ? cms2.pfjets_p4()[theJetIndices[0]].phi() : -999999.;
@@ -654,8 +662,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
                     e1_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
                     e1_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
+                    e1_numSSv4_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV4);
+                    e1_foSSv4_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV4_ssVBTF80_v3);
 
                     e1_scet_        = cms2.els_eSC()[index1] / cosh(cms2.els_etaSC()[index1]);
+                    e1_sceta_       = cms2.els_etaSC()[index1];
                     e1_eopin_       = cms2.els_eOverPIn()[index1];
                     e1_hoe_         = cms2.els_hOverE()[index1];
                     e1_dphiin_      = cms2.els_dPhiIn()[index1];
@@ -731,8 +742,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
                     e2_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
                     e2_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
+                    e2_numSSv4_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV4);
+                    e2_foSSv4_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV4_ssVBTF80_v3);
 
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
+                    e2_sceta_       = cms2.els_etaSC()[index2];
                     e2_eopin_       = cms2.els_eOverPIn()[index2];
                     e2_hoe_         = cms2.els_hOverE()[index2];
                     e2_dphiin_      = cms2.els_dPhiIn()[index2];
@@ -805,12 +819,14 @@ void dilepbabymaker::InitBabyNtuple ()
     njets_        = -999999;
     njets25_      = -999999;
     njetsSS_      = -999999;
+    njetsSS30_      = -999999;
     jet1pt_       = -999999.;
     jet2pt_       = -999999.;
     jet3pt_       = -999999.;
     sumjetpt_     = -999999.;
     sumjetpt25_     = -999999.;
     sumjetptSS_   = -999999.;
+    sumjetptSS30_   = -999999.;
     jet1cor_        = -9999999.;
     jet2cor_        = -9999999.;
     jet3cor_        = -9999999.;
@@ -940,6 +956,8 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_relPtErr_     = -999999.;
 
     // electron stuff
+    e1_numSSv4_     = 0;
+    e1_foSSv4_      = 0;
     e1_numSSv3_     = 0;
     e1_foSSv3_      = 0;
     e1_vbtf90full_  = 0;
@@ -949,6 +967,7 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_vbtf70_      = 0;
     e1_smurfV3_     = 0;
     e1_scet_        = -999999.;
+    e1_sceta_        = -999999.;
     e1_eopin_       = -999999.;
     e1_hoe_         = -999999.;
     e1_dphiin_      = -999999.;
@@ -967,6 +986,8 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_fbrem_       = -999999.;
     e1_mitConv_     = 0;
 
+    e2_numSSv4_     = 0;
+    e2_foSSv4_      = 0;
     e2_numSSv3_     = 0;
     e2_foSSv3_      = 0;
     e2_vbtf90full_  = 0;
@@ -976,6 +997,7 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_vbtf70_      = 0;
     e2_smurfV3_     = 0;
     e2_scet_        = -999999.;
+    e2_sceta_        = -999999.;
     e2_eopin_       = -999999.;
     e2_hoe_         = -999999.;
     e2_dphiin_      = -999999.;
@@ -1045,6 +1067,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("njets",        &njets_,       "njets/I"       );
     babyTree_->Branch("njets25",        &njets25_,       "njets25/I"       ); 
     babyTree_->Branch("njetsSS",      &njetsSS_,     "njetsSS/I"     );
+    babyTree_->Branch("njetsSS30",      &njetsSS30_,     "njetsSS30/I"     );
     babyTree_->Branch("jet1cor", &jet1cor_, "jet1cor/F");
     babyTree_->Branch("jet2cor", &jet2cor_, "jet2cor/F");
     babyTree_->Branch("jet3cor", &jet3cor_, "jet3cor/F");
@@ -1053,6 +1076,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("jet3pt",       &jet3pt_,      "jet3pt/F"      );
     babyTree_->Branch("sumjetpt",     &sumjetpt_,    "sumjetpt/F"    );
     babyTree_->Branch("sumjetpt25",     &sumjetpt25_,    "sumjetpt25/F"    );
+    babyTree_->Branch("sumjetptSS30",   &sumjetptSS30_,  "sumjetptSS30/F"  );
     babyTree_->Branch("sumjetptSS",   &sumjetptSS_,  "sumjetptSS/F"  );
     babyTree_->Branch("jet1eta",      &jet1eta_,     "jet1eta/F"     );
     babyTree_->Branch("jet2eta",      &jet2eta_,     "jet2eta/F"     );
@@ -1180,6 +1204,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
     // electron stuff
 
+    babyTree_->Branch("e1_numSSv4",    &e1_numSSv4_,    "e1_numSSv4/O"   );
+    babyTree_->Branch("e1_foSSv4",     &e1_foSSv4_,     "e1_foSSv4/O"    );
     babyTree_->Branch("e1_numSSv3",    &e1_numSSv3_,    "e1_numSSv3/O"   );
     babyTree_->Branch("e1_foSSv3",     &e1_foSSv3_,     "e1_foSSv3/O"    );
     babyTree_->Branch("e1_vbtf90full", &e1_vbtf90full_, "e1_vbtf90full/O");
@@ -1189,6 +1215,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_vbtf70",     &e1_vbtf70_,     "e1_vbtf70/O"    );
     babyTree_->Branch("e1_smurfV3",    &e1_smurfV3_,    "e1_smurfV3/O"   );
     babyTree_->Branch("e1_scet",       &e1_scet_,       "e1_scet/F"      );
+    babyTree_->Branch("e1_sceta",       &e1_sceta_,       "e1_sceta/F"      );
     babyTree_->Branch("e1_eopin",      &e1_eopin_,      "e1_eopin/F"     );
     babyTree_->Branch("e1_hoe",        &e1_hoe_,        "e1_hoe/F"       );
     babyTree_->Branch("e1_dphiin",     &e1_dphiin_,     "e1_dphiin/F"    );
@@ -1206,6 +1233,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_scCharge",   &e1_scCharge_,   "e1_scCharge/I"  );
     babyTree_->Branch("e1_fbrem",      &e1_fbrem_,      "e1_fbrem/F"     );
     babyTree_->Branch("e1_mitConv",    &e1_mitConv_,    "e1_mitConv/O"   );
+    babyTree_->Branch("e2_numSSv4",    &e2_numSSv4_,    "e2_numSSv4/O"   );
+    babyTree_->Branch("e2_foSSv4",     &e2_foSSv4_,     "e2_foSSv4/O"    );
     babyTree_->Branch("e2_numSSv3",    &e2_numSSv3_,    "e2_numSSv3/O"   );
     babyTree_->Branch("e2_foSSv3",     &e2_foSSv3_,     "e2_foSSv3/O"    );
     babyTree_->Branch("e2_vbtf90full", &e2_vbtf90full_, "e2_vbtf90full/O");
@@ -1215,6 +1244,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_vbtf70",     &e2_vbtf70_,     "e2_vbtf70/O"    );
     babyTree_->Branch("e2_smurfV3",    &e2_smurfV3_,    "e2_smurfV3/O"   );
     babyTree_->Branch("e2_scet",       &e2_scet_,       "e2_scet/F"      );
+    babyTree_->Branch("e2_sceta",       &e2_sceta_,       "e2_sceta/F"      );
     babyTree_->Branch("e2_eopin",      &e2_eopin_,      "e2_eopin/F"     );
     babyTree_->Branch("e2_hoe",        &e2_hoe_,        "e2_hoe/F"       );
     babyTree_->Branch("e2_dphiin",     &e2_dphiin_,     "e2_dphiin/F"    );

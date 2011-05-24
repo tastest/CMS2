@@ -72,12 +72,14 @@ private:
     Int_t   ntrks_;
     Int_t   njets_;
     Int_t   njets25_;
+    Int_t   njetsSS30_;
     Int_t   njetsSS_;
     Float_t jet1pt_;
     Float_t jet2pt_;
     Float_t jet3pt_;
     Float_t sumjetpt_;
     Float_t sumjetpt25_;
+    Float_t sumjetptSS30_;
     Float_t sumjetptSS_;
     Float_t jet1cor_;
     Float_t jet2cor_;
@@ -205,6 +207,8 @@ private:
     Bool_t  mu2_cosmic_;
 
     // electron stuff
+    Bool_t  e1_numSSv4_;
+    Bool_t  e1_foSSv4_;
     Bool_t  e1_numSSv3_;
     Bool_t  e1_foSSv3_;
     Bool_t  e1_vbtf90full_;
@@ -214,6 +218,7 @@ private:
     Bool_t  e1_vbtf70_;
     Bool_t  e1_smurfV3_;
     Float_t e1_scet_;
+    Float_t e1_sceta_;
     Float_t e1_eopin_;
     Float_t e1_hoe_;
     Float_t e1_dphiin_;
@@ -232,6 +237,8 @@ private:
     Float_t e1_fbrem_;
     Bool_t  e1_mitConv_;
 
+    Bool_t  e2_numSSv4_;
+    Bool_t  e2_foSSv4_;
     Bool_t  e2_numSSv3_;
     Bool_t  e2_foSSv3_;
     Bool_t  e2_vbtf90full_;
@@ -241,6 +248,7 @@ private:
     Bool_t  e2_vbtf70_;
     Bool_t  e2_smurfV3_;
     Float_t e2_scet_;
+    Float_t e2_sceta_;
     Float_t e2_eopin_;
     Float_t e2_hoe_;
     Float_t e2_dphiin_;
