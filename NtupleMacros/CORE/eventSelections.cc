@@ -265,7 +265,7 @@ int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClo
     }
 
     if (lt_trkidx < 0 || ll_trkidx < 0)
-        return false;
+        return -1;
 
     // figure out which vertex collection to use
     std::vector<LorentzVector> vtxP4s = useDAvtxs ? cms2.davtxs_position() : cms2.vtxs_position();
