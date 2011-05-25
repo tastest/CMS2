@@ -34,7 +34,8 @@ enum EleSelectionType {
   ELEISO_REL010_WW,          // rel iso (fixed below 20 GeV) < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
   ELEISO_REL040_WW,          // rel iso (fixed below 20 GeV) < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
   ELEISO_REL100_WW,          // rel iso (fixed below 20 GeV) < 1.00, 0.3 cone size for all, 1 GeV pedestal sub in EB/EE
-  ELEISO_SMURFV4,            // non-truncated relative iso with cut [0.05,0.07,0.10] for pT [10,15,20]
+  ELEISO_SMURFV4,            // non-truncated relative pf iso with cut [0.15,0.09] for [barrel,endcap]
+  ELEISO_SMURFV5,            // non-truncated relative pf iso with cut [0.13,0.09] for [barrel,endcap]
   ELEISO_RELNT010,           // non-truncated relative iso < 0.10, 0.3 cone size for all, 1 GeV pedestal sub in EB
   ELEISO_RELNT015,           // non-truncated relative iso < 0.15, 0.3 cone size for all, 1 GeV pedestal sub in EB
   ELEISO_RELNT040,           // non-truncated relative iso < 0.40, 0.3 cone size for all, 1 GeV pedestal sub in EB
@@ -735,6 +736,27 @@ static const cuts_t electronSelection_smurfV4  =
          electronSelection_smurfV4_iso |
          electronSelection_smurfV4_id;
 //--------end of SMURF V4 cuts--------------------------------
+
+//--------SMURF V5 cuts--------------------------------
+static const cuts_t electronSelection_smurfV5_ip  = 
+         (1ll<<ELEIP_PV_SMURFV4);
+static const cuts_t electronSelection_smurfV5_baseline  = 
+	 electronSelection_wwV1_base |
+	 electronSelection_smurfV5_ip;
+static const cuts_t electronSelection_smurfV5_convrej  = 
+	 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+         (1ll<<ELENOTCONV_MIT);
+static const cuts_t electronSelection_smurfV5_iso  = 
+         (1ll<<ELEISO_SMURFV5);
+static const cuts_t electronSelection_smurfV5_id  = 
+	 (1ll<<ELEID_VBTF_80_NOHOEEND) |
+         (1ll<<ELEID_SMURFV3_EXTRA);
+static const cuts_t electronSelection_smurfV5  = 
+         electronSelection_smurfV5_baseline |
+         electronSelection_smurfV5_convrej |
+         electronSelection_smurfV5_iso |
+         electronSelection_smurfV5_id;
+//--------end of SMURF V5 cuts--------------------------------
 
 //--------SMURF FakableObject cuts--------------------------------
 static const cuts_t electronSelectionFO_el_smurf_base =

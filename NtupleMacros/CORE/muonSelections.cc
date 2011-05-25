@@ -118,6 +118,16 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
                 return muonIsoValuePF(index,0) < 0.11;
             }
             break;
+        case NominalSmurfV5:
+            if (!muonIdNotIsolated( index, type )) return false;
+            if (cms2.mus_p4().at(index).pt()>20) {
+                if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) return muonIsoValuePF(index,0,0.3) < 0.13;
+                else return muonIsoValuePF(index,0,0.3) < 0.09;
+            } else {
+                if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) return muonIsoValuePF(index,0,0.3) < 0.06;
+                else return muonIsoValuePF(index,0,0.3) < 0.05;
+            }
+            break;
         default:
             std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
             exit(1);
@@ -442,9 +452,10 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
             break;
         case NominalSmurfV3:
         case NominalSmurfV4:
+        case NominalSmurfV5:
         case muonSelectionFO_mu_smurf_04:
         case muonSelectionFO_mu_smurf_10:
-            if (type == NominalSmurfV3 || type == NominalSmurfV4){
+            if (type == NominalSmurfV3 || type == NominalSmurfV4 || type == NominalSmurfV5){
                 if (cms2.mus_p4().at(index).pt()<20){
                     if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.01)    return false; // d0 from pvtx
                 } else {
