@@ -76,5 +76,8 @@ bool idIsBeauty(int id);
 // -------------------------------------
 bool isNotPromptSusyLeptonHyp(int idx);
 
+int mc3idx_eormu(int id, int idx, float maxDr = 0.5, float minPt = 1);
+float mc3dr_eormu(int id, int idx, float maxDr = 0.5, float minPt = 1);
+
 #endif
 

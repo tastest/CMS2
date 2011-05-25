@@ -1011,3 +1011,29 @@ bool isNotPromptSusyLeptonHyp(int idx) {
 
 	 return false;
 }
+
+
+int mc3idx_eormu(int id, int idx, float maxDr, float minPt){
+  LorentzVector lepp4 =  abs(id)==11 ? cms2.els_p4()[idx] : cms2.mus_p4()[idx];
+  
+  float dRMin = 999999;
+  int nGens = cms2.genps_id().size();
+  int genidx = -1;
+  for (int iG = 0; iG < nGens; ++iG){
+    if (cms2.genps_status()[iG]==3){
+      float dr = ROOT::Math::VectorUtil::DeltaR(lepp4, cms2.genps_p4()[iG]);
+      if (dr < maxDr && cms2.genps_p4()[iG].pt() > minPt && dr < dRMin){
+	genidx = iG;
+	dRMin = dr;
+      }
+    }
+  }
+  return genidx;
+}
+
+float mc3dr_eormu(int id, int idx, float maxDr, float minPt){
+  int genidx = mc3idx_eormu(id,idx,maxDr,minPt);
+  if (genidx < 0) return 999999;
+  LorentzVector lepp4 =  abs(id)==11 ? cms2.els_p4()[idx] : cms2.mus_p4()[idx];
+  return ROOT::Math::VectorUtil::DeltaR(lepp4, cms2.genps_p4()[genidx]);
+}
