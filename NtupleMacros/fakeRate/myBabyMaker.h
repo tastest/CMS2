@@ -68,6 +68,7 @@ private:
     Float_t phi_;
     Float_t scet_;
     Int_t   id_;  // \pm 11 or \pm 13
+    Float_t hoe_;
   
     // tcmet
     Float_t tcmet_;
@@ -532,6 +533,7 @@ void myBabyMaker::InitBabyNtuple () {
     tcmetphi_         = -999.;
     pfmet_            = -999.;
     pfmetphi_         = -999.;
+    hoe_              = -999.;
     
     iso_              = -999.;
     iso_nps_          = -999.;
@@ -920,6 +922,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("sceta"               , &sceta_               );
     babyTree_->Branch("phi"                 , &phi_                 );
     babyTree_->Branch("scet"                , &scet_                );
+    babyTree_->Branch("hoe"                 , &hoe_                 );
     babyTree_->Branch("tcmet"               , &tcmet_               );
     babyTree_->Branch("tcmetphi"            , &tcmetphi_            );
     babyTree_->Branch("pfmet"               , &pfmet_               );

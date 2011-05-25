@@ -605,6 +605,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     sceta_          = els_etaSC().at(iLep);
                     phi_            = els_p4().at(iLep).phi();
                     scet_           = els_eSC()[iLep] / cosh( els_etaSC()[iLep] );
+                    hoe_            = els_hOverE().at(iLep);
                     id_             = 11*els_charge().at(iLep);
                     tcmet_          = evt_tcmet();
                     tcmetphi_       = evt_tcmetPhi();
