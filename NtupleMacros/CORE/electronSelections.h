@@ -72,9 +72,6 @@ enum EleSelectionType {
   ELEID_SMURFV3_EXTRA,                // pass smurf v3 electron ID
   ELEID_SMURFV1SS_EXTRA,              // electron ID with VBTF80
   ELEID_SMURFV2SS_EXTRA,              // electron ID with VBTF80
-  ELEID_CAND01,                       // pass "CAND01" electron ID
-  ELEID_CAND02,                       // pass "CAND02" electron ID
-  ELEID_EXTRA,                        // pass "EXTRA" electron ID
   ELEID_VBTF_35X_95,                  // VBTF95 electron ID (35X)
   ELEID_VBTF_35X_90,                  // VBTF90 electron ID (35X)
   ELEID_VBTF_35X_80,                  // VBTF80 electron ID (35X)
@@ -159,83 +156,6 @@ static const cuts_t electronSelectionFO_baseline =
 	 (1ll<<ELENOMUON_010) |            // no mu (dR < 0.1)
 	 (1ll<<ELESEED_ECAL) |             // not only tracker seeded
 	 (1ll<<ELENOTCONV_DISTDCOT002);    // dist/dcot conv. rejection
-//---------------------------------------------------------
-// V1 fakeable object for cand01
-// extrapolating in iso and id
-// NOTE - this is the same as el_ttbar_v1
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v1_cand01 =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL040);
-//---------------------------------------------------------
-// V1 fakeable object for cand02 + extra
-// extrapolating in iso and id
-// NOTE - this is the same as el_ttbar_v1
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v1_cand02 =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL040);
-//---------------------------------------------------------
-// V1 fakeable object for cand02 + extra + flipveto
-// extrapolating in iso and id with charge flip veto
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v1_cand02flip =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL040) |
-	 (1ll<<ELECHARGE_NOTFLIP);
-//---------------------------------------------------------
-// V2 fakeable object for cand01
-// extrapolating in id
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v2_cand01 =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL010);
-//---------------------------------------------------------
-// V2 fakeable object for cand02 + extra
-// extrapolating in id
-// NOTE: this is the same as above
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v2_cand02 =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL010);
-//---------------------------------------------------------
-// V2 fakeable object for cand02 + extra + flipveto
-// extrapolating in id with charge flip veto
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v2_cand02flip =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL010) |
-	 (1ll<<ELECHARGE_NOTFLIP);
-//---------------------------------------------------------
-// V3 fakeable object for cand01
-// extrapolating in isolation
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v3_cand01 =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL040) |
-	 (1ll<<ELEID_CAND01);
-//---------------------------------------------------------
-// V3 fakeable object for cand02 + extra
-// extrapolating in isolation
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v3_cand02 =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL040) |
-	 (1ll<<ELEID_CAND02) |
-	 (1ll<<ELEID_EXTRA);
-//---------------------------------------------------------
-// V3 fakeable object for cand02 + extra + flipveto
-// extrapolating in isolation with charge flip veto
-//---------------------------------------------------------
-static const cuts_t electronSelectionFO_el_v3_cand02flip =
-	 electronSelectionFO_baseline |
-	 (1ll<<ELEISO_REL040) |
-	 (1ll<<ELEID_CAND02) |
-	 (1ll<<ELEID_EXTRA) |
-	 (1ll<<ELECHARGE_NOTFLIP);
-//---------------------------------------------------------
-
-
 
 
 //========================================================
@@ -245,29 +165,6 @@ static const cuts_t electronSelectionFO_el_v3_cand02flip =
 
 
 // ===================== TTBar ============================
-// The standard TTBar selection without isolation
-//---------------------------------------------------------
-static const cuts_t electronSelection_ttbar_noiso =
-	 (1ll<<ELEIP_400) |
-	 (1ll<<ELEID_CAND01) |
-	 (1ll<<ELENOTCONV_DISTDCOT002) |
-	 (1ll<<ELEETA_250) |
-	 (1ll<<ELENOMUON_010) |
-	 (1ll<<ELESEED_ECAL);
-//---------------------------------------------------------
-// The standard TTBar isolation cut
-//---------------------------------------------------------
-static const cuts_t electronSelection_ttbar_iso =
-	 (1ll<<ELEISO_REL010);
-//---------------------------------------------------------
-// The standard TTBar selection with isolation
-//---------------------------------------------------------
-static const cuts_t electronSelection_ttbar =
-	 electronSelection_ttbar_noiso |
-	 electronSelection_ttbar_iso;
-//---------------------------------------------------------
-
-//---------------------------------------------------------
 // TTBarV1 selection with VBTF90 ID
 //---------------------------------------------------------
 static const cuts_t electronSelection_ttbarV1 =
@@ -486,18 +383,6 @@ static const cuts_t electronSelection_el_OSV2_FO =
 //
 // ======================== WW ============================
 //
-// The standard WW selection with no isolation
-//
-//---------------------------------------------------------
-static const cuts_t electronSelection_ww_noiso =
-	 (1ll<<ELEID_CAND02) |
-	 (1ll<<ELEID_EXTRA) |
-	 (1ll<<ELENOTCONV_DISTDCOT002) |
-	 (1ll<<ELEETA_250) |
-	 (1ll<<ELENOMUON_010) |
-	 (1ll<<ELESEED_ECAL);
-//---------------------------------------------------------
-//
 // The standard WW impact parameter cut
 //
 //---------------------------------------------------------
@@ -511,12 +396,6 @@ static const cuts_t electronSelection_ww_ip =
 static const cuts_t electronSelection_ww_iso =
 	 (1ll<<ELEISO_REL010);
 //---------------------------------------------------------
-// FIXME: for fakerates
-static const cuts_t electronSelection_cand02 = 
-	 electronSelection_ww_noiso |
-	 electronSelection_ww_ip |
-	 electronSelection_ww_iso;
-
 
 //--------beginning of WW V0 cuts--------------------------
 
@@ -898,26 +777,6 @@ static const cuts_t electronSelectionFO_el_smurf_v2 =
   (1ll<<ELEISO_RELNT010); 
 //--------end of SMURF FakableObject cuts------------------
 
-
-// ======================== OS ============================
-//
-// The standard OS selection
-//---------------------------------------------------------
-static const cuts_t electronSelection_os =
-	 (1ll<<ELEISO_REL010) |
-	 (1ll<<ELEIP_200) |
-	 (1ll<<ELEID_CAND01) |
-	 (1ll<<ELENOTCONV_DISTDCOT002) |
-	 (1ll<<ELEETA_250) |
-	 (1ll<<ELENOMUON_010) |
-	 (1ll<<ELESEED_ECAL);
-//---------------------------------------------------------
-// FIXME: for fake rates
-static const cuts_t electronSelection_cand01 = electronSelection_os;
-//---------------------------------------------------------
-
-
-
 // ======================== SS ============================
 //
 // The standard SS selection
@@ -1200,12 +1059,6 @@ static const cuts_t electronSelectionFOV2_ssVBTF80_v3 =
 
 
 //---------------------------------------------------------
-// FIXME: for fake rates
-static const cuts_t electronSelection_cand02flip = electronSelection_ss;
-//---------------------------------------------------------
-
-
-
 
 ////////////////////////////
 // enums for internal use //

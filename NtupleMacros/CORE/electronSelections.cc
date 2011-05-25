@@ -102,15 +102,6 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronId_smurf_v1ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV1SS_EXTRA);
     if (electronId_smurf_v2ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV2SS_EXTRA);
 
-    // 
-    // "CAND" ID
-    //
-    // CAND01
-    if (electronId_cand(index, CAND_01, applyAlignmentCorrection, removedEtaCutInEndcap)) cuts_passed |= (1ll<<ELEID_CAND01);
-    // CAND02
-    if (electronId_cand(index, CAND_02, applyAlignmentCorrection, removedEtaCutInEndcap)) cuts_passed |= (1ll<<ELEID_CAND02);
-    // "EXTRA"
-    if (electronId_extra(index)) cuts_passed |= (1ll<<ELEID_EXTRA);
     //
     // VBTF ID
     //
