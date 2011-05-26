@@ -43,7 +43,9 @@ enum SelectionType {
     OSZ_v2 = 33,
     NominalSmurfV4 = 34,
     OSGeneric_v2_FO = 35,
-    NominalSmurfV5 = 36
+    NominalSmurfV5 = 36,
+    OSGeneric_v3 = 37,
+    OSGeneric_v3_FO = 38
 }; 
 
 //

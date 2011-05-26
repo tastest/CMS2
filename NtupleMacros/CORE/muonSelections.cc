@@ -12,6 +12,7 @@
 bool muonId(unsigned int index, SelectionType type, int vertex_index){
 
     float isovalue;
+    bool truncated = true;
 
     switch(type) {
         case Nominal:
@@ -80,6 +81,14 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         case OSGeneric_v2_FO:
             isovalue  = 0.4;
             break;
+        case OSGeneric_v3:
+	    truncated = false;
+	    isovalue  = 0.15;
+            break;
+        case OSGeneric_v3_FO:
+	    truncated = false;
+            isovalue  = 0.4;
+            break;
         case OSZ_v1:
             isovalue = 0.15;
             break;
@@ -135,7 +144,7 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
     } 
     return 
         muonIdNotIsolated( index, type, vertex_index ) && 
-        muonIsoValue(index) < isovalue;          // Isolation cut
+        muonIsoValue(index,truncated) < isovalue;          // Isolation cut
 }
 bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index){
 
@@ -359,6 +368,10 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
             if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
             return true;
 
+        case OSGeneric_v3:
+            // copy of OSGeneric_v2 ID, with different iso requirement
+	    return muonIdNotIsolated( index, OSGeneric_v2, -1 );
+
         case OSGeneric_v2_FO:
 	    //baseline FO for 2011 OS analysis
 	    //relax cuts: chi2/ndf < 50, d0 < 0.2, reliso < 0.4
@@ -372,6 +385,10 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
             if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
             if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
             return true;
+
+        case OSGeneric_v3_FO:
+            // copy of OSGeneric_v2_FO ID, with different iso requirement
+	    return muonIdNotIsolated( index, OSGeneric_v2_FO, -1 );
 
         case OSZ_v1:
             //this selector is Nominal + eta < 2.4 + dpt/pt < 0.1
