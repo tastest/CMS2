@@ -178,6 +178,11 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 15.0 ) cuts_passed |= (1ll<<ELESCET_015);
 
     //
+    // Veto electron in transition region
+    //
+    if( fabs(cms2.els_etaSC()[index]) < 1.4442 || fabs(cms2.els_etaSC()[index]) > 1.566 )  cuts_passed |= (1ll<<ELE_NOT_TRANSITION);
+
+    //
     // chargeflip
     //
 

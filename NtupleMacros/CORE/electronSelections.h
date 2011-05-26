@@ -115,6 +115,7 @@ enum EleSelectionType {
   ELECHARGE_NOTFLIP,        // Not a charge flip
   ELECHARGE_NOTFLIP3AGREE,  // Not a charge flip and CTF, GSF, and Pixel-SuperCluster charges agree
 
+  ELE_NOT_TRANSITION,       // SC |eta| < 1.4442 OR SC |eta| > 1.556 (veto transition region)
  
   //*************************************************************************************//
   // This is the last enumerator element                                                 //
@@ -378,6 +379,40 @@ static const cuts_t electronSelection_el_OSV2_FO =
   (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
   (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
   (1ll<<ELEISO_REL040)                     | // reliso < 0.4, truncated, 1 GeV EB PS
+  (1ll<<ELEETA_250);                         // |eta| < 2.5
+
+//-------------------------------------------------------------------
+// baseline selection for OS 2011 analysis
+// start with OSV2, make small adjustments for sync with Aachen
+//-------------------------------------------------------------------
+
+static const cuts_t electronSelection_el_OSV3_noiso = 
+  (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
+  (1ll<<ELEIP_PV_OSV2)                     | // d0(PV) < 0.04 cm, dz(PV) < 1.0 cm
+  (1ll<<ELENOMUON_010)                     | // no muon dR < 0.1
+  (1ll<<ELENOTCONV_HITPATTERN)             | // <=1 missing hits
+  (1ll<<ELENOTCONV_DISTDCOT002)            | // dist/dcot(theta) conversion rejection
+  (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
+  (1ll<<ELE_NOT_TRANSITION)                | // veto electrons with SC in transition region 
+  (1ll<<ELEETA_250);                         // |eta| < 2.5
+
+static const cuts_t electronSelection_el_OSV3_iso = 
+  (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
+  (1ll<<ELEISO_RELNT015);                    // reliso < 0.15, non-truncated, 1 GeV EB PS
+
+static const cuts_t electronSelection_el_OSV3 = 
+  electronSelection_el_OSV3_iso | electronSelection_el_OSV3_noiso;
+
+static const cuts_t electronSelection_el_OSV3_FO = 
+  (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
+  (1ll<<ELEIP_PV_OSV2_FO)                  | // d0(PV) < 0.2 cm, dz(PV) < 1.0 cm
+  (1ll<<ELENOMUON_010)                     | // no muon dR < 0.1
+  (1ll<<ELENOTCONV_HITPATTERN)             | // <=1 missing hits
+  (1ll<<ELENOTCONV_DISTDCOT002)            | // dist/dcot(theta) conversion rejection
+  (1ll<<ELEPT_010)                         | // electron p_T > 10 GeV
+  (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
+  (1ll<<ELEISO_RELNT040)                   | // reliso < 0.4, non-truncated, 1 GeV EB PS
+  (1ll<<ELE_NOT_TRANSITION)                | // veto electrons with SC in transition region 
   (1ll<<ELEETA_250);                         // |eta| < 2.5
 
 
