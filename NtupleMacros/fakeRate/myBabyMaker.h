@@ -172,6 +172,11 @@ private:
     Bool_t fo_el_OSV2_;    // electronSelection_el_OSV2_FO
     Bool_t fo_mu_OSGV2_;   // OSGeneric_v2_FO
 
+    Bool_t num_el_OSV3_;   // electronSelection_el_OSV3
+    Bool_t num_mu_OSGV3_;  // OSGeneric_v3
+    Bool_t fo_el_OSV3_;    // electronSelection_el_OSV3_FO
+    Bool_t fo_mu_OSGV3_;   // OSGeneric_v3_FO
+
 
     //////////
     // 2010 //
@@ -630,6 +635,12 @@ void myBabyMaker::InitBabyNtuple () {
     fo_el_OSV2_   = false;
     fo_mu_OSGV2_  = false;
 
+    // OS
+    num_el_OSV3_  = false;
+    num_mu_OSGV3_ = false;
+    fo_el_OSV3_   = false;
+    fo_mu_OSGV3_  = false;
+
 
 
     //////////
@@ -1018,6 +1029,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("num_mu_OSZV2" , &num_mu_OSZV2_     );
     babyTree_->Branch("fo_el_OSV2"   , &fo_el_OSV2_       );
     babyTree_->Branch("fo_mu_OSGV2"  , &fo_mu_OSGV2_      );
+
+    // OS
+    babyTree_->Branch("num_el_OSV3"  , &num_el_OSV3_      );
+    babyTree_->Branch("num_mu_OSGV3" , &num_mu_OSGV3_     );
+    babyTree_->Branch("fo_el_OSV3"   , &fo_el_OSV3_       );
+    babyTree_->Branch("fo_mu_OSGV3"  , &fo_mu_OSGV3_      );
 
     //////////
     // 2010 //

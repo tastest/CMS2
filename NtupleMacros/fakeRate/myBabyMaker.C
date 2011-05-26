@@ -460,6 +460,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     num_el_OSV2_   = pass_electronSelection( iLep, electronSelection_el_OSV2          );
                     fo_el_OSV2_    = pass_electronSelection( iLep, electronSelection_el_OSV2_FO       );
 
+                    //OS
+                    num_el_OSV3_   = pass_electronSelection( iLep, electronSelection_el_OSV3          );
+                    fo_el_OSV3_    = pass_electronSelection( iLep, electronSelection_el_OSV3_FO       );
+
                     //////////
                     // 2010 //
                     //////////
@@ -533,6 +537,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         (!v1_el_ssV3_)    && (!v2_el_ssV3_)    && (!v3_el_ssV3_)    &&                      // SS 2011
                         (!v1OSOct18_)     && (!v2OSOct18_)     && (!v3OSOct18_)     &&                      // OS
 			(!fo_el_OSV2_)    &&                                                                // OS 2011
+			(!fo_el_OSV3_)    &&                                                                // OS 2011
                         (!v1_wwV1_)       && (!v2_wwV1_)       && (!v3_wwV1_)       && (!v4_wwV1_)       && // WW 2010
                         (!v1_el_smurfV1_) && (!v1_el_smurfV1_) && (!v3_el_smurfV1_) && (!v4_el_smurfV1_)    // WW 2011
                         ){ 
@@ -1220,6 +1225,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     num_mu_OSZV2_     = muonId(iLep, OSZ_v2);
                     fo_mu_OSGV2_      = muonId(iLep, OSGeneric_v2_FO);
 
+		    //OS
+                    num_mu_OSGV3_     = muonId(iLep, OSGeneric_v3);
+                    fo_mu_OSGV3_      = muonId(iLep, OSGeneric_v3_FO);
+
                     //////////
                     // 2010 //
                     //////////
@@ -1257,6 +1266,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         !fo_04_ && !fo_10_ &&                                      // ttbar
                         !fo_mussV2_04_   && !fo_mussV2_10_   && !fo_mussV3_04_  && // SS
 			!fo_mu_OSGV2_    &&                                        // OS2011
+			!fo_mu_OSGV3_    &&                                        // OS2011
                         !fo_wwV1_04_     && !fo_wwV1_10_     && !fo_wwV1_10_d0_ && // WW
                         !fo_mu_smurf_04_ && !fo_mu_smurf_10_                       // WW
                         ){ 
