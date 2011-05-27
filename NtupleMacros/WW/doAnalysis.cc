@@ -1,5 +1,4 @@
-const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose;FullMET); Spring11 samples"; //Skim1
-// const char* config_info = "SmurfV3 selection (Baseline;Tight+Loose); Spring11 samples";
+const char* config_info = "SmurfV5 selection (Baseline;Tight+Loose;FullMET); Spring11 samples"; //Skim1
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -80,7 +79,7 @@ wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
 
-// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL;
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_ZControlSampleTight;
 
 bool applyJEC = false;
 bool applyFastJetCorrection = true;
@@ -110,15 +109,15 @@ bool goodElectronWithoutIsolation(unsigned int i){
 }
 
 bool goodElectronIsolated(unsigned int i){
-  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
-  bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV4);
+  bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
+  bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV5);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
   assert(!lockToCoreSelectors || core==internal);
   return internal;
 }
 
 bool fakableElectron(unsigned int i, EleFOTypes type){
-  if ( cms2.els_p4().at(i).pt() < 15.0 ) return false;
+  if ( cms2.els_p4().at(i).pt() < 10.0 ) return false;
   switch (type){
   case EleFOV1: return pass_electronSelection( i, electronSelectionFO_el_smurf_v1);
   case EleFOV2: return pass_electronSelection( i, electronSelectionFO_el_smurf_v2);
@@ -134,7 +133,7 @@ bool goodMuonWithoutIsolation(unsigned int i){
 
 bool goodMuonIsolated(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  bool core = ptcut && muonId(i, NominalSmurfV4);
+  bool core = ptcut && muonId(i, NominalSmurfV5);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
   assert(!lockToCoreSelectors || core==internal);
   return internal;
@@ -190,7 +189,7 @@ bool passedMetRequirements(unsigned int i_hyp){
 //
 
 bool ww_elBase(unsigned int index){
-  if (cms2.els_p4().at(index).pt() < 15.0) return false;
+  if (cms2.els_p4().at(index).pt() < 10.0) return false;
   if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
   return true;
 }
@@ -288,7 +287,7 @@ double ww_elIsoVal(unsigned int index){
 }
 
 bool ww_elIso(unsigned int index){
-  return pass_electronSelection(index, electronSelection_smurfV4_iso);
+  return pass_electronSelection(index, electronSelection_smurfV5_iso);
   //return ww_elIsoVal(index)<0.1;
 }
 
@@ -343,10 +342,15 @@ double ww_muIsoVal(unsigned int index){
 }
 bool ww_muIso(unsigned int index){
   if (cms2.mus_p4().at(index).pt()>20) {
-    if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) return muonIsoValuePF(index,0) < 0.22;
-    else return muonIsoValuePF(index,0) < 0.20;
+    if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) 
+      return muonIsoValuePF(index,0,0.3) < 0.13;
+    else 
+      return muonIsoValuePF(index,0,0.3) < 0.09;
   } else {
-    return muonIsoValuePF(index,0) < 0.11;
+    if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) 
+      return muonIsoValuePF(index,0,0.3) < 0.06;
+    else 
+      return muonIsoValuePF(index,0,0.3) < 0.05;
   }
 //   if ( cms2.mus_p4().at(index).pt() < 20. )
 //     return ww_muIsoVal(index)<0.1;
