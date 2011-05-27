@@ -31,8 +31,11 @@
 bool isGoodLepton(int id, int idx, int vidx)
 {
     // electrons
-    if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV3_noIso, false, false, vidx));
+    if (abs(id) == 11) {
+        if (fabs(cms2.els_p4()[idx].eta())>1.4442 && fabs(cms2.els_p4()[idx].eta())<1.566)
+            return false;
+        return (pass_electronSelection(idx, electronSelection_ssV4_noIso, false, false, vidx));   
+    }
 
     // muons
     if (abs(id) == 13)
@@ -49,7 +52,7 @@ bool isIsolatedLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV3_iso));
+        return (pass_electronSelection(idx, electronSelection_ssV4_iso));
 
     // muons
     if (abs(id) == 13)
@@ -89,7 +92,7 @@ bool isDenominatorLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelectionFOV3_ssVBTF80_v3, false, false, vidx));
+        return (pass_electronSelection(idx, electronSelectionFOV4_ssVBTF80_v3, false, false, vidx));
 
     // muons
     if (abs(id) == 13)
