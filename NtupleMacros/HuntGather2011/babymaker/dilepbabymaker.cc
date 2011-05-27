@@ -671,8 +671,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso1_   = muonIsoValue(index1);
                     ntiso1_ = muonIsoValue(index1, false); 
                     type1_  = cms2.mus_type()[index1];
-                    mu1_numSSv3_      = muonId(index1, NominalSSv3, vertex_index);
-                    mu1_foSSv3_       = muonId(index1, muonSelectionFO_ssV3, vertex_index);
+                    mu1_numSSv3_      = muonId(index1, NominalSSv4);
+                    mu1_foSSv3_       = muonId(index1, muonSelectionFO_ssV4);
                     mu1_muonidfull_   = muonId(index1, NominalTTbarV2);
                     mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2);
                     mu1_muonidfullV1_ = muonId(index1, NominalTTbar);
@@ -687,7 +687,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_relPtErr_     = cms2.mus_ptErr()[index1]/cms2.mus_p4()[index1].pt();
                     if (cms2.mus_pfmusidx()[index1] > -1) mu1_isPFmuon_ = 1;
                     int trkidx1 = cms2.mus_trkidx()[index1];
-                    d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                    int vtxidx = firstGoodDAvertex();
+                    if (trkidx1 >= 0)
+                        d0vtx1_ = trks_d0_pv(trkdix1, vtxidx, true).first;
                     trkIso1_ = cms2.mus_iso03_sumPt()[index1];
                     ecalIso1_ = cms2.mus_iso03_emEt()[index1];
                     hcalIso1_ = cms2.mus_iso03_hadEt()[index1];
@@ -707,7 +709,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     electronIdComponent_t answer_vbtf70 = electronId_VBTF(index1, VBTF_35X_70);
                     e1_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 
-                    cuts_t electron_selection = electronSelection(index1, false, false, vertex_index);
+                    cuts_t electron_selection = electronSelection(index1);
                     e1_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
                     e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
                     e1_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
@@ -733,7 +735,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_gsfCharge_  = cms2.els_trk_charge()[index1];
                     e1_ctfCharge_  = cms2.els_trkidx()[index1] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index1]] : -999999;
                     int trkidx1 = cms2.els_trkidx()[index1];
-                    if(trkidx1 >= 0) d0vtx1_ = cms2.trks_d0vtx()[trkidx1];
+                    int vtxidx = firstGoodDAvertex();
+                    if (trkidx1 >= 0)
+                        d0vtx1_ = trks_d0_pv(trkdix1, vtxidx, true).first;
                     e1_fbrem_ = cms2.els_fbrem()[index1];
                     trkIso1_ = cms2.els_tkIso()[index1];
                     hcalIso1_ = cms2.els_hcalIso()[index1];
@@ -751,8 +755,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso2_   = muonIsoValue(index2);
                     ntiso2_ = muonIsoValue(index2, false);
                     type2_  = cms2.mus_type()[index2];
-                    mu2_numSSv3_      = muonId(index2, NominalSSv3, vertex_index);
-                    mu2_foSSv3_       = muonId(index2, muonSelectionFO_ssV3, vertex_index);
+                    mu2_numSSv3_      = muonId(index2, NominalSSv4);
+                    mu2_foSSv3_       = muonId(index2, muonSelectionFO_ssV4);
                     mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
                     mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
                     mu2_muonidfullV1_ = muonId(index2, NominalTTbar);
@@ -767,7 +771,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_relPtErr_     = cms2.mus_ptErr()[index2]/cms2.mus_p4()[index2].pt();
                     if (cms2.mus_pfmusidx()[index2] > -1) mu2_isPFmuon_ = 1;
                     int trkidx2 = cms2.mus_trkidx()[index2];
-                    d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                    int vtxidx = firstGoodDAvertex();
+                    if (trkidx2 >= 0)
+                        d0vtx2_ = trks_d0_pv(trkdix2, vtxidx, true).first;
                     trkIso2_ = cms2.mus_iso03_sumPt()[index2];
                     ecalIso2_ = cms2.mus_iso03_emEt()[index2];
                     hcalIso2_ = cms2.mus_iso03_hadEt()[index2];
@@ -787,7 +793,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     electronIdComponent_t answer_vbtf70   = electronId_VBTF(index2, VBTF_35X_70);
                     e2_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 
-                    cuts_t electron_selection = electronSelection(index2, false, false, vertex_index);
+                    cuts_t electron_selection = electronSelection(index2);
                     e2_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
                     e2_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
                     e2_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
@@ -813,7 +819,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_gsfCharge_   = cms2.els_trk_charge()[index2]; 
                     e2_ctfCharge_   = cms2.els_trkidx()[index2] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index2]] : -999999;
                     int trkidx2 = cms2.els_trkidx()[index2];
-                    if (trkidx2 >= 0) d0vtx2_ = cms2.trks_d0vtx()[trkidx2];
+                    int vtxidx = firstGoodDAvertex();
+                    if (trkidx2 >= 0)
+                        d0vtx2_ = trks_d0_pv(trkdix2, vtxidx, true).first;
                     e2_fbrem_ = cms2.els_fbrem()[index2];
                     trkIso2_ = cms2.els_tkIso()[index2];
                     hcalIso2_ = cms2.els_hcalIso()[index2];
