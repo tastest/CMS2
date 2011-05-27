@@ -39,7 +39,7 @@ bool isGoodLepton(int id, int idx, int vidx)
 
     // muons
     if (abs(id) == 13)
-        return (muonIdNotIsolated(idx, NominalSSv3, vidx));
+        return (muonIdNotIsolated(idx, NominalSSv4, vidx));
 
     return false;
 }
@@ -96,7 +96,7 @@ bool isDenominatorLepton(int id, int idx, int vidx)
 
     // muons
     if (abs(id) == 13)
-        return (muonId(idx, muonSelectionFO_ssV3, vidx));
+        return (muonId(idx, muonSelectionFO_ssV4, vidx));
 
     return false;
 }
@@ -235,7 +235,7 @@ bool isGoodJet(LorentzVector jetp4, int hypIdx, double ptCut, double absEtaCut, 
 	 {
 		  for (unsigned int muidx = 0; muidx < cms2.mus_p4().size(); muidx++)
 		  {
-			   if (cms2.mus_p4()[muidx].pt() < 10.)
+			   if (cms2.mus_p4()[muidx].pt() < 5.)
 					continue;
 			   if (fabs(cms2.mus_p4()[muidx].eta()) > 2.4)
 					continue;

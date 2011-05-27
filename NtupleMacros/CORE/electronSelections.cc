@@ -82,7 +82,12 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(electron_d0PV_smurfV3(index)) < 0.20 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2_FO);
 
     if (vertex_index < 0) {
-        if (fabs(cms2.els_d0corr()[index]) < 0.02)
+        int vtxidx = firstGoodDAvertex();
+        if (vtxidx >= 0 && cms2.els_trkidx()[index] >= 0) {            
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, true).first) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);  
+        }
+        else if (fabs(cms2.els_d0corr()[index]) < 0.02)
             cuts_passed |= (1ll<<ELEIP_SS200);  
     }
     else {

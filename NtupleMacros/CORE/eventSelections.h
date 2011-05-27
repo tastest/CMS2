@@ -96,5 +96,8 @@ bool hypsFromSameVtx(size_t hypIdx);
 //----------------------------------------------------------------
 int hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool useDAvtxs = false, bool requireClosest = false);
 
+// find first good DA veratex
+int firstGoodDAvertex ();
+
 #endif
 

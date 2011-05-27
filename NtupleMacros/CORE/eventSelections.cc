@@ -351,3 +351,17 @@ int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClo
 
     return lt_vidx;
 }
+
+//---------------------------------------------------------
+//
+// Find first good DA vertex
+//
+//---------------------------------------------------------
+int firstGoodDAvertex () {
+    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
+        if (isGoodDAVertex(vidx))
+            return vidx;
+    }
+
+    return -1;
+}
