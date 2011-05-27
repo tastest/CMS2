@@ -37,6 +37,7 @@
 #include "CORE/muonSelections.cc"
 #include "CORE/jetSelections.cc"
 #include "CORE/mcSelections.cc"
+#include "CORE/MITConversionUtilities.cc"
 #include "MCUtil.h"
 using namespace tas;
 
@@ -46,7 +47,8 @@ const char* config_info = "Smurf HWW V1 selection; Fall10 samples; 1/fb";
 
 
 // JEC 
-bool applyJEC = true;
+bool applyJEC = false;
+bool applyFastJetCorrection = true;
 
 std::vector<std::string> jetcorr_filenames_jpt;
 FactorizedJetCorrector *jet_corrector_jpt;
@@ -491,75 +493,82 @@ double nearestDeltaPhi(double Phi, int i_hyp)
   return TMath::Min(tightDPhi, looseDPhi);
 }
 
-
-std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag){
-  std::vector<LorentzVector> jets;
-  const double vetoCone = 0.3;
-  double jec = 1.0;
-  
-  switch ( type ){
-  case jptJet:
-    for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-      if(applyJEC)
-	jec = jetCorrection(cms2.jpts_p4().at(i), jet_corrector_jpt);
-      if ( cms2.jpts_p4().at(i).pt() * jec < etThreshold ) continue;
-      if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.jpts_p4().at(i).eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4().at(i))) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4().at(i))) < vetoCone ) continue;
-      jets.push_back(cms2.jpts_p4().at(i) * jec);
-    }
-    break;
-  case pfJet:
-    for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-      if(applyJEC)
-	jec = jetCorrection(cms2.pfjets_p4().at(i), jet_corrector_pf);
-      if ( cms2.pfjets_p4().at(i).pt() * jec < etThreshold ) continue;
-      if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.pfjets_p4().at(i).eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4().at(i))) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4().at(i))) < vetoCone ) continue;
-      jets.push_back(cms2.pfjets_p4().at(i) * jec);
-    }
-    break;
-  case GenJet:
-    for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
-      if ( cms2.genjets_p4().at(i).pt() < etThreshold ) continue;
-      if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.genjets_p4().at(i).eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4().at(i))) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4().at(i))) < vetoCone ) continue;
-      jets.push_back(cms2.genjets_p4().at(i));
-    }
-    break;
-  case CaloJet:
-    for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
-      if ( cms2.jets_pat_jet_p4().at(i).pt() < etThreshold ) continue; // note that this is already corrected
-      if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.jets_pat_jet_p4().at(i).eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4().at(i))) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4().at(i))) < vetoCone ) continue;
-      jets.push_back(cms2.jets_pat_jet_p4().at(i));
-    }
-    break;
-  case TrkJet:
-    for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
-      if(applyJEC)
-	jec = jetCorrection(cms2.trkjets_p4().at(i), jet_corrector_trk);
-      if ( cms2.trkjets_p4().at(i).pt() < etThreshold ) continue;
-      if ( btag && !defaultBTag(type,i) ) continue;
-      if ( TMath::Abs(cms2.trkjets_p4().at(i).eta()) > etaMax ) continue;
-      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4().at(i))) < vetoCone ||
-	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4().at(i))) < vetoCone ) continue;
-      jets.push_back(cms2.trkjets_p4().at(i) * jec);
-    }
-    break;
-  default:
-    std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
-  }
-  if ( sortJets ) std::sort(jets.begin(), jets.end(), comparePt);
-  return jets;
+std::vector<LorentzVector> 
+getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag)
+{
+     std::vector<LorentzVector> jets;
+     const double vetoCone = 0.3;
+     double jec = 1.0;
+     
+     switch ( type ){
+     case jptJet:
+        for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+	 if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
+	 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
+	 jets.push_back(cms2.jpts_p4()[i] * jec);
+       }
+       break;
+     case pfJet:
+       for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
+	  if(applyJEC)
+	    jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+	  if(applyFastJetCorrection)
+	    // jec *= 1 - 0.5*0.5*M_PI*cms2.evt_rho()/cms2.pfjets_p4().at(i).pt();
+	    // jec *= cms2.pfjets_corL1FastL2L3().at(i)/cms2.pfjets_corL1L2L3().at(i);
+	    // jec *= cms2.pfjets_corL1FastL2L3().at(i);
+	    jec = (1-cms2.evt_rho()*M_PI*0.5*0.5/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
+	  if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
+	  if ( btag && !defaultBTag(type,i) ) continue;
+	  if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
+	  if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
+	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+	  jets.push_back(cms2.pfjets_p4()[i] * jec);
+       }
+       break;
+     case GenJet:
+       for ( unsigned int i=0; i < cms2.genjets_p4().size(); ++i) {
+	 if ( cms2.genjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
+	 if ( TMath::Abs(cms2.genjets_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.genjets_p4()[i])) < vetoCone ) continue;
+	 jets.push_back(cms2.genjets_p4()[i]);
+       }
+       break;
+//      case CaloJet:
+//        for ( unsigned int i=0; i < cms2.jets_pat_jet_p4().size(); ++i) {
+// 	 if ( cms2.jets_pat_jet_p4()[i].pt() < etThreshold ) continue; // note that this is already corrected
+// 	 if ( btag && !defaultBTag(type,i) ) continue;
+// 	 if ( TMath::Abs(cms2.jets_pat_jet_p4()[i].eta()) > etaMax ) continue;
+// 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ||
+// 	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jets_pat_jet_p4()[i])) < vetoCone ) continue;
+// 	 jets.push_back(cms2.jets_pat_jet_p4()[i]);
+//        }
+//        break;
+     case TrkJet:
+       for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
+	 if(applyJEC)
+	   jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
+	 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
+	 if ( btag && !defaultBTag(type,i) ) continue;
+	 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
+	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
+	 jets.push_back(cms2.trkjets_p4()[i] * jec);
+       }
+       break;
+     default:
+       std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+     }
+     if ( sortJets ) std::sort(jets.begin(), jets.end(), comparePt);
+     return jets;
 }
+
 
 bool comparePt(LorentzVector lv1, LorentzVector lv2) {
    return lv1.pt() > lv2.pt();
@@ -583,9 +592,19 @@ bool isGoodVertex(size_t ivtx) {
     return true;
 }
 
-
-double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
-  return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
+int primaryVertex(){
+  //  double sumPtMax = -1;
+  //   int iMax = -1;
+  //   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+  //     // if (cms2.vtxs_isFake()[i]) continue;
+  //     if (!isGoodVertex(i)) continue;
+  //     if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
+  //       iMax = i;
+  //       sumPtMax = cms2.vtxs_sumpt().at(i);
+  //     }
+  //   }
+  //   if (iMax<0) return false;
+  return 0;
 }
 
 //
@@ -593,10 +612,13 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
 //
 bool goodMuonIsolated(unsigned int i){  
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  // SmurfV1
-  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_muId(i) && ww_muIso(i); 
+  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
   return ptcut && internal;
-  // return ptcut && muonId(i, NominalWWV1);
+}
+
+bool fakableMuon(unsigned int i){
+  bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
+  return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
 }
 
 bool ww_muBase(unsigned int index){
@@ -604,11 +626,6 @@ bool ww_muBase(unsigned int index){
   if (fabs(cms2.mus_p4().at(index).eta()) > 2.4) return false;
   if (cms2.mus_type().at(index) == 8) return false; // not STA
   return true;
-}
-
-bool fakableMuon(unsigned int i){
-  bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
 }
 
 bool ww_mud0PV(unsigned int index){
@@ -634,18 +651,12 @@ bool ww_mud0PV(unsigned int index){
   return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
 }
 
-double ww_muIsoVal(unsigned int index){
-  double sum =  cms2.mus_iso03_sumPt().at(index) +
-    cms2.mus_iso03_emEt().at(index)  +
-    cms2.mus_iso03_hadEt().at(index);
-  double pt  = cms2.mus_p4().at(index).pt();
-  return sum/pt;
-}
-
-bool ww_muIso(unsigned int index){
-  if ( cms2.mus_p4().at(index).pt() < 20. )
-    return ww_muIsoVal(index)<0.1;
-  return ww_muIsoVal(index)<0.15;
+bool ww_mudZPV(unsigned int index){
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
+  //double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
+  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  return fabs(dzpv)<0.2;
 }
 
 bool ww_muId(unsigned int index){
@@ -660,6 +671,21 @@ bool ww_muId(unsigned int index){
   return true;
 }
 
+double ww_muIsoVal(unsigned int index){
+  double sum =  cms2.mus_iso03_sumPt().at(index) +
+    cms2.mus_iso03_emEt().at(index)  +
+    cms2.mus_iso03_hadEt().at(index);
+  double pt  = cms2.mus_p4().at(index).pt();
+  return sum/pt;
+}
+
+bool ww_muIso(unsigned int index){
+  if ( cms2.mus_p4().at(index).pt() < 20. )
+    return ww_muIsoVal(index)<0.1;
+  return ww_muIsoVal(index)<0.15;
+}
+
+
 //
 // Electron selectionsS
 
@@ -668,49 +694,54 @@ bool ww_muId(unsigned int index){
 bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
   // return  ptcut && pass_electronSelection( i, electronSelection_wwV1);
-  return  ptcut && pass_electronSelection( i, electronSelection_smurfV1);
+  // return  ptcut && pass_electronSelection( i, electronSelection_smurfV1);
+  bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
 }
 
 bool fakableElectron(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
   // extrapolate in partial id, iso and d0
-  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v4);
+  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
+}
+
+bool ww_elBase(unsigned int index){
+  if (cms2.els_p4().at(index).pt() < 15.0) return false;
+  if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
+  return true;
 }
 
 bool ww_elId(unsigned int index){
-  if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
-      fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
-  if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
-  if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
-  if ( !electronId_smurf_v2(index) ) return false;
+  if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+  // MIT conversion
+  if ( isFromConversionMIT(index) ) return false;
+  // conversion rejection - hit based
+  if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
   return true;
 }
 
 bool ww_eld0PV(unsigned int index){
-  if ( cms2.vtxs_sumpt().empty() ) return false;
-  double sumPtMax = -1;
-  int iMax = -1;
-  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-    if (!isGoodVertex(i)) continue;
-    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-      iMax = i;
-      sumPtMax = cms2.vtxs_sumpt().at(i);
-    }
-  }
-  if (iMax<0) return false;
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
   double dxyPV = cms2.els_d0()[index]-
-    cms2.vtxs_position()[iMax].x()*sin(cms2.els_trk_p4()[index].phi())+
-    cms2.vtxs_position()[iMax].y()*cos(cms2.els_trk_p4()[index].phi());
-  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[iMax]);
-  return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
+    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
+  return fabs(dxyPV) < 0.02;
+}
+
+bool ww_eldZPV(unsigned int index){
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
+  //double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  return fabs(dzpv)<0.2;
 }
 
 double ww_elIsoVal(unsigned int index){
   float sum = cms2.els_tkIso().at(index);
   if ( fabs(cms2.els_etaSC()[index]) < 1.479 )
-    // if ( fabs(cms2.els_p4().at(index).eta()) < 1.479) 
+    // if ( fabs(cms2.els_p4().at(index).eta()) < 1.479)
     sum += max(0., (cms2.els_ecalIso().at(index) -1.));
-  else
+  else 
     sum += cms2.els_ecalIso().at(index);
   sum += cms2.els_hcalIso().at(index);
   double pt = cms2.els_p4().at(index).pt();
@@ -720,7 +751,6 @@ double ww_elIsoVal(unsigned int index){
 bool ww_elIso(unsigned int index){
   return ww_elIsoVal(index)<0.1;
 }
-
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
 			       const std::vector<LorentzVector>& vetojets)
@@ -1032,6 +1062,9 @@ void fillKtHist(const char* process, double weight) {
   
   kx_->Fill(systP4.Px(), weight);
   ky_->Fill(systP4.Py(), weight);
+  kt_->Fill(sqrt(systP4.Px()*systP4.Px()+systP4.Py()*systP4.Py()), weight);
+  boost_->Fill(systP4.Px(), systP4.Py());
+
 }
 
 void fillFOHist() {
@@ -1042,8 +1075,6 @@ void fillFOHist() {
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
     // selecting status = 3 colored objects
     if (cms2.genps_status().at(i) != 3 || (cms2.genps_id().at(i) != 21 && TMath::Abs(cms2.genps_id().at(i)) > 8 )) continue;
-    // just concentrate on the gluons
-    // if (cms2.genps_status().at(i) != 3 || cms2.genps_id().at(i) != 21 ) continue;
     // apply acceptance cuts, which must be looser than the FO definition
     if (cms2.genps_p4().at(i).pt() < 10 || TMath::Abs(cms2.genps_p4().at(i).eta()) > 2.5 ) continue;
 

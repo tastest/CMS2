@@ -189,6 +189,7 @@ bool goodMuonIsolated(unsigned int i);
 bool fakableMuon(unsigned int i);
 bool ww_muBase(unsigned int index);
 bool ww_mud0PV(unsigned int index);
+bool ww_mudZPV(unsigned int index);
 bool ww_muId(unsigned int index);
 double ww_muIsoVal(unsigned int index);
 bool ww_muIso(unsigned int index);
@@ -196,7 +197,9 @@ bool ww_muIso(unsigned int index);
 //electron ID
 bool goodElectronIsolated(unsigned int i);
 bool fakableElectron(unsigned int i);
+bool ww_elBase(unsigned int index);
 bool ww_eld0PV(unsigned int index);
+bool ww_eldZPV(unsigned int index);
 bool ww_elId(unsigned int index);
 double ww_elIsoVal(unsigned int index);
 bool ww_elIso(unsigned int index);

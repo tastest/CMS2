@@ -44,6 +44,8 @@ TH1F  *mus_eff_mc_pt_;
 
 TH1F *kx_;
 TH1F *ky_;
+TH1F *kt_;
+TH2F *boost_;
 
 // Histograms to calculate the probablitiy of a parton -> lepton
 
@@ -135,6 +137,8 @@ void InitMCUtilHist(const char* process, TFile *utilFile_) {
   
   kx_ = new TH1F(Form("%s_kx",process), "System Boost in X", 50, -50, 50);
   ky_ = new TH1F(Form("%s_ky",process), "System Boost in Y", 50, -50, 50);
+  kt_ = new TH1F(Form("%s_kt",process), "System Boost", 50, 0, 50);
+  boost_ = new TH2F(Form("%s_boost",process), "System Boost kX vs kY", 50, -50, 50, 50, -50, 50);
 
   if (TString(process) == "wjets") {
     const Double_t ptbins_genfr[10] = {10.,15.,20.,25.,30.,35., 40., 50., 75., 100.};
@@ -318,6 +322,8 @@ void saveMCUtilOutput(const char* process, TFile *utilFile_)
   
   kx_->Write();
   ky_->Write();
+  kt_->Write();
+  boost_->Write();
 
   // Fake rate related histograms filled only for wjets MC
   if(TString(process) == "wjets") {
