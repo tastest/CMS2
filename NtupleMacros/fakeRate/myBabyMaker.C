@@ -1221,6 +1221,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     numNomSSv3_   = muonId(iLep, NominalSSv3          );
                     fo_mussV3_04_ = muonId(iLep, muonSelectionFO_ssV3 );
 
+                    numNomSSv4_   = muonId(iLep, NominalSSv4          );
+                    fo_mussV4_04_ = muonId(iLep, muonSelectionFO_ssV4 );
+
                     //OS
                     num_mu_OSGV2_     = muonId(iLep, OSGeneric_v2);
                     num_mu_OSZV2_     = muonId(iLep, OSZ_v2);

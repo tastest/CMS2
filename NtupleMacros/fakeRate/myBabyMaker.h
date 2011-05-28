@@ -148,6 +148,10 @@ private:
     Bool_t numNomSSv3_;   // NominalSSv3
     Bool_t fo_mussV3_04_; // muonSelectionFO_mu_ssV3
 
+    // Muons
+    Bool_t numNomSSv4_;   // NominalSSv3
+    Bool_t fo_mussV4_04_; // muonSelectionFO_mu_ssV3
+
     // WW, HWW
 
     // Electrons
@@ -611,6 +615,9 @@ void myBabyMaker::InitBabyNtuple () {
     numNomSSv3_     = false;
     fo_mussV3_04_   = false;
 
+    numNomSSv4_     = false;
+    fo_mussV4_04_   = false;
+
     // WW, HWW
 
     // Electrons
@@ -1006,6 +1013,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("numNomSSv3",   &numNomSSv3_       );
     babyTree_->Branch("fo_mussV3_04", &fo_mussV3_04_     );
 
+    babyTree_->Branch("numNomSSv4",   &numNomSSv4_       );
+    babyTree_->Branch("fo_mussV4_04", &fo_mussV4_04_     );
  
     // WW, HWW
 
