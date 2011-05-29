@@ -149,8 +149,6 @@ class trilepbabymaker
 		Bool_t  mu3_isPFmuon_;
 
         // electron stuff
-        Bool_t  e1_cand01full_;
-        Bool_t  e1_cand01_;
         Bool_t  e1_vbtf90full_;
         Bool_t  e1_vbtf90_;
         Bool_t  e1_vbtf85_;
@@ -173,8 +171,6 @@ class trilepbabymaker
         Int_t   e1_scCharge_;
         Int_t   e1_gsfCharge_;
 
-        Bool_t  e2_cand01full_;
-        Bool_t  e2_cand01_;
         Bool_t  e2_vbtf90full_;
         Bool_t  e2_vbtf90_;
         Bool_t  e2_vbtf85_;
@@ -197,8 +193,6 @@ class trilepbabymaker
         Int_t   e2_scCharge_;
         Int_t   e2_gsfCharge_;
 	
-        Bool_t  e3_cand01full_;
-        Bool_t  e3_cand01_;
         Bool_t  e3_vbtf90full_;
         Bool_t  e3_vbtf90_;
         Bool_t  e3_vbtf85_;
