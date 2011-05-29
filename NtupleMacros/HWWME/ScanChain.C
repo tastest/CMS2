@@ -27,22 +27,30 @@
 #include "TH2F.h"
 #include "TH1F.h"
 #include "TAxis.h"
+#include "Math/LorentzVector.h"
+#include "TLorentzVector.h"
+
+
 
 // CMS2
 #include "branches.h"
 #include "TBitSet.cc"
 #include "CORE/CMS2.cc"
+#include "CORE/utilities.cc"
+#include "CORE/eventSelections.cc"
+#include "CORE/trackSelections.cc"
 #include "CORE/electronSelections.cc"
 #include "CORE/electronSelectionsParameters.cc"
 #include "CORE/muonSelections.cc"
 #include "CORE/jetSelections.cc"
 #include "CORE/mcSelections.cc"
+#include "CORE/metSelections.cc"
 #include "CORE/MITConversionUtilities.cc"
 #include "MCUtil.h"
 using namespace tas;
 
 // Smurf
-const char* config_info = "Smurf HWW V1 selection; Fall10 samples; 1/fb";
+const char* config_info = "Smurf HWW V5 selection; Spring11 samples; 1/fb";
 #include "../../../Smurf/Core/SmurfTree.h"
 
 
@@ -347,12 +355,10 @@ int ApplyEventSelection( unsigned int i_hyp, bool realData){
   if ( passedLLFinalRequirements )     _cutWord->SetTrue(kcut_LL);
 
   // MET cut
-  double pMet = projectedMet(i_hyp);
-  if  (( type == ee || type == mumu ) && ( pMet > 35 )) _cutWord->SetTrue(kcut_met);
-  if  ((type == emu ) && ( pMet > 20 )) _cutWord->SetTrue(kcut_met);
+  if (passedMetRequirements(i_hyp)) _cutWord->SetTrue(kcut_met);
   
   // Jet Veto
-  int njets = getJets(pfJet, i_hyp, 25, 5.0, true, false).size(); 
+  int njets = getJets(pfJet, i_hyp, 30, 5.0, true, false).size(); 
   if ( njets == 0 ) _cutWord->SetTrue(kcut_jetveto);
 
   // ==Soft Muon Veto
@@ -398,9 +404,8 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, const c
   // jet1_btag_;
   // jet2_btag_;
   tree.njets_ = jets.size();
-  tree.evtype_ = SmurfTree::ZeroJet;
-  tree.dilep_ = cms2.hyp_p4().at(i_hyp);
-  tree.pmet_ = projectedMet(i_hyp);
+  tree.dilep_ = cms2.hyp_p4().at(i_hyp);  
+  tree.pmet_ = projectedMet(i_hyp, metValue(), metPhiValue());
   tree.dPhi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp)));
   tree.dR_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp));
   if (jets.size()>0) {
@@ -454,11 +459,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, const c
   if(TString(process) == "hww220")  tree.dstype_ = SmurfTree::hww220;
   if(TString(process) == "hww230")  tree.dstype_ = SmurfTree::hww230;
   if(TString(process) == "hww250")  tree.dstype_ = SmurfTree::hww250;
-  
 }
-
-
-
 
 // == Utility fucntions
 
@@ -466,22 +467,29 @@ double mt(double pt1, double pt2, double dphi){
   return 2*sqrt(pt1*pt2)*fabs(sin(dphi/2));
 }
 
-bool inZmassWindow(float mass){
-  // return ( mass > 76. && mass < 106. );  
-  return fabs(mass - 91.1876) < 15;
-}
-
-double projectedMet(int i_hyp)
+double projectedMet(unsigned int i_hyp, double met, double phi)
 {
-  double DeltaPhi = nearestDeltaPhi(metPhiValue(),i_hyp);
-  if (DeltaPhi < TMath::Pi()/2) return metValue()*TMath::Sin(DeltaPhi);
-  return metValue();
+  double DeltaPhi = nearestDeltaPhi(phi,i_hyp);
+  if (DeltaPhi < TMath::Pi()/2) return met*TMath::Sin(DeltaPhi);
+  return met;
 }
 
+double metValue(){    return cms2.evt_pfmet(); }
+double metPhiValue(){ return cms2.evt_pfmetPhi(); }
 
-double metValue(){    return cms2.evt_tcmet(); }
-double metPhiValue(){ return cms2.evt_tcmetPhi(); }
+bool passedMetRequirements(unsigned int i_hyp){
 
+  int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
+  metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
+  double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
+			 projectedMet(i_hyp, trkMET.met, trkMET.metphi));
+  if ( pMet < 20 ) return false;
+  if (type == ee || type == mumu) {
+    if ( pMet < 35 ) return false;
+  }
+
+  return true;
+}
 
 
 double nearestDeltaPhi(double Phi, int i_hyp)
@@ -576,34 +584,15 @@ bool comparePt(LorentzVector lv1, LorentzVector lv2) {
 
 unsigned int nGoodVertex() {
   unsigned int nVtx = 0;
-  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
+  for ( unsigned int i = 0; i < cms2.davtxs_sumpt().size(); ++i ){
+    // if (cms2.vtxs_isFake()[i]) continue;
     if (!isGoodVertex(i)) continue;
     nVtx++;
   }
   return nVtx;
 }
 
-
-bool isGoodVertex(size_t ivtx) {
-    if (cms2.vtxs_isFake()[ivtx]) return false;
-    if (cms2.vtxs_ndof()[ivtx] < 4.) return false;
-    if (cms2.vtxs_position()[ivtx].Rho() > 2.0) return false;
-    if (fabs(cms2.vtxs_position()[ivtx].Z()) > 24.0) return false;
-    return true;
-}
-
 int primaryVertex(){
-  //  double sumPtMax = -1;
-  //   int iMax = -1;
-  //   for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-  //     // if (cms2.vtxs_isFake()[i]) continue;
-  //     if (!isGoodVertex(i)) continue;
-  //     if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-  //       iMax = i;
-  //       sumPtMax = cms2.vtxs_sumpt().at(i);
-  //     }
-  //   }
-  //   if (iMax<0) return false;
   return 0;
 }
 
@@ -612,43 +601,33 @@ int primaryVertex(){
 //
 bool goodMuonIsolated(unsigned int i){  
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
-  return ptcut && internal;
+  bool core = ptcut && muonId(i, NominalSmurfV5);
+  //bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
+  return ptcut && core;
 }
 
 bool fakableMuon(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
+  // return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
+  return ptcut && ww_mudZPV(i) && muonId(i, muonSelectionFO_mu_smurf_04);
 }
 
 bool ww_muBase(unsigned int index){
-  // if (cms2.mus_p4().at(index).pt() < 20.0) return false;
+  if (cms2.mus_p4().at(index).pt() < 10.0) return false;
   if (fabs(cms2.mus_p4().at(index).eta()) > 2.4) return false;
   if (cms2.mus_type().at(index) == 8) return false; // not STA
   return true;
 }
 
 bool ww_mud0PV(unsigned int index){
-  if ( cms2.vtxs_sumpt().empty() ) return false;
-  double sumPtMax = -1;
-  int iMax = -1;
-  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
-    if (cms2.vtxs_isFake()[i]) continue;
-    if (!isGoodVertex(i)) continue;
-    if ( cms2.vtxs_sumpt().at(i) > sumPtMax ){
-      iMax = i;
-      sumPtMax = cms2.vtxs_sumpt().at(i);
-    }
-  }
-  if (iMax<0) return false;
+  int vtxIndex = primaryVertex();
+  if (vtxIndex<0) return false;
   double dxyPV = cms2.mus_d0()[index]-
-    cms2.vtxs_position()[iMax].x()*sin(cms2.mus_trk_p4()[index].phi())+
-    cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
-  // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
-  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[iMax]);
+    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
+    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
   if ( cms2.mus_p4().at(index).pt() < 20. )
-    return fabs(dxyPV) < 0.01 && fabs(dzpv)<1.0;
-  return fabs(dxyPV) < 0.02 && fabs(dzpv)<1.0;
+    return fabs(dxyPV) < 0.01;
+  return fabs(dxyPV) < 0.02;
 }
 
 bool ww_mudZPV(unsigned int index){
@@ -656,7 +635,7 @@ bool ww_mudZPV(unsigned int index){
   if (vtxIndex<0) return false;
   //double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
-  return fabs(dzpv)<0.2;
+  return fabs(dzpv)<0.1;
 }
 
 bool ww_muId(unsigned int index){
@@ -680,32 +659,42 @@ double ww_muIsoVal(unsigned int index){
 }
 
 bool ww_muIso(unsigned int index){
-  if ( cms2.mus_p4().at(index).pt() < 20. )
-    return ww_muIsoVal(index)<0.1;
-  return ww_muIsoVal(index)<0.15;
+  if (cms2.mus_p4().at(index).pt()>20) {
+    if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) 
+      return muonIsoValuePF(index,0,0.3) < 0.13;
+    else 
+      return muonIsoValuePF(index,0,0.3) < 0.09;
+  } else {
+    if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) 
+      return muonIsoValuePF(index,0,0.3) < 0.06;
+    else 
+      return muonIsoValuePF(index,0,0.3) < 0.05;
+  }
+  //   if ( cms2.mus_p4().at(index).pt() < 20. )
+  //     return ww_muIsoVal(index)<0.1;
+  //   return ww_muIsoVal(index)<0.15;
 }
 
 
 //
-// Electron selectionsS
-
+// Electron selections
 //
 
 bool goodElectronIsolated(unsigned int i){
-  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
-  // return  ptcut && pass_electronSelection( i, electronSelection_wwV1);
-  // return  ptcut && pass_electronSelection( i, electronSelection_smurfV1);
-  bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
+  bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
+  //bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
+  return ptcut && pass_electronSelection( i, electronSelection_smurfV5);
 }
 
 bool fakableElectron(unsigned int i){
-  bool ptcut = cms2.els_p4().at(i).pt() >= 15.0;
+  bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
   // extrapolate in partial id, iso and d0
-  return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
+  //return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
+  return ptcut && ww_eldZPV(i) && pass_electronSelection( i, electronSelectionFO_el_smurf_v4);
 }
 
 bool ww_elBase(unsigned int index){
-  if (cms2.els_p4().at(index).pt() < 15.0) return false;
+  if (cms2.els_p4().at(index).pt() < 10.0) return false;
   if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
   return true;
 }
@@ -733,7 +722,7 @@ bool ww_eldZPV(unsigned int index){
   if (vtxIndex<0) return false;
   //double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
-  return fabs(dzpv)<0.2;
+  return fabs(dzpv)<0.1;
 }
 
 double ww_elIsoVal(unsigned int index){
@@ -749,7 +738,8 @@ double ww_elIsoVal(unsigned int index){
 }
 
 bool ww_elIso(unsigned int index){
-  return ww_elIsoVal(index)<0.1;
+  return pass_electronSelection(index, electronSelection_smurfV5_iso);
+  //return ww_elIsoVal(index)<0.1;
 }
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
@@ -832,6 +822,7 @@ bool toptag(int type, int i_hyp, double minPt){
   }
   return false;
 }
+
 
 
 //
@@ -990,7 +981,7 @@ void fillEffHist(const char* process, double weight) {
       mus_denom_mc_eta_->Fill(cms2.genps_p4().at(i).eta());
       mus_denom_mc_pt_->Fill(cms2.genps_p4().at(i).pt());
       
-      for(int i_mus=0;i_mus<cms2.mus_charge().size();++i_mus) {
+      for(unsigned int i_mus=0;i_mus<cms2.mus_charge().size();++i_mus) {
 	if( goodMuonIsolated(i_mus) && cms2.mus_mc3idx().at(i_mus) == i) {
 	  mus_numer_mc_->Fill(cms2.genps_p4().at(i).eta(),cms2.genps_p4().at(i).pt());
 	  mus_numer_mc_eta_->Fill(cms2.genps_p4().at(i).eta());

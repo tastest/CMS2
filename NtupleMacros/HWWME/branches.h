@@ -164,7 +164,6 @@ void CalculateFakeRateProb();
 
 
 //Utils
-bool inZmassWindow(float);
 double nearestDeltaPhi(double Phi, int i_hyp);
 bool comparePt(LorentzVector lv1, LorentzVector lv2);
 std::vector<LorentzVector> getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets, bool btag);
@@ -176,7 +175,8 @@ double mt(double pt1, double pt2, double dphi);
 // met
 double metValue();
 double metPhiValue();
-double projectedMet(int);
+double projectedMet(unsigned int, double, double);
+bool passedMetRequirements(unsigned int i_hyp);
 
 //trigger
 bool  passedTrigger(TString trigName);
