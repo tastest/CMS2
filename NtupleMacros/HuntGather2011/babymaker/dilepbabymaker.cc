@@ -689,7 +689,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int vtxidx = firstGoodDAvertex();
                     if (trkidx1 >= 0)
-                        d0vtx1_ = trks_d0_pv(trkdix1, vtxidx, true).first;
+                        d0vtx1_ = trks_d0_pv(trkidx1, vtxidx, true).first;
                     trkIso1_ = cms2.mus_iso03_sumPt()[index1];
                     ecalIso1_ = cms2.mus_iso03_emEt()[index1];
                     hcalIso1_ = cms2.mus_iso03_hadEt()[index1];
@@ -737,7 +737,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     int trkidx1 = cms2.els_trkidx()[index1];
                     int vtxidx = firstGoodDAvertex();
                     if (trkidx1 >= 0)
-                        d0vtx1_ = trks_d0_pv(trkdix1, vtxidx, true).first;
+                        d0vtx1_ = trks_d0_pv(trkidx1, vtxidx, true).first;
                     e1_fbrem_ = cms2.els_fbrem()[index1];
                     trkIso1_ = cms2.els_tkIso()[index1];
                     hcalIso1_ = cms2.els_hcalIso()[index1];
@@ -773,7 +773,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     int trkidx2 = cms2.mus_trkidx()[index2];
                     int vtxidx = firstGoodDAvertex();
                     if (trkidx2 >= 0)
-                        d0vtx2_ = trks_d0_pv(trkdix2, vtxidx, true).first;
+                        d0vtx2_ = trks_d0_pv(trkidx2, vtxidx, true).first;
                     trkIso2_ = cms2.mus_iso03_sumPt()[index2];
                     ecalIso2_ = cms2.mus_iso03_emEt()[index2];
                     hcalIso2_ = cms2.mus_iso03_hadEt()[index2];
@@ -821,7 +821,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     int trkidx2 = cms2.els_trkidx()[index2];
                     int vtxidx = firstGoodDAvertex();
                     if (trkidx2 >= 0)
-                        d0vtx2_ = trks_d0_pv(trkdix2, vtxidx, true).first;
+                        d0vtx2_ = trks_d0_pv(trkidx2, vtxidx, true).first;
                     e2_fbrem_ = cms2.els_fbrem()[index2];
                     trkIso2_ = cms2.els_tkIso()[index2];
                     hcalIso2_ = cms2.els_hcalIso()[index2];
