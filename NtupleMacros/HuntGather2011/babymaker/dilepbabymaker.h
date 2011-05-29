@@ -191,6 +191,7 @@ private:
     Bool_t  mu1_isPFmuon_;
     Float_t mu1_relPtErr_;
     Bool_t  mu1_cosmic_;
+    Float_t mu1_trkpt_;
 
     Bool_t  mu2_numSSv3_;
     Bool_t  mu2_foSSv3_;
@@ -207,6 +208,7 @@ private:
     Bool_t  mu2_isPFmuon_;
     Float_t mu2_relPtErr_;
     Bool_t  mu2_cosmic_;
+    Float_t mu2_trkpt_;
 
     // electron stuff
     Bool_t  e1_numSSv4_;
@@ -226,6 +228,7 @@ private:
     Float_t e1_dphiin_;
     Float_t e1_detain_;
     Float_t e1_e25Me55_;
+    Float_t e1_e15Me55_;
     Float_t e1_sigieie_; // sigmaietaieta
     Float_t e1_eMe55_;
     Int_t   e1_nmHits_;
@@ -256,6 +259,7 @@ private:
     Float_t e2_dphiin_;
     Float_t e2_detain_;
     Float_t e2_e25Me55_;
+    Float_t e2_e15Me55_;
     Float_t e2_sigieie_; // sigmaietaieta
     Float_t e2_eMe55_;
     Int_t   e2_nmHits_;

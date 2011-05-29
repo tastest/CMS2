@@ -685,6 +685,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index1];
                     mu1_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index1];
                     mu1_relPtErr_     = cms2.mus_ptErr()[index1]/cms2.mus_p4()[index1].pt();
+                    mu1_trkpt_        = cms2.mus_trk_p4()[index1].pt();
                     if (cms2.mus_pfmusidx()[index1] > -1) mu1_isPFmuon_ = 1;
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int vtxidx = firstGoodDAvertex();
@@ -724,6 +725,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_dphiin_      = cms2.els_dPhiIn()[index1];
                     e1_detain_      = cms2.els_dEtaIn()[index1];
                     e1_e25Me55_     = cms2.els_e2x5Max()[index1] / cms2.els_e5x5()[index1];
+                    e1_e15Me55_     = cms2.els_e1x5Max()[index1] / cms2.els_e5x5()[index1];
                     e1_sigieie_     = cms2.els_sigmaIEtaIEta()[index1];
                     e1_eMe55_       = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
                     e1_nmHits_      = cms2.els_exp_innerlayers()[index1];
@@ -769,6 +771,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_emVetoDep_    = cms2.mus_iso_ecalvetoDep()[index2];
                     mu2_hadVetoDep_   = cms2.mus_iso_hcalvetoDep()[index2];
                     mu2_relPtErr_     = cms2.mus_ptErr()[index2]/cms2.mus_p4()[index2].pt();
+                    mu2_trkpt_        = cms2.mus_trk_p4()[index2].pt();
                     if (cms2.mus_pfmusidx()[index2] > -1) mu2_isPFmuon_ = 1;
                     int trkidx2 = cms2.mus_trkidx()[index2];
                     int vtxidx = firstGoodDAvertex();
@@ -808,6 +811,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_dphiin_      = cms2.els_dPhiIn()[index2];
                     e2_detain_      = cms2.els_dEtaIn()[index2]; 
                     e2_e25Me55_     = cms2.els_e2x5Max()[index2] / cms2.els_e5x5()[index2];
+                    e2_e15Me55_     = cms2.els_e1x5Max()[index2] / cms2.els_e5x5()[index2];
                     e2_sigieie_     = cms2.els_sigmaIEtaIEta()[index2];
                     e2_eMe55_       = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
                     e2_nmHits_      = cms2.els_exp_innerlayers()[index2];
@@ -998,6 +1002,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu1_hadVetoDep_   = -999999.;
     mu1_isPFmuon_     = 0;
     mu1_relPtErr_     = -999999.;
+    mu1_trkpt_        = -999999.;
 
     mu2_numSSv3_      = 0;
     mu2_foSSv3_       = 0;
@@ -1014,6 +1019,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_hadVetoDep_   = -999999.;
     mu2_isPFmuon_     = 0;
     mu2_relPtErr_     = -999999.;
+    mu2_trkpt_        = -999999.;
 
     // electron stuff
     e1_numSSv4_     = 0;
@@ -1033,6 +1039,7 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_dphiin_      = -999999.;
     e1_detain_      = -999999.;
     e1_e25Me55_     = -999999.;
+    e1_e15Me55_     = -999999.;
     e1_sigieie_     = -999999.;
     e1_eMe55_       = -999999.;
     e1_nmHits_      = -999999;
@@ -1063,6 +1070,7 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_dphiin_      = -999999.;
     e2_detain_      = -999999.;
     e2_e25Me55_     = -999999.;
+    e2_e15Me55_     = -999999.;
     e2_sigieie_     = -999999.;
     e2_eMe55_       = -999999.;
     e2_nmHits_      = -999999;
@@ -1263,6 +1271,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu1_hadVetoDep",   &mu1_hadVetoDep_,   "mu1_hadVetoDep/F"  );
     babyTree_->Branch("mu1_isPFmuon",     &mu1_isPFmuon_,     "mu1_isPFmuon/O"    );
     babyTree_->Branch("mu1_relPtErr",     &mu1_relPtErr_,     "mu1_relPtErr/F"    );
+    babyTree_->Branch("mu1_trkpt",     &mu1_trkpt_,     "mu1_trkpt/F"    );
 
     babyTree_->Branch("mu2_numSSv3",      &mu2_numSSv3_,      "mu2_numSSv3/O"     );
     babyTree_->Branch("mu2_foSSv3",       &mu2_foSSv3_,       "mu2_foSSv3/O"      );
@@ -1279,6 +1288,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu2_hadVetoDep",   &mu2_hadVetoDep_,   "mu2_hadVetoDep/F"  );
     babyTree_->Branch("mu2_isPFmuon",     &mu2_isPFmuon_,     "mu2_isPFmuon/O"    );
     babyTree_->Branch("mu2_relPtErr",     &mu2_relPtErr_,     "mu2_relPtErr/F"    );
+    babyTree_->Branch("mu2_trkpt",     &mu2_trkpt_,     "mu2_trkpt/F"    );
 
     // electron stuff
 
@@ -1299,6 +1309,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_dphiin",     &e1_dphiin_,     "e1_dphiin/F"    );
     babyTree_->Branch("e1_detain",     &e1_detain_,     "e1_detain/F"    );
     babyTree_->Branch("e1_e25Me55",    &e1_e25Me55_,    "e1_e25Me55/F"   );
+    babyTree_->Branch("e1_e15Me55",    &e1_e15Me55_,    "e1_e15Me55/F"   );
     babyTree_->Branch("e1_sigieie",    &e1_sigieie_,    "e1_sigieie/F"   );
     babyTree_->Branch("e1_eMe55",      &e1_eMe55_,      "e1_eMe55/F"     ); // for spikes
     babyTree_->Branch("e1_nmHits",     &e1_nmHits_,     "e1_nmHits/I"    );
@@ -1328,6 +1339,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_dphiin",     &e2_dphiin_,     "e2_dphiin/F"    );
     babyTree_->Branch("e2_detain",     &e2_detain_,     "e2_detain/F"    );
     babyTree_->Branch("e2_e25Me55",    &e2_e25Me55_,    "e2_e25Me55/F"   );
+    babyTree_->Branch("e2_e15Me55",    &e2_e15Me55_,    "e2_e15Me55/F"   );
     babyTree_->Branch("e2_sigieie",    &e2_sigieie_,    "e2_sigieie/F"   );
     babyTree_->Branch("e2_eMe55",      &e2_eMe55_,      "e2_eMe55/F"     ); // for spikes
     babyTree_->Branch("e2_nmHits",     &e2_nmHits_,     "e2_nmHits/I"    );
