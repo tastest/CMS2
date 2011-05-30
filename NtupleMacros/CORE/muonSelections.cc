@@ -118,13 +118,15 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
             return false;
         return (muonIsoValue(index, false) < 0.40);
         break;
-    case NominalSSv4:
-        isovalue = 0.4;
-        break;
-    case muonSelectionFO_ssV4:
+    case NominalSSv4: 
         if (!muonIdNotIsolated(index, type))
             return false;
         return (muonIsoValue(index, false) < 0.15);
+        break;
+   case muonSelectionFO_ssV4:
+        if (!muonIdNotIsolated(index, type))
+            return false;
+        return (muonIsoValue(index, false) < 0.40);
         break;
     case NominalSmurfV4:
         if (!muonIdNotIsolated( index, type )) return false;
