@@ -58,7 +58,7 @@ enum EleSelectionType {
   ELEIP_PV_200,      // d0 corrected for primary vertex < 0.02
   ELEIP_PV_wwV1,     // d0 (PV) < 0.02 and dz (PV) < 1.0
   ELEIP_PV_SMURFV3,  // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
-  ELEIP_PV_SMURFV4,  // d0 (PV) < 0.02 and dz (PV) < 0.1, using first DA PV
+  ELEIP_PV_DZ_1MM,   // dz (PV) < 0.1, using first DA PV
   ELEIP_PV_OSV2,     // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
   ELEIP_PV_OSV2_FO,  // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
   ELEIP_SS200,       // 2011 SS numerator d0 cut
@@ -753,7 +753,7 @@ static const cuts_t electronSelection_smurfV3  =
 
 //--------SMURF V4 cuts--------------------------------
 static const cuts_t electronSelection_smurfV4_ip  = 
-         (1ll<<ELEIP_PV_SMURFV4);
+         (1ll<<ELEIP_PV_SMURFV3) | (1ll<<ELEIP_PV_DZ_1MM);
 static const cuts_t electronSelection_smurfV4_baseline  = 
 	 electronSelection_wwV1_base |
 	 electronSelection_smurfV4_ip;
@@ -774,7 +774,7 @@ static const cuts_t electronSelection_smurfV4  =
 
 //--------SMURF V5 cuts--------------------------------
 static const cuts_t electronSelection_smurfV5_ip  = 
-         (1ll<<ELEIP_PV_SMURFV4);
+         (1ll<<ELEIP_PV_SMURFV3) | (1ll<<ELEIP_PV_DZ_1MM);
 static const cuts_t electronSelection_smurfV5_baseline  = 
 	 electronSelection_wwV1_base |
 	 electronSelection_smurfV5_ip;
@@ -795,7 +795,7 @@ static const cuts_t electronSelection_smurfV5  =
 
 //--------SMURF FakableObject cuts--------------------------------
 static const cuts_t electronSelectionFO_el_smurf_base =
-  (1ll<<ELEETA_250) |
+  (1ll<<ELEETA_250) | (1ll<<ELEIP_PV_DZ_1MM) |
   electronSelection_smurfV3_convrej;
 //---------------------------------------------------------
 // Fakeable object definition (option V3)
