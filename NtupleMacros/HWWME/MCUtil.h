@@ -141,8 +141,8 @@ void InitMCUtilHist(const char* process, TFile *utilFile_) {
   boost_ = new TH2F(Form("%s_boost",process), "System Boost kX vs kY", 50, -50, 50, 50, -50, 50);
 
   if (TString(process) == "wjets") {
-    const Double_t ptbins_genfr[10] = {10.,15.,20.,25.,30.,35., 40., 50., 75., 100.};
-    const int nptbins_genfr = 9;
+    const Double_t ptbins_genfr[9] = {10.,20.,25.,30.,35., 40., 50., 75., 100.};
+    const int nptbins_genfr = 8;
     const Double_t etabins_genfr[5] = {0.0, 1.0, 1.479, 2.0, 2.5};
     const int netabins_genfr = 4;
     
