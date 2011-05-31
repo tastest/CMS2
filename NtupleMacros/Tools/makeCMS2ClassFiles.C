@@ -38,20 +38,6 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile);
 void makeBranchFile(std::string branchNamesFile);
 void makeDriverFile(std::string fname);
 
-struct hltcompare {
-  bool operator() (const TString& lhs, const TString& rhs) const {
-    string s_match = "hlt_bits";
-    string s_lhs   = (string) lhs;
-    string s_rhs   = (string) rhs;
-    s_lhs          = s_lhs.replace( s_lhs.find(s_match), s_match.length(), "" );
-    s_rhs          = s_rhs.replace( s_rhs.find(s_match), s_match.length(), "" );
-    int i_lhs      = atoi( s_lhs.c_str() );
-    int i_rhs      = atoi( s_rhs.c_str() );
-    return i_lhs < i_rhs;
-  }
-};
-
-
 
 //-------------------------------------------------------------------------------------------------
 void makeCMS2ClassFiles (std::string fname, bool paranoid = true, 
@@ -427,26 +413,28 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t\t"   << "}" << endl << endl;
     //get the list of branches that hold the HLT bitmasks
     //store in a set 'cause its automatically sorted
-    //set<TString> s_HLTbitmasks;
-    set<TString, hltcompare> s_HLTbitmasks;
+    set<TString> s_HLTbitmasks;
     set<TString> s_L1bitmasks;
     for(int j = 0; j < aliasarray->GetSize(); j++) {
       TString aliasname(aliasarray->At(j)->GetName());
       TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
       TString classname = branch->GetClassName();
       if(aliasname.Contains("hlt_bits") && classname.Contains("int")) {
-	      s_HLTbitmasks.insert(aliasname);
+	s_HLTbitmasks.insert(aliasname);
       }
+     
     }
     int i = 0;
-    for( set<TString>::const_iterator s_it = s_HLTbitmasks.begin(); s_it != s_HLTbitmasks.end(); s_it++, i++ ) {
+    for(set<TString>::const_iterator s_it = s_HLTbitmasks.begin();
+	s_it != s_HLTbitmasks.end(); s_it++, i++) {
+      
       if(i==0) {
-	      headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
-	      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-	      headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
-	      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
-	      headerf << "\t\t" << "}" << endl;
-	      continue;
+	headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
+	headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
+	headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
+	headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
+	headerf << "\t\t" << "}" << endl;
+	continue;
       }
       headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
       headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
@@ -554,28 +542,6 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t" << "}" << endl;
   }//if(haveL1Info)
     
-  headerf << endl;
-  headerf << "  static void progress( int nEventsTotal, int nEventsChain ){" << endl;
-  headerf << "    int period = 1000;" << endl;
-  headerf << "    if(nEventsTotal%1000 == 0) {" << endl;
-  headerf << "      // xterm magic from L. Vacavant and A. Cerri" << endl;
-  headerf << "      if (isatty(1)) {" << endl;
-  headerf << "        if( ( nEventsChain - nEventsTotal ) > period ){" << endl;
-  headerf << "          float frac = (float)nEventsTotal/(nEventsChain*0.01);" << endl;
-  headerf << "          printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
-  headerf << "               \"\\033[0m\\033[32m <---\\033[0m\\015\", frac);" << endl;
-  headerf << "          fflush(stdout);" << endl;
-  headerf << "        }" << endl;
-  headerf << "        else {" << endl;
-  headerf << "          printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
-  headerf << "                 \"\\033[0m\\033[32m <---\\033[0m\\015\", 100.);" << endl;
-  headerf << "          cout << endl;" << endl;
-  headerf << "        }" << endl;
-  headerf << "      }" << endl;
-  headerf << "    }" << endl;
-  headerf << "  }" << endl;
-  headerf << "  " << endl;
-
   headerf << "};" << endl << endl;
     
   headerf << "#ifndef __CINT__" << endl;
@@ -641,7 +607,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t" << "bool passL1Trigger(TString trigName);" << endl;
     implf   << "\t" << "bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
   }//if(haveL1Info)
- 
+    
 }
   
 //-------------------------------------------------------------------------------------------------
@@ -672,7 +638,26 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
     codef << "#include \"branches.h\"" << endl;
   codef << "using namespace tas;" << endl;
   codef << endl;
-  codef << endl;
+  codef << "void progress( int nEventsTotal, int nEventsChain ){" << endl;
+  codef << "  int period = 1000;" << endl;
+  codef << "  if(nEventsTotal%1000 == 0) {" << endl;
+  codef << "    // xterm magic from L. Vacavant and A. Cerri" << endl;
+  codef << "    if (isatty(1)) {" << endl;
+  codef << "      if( ( nEventsChain - nEventsTotal ) > period ){" << endl;
+  codef << "        float frac = (float)nEventsTotal/(nEventsChain*0.01);" << endl;
+  codef << "        printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
+  codef << "             \"\\033[0m\\033[32m <---\\033[0m\\015\", frac);" << endl;
+  codef << "        fflush(stdout);" << endl;
+  codef << "      }" << endl;
+  codef << "      else {" << endl;
+  codef << "        printf(\"\\015\\033[32m ---> \\033[1m\\033[31m%4.1f%%\"" << endl;
+  codef << "               \"\\033[0m\\033[32m <---\\033[0m\\015\", 100.);" << endl;
+  codef << "        cout << endl;" << endl;
+  codef << "      }" << endl;
+  codef << "    }" << endl;
+  codef << "  }" << endl;
+  codef << "}" << endl;
+  codef << "" << endl;
   codef << "int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix=\"\") {" << endl;
   codef << "" << endl;
   codef << "  // Example Histograms" << endl;
@@ -704,7 +689,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "      ++nEventsTotal;" << endl;
   codef << "    " << endl;
   codef << "      // Progress" << endl;
-  codef << "      CMS2::progress( nEventsTotal, nEventsChain );" << endl;
+  codef << "      progress( nEventsTotal, nEventsChain );" << endl;
   codef << "    }" << endl;
   codef << "  " << endl;
   codef << "    delete tree;" << endl;
