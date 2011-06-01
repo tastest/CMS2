@@ -180,7 +180,7 @@ bool cleaning_goodTracks()
 bool isGoodVertex(size_t ivtx) {
 
   if (cms2.vtxs_isFake()[ivtx]) return false;
-  if (cms2.vtxs_ndof()[ivtx] < 4.) return false;
+  if (cms2.vtxs_ndof()[ivtx] <= 4.) return false;
   if (cms2.vtxs_position()[ivtx].Rho() > 2.0) return false;
   if (fabs(cms2.vtxs_position()[ivtx].Z()) > 24.0) return false;
   return true;
@@ -191,7 +191,7 @@ bool isGoodVertex(size_t ivtx) {
 bool isGoodDAVertex(size_t ivtx) {
 
   if (cms2.davtxs_isFake()[ivtx]) return false;
-  if (cms2.davtxs_ndof()[ivtx] < 4.) return false;
+  if (cms2.davtxs_ndof()[ivtx] <= 4.) return false;
   if (cms2.davtxs_position()[ivtx].Rho() > 2.0) return false;
   if (fabs(cms2.davtxs_position()[ivtx].Z()) > 24.0) return false;
   return true;
