@@ -18,6 +18,8 @@ bool   sortByPt(const LorentzVector & vec1, const LorentzVector & vec2 );
 
 float deltaPhi( float phi1 , float phi2 ) ;
 
+bool hypsOverlap(int idxa, int idxb);
+
 class DorkyEvent;
 class DorkyEventIdentifier;
 

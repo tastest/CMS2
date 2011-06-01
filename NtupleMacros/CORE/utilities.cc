@@ -155,6 +155,24 @@ bool sortByPt(const LorentzVector &vec1,
     return vec1.pt() > vec2.pt();
 }
 
+//return true if one of the leptons is the same in both hyps
+bool hypsOverlap(int idxa, int idxb){
+  int idlta = cms2.hyp_lt_id()[idxa];
+  int idlla = cms2.hyp_ll_id()[idxa];
+  int ilta = cms2.hyp_lt_index()[idxa];
+  int illa = cms2.hyp_ll_index()[idxa];
+  int idltb = cms2.hyp_lt_id()[idxb];
+  int idllb = cms2.hyp_ll_id()[idxb];
+  int iltb = cms2.hyp_lt_index()[idxb];
+  int illb = cms2.hyp_ll_index()[idxb];
+  
+  int matches = (idlta == idltb && ilta == iltb)
+    + (idlla == idllb && illa == illb)
+    + (idlta == idllb && ilta == illb)
+    + (idlla == idltb && illa == iltb);
+  return matches>0;
+}
+
 /*
 // this is a workaround for not having unique event id's in MC
 class DorkyEvent
