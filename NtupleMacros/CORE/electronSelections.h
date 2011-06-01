@@ -975,6 +975,7 @@ static const cuts_t electronSelection_ssV4_noIso =
            electronSelection_smurfV1ss_id      |
            (1ll<<ELEIP_SS200)                  |
            (1ll<<ELESEED_ECAL)                 |
+           (1ll<<ELE_NOT_TRANSITION)           |
            (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
 static const cuts_t electronSelection_ssV4_iso =
@@ -988,6 +989,7 @@ static const cuts_t electronSelection_ssV4 =
 
 static const cuts_t electronSelectionFOV4_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
                  electronSelectionFO_SS_baseline     |
+                 (1ll<<ELE_NOT_TRANSITION)           |
                  (1ll<<ELENOTCONV_DISTDCOT002)       |
                  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
@@ -995,6 +997,7 @@ static const cuts_t electronSelectionFOV4_ssVBTF80_v1 =       // V1 - relaxed Id
 
 static const cuts_t electronSelectionFOV4_ssVBTF80_v2 =       // V2 - relaxed Id
                  electronSelectionFO_SS_baseline     |
+                 (1ll<<ELE_NOT_TRANSITION)           |
                  (1ll<<ELENOTCONV_DISTDCOT002)       |
                  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
@@ -1003,6 +1006,7 @@ static const cuts_t electronSelectionFOV4_ssVBTF80_v2 =       // V2 - relaxed Id
 
 static const cuts_t electronSelectionFOV4_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
                  electronSelectionFO_SS_baseline     |
+                 (1ll<<ELE_NOT_TRANSITION)           |
                  (1ll<<ELENOTCONV_DISTDCOT002)       |
                  (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
                  electronSelection_smurfV1ss_id      |              
