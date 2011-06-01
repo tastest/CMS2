@@ -4,6 +4,7 @@
 #include <vector>
 #include "Math/LorentzVector.h"
 #include "CMS2.h"
+#include "jetSelections.h"
 
 /****************************************************************
 ***                                                           ***
@@ -56,11 +57,14 @@ bool passThreeChargeRequirement(int elIdx);
 /******************************************************************************************/     
 bool isGoodJet(LorentzVector jetp4, int hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean);
 
+float sumPtSS(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10);
 
 /*****************************************************************************************/
 // extra Z veto
 /*****************************************************************************************/
+bool overlapsNNHypInZ(int idx); //similar to makesExtraZ, uses hyps only
 bool makesExtraZ(int hypIdx, bool applyAlignmentCorrection=false, bool removedEtaCutInEndcap=false);
+
 
 
 

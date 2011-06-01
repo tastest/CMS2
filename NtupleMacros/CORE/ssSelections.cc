@@ -11,9 +11,9 @@
 #include "metSelections.h"
 #include "triggerUtils.h"
 #include "eventSelections.h"
+#include "utilities.h"
 
 #include "ssSelections.h"
-
 
 /****************************************************************
 ***                                                           ***
@@ -58,13 +58,12 @@ bool isIsolatedLepton(int id, int idx, int vidx)
     return false;
 }
 
-
 /******************************************************************************************/     
 // 2011 numerator lepton
 /******************************************************************************************/     
 bool isNumeratorLepton(int id, int idx, int vidx)
 {
-    return (isGoodLepton(id, idx, vidx) && isIsolatedLepton(id, idx, vidx));
+  return (isGoodLepton(id, idx, vidx) && isIsolatedLepton(id, idx, vidx));
 }
 
 
@@ -73,9 +72,9 @@ bool isNumeratorLepton(int id, int idx, int vidx)
 /******************************************************************************************/     
 bool isNumeratorHypothesis(int idx, int vidx)
 {
-    if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), vidx))
+  if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), vidx))
         return false;
-    if (!isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), vidx))
+  if (!isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), vidx))
         return false;
 
     return true;
@@ -102,6 +101,22 @@ bool isDenominatorLepton(int id, int idx, int vidx)
 /*****************************************************************************************/
 // extra Z veto
 /*****************************************************************************************/
+bool overlapsOtherNNHypInZ(int idx){
+  int vidx = -1; // use default now // hypsFromSameVtx2011(idx,1.0,true, false);
+  bool result = false;
+  int nHyps = cms2.hyp_lt_p4().size();
+  for (int iH = 0; iH< nHyps; ++iH){
+    if (iH == idx || !hypsOverlap(idx,iH)
+	|| abs(cms2.hyp_lt_id()[iH])!= abs(cms2.hyp_ll_id()[iH]) || cms2.hyp_lt_id()[iH]*cms2.hyp_ll_id()[iH] > 0) 
+      continue;
+    if (! isNumeratorHypothesis(iH,vidx)) continue;
+    if (cms2.hyp_p4()[iH].mass2()>0 && fabs(cms2.hyp_p4()[iH].mass() - 91)< 15){ 
+      result = true; break;
+    }
+  }
+  return result;
+}
+
 bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap)
 {
  	 LorentzVector ltp4	= cms2.hyp_lt_p4()[hypIdx];
@@ -578,4 +593,43 @@ bool isFakeableMuon(int index, bool useTightIsolation)
 		  return muonId(index, muonSelectionFO_mu_ss);
 	 else
 		  return muonId(index, muonSelectionFO_mu_ss_iso10);
+}
+
+
+float sumPtSS(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt){
+  vector<LorentzVector> selJets = getJets(idx, true, type, JETS_CLEAN_NONE, deltaR, min_pt, max_eta);
+  int nJets = selJets.size();
+  if (nJets == 0 ) return 0.;
+
+  int ivtx = -1;// hypsFromSameVtx2011(idx,1.0, true, false);
+
+  vector<int> jetFlags(nJets, 0);
+
+  int nMus = cms2.mus_type().size();
+  for (int iMu = 0; iMu < nMus; ++iMu){    
+    if (cms2.mus_p4()[iMu].pt() > mu_minpt && isNumeratorLepton(13,iMu,ivtx)){
+      for (int iJ = 0; iJ < nJets; ++iJ){
+	float dR = ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[iMu], selJets[iJ]);
+	if (dR < deltaR) jetFlags[iJ]++;
+      }
+    }
+  }
+
+  int nEls = cms2.els_type().size();
+  for (int iEl = 0; iEl < nEls; ++iEl){
+    if (cms2.els_p4()[iEl].pt() > ele_minpt && isNumeratorLepton(11,iEl,ivtx)){
+      for (int iJ = 0; iJ < nJets; ++iJ){
+	float dR = ROOT::Math::VectorUtil::DeltaR(cms2.els_p4()[iEl], selJets[iJ]);
+	if (dR < deltaR) jetFlags[iJ]++;
+      }
+    }
+  }
+
+  float result = 0.0;
+
+  for (int iJ = 0; iJ < nJets; ++iJ){
+    if (jetFlags[iJ] == 0) result += selJets[iJ].pt();
+  }
+
+  return result;
 }
