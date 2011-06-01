@@ -116,7 +116,7 @@ bool makesExtraZ (int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutI
 	 {
 		  for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++)
 		  {
-			   if (cms2.mus_p4()[imu].pt() < 10.)
+			   if (cms2.mus_p4()[imu].pt() < 5.)
 					continue;
 
 			   if (!isGoodLeptonwIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap) || !isGoodLeptonNoIsoSS(13, imu, applyAlignmentCorrection, removedEtaCutInEndcap))
