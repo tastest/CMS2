@@ -29,7 +29,7 @@ void printEventInfo(){
 //veto Z->mumugamma events                                                                
 /*****************************************************************************************/
 bool vetoZmumuGamma( unsigned int hypIdx , float emax , float minmass , float maxmass ){
-  
+
   //we only care about mumu hyp types
   if( cms2.hyp_type().at(hypIdx) != 0 ) return false; 
 
@@ -212,7 +212,7 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
     else if( hypType == 3 ){
       if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+
     }
   }
   
