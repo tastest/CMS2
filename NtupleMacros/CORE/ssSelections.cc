@@ -53,7 +53,7 @@ bool isIsolatedLepton(int id, int idx, int vidx)
 
     // muons
     if (abs(id) == 13)
-        return (muonIsoValue(idx, true) < 0.15);
+        return (muonIsoValue(idx, false) < 0.15);
 
     return false;
 }
