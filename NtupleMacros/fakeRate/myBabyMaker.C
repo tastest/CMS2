@@ -450,7 +450,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v3_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v3  );
 
                     // WW
-                    num_el_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5          );
+                    num_el_smurfV3_ = pass_electronSelection( iLep, electronSelection_smurfV3          );
+                    num_el_smurfV4_ = pass_electronSelection( iLep, electronSelection_smurfV4          );
                     v1_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v1    );
                     v2_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v2    );
                     v3_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v3    );
@@ -663,7 +664,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                       }
                     */
 
-                    el_id_smurfV5_  = pass_electronSelection( iLep, electronSelection_smurfV5_id );
+                    el_id_smurfV3_  = pass_electronSelection( iLep, electronSelection_smurfV3_id );
+                    el_id_smurfV4_  = pass_electronSelection( iLep, electronSelection_smurfV4_id );
                     el_id_vbtf80_   = electronId_VBTF(iLep, VBTF_35X_80, false, false);
                     el_id_vbtf90_   = electronId_VBTF(iLep, VBTF_35X_90, false, false);
                     if( els_closestMuon().at(iLep) == -1 ) closestMuon_ = true;
@@ -722,28 +724,28 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                   = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_Jet40_regexp);
                     triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                         = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_regexp);
                     triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                        = MatchTriggerClass( els_p4().at(iLep), ele17_CaloIdL_CaloIsoVL_regexp);  
-                    triggerMatchStruct struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar  = MatchTriggerClass( els_p4().at(iLep), photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
+                    //struct<int, float> struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar  = MatchTriggerClass( els_p4().at(iLep), photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
   
                     ele8_vstar_                                              = struct_ele8_vstar.nHLTObjects_;
                     ele8_CaloIdL_TrkIdVL_vstar_                              = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
                     ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                      = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.nHLTObjects_;
                     ele8_CaloIdL_CaloIsoVL_vstar_                            = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
                     ele17_CaloIdL_CaloIsoVL_vstar_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_; 
-                    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                    //photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
 
                     ele8_version_                                              = struct_ele8_vstar.version_;
                     ele8_CaloIdL_TrkIdVL_version_                              = struct_ele8_CaloIdL_TrkIdVL_vstar.version_; 
                     ele8_CaloIdL_CaloIsoVL_Jet40_version_                      = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.version_;
                     ele8_CaloIdL_CaloIsoVL_version_                            = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
                     ele17_CaloIdL_CaloIsoVL_version_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_; 
-                    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                    //photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
           
                     dr_ele8_vstar_                                           = struct_ele8_vstar.dR_;
                     dr_ele8_CaloIdL_TrkIdVL_vstar_                           = struct_ele8_CaloIdL_TrkIdVL_vstar.dR_;
                     dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                   = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.dR_;
                     dr_ele8_CaloIdL_CaloIsoVL_vstar_                         = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
                     dr_ele17_CaloIdL_CaloIsoVL_vstar_                        = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
-                    dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
+                    //dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
 /*
                     if ( (ele8_vstar_ == 0) && (ele8_CaloIdL_TrkIdVL_vstar_ == 0) && (ele8_CaloIdL_CaloIsoVL_Jet40_vstar_ == 0)
                          && (ele8_CaloIdL_CaloIsoVL_vstar_  == 0) && (ele17_CaloIdL_CaloIsoVL_vstar_ == 0) ) { continue; }
@@ -1256,7 +1258,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     fo_wwV1_10_d0_  = muonId(iLep, muonSelectionFO_mu_wwV1_iso10_d0  );
  
                     // WW
-                    num_mu_smurfV5_    = muonId(iLep, NominalSmurfV5                    );
+                    num_mu_smurfV3_    = muonId(iLep, NominalSmurfV3                    );
+                    num_mu_smurfV4_    = muonId(iLep, NominalSmurfV4                    );
                     fo_mu_smurf_04_    = muonId(iLep, muonSelectionFO_mu_smurf_04       );
                     fo_mu_smurf_10_    = muonId(iLep, muonSelectionFO_mu_smurf_10       );
 
