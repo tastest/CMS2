@@ -17,7 +17,7 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
     return false;
 }
 
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index)
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index)
 {
   checkElectronSelections();
   cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
@@ -25,7 +25,7 @@ bool pass_electronSelection(const unsigned int index, const cuts_t selectionType
     return false;
 }
 
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index) 
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index) 
 {
     // keep track of which cuts passed
     cuts_t cuts_passed = 0;
@@ -83,15 +83,25 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 
     if (vertex_index < 0) {
         int vtxidx = firstGoodDAvertex();
-        if (vtxidx >= 0 && cms2.els_trkidx()[index] >= 0) {            
-            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, true).first) < 0.02)
-                cuts_passed |= (1ll<<ELEIP_SS200);  
+        if (vtxidx >= 0) {
+            if (useGsfTrack) {
+                if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, true).first) < 0.02)
+                    cuts_passed |= (1ll<<ELEIP_SS200);
+            }
+            else if (cms2.els_trkidx()[index] >= 0) {            
+                if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, true).first) < 0.02)
+                    cuts_passed |= (1ll<<ELEIP_SS200);  
+            }
         }
         else if (fabs(cms2.els_d0corr()[index]) < 0.02)
             cuts_passed |= (1ll<<ELEIP_SS200);  
     }
     else {
-        if (cms2.els_trkidx()[index] < 0) {
+        if (useGsfTrack) {
+            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vertex_index, true).first) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
+        }
+        else if (cms2.els_trkidx()[index] < 0) {
             if (fabs(cms2.els_d0corr()[index]) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
