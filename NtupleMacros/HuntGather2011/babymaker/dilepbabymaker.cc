@@ -689,7 +689,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (cms2.mus_pfmusidx()[index1] > -1) mu1_isPFmuon_ = 1;
                     int trkidx1 = cms2.mus_trkidx()[index1];
                     int vtxidx = firstGoodDAvertex();
-                    if (trkidx1 >= 0)
+                    if (trkidx1 >= 0 && vtxidx >=0)
                         d0vtx1_ = trks_d0_pv(trkidx1, vtxidx, true).first;
                     trkIso1_ = cms2.mus_iso03_sumPt()[index1];
                     ecalIso1_ = cms2.mus_iso03_emEt()[index1];
@@ -725,7 +725,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_dphiin_      = cms2.els_dPhiIn()[index1];
                     e1_detain_      = cms2.els_dEtaIn()[index1];
                     e1_e25Me55_     = cms2.els_e2x5Max()[index1] / cms2.els_e5x5()[index1];
-                    e1_e15Me55_     = cms2.els_e1x5Max()[index1] / cms2.els_e5x5()[index1];
+//                    e1_e15Me55_     = cms2.els_e1x5Max()[index1] / cms2.els_e5x5()[index1];
                     e1_sigieie_     = cms2.els_sigmaIEtaIEta()[index1];
                     e1_eMe55_       = cms2.els_eMax()[index1] / cms2.els_e5x5()[index1];
                     e1_nmHits_      = cms2.els_exp_innerlayers()[index1];
@@ -736,10 +736,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_scCharge_   = cms2.els_sccharge()[index1];
                     e1_gsfCharge_  = cms2.els_trk_charge()[index1];
                     e1_ctfCharge_  = cms2.els_trkidx()[index1] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index1]] : -999999;
-                    int trkidx1 = cms2.els_trkidx()[index1];
+                    int trkidx1 = cms2.els_gsftrkidx()[index1];
                     int vtxidx = firstGoodDAvertex();
-                    if (trkidx1 >= 0)
-                        d0vtx1_ = trks_d0_pv(trkidx1, vtxidx, true).first;
+                    if (trkidx1 >= 0 && vtxidx >= 0)
+                        d0vtx1_ = gsftrks_d0_pv(trkidx1, vtxidx, true).first;
                     e1_fbrem_ = cms2.els_fbrem()[index1];
                     trkIso1_ = cms2.els_tkIso()[index1];
                     hcalIso1_ = cms2.els_hcalIso()[index1];
@@ -775,7 +775,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     if (cms2.mus_pfmusidx()[index2] > -1) mu2_isPFmuon_ = 1;
                     int trkidx2 = cms2.mus_trkidx()[index2];
                     int vtxidx = firstGoodDAvertex();
-                    if (trkidx2 >= 0)
+                    if (trkidx2 >= 0 && vtxidx >= 0)
                         d0vtx2_ = trks_d0_pv(trkidx2, vtxidx, true).first;
                     trkIso2_ = cms2.mus_iso03_sumPt()[index2];
                     ecalIso2_ = cms2.mus_iso03_emEt()[index2];
@@ -811,7 +811,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_dphiin_      = cms2.els_dPhiIn()[index2];
                     e2_detain_      = cms2.els_dEtaIn()[index2]; 
                     e2_e25Me55_     = cms2.els_e2x5Max()[index2] / cms2.els_e5x5()[index2];
-                    e2_e15Me55_     = cms2.els_e1x5Max()[index2] / cms2.els_e5x5()[index2];
+//                    e2_e15Me55_     = cms2.els_e1x5Max()[index2] / cms2.els_e5x5()[index2];
                     e2_sigieie_     = cms2.els_sigmaIEtaIEta()[index2];
                     e2_eMe55_       = cms2.els_eMax()[index2] / cms2.els_e5x5()[index2];
                     e2_nmHits_      = cms2.els_exp_innerlayers()[index2];
@@ -822,10 +822,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_scCharge_    = cms2.els_sccharge()[index2];
                     e2_gsfCharge_   = cms2.els_trk_charge()[index2]; 
                     e2_ctfCharge_   = cms2.els_trkidx()[index2] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index2]] : -999999;
-                    int trkidx2 = cms2.els_trkidx()[index2];
+                    int trkidx2 = cms2.els_gsftrkidx()[index2];
                     int vtxidx = firstGoodDAvertex();
-                    if (trkidx2 >= 0)
-                        d0vtx2_ = trks_d0_pv(trkidx2, vtxidx, true).first;
+                    if (trkidx2 >= 0 && vtxidx >= 0)
+                        d0vtx2_ = gsftrks_d0_pv(trkidx2, vtxidx, true).first;
                     e2_fbrem_ = cms2.els_fbrem()[index2];
                     trkIso2_ = cms2.els_tkIso()[index2];
                     hcalIso2_ = cms2.els_hcalIso()[index2];
