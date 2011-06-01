@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.19 2011/06/01 22:29:46 slava77 Exp $
+// $Id: jetSelections.cc,v 1.18 2011/05/24 20:40:15 slava77 Exp $
 
 #include <algorithm>
 #include <utility>
@@ -123,14 +123,8 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  //------------------------------------------------------------
 	  // jet ID cuts
 	  //------------------------------------------------------------
-	  if (type == JETS_TYPE_CALO_CORR || type == JETS_TYPE_JPT || type == JETS_TYPE_CALO_UNCORR){
-	    if (not passesCaloJetID(jets->at(i)))
-	      goto conti;
-	  }
-	  if (type == JETS_TYPE_PF_FAST_CORR || type == JETS_TYPE_PF_CORR || type == JETS_TYPE_PF_UNCORR){
-	    if (not passesPFJetID(i)) 
-	      goto conti;
-	  }
+	  if (not passesCaloJetID(jets->at(i)))
+	       goto conti;
 	  //------------------------------------------------------------
 	  // jet passed all cuts
 	  //------------------------------------------------------------

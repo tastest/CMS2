@@ -99,7 +99,8 @@ private:
 
     // Id
     Bool_t closestMuon_;  // true if els_closestMuon().at(index) == -1
-    Bool_t el_id_smurfV5_;
+    Bool_t el_id_smurfV3_;
+    Bool_t el_id_smurfV4_;
     Bool_t el_id_vbtf80_;
     Bool_t el_id_vbtf90_;
 
@@ -154,14 +155,16 @@ private:
     // WW, HWW
 
     // Electrons
-    Bool_t num_el_smurfV5_;
+    Bool_t num_el_smurfV3_;
+    Bool_t num_el_smurfV4_;
     Bool_t v1_el_smurfV1_;
     Bool_t v2_el_smurfV1_;
     Bool_t v3_el_smurfV1_;
     Bool_t v4_el_smurfV1_;
 
     // Muons
-    Bool_t num_mu_smurfV5_;
+    Bool_t num_mu_smurfV3_;
+    Bool_t num_mu_smurfV4_;
     Bool_t fo_mu_smurf_04_;
     Bool_t fo_mu_smurf_10_;
 
@@ -555,7 +558,8 @@ void myBabyMaker::InitBabyNtuple () {
     hcal_nt_iso_      = -999.;
 
     closestMuon_      = false;
-    el_id_smurfV5_    = false;
+    el_id_smurfV3_    = false;
+    el_id_smurfV4_    = false;
     el_id_vbtf80_     = false;
     el_id_vbtf90_     = false;
     convHitPattern_   = false;
@@ -617,14 +621,16 @@ void myBabyMaker::InitBabyNtuple () {
     // WW, HWW
 
     // Electrons
-    num_el_smurfV5_ = false;
+    num_el_smurfV3_ = false;
+    num_el_smurfV4_ = false;
     v1_el_smurfV1_  = false;
     v2_el_smurfV1_  = false;
     v3_el_smurfV1_  = false;
     v4_el_smurfV1_  = false;
 
     // Muons
-    num_mu_smurfV5_ = false;
+    num_mu_smurfV3_ = false;
+    num_mu_smurfV4_ = false;
     fo_mu_smurf_04_ = false;
     fo_mu_smurf_10_ = false;
 
@@ -953,7 +959,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hcal_nt_iso"         , &hcal_nt_iso_         );
     babyTree_->Branch("id"                  , &id_                  );
     babyTree_->Branch("closestMuon"         , &closestMuon_         );
-    babyTree_->Branch("el_id_smurfV5"       , &el_id_smurfV5_       );
+    babyTree_->Branch("el_id_smurfV3"       , &el_id_smurfV3_       );
+    babyTree_->Branch("el_id_smurfV4"       , &el_id_smurfV4_       );
     babyTree_->Branch("el_id_vbtf80"        , &el_id_vbtf80_        );
     babyTree_->Branch("el_id_vbtf90"        , &el_id_vbtf90_        );
     babyTree_->Branch("conv0MissHits"       , &conv0MissHits_       );
@@ -1012,14 +1019,16 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // WW, HWW
 
     // Electrons
-    babyTree_->Branch("num_el_smurfV5", &num_el_smurfV5_ );
+    babyTree_->Branch("num_el_smurfV3", &num_el_smurfV3_ );
+    babyTree_->Branch("num_el_smurfV4", &num_el_smurfV4_ );
     babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
     babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
     babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
     babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
 
     // Muons
-    babyTree_->Branch("num_mu_smurfV5",  &num_mu_smurfV5_ );
+    babyTree_->Branch("num_mu_smurfV3",  &num_mu_smurfV3_ );
+    babyTree_->Branch("num_mu_smurfV4",  &num_mu_smurfV4_ );
     babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_ );
     babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_ );
   
