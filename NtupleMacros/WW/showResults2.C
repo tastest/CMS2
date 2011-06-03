@@ -5,7 +5,6 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "wwtypes.cc"
 #include <assert.h>
 #include <math.h>
 #include "TCut.h"
@@ -13,6 +12,8 @@
 #include "TROOT.h"
 #include <sstream>
 #include <stdarg.h>
+
+#ifndef __CINT__
 
 // modes
 // 0 - text
@@ -132,8 +133,9 @@ double getError(const TH1F* hist, unsigned int type){
 		pow(hist->GetBinError(3),2) + pow(hist->GetBinError(4),2));
   }
 }
+#endif
 
-void showResults2(const char* cut = 0, int imode=0, int iprecision=1, string dir = "smurf", bool showTotalBkg=false)
+void showResults2(const char* cut = "njets==0&&(cuts&4915719)==4915719", int imode=0, int iprecision=1, string dir = "smurf", bool showTotalBkg=false)
 {
   mode = imode;
   precision = iprecision;
