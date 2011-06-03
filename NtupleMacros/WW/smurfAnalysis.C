@@ -38,10 +38,10 @@ enum SelectionType{
   WW2Jets,
   HWWCutBased0Jet,
   HWWCutBased1Jet,
-  HWWCutBased2Jet2,
+  HWWCutBased2Jets,
   HWWMVABased0Jet,
   HWWMVABased1Jet,
-  HWWMVABased2Jet2
+  HWWMVABased2Jets
 };
 
 struct FakeBkg{
@@ -82,12 +82,12 @@ struct SmurfAnalysis{
   };
   SmurfAnalysis(double lumi,
 		const char* dir = "/smurf/dmytro/samples/smurf",
-		const char* el_fakerate_file = "files/ww_el_fr_smurfV4.root",
+		const char* el_fakerate_file = "files/ww_el_fr.root",
 		const char* el_fakerate_name = "el_fr_v4",
-		const char* mu_fakerate_file = "files/ww_mu_fr_smurfV4.root",
+		const char* mu_fakerate_file = "files/ww_mu_fr.root",
 		const char* mu_fakerate_name = "mu_fr_m2");
   bool passedExtraCuts(SmurfTree& tree);
-  void showYields();
+  void showYields(double lumi = -1, bool tex_format=false); // -1 for lumi means internal lumi
   void estimateFakeBackground(bool verbose = true);
   void estimateTopBackground();
   void estimateDYBackground();
@@ -107,6 +107,19 @@ struct SmurfAnalysis{
       return false;
     }
   }
+  bool isGGHiggs(SmurfTree::DataType sample){
+    switch (sample){
+    case SmurfTree::hww115: case SmurfTree::hww120: case SmurfTree::hww130: 
+    case SmurfTree::hww140: case SmurfTree::hww150: case SmurfTree::hww160: case SmurfTree::hww170:
+    case SmurfTree::hww180: case SmurfTree::hww190: case SmurfTree::hww200: case SmurfTree::hww210:
+    case SmurfTree::hww220: case SmurfTree::hww230: case SmurfTree::hww250: case SmurfTree::hww300:
+    case SmurfTree::hww350: case SmurfTree::hww400: case SmurfTree::hww450: case SmurfTree::hww500:
+    case SmurfTree::hww550: case SmurfTree::hww600:
+      return true;
+    default:
+      return false;
+    }
+  }
   bool isRelevantToFakeBkg(SmurfTree::DataType sample){
     return sample==SmurfTree::wjets || sample==SmurfTree::data || sample==SmurfTree::qqww ||
       sample==SmurfTree::ttbar;
@@ -115,7 +128,7 @@ struct SmurfAnalysis{
     return sample==SmurfTree::data || sample==SmurfTree::ttbar || sample==SmurfTree::tw;
   }
   bool isRelevantToBeProcessed(SmurfTree::DataType sample){
-    return sample==SmurfTree::data || isStandardModel(sample);
+    return sample==SmurfTree::data || isStandardModel(sample) || sample==SmurfTree::hww160 || sample==SmurfTree::hww130;
   }
 
   double lumi_;
@@ -392,14 +405,16 @@ void SmurfAnalysis::estimateTopBackground()
   }
 }
 
-void SmurfAnalysis::showYields()
+void SmurfAnalysis::showYields(double lumi, bool tex_format)
 {
   printf("\nEvent yields:\n\b");;    
+  double weight = 1;
+  if (lumi>0) weight = lumi/lumi_;
   for (unsigned int i=0; i<entries_.size(); ++i){
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
     for (unsigned int j=0; j<4; ++j)
-      printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j], pm, sqrt(entries_.at(i).finalSelection.err2[j]));
-    printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield(), pm, entries_.at(i).finalSelection.total_error());
+      printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j]*weight, pm, sqrt(entries_.at(i).finalSelection.err2[j])*weight);
+    printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield()*weight, pm, entries_.at(i).finalSelection.total_error()*weight);
   }
 }
 
@@ -621,7 +636,7 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
   std::string file_name = std::string(dir_)+"/"+SmurfTree::name(sample)+".root";
   // check if file exists
   if (gSystem->GetPathInfo(file_name.c_str(), buf)) return;
-  std::cout << "processing file " << file_name << std::endl;
+  // std::cout << "processing file " << file_name << std::endl;
   Entry entry;
   entry.sample = sample;
   for (unsigned int i=0; i<4; ++i){
@@ -669,7 +684,28 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
     if ( sample == SmurfTree::data && json_ )
       if( !goodrun(tree.run_, tree.lumi_) ) continue;
     double weight = 1.0;
-    if ( sample != SmurfTree::data ) weight = tree.scale1fb_*lumi_;
+    if ( sample != SmurfTree::data ) {
+      weight = tree.scale1fb_*lumi_;
+      if ( isGGHiggs(sample) ){
+	switch (measurement_.type){
+	case WW0Jet:
+	case HWWCutBased0Jet:
+	case HWWMVABased0Jet:
+	  weight = weight*1.13;
+	  break;
+	case WW1Jet:
+	case HWWCutBased1Jet:
+	case HWWMVABased1Jet:
+	  weight = weight*0.86;
+	  break;
+	case WW2Jets:
+	case HWWCutBased2Jets:
+	case HWWMVABased2Jets:
+	  weight = weight*0.73;
+	  break;
+	}
+      }
+    }
 
     // Control samples
     if ( (tree.cuts_ & cut_top1B) == cut_top1B ) {
@@ -734,7 +770,7 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
       }
     }
   }
-  std::cout << "Events passed full selection: " << nEvents << std::endl;
+  // std::cout << "Events passed full selection: " << nEvents << std::endl;
   // fill histograms
   entries_.push_back(entry);
 }
