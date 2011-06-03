@@ -34,7 +34,7 @@
 // WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
 //------------------------------------------------------------------------------
 
-// $Id: vtxreweight.cc,v 1.4 2011/05/20 14:24:22 warren Exp $
+// $Id: vtxreweight.cc,v 1.2 2011/05/11 18:19:17 benhoob Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
@@ -57,7 +57,7 @@
 
 bool loaded_vtxreweight_hist = false;
 
-float vtxweight( bool isData , bool useDAVertices ){
+float vtxweight( bool isData ){
 
   if( isData ) return 1;
 
@@ -71,39 +71,20 @@ float vtxweight( bool isData , bool useDAVertices ){
     exit(2);
   }
 
-  int nvtx = 0;
-  
-  //---------------------
-  // count DA vertices
-  //---------------------
-
-  if( useDAVertices ){
-    //cout << "Counting DA vertices" << endl;
-    for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-      if(isGoodDAVertex(v)) ++nvtx;
-    }
+  int ndavtx = 0;
+    
+  for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
+    if(isGoodDAVertex(v)) ++ndavtx;
   }
 
-  //---------------------
-  // count DA vertices
-  //---------------------
-
-  else{
-    //cout << "Counting standard vertices" << endl;
-    for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
-      if(isGoodVertex(v)) ++nvtx;
-    }
-  }
-
-  if( nvtx == 0 ){
+  if( ndavtx == 0 ){
     cout << "vtxreweight.cc: warning 0 good vertices found, returning 0 weight" << endl;
     return 0;
   }
 
-  if( nvtx > vtxreweight_hist->GetNbinsX() ) nvtx = vtxreweight_hist->GetNbinsX();
+  if( ndavtx > vtxreweight_hist->GetNbinsX() ) ndavtx = vtxreweight_hist->GetNbinsX();
 
-  //cout << "nvtx " << nvtx << " weight " << vtxreweight_hist->GetBinContent(nvtx) << endl;
-  return vtxreweight_hist->GetBinContent(nvtx);
+  return vtxreweight_hist->GetBinContent(ndavtx);
 
 }
 
@@ -130,15 +111,15 @@ void set_vtxreweight_rootfile ( const char* filename , bool verbose ){
     cout << "|" << setw(10) << "nvtx"   << setw(4) 
 	 << "|" << setw(10) << "weight" << setw(4) << "|" << endl;
 
-    for(unsigned int ibin = 1 ; ibin <= (unsigned int)vtxreweight_hist->GetNbinsX() ; ++ibin ){
+    for(unsigned int ibin = 1 ; ibin <= vtxreweight_hist->GetNbinsX() ; ++ibin ){
 
       cout << "|" << setw(10) << ibin                                   << setw(4) 
 	   << "|" << setw(10) << vtxreweight_hist->GetBinContent(ibin) << setw(4) << "|" << endl;
 
     }
-  }
-  loaded_vtxreweight_hist = true;
 
+  loaded_vtxreweight_hist = true;
+  }
 }
 
 #endif // __CUNT__

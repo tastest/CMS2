@@ -52,7 +52,7 @@ namespace hist {
       //If out hist does not exist, remember to create it
       if (! hist) makeOutHist = true;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          TString name = obj->GetName();
@@ -96,7 +96,7 @@ namespace hist {
 
       TObject* obj = 0;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          TString name = obj->GetName();
@@ -130,7 +130,7 @@ namespace hist {
       //Hist color iterator
       Int_t colorIt = 1;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          if (addColor) {
@@ -172,7 +172,7 @@ namespace hist {
       //Hist color iterator
       Int_t colorIt = 1;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          if (addColor) {
@@ -206,7 +206,7 @@ namespace hist {
 
       TObject* obj = 0;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          TString name = obj->GetName();
@@ -240,7 +240,7 @@ namespace hist {
 
       TObject* obj = 0;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          TString name = obj->GetName();
@@ -273,7 +273,7 @@ namespace hist {
       Double_t maxy = -999999;
       Double_t miny = 999999;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          if (! top) top = obj;
@@ -314,7 +314,7 @@ namespace hist {
       //Hist color iterator
       Int_t colorIt = 1;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! obj->InheritsFrom(TH1::Class())) continue;
 
          TString name = obj->GetName();
@@ -351,7 +351,7 @@ namespace hist {
 
       TObject* obj = 0;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! (obj->InheritsFrom(TH1::Class()) || obj->InheritsFrom(THStack::Class()))) continue;
 
          TString name = obj->GetName();
@@ -380,7 +380,7 @@ namespace hist {
 
       TObject* obj = 0;
 
-      while ( (obj = iter->Next()) ) {
+      while (obj = iter->Next()) {
          if (! (obj->InheritsFrom(TH1::Class()) || obj->InheritsFrom(THStack::Class()))) continue;
 
          TString name = obj->GetName();
@@ -445,7 +445,7 @@ TH1F* eff(const char* name1, const char* name2, const char* name="eff"){
   TH1F* h2=0;
   TString str1 = Form("%s",name1);
   TString str2 = Form("%s",name2);
-  while( (obj=iter->Next()) ) {
+  while(obj=iter->Next()) {
     TString objName = obj->GetName();
     if (objName == str1) h1 = (TH1F*) obj;
     if (objName == str2) h2 = (TH1F*) obj;
@@ -540,7 +540,7 @@ void deleteHistos() {
    TObject* obj;
    TList* list = gDirectory->GetList() ;
    TIterator* iter = list->MakeIterator();
-   while ( (obj=iter->Next()) ) {
+   while (obj=iter->Next()) {
      if (obj->IsA()->InheritsFrom(TH1::Class()) ||
          obj->IsA()->InheritsFrom(TH2::Class()) ) {delete obj;}
    }
@@ -588,7 +588,7 @@ void loadHist(const char* filename, const char* pfx=0, const char* pat="*", Bool
    TKey* key ;
    cout << "doAdd = " << (doAdd?"T":"F") << endl ;
    cout << "loadHist: reading." ;
-   while( (key=(TKey*)iter->Next()) ) {
+   while(key=(TKey*)iter->Next()) {
 
       Int_t ridx = TString(key->GetName()).Index(re) ;
       if (ridx==-1) {

@@ -21,6 +21,7 @@ enum TrackQuality { undefQuality=-1, loose=0, tight=1, highPurity=2, confirmed=3
 std::pair<double , double> trks_d0_pv      (int itrk, int ipv, bool useDAvtxs = false);
 std::pair<double , double> trks_dz_pv      (int itrk, int ipv, bool useDAvtxs = false);
 std::pair<double , double> gsftrks_dz_pv   (int itrk, int ipv, bool useDAvtxs = false);
+std::pair<double , double> gsftrks_d0_pv   (int itrk, int ipv, bool useDAvtxs = false);
 
 // these are now obsolete, but keeping them around for backwards compatibility
 std::pair<double , double> trks_d0_dapv    (int itrk, int ipv);

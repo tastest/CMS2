@@ -17,7 +17,7 @@ bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t se
     return false;
 }
 
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index)
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index)
 {
   checkElectronSelections();
   cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
@@ -25,7 +25,7 @@ bool pass_electronSelection(const unsigned int index, const cuts_t selectionType
     return false;
 }
 
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, int vertex_index) 
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index) 
 {
     // keep track of which cuts passed
     cuts_t cuts_passed = 0;
@@ -63,10 +63,11 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
 //     else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
 
     //pf iso
+    float pfiso = electronIsoValuePF(index,0);
     if (fabs(cms2.els_p4()[index].eta()) < 1.479){
-      if (electronIsoValuePF(index,0)<0.15) cuts_passed |= (1ll<<ELEISO_SMURFV4);
-      if (electronIsoValuePF(index,0)<0.13) cuts_passed |= (1ll<<ELEISO_SMURFV5);
-    } else if (electronIsoValuePF(index,0)<0.09) {
+      if (pfiso<0.15) cuts_passed |= (1ll<<ELEISO_SMURFV4);
+      if (pfiso<0.13) cuts_passed |= (1ll<<ELEISO_SMURFV5);
+    } else if (pfiso<0.09) {
       cuts_passed |= (1ll<<ELEISO_SMURFV4);
       cuts_passed |= (1ll<<ELEISO_SMURFV5);
     }
@@ -77,16 +78,31 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
     if (fabs(electron_d0PV_wwV1(index)) < 0.02 && fabs(electron_dzPV_wwV1(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_wwV1);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.02 && fabs(electron_dzPV_smurfV3(index)) < 0.2 ) cuts_passed |= (1ll<<ELEIP_PV_SMURFV3);
-    if (fabs(electron_d0PV_smurfV3(index)) < 0.02 && fabs(electron_dzPV_smurfV3(index)) < 0.1 ) cuts_passed |= (1ll<<ELEIP_PV_SMURFV4);
+    if (fabs(electron_dzPV_smurfV3(index)) < 0.1 ) cuts_passed |= (1ll<<ELEIP_PV_DZ_1MM);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.04 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.20 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2_FO);
 
     if (vertex_index < 0) {
-        if (fabs(cms2.els_d0corr()[index]) < 0.02)
+        int vtxidx = firstGoodDAvertex();
+        if (vtxidx >= 0) {
+            if (useGsfTrack) {
+                if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, true).first) < 0.02)
+                    cuts_passed |= (1ll<<ELEIP_SS200);
+            }
+            else if (cms2.els_trkidx()[index] >= 0) {            
+                if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, true).first) < 0.02)
+                    cuts_passed |= (1ll<<ELEIP_SS200);  
+            }
+        }
+        else if (fabs(cms2.els_d0corr()[index]) < 0.02)
             cuts_passed |= (1ll<<ELEIP_SS200);  
     }
     else {
-        if (cms2.els_trkidx()[index] < 0) {
+        if (useGsfTrack) {
+            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vertex_index, true).first) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
+        }
+        else if (cms2.els_trkidx()[index] < 0) {
             if (fabs(cms2.els_d0corr()[index]) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
@@ -176,6 +192,11 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     //
     if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 10.0 ) cuts_passed |= (1ll<<ELESCET_010);
     if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 15.0 ) cuts_passed |= (1ll<<ELESCET_015);
+
+    //
+    // Veto electron in transition region
+    //
+    if( fabs(cms2.els_etaSC()[index]) < 1.4442 || fabs(cms2.els_etaSC()[index]) > 1.566 )  cuts_passed |= (1ll<<ELE_NOT_TRANSITION);
 
     //
     // chargeflip
