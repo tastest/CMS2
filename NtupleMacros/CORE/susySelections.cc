@@ -200,6 +200,7 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
     if( hypType == 0 ){
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
     }
     
     //em
