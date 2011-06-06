@@ -7,6 +7,8 @@
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
+int leptonOrTauIsFromW(int idx, int id, bool alsoSusy = false);
+
 /*****************************************************************************************/
 //print event info
 /*****************************************************************************************/
