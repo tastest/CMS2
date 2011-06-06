@@ -311,7 +311,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 // muon loop
                 for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
                     // for SS
-                    if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalSSv3) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
+                    if (cms2.mus_p4()[muii].pt() > 5. && muonId(muii, NominalSSv4) && fabs(cms2.mus_p4()[muii].eta()) < 2.4) {
                         goodMuonIndicesSSV2.push_back(muii);
                         ++ngoodlepSS_;
                         ++ngoodmusSS_;
@@ -329,13 +329,11 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     cuts_t cuts_passed = electronSelection(eli);
                     // for SS
                     if (cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ssV4) && fabs(cms2.els_p4()[eli].eta()) < 2.4) {
-                        if (fabs(cms2.els_etaSC()[eli]) < 1.4442 || fabs(cms2.els_etaSC()[eli] > 1.566)) {
-                            goodElectronIndicesSSV2.push_back(eli);
-                            ++ngoodlepSS_;
-                            ++ngoodelsSS_;
-                            if (cms2.els_ecalIso()[eli]/cms2.els_p4()[eli].pt() < 0.2) {
-                                goodElectronIndicesSShighPt.push_back(eli);
-                            }
+                        goodElectronIndicesSSV2.push_back(eli);
+                        ++ngoodlepSS_;
+                        ++ngoodelsSS_;
+                        if (cms2.els_ecalIso()[eli]/cms2.els_p4()[eli].pt() < 0.2) {
+                            goodElectronIndicesSShighPt.push_back(eli);
                         }
                     }
                     // for TTBarV2
@@ -399,8 +397,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
                 // check if leptons are from the same vertex
                 //
-                int vertex_index = hypsFromSameVtx2011(hypi, 1.0, true, false);
-                lepsFromSameVtx_ = vertex_index < 0 ? false : true;
+                int vertex_index = firstGoodDAvertex();
+                lepsFromSameVtx_ = hypsFromFirstGoodDAvertx(hypi);
 
                 //
                 // clean jets for ALL leptons
