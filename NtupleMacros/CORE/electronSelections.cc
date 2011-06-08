@@ -1309,10 +1309,10 @@ bool isFromConversionMIT(const unsigned int index){
   return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
 }
 
-bool passLikelihoodId(unsigned int index, float lhValue, int workingPoint) {
+electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint) {
   unsigned int answer = 0;
   float etaSC = cms2.els_etaSC().at(index);
-  unsigned int nbrem = els_nSeed().at(index);
+  unsigned int nbrem = cms2.els_nSeed().at(index);
   if (workingPoint==95) 
     if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>-4.274 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>-3.773 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>-5.092 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>-2.796)
       answer |= (1<<ELEID_ID);
