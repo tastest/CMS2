@@ -47,7 +47,8 @@ enum SelectionType {
     OSGeneric_v3 = 37,
     OSGeneric_v3_FO = 38,
     NominalSSv4 = 39,
-    muonSelectionFO_ssV4 = 40
+    muonSelectionFO_ssV4 = 40,
+    NominalSmurfV6 = 41
 }; 
 
 //
