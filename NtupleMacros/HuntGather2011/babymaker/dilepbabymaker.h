@@ -105,6 +105,9 @@ private:
     Int_t nssvhembtags_;
     Int_t nssvhetbtags_;
     Int_t nssvhptbtags_;
+    Int_t ntchembtags20_;
+    Int_t ntchembtags30_;
+    Int_t ntchembtags40_;
     Float_t pfmeff_;
     Float_t tcmeff_;
     Float_t intLumiPerLS_;

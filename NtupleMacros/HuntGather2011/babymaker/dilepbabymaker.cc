@@ -406,6 +406,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 VofP4 theJets;
                 std::vector<unsigned int> theJetIndices;
+                std::vector<unsigned int> theBtagJetIndices;
                 sumjetpt_   = 0.;
                 sumjetpt25_ = 0.;
                 sumjetptSS30_ = 0.;
@@ -466,10 +467,14 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         if (!jetIsLepSSV2 && dRbetweenVectors(vjet, vlep) < 0.4)
                             jetIsLepSSV2 = true;
                     }
-                    if (!jetIsLepSSV2 && vjet.Pt() > 30. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
-                        theJets.push_back(cms2.pfjets_p4()[jeti]);
-                        theJetIndices.push_back(jeti);
-                        sumjetptSS30_ += vjet.Pt();
+                    if (!jetIsLepSSV2 && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
+                        if (vjet.Pt() > 20.)
+                            theBtagJetIndices.push_back(jeti);
+                        if (vjet.Pt() > 30.) {
+                            theJets.push_back(cms2.pfjets_p4()[jeti]);
+                            theJetIndices.push_back(jeti);
+                            sumjetptSS30_ += vjet.Pt();
+                        }
                     }
                     if (!jetIsLepSSV2 && vjet.Pt() > 40. && fabs(cms2.pfjets_p4()[jeti].eta()) < 2.5 && isGoodPFJet(jeti)) {
                         sumjetptSS_ += vjet.Pt();
@@ -606,6 +611,26 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     // add jet pt to meff
                     pfmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt() * cms2.pfjets_cor()[theJetIndices[jeti]];
                     tcmeff_ += cms2.pfjets_p4()[theJetIndices[jeti]].pt() * cms2.pfjets_cor()[theJetIndices[jeti]];
+                }
+
+                // initialize btag counts
+                ntchembtags20_ = 0;
+                ntchembtags30_ = 0;
+                ntchembtags40_ = 0;
+
+                for (unsigned int jeti = 0; jeti < theBtagJetIndices.size(); jeti++) {
+                    
+                    // TCHEM
+                    if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] <= 3.3)
+                        continue;
+
+                    float pt = cms2.pfjets_p4()[jeti].pt() * cms2.pfjets_corL1FastL2L3()[jeti];
+                    if (pt > 20.)
+                        ++ntchembtags20_;
+                    if (pt > 30.)
+                        ++ntchembtags30_;
+                    if (pt > 40.)
+                        ++ntchembtags40_;
                 }
 
                 dphipfmetjet_ = mindphipfmet;
@@ -919,6 +944,9 @@ void dilepbabymaker::InitBabyNtuple ()
     nssvhembtags_ = -999999;
     nssvhetbtags_ = -999999;
     nssvhptbtags_ = -999999;
+    ntchembtags20_ = -999999;
+    ntchembtags30_ = -999999;
+    ntchembtags40_ = -999999;
 
     pfmeff_       = -999999.;
     tcmeff_       = -999999.;
@@ -1184,10 +1212,13 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfmetphicor", &pfmetphicor_, "pfmetphicor/F");
 
 
-    babyTree_->Branch("ntchelbtags",    &ntchelbtags_,      "ntchelbtags/I"   );
-    babyTree_->Branch("nssvhembtags",   &nssvhembtags_,     "nssvhembtags/I"   );
-    babyTree_->Branch("nssvhetbtags",   &nssvhetbtags_,     "nssvhetbtags/I" );
-    babyTree_->Branch("nssvhptbtags",   &nssvhptbtags_,     "nssvhptbtags/I" );
+    babyTree_->Branch("ntchelbtags"   ,    &ntchelbtags_   ,      "ntchelbtags/I"   );
+    babyTree_->Branch("nssvhembtags"  ,   &nssvhembtags_   ,     "nssvhembtags/I"   );
+    babyTree_->Branch("nssvhetbtags"  ,   &nssvhetbtags_   ,     "nssvhetbtags/I"   );
+    babyTree_->Branch("nssvhptbtags"  ,   &nssvhptbtags_   ,     "nssvhptbtags/I"   );
+    babyTree_->Branch("ntchembtags20" ,    &ntchembtags20_ ,      "ntchembtags20/I" );
+    babyTree_->Branch("ntchembtags30" ,    &ntchembtags30_ ,      "ntchembtags30/I" );
+    babyTree_->Branch("ntchembtags40" ,    &ntchembtags40_ ,      "ntchembtags40/I" );
 
     babyTree_->Branch("pfmeff",       &pfmeff_,      "pfmeff/F"      );
     babyTree_->Branch("tcmeff",       &tcmeff_,      "tcmeff/F"      );
