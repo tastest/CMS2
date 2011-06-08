@@ -1308,3 +1308,28 @@ double electron_d0PV_mindz(unsigned int index){
 bool isFromConversionMIT(const unsigned int index){
   return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
 }
+
+bool passLikelihoodId(unsigned int index, float lhValue, int workingPoint) {
+  unsigned int answer = 0;
+  float etaSC = cms2.els_etaSC().at(index);
+  unsigned int nbrem = els_nSeed().at(index);
+  if (workingPoint==95) 
+    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>-4.274 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>-3.773 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>-5.092 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>-2.796)
+      answer |= (1<<ELEID_ID);
+  else if (workingPoint==90)
+    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>-1.497 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>-1.521 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>-2.571 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>-0.657)
+      answer |= (1<<ELEID_ID);
+  else if (workingPoint==85)
+    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>+0.163 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>+0.065 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>-0.683 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>+1.564)
+      answer |= (1<<ELEID_ID);
+  else if (workingPoint==80)
+    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>+1.193 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>+1.345 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>+0.810 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>+3.021)
+      answer |= (1<<ELEID_ID);
+  else if (workingPoint==70)
+    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>+1.781 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>+2.397 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>+2.361 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>+4.052)
+      answer |= (1<<ELEID_ID);
+  else {
+    cout << "Error! Likelihood WP not supported: " << workingPoint << ". Please choose 70, 80, 85, 90, 95" << endl;
+  }
+  return answer;
+}

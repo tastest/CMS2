@@ -1177,6 +1177,9 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
 unsigned int eidClassify(const unsigned int version, const unsigned int index);
 bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn=false);
 
+//electron ID WP as of June 8th 2011
+electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint);
+
 // relative isolation 
 // - standard track isolation from CMSSW
 // --- CMSSW >= 3_5_X track jurassic strip half width 0.015
