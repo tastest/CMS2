@@ -620,17 +620,37 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 for (unsigned int jeti = 0; jeti < theBtagJetIndices.size(); jeti++) {
                     
-                    // TCHEM
-                    if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] <= 3.3)
-                        continue;
-
                     float pt = cms2.pfjets_p4()[jeti].pt() * cms2.pfjets_corL1FastL2L3()[jeti];
-                    if (pt > 20.)
-                        ++ntchembtags20_;
-                    if (pt > 30.)
-                        ++ntchembtags30_;
-                    if (pt > 40.)
-                        ++ntchembtags40_;
+
+                    // TCHEM
+                    if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 3.3) {
+                        if (pt > 20.)
+                            ++ntchembtags20_;
+                        if (pt > 30.)
+                            ++ntchembtags30_;
+                        if (pt > 40.)
+                            ++ntchembtags40_;
+                    }
+                    
+                    // TCHEL
+                    if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 1.7) {
+                        if (pt > 20.)
+                            ++ntchelbtags20_;
+                        if (pt > 30.)
+                            ++ntchelbtags30_;
+                        if (pt > 40.)
+                            ++ntchelbtags40_;
+                    }
+
+                    // SSVHEM
+                    if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74) {
+                        if (pt > 20.)
+                            ++nssvhembtags20_;
+                        if (pt > 30.)
+                            ++nssvhembtags30_;
+                        if (pt > 40.)
+                            ++nssvhembtags40_;
+                    }
                 }
 
                 dphipfmetjet_ = mindphipfmet;
@@ -944,9 +964,15 @@ void dilepbabymaker::InitBabyNtuple ()
     nssvhembtags_ = -999999;
     nssvhetbtags_ = -999999;
     nssvhptbtags_ = -999999;
+    ntchelbtags20_ = -999999;
+    ntchelbtags30_ = -999999;
+    ntchelbtags40_ = -999999;
     ntchembtags20_ = -999999;
     ntchembtags30_ = -999999;
     ntchembtags40_ = -999999;
+    nssvhembtags20_ = -999999;
+    nssvhembtags30_ = -999999;
+    nssvhembtags40_ = -999999;
 
     pfmeff_       = -999999.;
     tcmeff_       = -999999.;
@@ -1216,9 +1242,15 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("nssvhembtags"  ,   &nssvhembtags_   ,     "nssvhembtags/I"   );
     babyTree_->Branch("nssvhetbtags"  ,   &nssvhetbtags_   ,     "nssvhetbtags/I"   );
     babyTree_->Branch("nssvhptbtags"  ,   &nssvhptbtags_   ,     "nssvhptbtags/I"   );
+    babyTree_->Branch("ntchelbtags20" ,    &ntchelbtags20_ ,      "ntchelbtags20/I" );
+    babyTree_->Branch("ntchelbtags30" ,    &ntchelbtags30_ ,      "ntchelbtags30/I" );
+    babyTree_->Branch("ntchelbtags40" ,    &ntchelbtags40_ ,      "ntchelbtags40/I" );
     babyTree_->Branch("ntchembtags20" ,    &ntchembtags20_ ,      "ntchembtags20/I" );
     babyTree_->Branch("ntchembtags30" ,    &ntchembtags30_ ,      "ntchembtags30/I" );
     babyTree_->Branch("ntchembtags40" ,    &ntchembtags40_ ,      "ntchembtags40/I" );
+    babyTree_->Branch("nssvhembtags20"  ,   &nssvhembtags20_   ,     "nssvhembtags20/I"   );
+    babyTree_->Branch("nssvhembtags30"  ,   &nssvhembtags30_   ,     "nssvhembtags30/I"   );
+    babyTree_->Branch("nssvhembtags40"  ,   &nssvhembtags40_   ,     "nssvhembtags40/I"   );
 
     babyTree_->Branch("pfmeff",       &pfmeff_,      "pfmeff/F"      );
     babyTree_->Branch("tcmeff",       &tcmeff_,      "tcmeff/F"      );
