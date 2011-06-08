@@ -321,7 +321,8 @@ bool ww_mudZPV(unsigned int index){
   double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
   return fabs(dzpv)<0.1;
 }
-bool ww_muId(unsigned int index){
+bool ww_muId(unsigned int index){ 
+  //GC FIXME this will not work for SmurfV6!!!!
   if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
   if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
   if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
@@ -2280,7 +2281,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
-  const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 5.0, false, false);
+  const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 5.0, true, false); //GC apply sorting
   if (jets.size()>0){
     tree.jet1_ = jets.at(0).first;
     tree.jet1Btag_ = BTag(jetType(),jets.at(0).second);
@@ -2322,6 +2323,19 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     tree.genmetPhi_ = cms2.gen_metPhi();
     tree.lep1McId_ = ltIsFirst ? cms2.hyp_lt_mc_id().at(i_hyp) : cms2.hyp_ll_mc_id().at(i_hyp);
     tree.lep2McId_ = ltIsFirst ? cms2.hyp_ll_mc_id().at(i_hyp) : cms2.hyp_lt_mc_id().at(i_hyp);
+    tree.lep1MotherMcId_  = ltIsFirst ? cms2.hyp_lt_mc_motherid().at(i_hyp) : cms2.hyp_ll_mc_motherid().at(i_hyp);// GC
+    tree.lep2MotherMcId_  = ltIsFirst ? cms2.hyp_ll_mc_motherid().at(i_hyp) : cms2.hyp_lt_mc_motherid().at(i_hyp);// GC
+    if (jetType()==pfJet) { //GC fixme in case they are not pfjets 
+      if (jets.size()>0){
+	tree.jet1McId_ = cms2.pfjets_mc_id().at(jets.at(0).second);
+      }
+      if (jets.size()>1){
+	tree.jet2McId_ = cms2.pfjets_mc_id().at(jets.at(1).second);
+      }
+      if (jets.size()>2){
+	tree.jet3McId_ = cms2.pfjets_mc_id().at(jets.at(2).second);
+      }
+    }
   }
 
   tree.dstype_ = sample;
@@ -2391,12 +2405,20 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
 	tree.lep3_ = cms2.mus_p4().at(lep->second);
 	tree.lq3_   = cms2.mus_charge().at(lep->second);
 	tree.lid3_ = tree.lq3_>0?-13:13;
+	if (sample!=SmurfTree::data){// GC
+	  tree.lep3McId_ = cms2.mus_mc_id().at(lep->second);
+	  tree.lep3MotherMcId_  = cms2.mus_mc_motherid().at(lep->second);
+	}
       }
     } else {
       if ( tree.lep3_.pt() < cms2.els_p4().at(lep->second).pt() ){
 	tree.lep3_ = cms2.els_p4().at(lep->second);
 	tree.lq3_   = cms2.els_charge().at(lep->second);
 	tree.lid3_ = tree.lq3_>0?-11:11;
+	if (sample!=SmurfTree::data){// GC
+	  tree.lep3McId_ = cms2.els_mc_id().at(lep->second);
+	  tree.lep3MotherMcId_  = cms2.els_mc_motherid().at(lep->second);
+	}
       }
     }
   }
@@ -2413,9 +2435,9 @@ int bestHypothesis(const std::vector<unsigned int>& candidates){
       best = i_hyp;
       continue;
     }
-    if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(), cms2.hyp_ll_p4().at(i_hyp).pt()) > 
+    if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(), cms2.hyp_ll_p4().at(i_hyp).pt()) >= //GC add = in case the lepton is the same 
 	 std::max(cms2.hyp_lt_p4().at(best).pt(),  cms2.hyp_ll_p4().at(best).pt()) &&
-	 std::min(cms2.hyp_lt_p4().at(i_hyp).pt(), cms2.hyp_ll_p4().at(i_hyp).pt()) > 
+	 std::min(cms2.hyp_lt_p4().at(i_hyp).pt(), cms2.hyp_ll_p4().at(i_hyp).pt()) >= 
 	 std::min(cms2.hyp_lt_p4().at(best).pt(),  cms2.hyp_ll_p4().at(best).pt()) )
       best = i_hyp;
   }
