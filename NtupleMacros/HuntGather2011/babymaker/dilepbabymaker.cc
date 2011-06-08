@@ -620,10 +620,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 
                 for (unsigned int jeti = 0; jeti < theBtagJetIndices.size(); jeti++) {
                     
-                    float pt = cms2.pfjets_p4()[jeti].pt() * cms2.pfjets_corL1FastL2L3()[jeti];
+                    float pt = cms2.pfjets_p4()[theBtagJetIndices[jeti]].pt() * cms2.pfjets_corL1FastL2L3()[theBtagJetIndices[jeti]];
 
                     // TCHEM
-                    if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 3.3) {
+                    if (cms2.pfjets_trackCountingHighEffBJetTag()[theBtagJetIndices[jeti]] > 3.3) {
                         if (pt > 20.)
                             ++ntchembtags20_;
                         if (pt > 30.)
@@ -633,7 +633,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     }
                     
                     // TCHEL
-                    if (cms2.pfjets_trackCountingHighEffBJetTag()[jeti] > 1.7) {
+                    if (cms2.pfjets_trackCountingHighEffBJetTag()[theBtagJetIndices[jeti]] > 1.7) {
                         if (pt > 20.)
                             ++ntchelbtags20_;
                         if (pt > 30.)
@@ -643,7 +643,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     }
 
                     // SSVHEM
-                    if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theJetIndices[jeti]] > 1.74) {
+                    if (cms2.pfjets_simpleSecondaryVertexHighEffBJetTag()[theBtagJetIndices[jeti]] > 1.74) {
                         if (pt > 20.)
                             ++nssvhembtags20_;
                         if (pt > 30.)
