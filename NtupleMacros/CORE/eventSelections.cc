@@ -377,6 +377,9 @@ bool hypsFromFirstGoodDAvertx(size_t hypIdx, float dz_cut) {
 
     int vtxidx = firstGoodDAvertex ();
 
+    if (vtxidx < 0)
+        return false;
+
     float lt_dz = -999.;
     float ll_dz = -999.;
     
