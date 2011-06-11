@@ -125,10 +125,20 @@ struct SmurfAnalysis{
       sample==SmurfTree::ttbar;
   }
   bool isRelevantToTopBkg(SmurfTree::DataType sample){
-    return sample==SmurfTree::data || sample==SmurfTree::ttbar || sample==SmurfTree::tw;
+    return sample==SmurfTree::data || sample==SmurfTree::ttbar || sample==SmurfTree::tw || sample==SmurfTree::qqww;
   }
   bool isRelevantToBeProcessed(SmurfTree::DataType sample){
-    return sample==SmurfTree::data || isStandardModel(sample) || sample==SmurfTree::hww160 || sample==SmurfTree::hww130;
+    switch (sample){
+    case SmurfTree::qqww: case SmurfTree::ggww: case SmurfTree::ttbar: 
+    case SmurfTree::tw: // case SmurfTree::dyee: case SmurfTree::dymm: case SmurfTree::dytt:
+    case SmurfTree::wjets: //case SmurfTree::wz: case SmurfTree::zz: case SmurfTree::wgamma: case SmurfTree::qcd:
+    case SmurfTree::hww130: case SmurfTree::hww160: case SmurfTree::data:
+      return true;
+    default:
+      return false;
+    }
+    // return sample==SmurfTree::data;
+    // return sample==SmurfTree::data || isStandardModel(sample) || isGGHiggs(sample);
   }
 
   double lumi_;
@@ -177,10 +187,11 @@ private:
 
 };
 
-bool HWWCuts_SmurfV3(SmurfTree& tree, SmurfTree::DataType sig_type){
+bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type){
   if (tree.njets_!=0) return false;
   switch (sig_type){
   case SmurfTree::hww120: 
+  case SmurfTree::hww115: 
     return tree.lep1_.pt()>20 && tree.lep2_.pt()>10 &&
       tree.dilep_.mass()<40 && fabs(tree.dPhi_)<2.0 && 
       tree.mt_>70 && tree.mt_<120;
@@ -233,11 +244,12 @@ bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree){
   case WW0Jet:
     return tree.njets_==0;
   case WW1Jet:
-    return tree.njets_==1;
+    return tree.njets_==1 && 
+      (tree.type_==1 || tree.type_==2 || fabs(tree.dPhiDiLepJet1_)<M_PI*165/180);
   case WW2Jets:
     return tree.njets_==2;
   case HWWCutBased0Jet:
-    return tree.njets_==0 && HWWCuts_SmurfV3(tree,measurement_.sig_type);
+    return tree.njets_==0 && HWWCuts_SmurfV5(tree,measurement_.sig_type);
   default:
     return false;
   }
@@ -257,7 +269,7 @@ SmurfAnalysis::SmurfAnalysis(double lumi, const char* dir,
 			     const char* mu_fakerate_file,
 			     const char* mu_fakerate_name):
   lumi_(lumi),processOnlyImportantSamples(true),dir_(dir),json_(0),
-  rInOutEl_(0.11), rInOutMu_(0.15), kElMu_(0.823352)
+  rInOutEl_(0.13), rInOutMu_(0.16), kElMu_(0.823352)
 {
   measurement_.type = WW0Jet;
   measurement_.sig_type = SmurfTree::qqww;
@@ -348,7 +360,7 @@ void SmurfAnalysis::estimateDYBackground()
 void SmurfAnalysis::estimateTopBackground()
 {
   const bool binomialError = false;
-  printf("\nTop background estimation inputs :\n\b");;    
+  printf("\nTop background estimation inputs (nTopTaggedEvents/nTop1BJetEvents/nTop1BJetTopTaggedEvents):\n\b");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
   if (entries_.empty()){
     printf("No samples are processed.\n");
@@ -397,7 +409,7 @@ void SmurfAnalysis::estimateTopBackground()
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
 
   for (unsigned int i=0; i<entries_.size(); ++i){
-    if (entries_.at(i).sample!=SmurfTree::ttbar && entries_.at(i).sample!=SmurfTree::tw) continue;
+    if (entries_.at(i).sample!=SmurfTree::ttbar && entries_.at(i).sample!=SmurfTree::tw && entries_.at(i).sample!=SmurfTree::qqww) continue;
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
     for (unsigned int j=0; j<4; ++j)
       printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j], pm, sqrt(entries_.at(i).finalSelection.err2[j]));
@@ -765,8 +777,11 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
     if ( (tree.cuts_ & cut_topTagged) == cut_topTagged ) entry.nTopTaggedEvents.add(tree.type_,weight);
     if ( (tree.cuts_ & cut_final_nomass) == cut_final_nomass ){
       if (std::min(tree.pmet_,tree.pTrackMet_)>35){ // use the same MET cut in all final states
-	if ( fabs(tree.dilep_.mass() - 91.1876) < 15 )
+	if ( fabs(tree.dilep_.mass() - 91.1876) < 15 ){
 	  entry.nZpeak.add(tree.type_,weight);
+	  // std::cout << "Found event in Z window (run/lumi/event): " 
+	  // << tree.run_ << " / " << tree.lumi_ << " / " << tree.event_ << std::endl; 
+	}
       }
     }
   }

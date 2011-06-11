@@ -39,6 +39,7 @@ void hypo_monitor::count(CMS2& cms2, HypothesisType type, const char* name, doub
   entry->nhyp[type]++;
   entry->nhyp[ALL]++;
   if (id != entry->lastEvent){
+    if (keepEventList) entry->events.push_back(id);
     for (unsigned int i=0; i<4; ++i) entry->seen[i] = false;
     entry->nevt[type]++;
     entry->nevt[ALL]++;
@@ -58,11 +59,20 @@ void hypo_monitor::count(CMS2& cms2, HypothesisType type, const char* name, doub
 void hypo_monitor::print() const
 {
   std::cout << "Total number of processed events: \t" << nEvtProcessed << std::endl;
-  for ( unsigned int i=0; i<counters.size(); ++i ) 
+  for ( unsigned int i=0; i<counters.size(); ++i ){
     std::cout << Form("%-40s \thyps: %u/%u/%u/%u \tnevts: %u/%u/%u/%u", counters[i].name.c_str(),
 		      counters[i].nhyp[MM],counters[i].nhyp[EE],counters[i].nhyp[EM],counters[i].nhyp[ALL],
 		      counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ALL]) 
 	      << std::endl;
+    std::ofstream cut_file(Form("cut-%d.txt",i));
+    cut_file << Form("%-40s \tnevts: %u/%u/%u/%u", counters[i].name.c_str(),
+		     counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ALL]) << "\n";
+    for ( std::vector<MonitorEventId>::const_iterator id=counters[i].events.begin();
+	  id!=counters[i].events.end(); ++id ){
+      cut_file << id->run << "\t" << id->lumi << "\t" << id->event <<"\n";
+    }
+    cut_file.close();
+  }
 }
 
 void hypo_monitor::makeHistograms(const char* prefix) const

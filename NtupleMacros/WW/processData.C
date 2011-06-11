@@ -39,7 +39,7 @@ void processData()
   // (0 and 1 are easier to modify)
   //
   bool runWW    = 0;
-  bool runHWW   = 0;
+  bool runHWW   = 1;
   bool runGGWW  = 0;
   bool runWZ    = 0;
   bool runZZ    = 0;
@@ -50,7 +50,7 @@ void processData()
   bool runttbar = 0;
   bool runtW    = 0;
   bool runQCD   = 0; 
-  bool runData  = 1;
+  bool runData  = 0;
 
   // 
   // Ntuple version
@@ -95,48 +95,51 @@ void processData()
 
   if (runHWW){
     std::vector<string> samples;
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww120, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww130, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-140_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-140_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww140, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-150_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-150_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww150, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww120, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww130, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-140_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-140_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww140, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-150_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-150_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww150, integratedLumi, -1, -1, kBlue); samples.clear();
+
+    // samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+    samples.push_back("/smurf/cerati/test_bHWW41X/GluGluToHToWWTo2L2Nu_M-160/merged_ntuple*.root");
+    //    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
     ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-170_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-170_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww170, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-180_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-180_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww180, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-190_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-190_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww190, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww200, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-210_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-210_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww210, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-220_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-220_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww220, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-230_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-230_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww230, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-250_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww250, integratedLumi, -1, -1, kBlue); samples.clear();
-    samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-300_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    ProcessSample(samples, SmurfTree::hww300, integratedLumi, -1, -1, kBlue); samples.clear();
+
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-170_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-170_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww170, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-180_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-180_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww180, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-190_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-190_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww190, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-200_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww200, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-210_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-210_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww210, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-220_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-220_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww220, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-230_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-230_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww230, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-250_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-250_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww250, integratedLumi, -1, -1, kBlue); samples.clear();
+//     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-300_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-300_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
+//     ProcessSample(samples, SmurfTree::hww300, integratedLumi, -1, -1, kBlue); samples.clear();
 
 //     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww120, integratedLumi, -1, -1, kBlue);
 //     ProcessSample(dataset+"/VBF_HToWWTo2L2Nu_M-130_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root", SmurfTree::vbfhww130, integratedLumi, -1, -1, kBlue);
@@ -193,12 +196,20 @@ void processData()
     ProcessSample(qcdSamples, SmurfTree::qcd, integratedLumi, -1, -1, 40, false, true);
   
   // RealData
-  TString cms2_json_file = "";// "files/merged_JsonReRecoSep17_JsonStreamExpressV2_35.49.txt";
+  TString cms2_json_file = "files/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt";
 
   std::vector<string> dataSamples;
-  dataSamples.push_back("/nfs-4/userdata/cms2/DoubleElectron_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleElectronTriggerSkim_merged/*.root");
-  dataSamples.push_back("/nfs-4/userdata/cms2/DoubleMu_Run2011A-PromptReco-v1_AOD/V04-00-13/DoubleMuTriggerSkim_merged/*.root");
-  dataSamples.push_back("/nfs-4/userdata/cms2/MuEG_Run2011A-PromptReco-v1_AOD/V04-00-13/*.root");
+  // dataSamples.push_back(dataset+"/ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/merged*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/SingleElectronRun2011A-PromptReco-v1AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/SingleElectronRun2011A-PromptReco-v2AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/SingleMuRun2011A-PromptReco-v1AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/SingleMuRun2011A-PromptReco-v2AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/MuEGRun2011A-PromptReco-v1AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/MuEGRun2011A-PromptReco-v2AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/DoubleMuRun2011A-PromptReco-v1AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/DoubleMuRun2011A-PromptReco-v2AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/DoubleElectronRun2011A-PromptReco-v1AOD*root");
+  dataSamples.push_back("/tas/dmytro/data/dilep-cms2-Run2011A/data/DoubleElectronRun2011A-PromptReco-v2AOD*root");
   
   if (runData)
     ProcessSample(dataSamples, SmurfTree::data, 3.1, -1, -1, kBlack, false, false, zStudy, true, cms2_json_file);

@@ -24,6 +24,7 @@ const char* config_info = "SmurfV5 selection (Baseline;Tight+Loose;FullMET); Spr
 #include "TPRegexp.h"
 #include "monitor.h"
 #include "../Tools/goodrun.cc"
+#include "TTreeCache.h"
 using namespace std;
 
 #ifndef __CINT__
@@ -79,11 +80,11 @@ wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
 
-// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_ZControlSampleTight;
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_ZControlSampleTight;
 
 bool applyJEC = false;
 bool applyFastJetCorrection = true;
-bool lockToCoreSelectors = true;
+bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
@@ -322,16 +323,20 @@ bool ww_mudZPV(unsigned int index){
   return fabs(dzpv)<0.1;
 }
 bool ww_muId(unsigned int index){ 
-  //GC FIXME this will not work for SmurfV6!!!!
-  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
   if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
   if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-  if (cms2.mus_gfit_validSTAHits().at(index)==0 ) return false;
   if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
   if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
-  if (cms2.mus_nmatches().at(index)<2) return false;
-  return true;
+  // global muon
+  bool goodMuonGlobalMuon = false;
+  if (((cms2.mus_type().at(index)) & (1<<1)) == (1<<1)){
+    goodMuonGlobalMuon = true;
+    if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) goodMuonGlobalMuon = false; //glb fit chisq
+    if (cms2.mus_gfit_validSTAHits().at(index)==0 ) goodMuonGlobalMuon = false;
+    if (cms2.mus_nmatches().at(index)<2) goodMuonGlobalMuon = false;
+  }
+  return goodMuonGlobalMuon || 
+    cms2.mus_pid_TMLastStationTight().at(index) == 1; // TM id
 }
 
 double ww_muIsoVal(unsigned int index){
@@ -974,7 +979,7 @@ TH2F* hextramuonsvsnjet[4];
 TH2F* hbtagvsnjet[4];
 TH2F* htoptagvsnjet[4];
 
-hypo_monitor monitor;
+hypo_monitor monitor(true);
 
 /*
 void checkIsolation(int i_hyp, double weight){
@@ -1465,28 +1470,7 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
   HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
   if (nGoodVertex()<1) return false;
   
-  monitor.count(cms2,type,"primary verex",weight);
-  
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  
-  monitor.count(cms2,type,"d0",weight);
-  
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  
-  monitor.count(cms2,type,"dZ",weight);
-
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
-
-  monitor.count(cms2,type,"iso",weight);
+  monitor.count(cms2,type,"basic selection",weight);
   
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
@@ -1497,12 +1481,12 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
   
   monitor.count(cms2,type,"lepton id",weight);
 
-//   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-//       (fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
-//        fabs(cms2.els_conv_dcot().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 )) return false;
-//   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-//       (fabs(cms2.els_conv_dist().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 &&
-//        fabs(cms2.els_conv_dcot().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 )) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
+
+  monitor.count(cms2,type,"iso",weight);
   
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
       cms2.els_exp_innerlayers().at(cms2.hyp_lt_index()[i_hyp]) != 0) return false;
@@ -1519,6 +1503,27 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
     return false;
   
   monitor.count(cms2,type,"conv rejection",weight);
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  
+  monitor.count(cms2,type,"d0",weight);
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  
+  monitor.count(cms2,type,"dZ",weight);
+
+//   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
+//       (fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
+//        fabs(cms2.els_conv_dcot().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 )) return false;
+//   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
+//       (fabs(cms2.els_conv_dist().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 &&
+//        fabs(cms2.els_conv_dcot().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 )) return false;
   
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) return false;
@@ -1557,7 +1562,7 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
 bool hypo (int i_hyp, double weight, bool zStudy, bool realData) 
 {
   cuts_passed = 0;
-  //  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
   if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
 
   /*
@@ -1580,7 +1585,8 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   // monitor.count(cms2, type, "after vertex cut");
   
   if (cms2.hyp_p4().at(i_hyp).mass2()<0) return false;
-  if (nGoodVertex()<1) return false;
+  // if (nGoodVertex()<1) return false;
+  if (!isGoodVertex(primaryVertex())) return false;
 
   if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "trigger requirements",weight);
@@ -1683,8 +1689,8 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if ( countmus == 0)        cuts_passed |=   PASSED_SOFTMUVETO;
   if ( nExtraVetoMuons == 0) cuts_passed |=   PASSED_SOFTMUVETO_NotInJets;
   if ( numberOfExtraLeptons(i_hyp,10) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
-  if ( ! toptag(CaloJet,i_hyp,0,vetojets) ) cuts_passed |= PASSED_TOPVETO_NotInJets;
-  if ( ! toptag(CaloJet,i_hyp,0) )          cuts_passed |= PASSED_TOPVETO;
+  if ( ! toptag(jetType(),i_hyp,7,vetojets) ) cuts_passed |= PASSED_TOPVETO_NotInJets;
+  if ( ! toptag(jetType(),i_hyp,7) )          cuts_passed |= PASSED_TOPVETO;
 
   // -------------------------------------------------------------------//
   // Finished checking the cuts, fill histograms before the final sel   //
@@ -2427,10 +2433,10 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     tree.dRLep3Jet1_   = ROOT::Math::VectorUtil::DeltaR(tree.lep3_,jets.at(0).first);
   }
 }
-int bestHypothesis(const std::vector<unsigned int>& candidates){
+int bestHypothesis(const std::vector<std::pair<unsigned int, unsigned int> >& candidates){
   int best = -1;
   for( unsigned int i = 0; i < candidates.size(); ++i ) {
-    unsigned int i_hyp = candidates.at(i);
+    unsigned int i_hyp = candidates.at(i).first;
     if (best<0){
       best = i_hyp;
       continue;
@@ -2578,7 +2584,9 @@ void ScanChain( TChain* chain,
     assert(f);
     TTree *tree = (TTree*)f->Get("Events");
     assert(tree);
-    
+    TTreeCache::SetLearnEntries(10);
+    tree->SetCacheSize(128*1024*1024);
+
     cms2.Init(tree);  // set branch addresses for TTree tree
     
     TStopwatch t;
@@ -2636,37 +2644,38 @@ void ScanChain( TChain* chain,
 	     continue;
 	   }
 	 }
-	 cuts_passed = 0;
 	 // loop over hypothesis candidates
 	 unsigned int nHyps = cms2.hyp_type().size();
 	 // find the best candidate with m(ll) closest to the Z mass
 	 unsigned int i_hyp_bestZ = bestZHyp();
-	 std::vector<unsigned int> candidates;
+	 std::vector<std::pair<unsigned int,unsigned int> > candidates;
 	 for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+	   cuts_passed = 0;
 	   if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) continue;
 	   if(zStudy && (i_hyp != i_hyp_bestZ)) continue;
-	   if ( hypo(i_hyp, weight, zStudy, realData) ) candidates.push_back(i_hyp);
+	   if ( hypo(i_hyp, weight, zStudy, realData) ) 
+	     candidates.push_back(std::pair<unsigned int,unsigned int>(i_hyp,cuts_passed));
 	 }
 	 if ( !candidates.empty() ){
 	   int best = bestHypothesis(candidates);
 	   for ( unsigned int i=0; i<candidates.size(); ++i){
-	     unsigned int i_hyp = candidates.at(i);
+	     unsigned int i_hyp = candidates.at(i).first;
 	     if (!selectBestCandidate|| int(i_hyp)==best){
-	       FillSmurfNtuple(smurfTree,i_hyp,weight,sample,cuts_passed);
+	       FillSmurfNtuple(smurfTree,i_hyp,weight,sample,candidates.at(i).second);
 	       smurfTree.tree_->Fill();
 	     }
 	   }
 	 }
-       }
-       t.Stop();
-       printf("Finished processing file: %s\n",currentFile->GetTitle());
-       printf("Real time: %u events / %f s = %e event/s\n", nEvents, 
-	      t.RealTime(), nEvents / t.RealTime());
-       printf("CPU time: %u events / %f s = %e event/s\n", nEvents, 
-	      t.CpuTime(), nEvents / t.CpuTime());
-       printf("Total duplicate count: %d.  Total weight %f\n",   
-	      duplicates_total_n, duplicates_total_weight);
-       delete f;
+    }
+    t.Stop();
+    printf("Finished processing file: %s\n",currentFile->GetTitle());
+    printf("Real time: %u events / %f s = %e event/s\n", nEvents, 
+	   t.RealTime(), nEvents / t.RealTime());
+    printf("CPU time: %u events / %f s = %e event/s\n", nEvents, 
+	   t.CpuTime(), nEvents / t.CpuTime());
+    printf("Total duplicate count: %d.  Total weight %f\n",   
+	   duplicates_total_n, duplicates_total_weight);
+    delete f;
   }
   monitor.print();
   monitor.makeHistograms(prefix.c_str());
@@ -2970,6 +2979,47 @@ bool passedSkimSelection_debug()
   return false;
 }
 
+bool passedSkimSelection_TightLoose()
+{
+  unsigned int nHyps = cms2.hyp_type().size();
+  for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
+    HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+    const double min1 = 20;
+    const double min2 = 10;
+    if ( !( cms2.hyp_lt_p4().at(i_hyp).pt() > min1 && cms2.hyp_ll_p4().at(i_hyp).pt() > min2 ) &&
+	 !( cms2.hyp_lt_p4().at(i_hyp).pt() > min2 && cms2.hyp_ll_p4().at(i_hyp).pt() > min1 ) ) continue;
+
+    // id & iso
+    bool tightLT(false);
+    bool tightLL(false);
+    bool looseLT(false);
+    bool looseLL(false);
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_lt_index()[i_hyp]) ) tightLT=true;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && goodMuonIsolated(cms2.hyp_ll_index()[i_hyp]) ) tightLL=true;
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_lt_index()[i_hyp]) ) tightLT=true;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && goodElectronIsolated(cms2.hyp_ll_index()[i_hyp]) ) tightLL=true;
+
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && fakableMuon(cms2.hyp_lt_index()[i_hyp], MuFOV2) ) looseLT=true;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && fakableMuon(cms2.hyp_ll_index()[i_hyp], MuFOV2) ) looseLL=true;
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && fakableElectron(cms2.hyp_lt_index()[i_hyp], EleFOV4) ) looseLT=true;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && fakableElectron(cms2.hyp_ll_index()[i_hyp], EleFOV4) ) looseLL=true;
+    
+    if ( !tightLT && !tightLL ) return false;
+    if ( !tightLT && !looseLL ) return false;
+    if ( !looseLT && !tightLL ) return false;
+
+    if ( type == EE || type == MM) {
+      if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
+    }
+    
+    if (!passedMetRequirements(i_hyp)) return false;
+    if ( numberOfJets(i_hyp)!=0 ) return false;
+
+    return true;
+  }
+  return false;
+}
+
 bool passedSkimSelection_emu()
 {
   unsigned int nHyps = cms2.hyp_type().size();
@@ -2992,6 +3042,7 @@ bool passedSkimSelection_emu()
   }
   return false;
 }
+
 
 void SkimChain(TChain* chain,bool mergeFiles){
   TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -3059,7 +3110,7 @@ void SkimChain(TChain* chain,bool mergeFiles){
       //set condition to skip event
       // if ( not passedSkimSelection() ) continue;
       // if ( not passedSkimSelection_TTbar() ) continue;
-      if ( not passedSkimSelection_debug() ) continue;
+      if ( not passedSkimSelection_TightLoose() ) continue;
       
       ++nEventsSelected;
       cms2.LoadAllBranches();
