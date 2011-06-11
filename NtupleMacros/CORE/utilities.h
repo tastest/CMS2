@@ -1,26 +1,24 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-#include "TH1F.h"
-#include "TH2D.h"
-#include "TVector3.h"
-#include <algorithm>
-#include <set>
-#include "Math/VectorUtil.h"
+#include "TMath.h"
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
-//TVector3 correctMETforTracks() ;
-double trkIsolation(int trk_index);
-bool   sortByPt(const LorentzVector & vec1, const LorentzVector & vec2 );
+// This is meant to be passed as the third argument, the predicate, of the standard library sort algorithm
+inline bool sortByPt(const LorentzVector &vec1, const LorentzVector &vec2 ) {
+    return vec1.pt() > vec2.pt();
+}
 
-float deltaPhi( float phi1 , float phi2 ) ;
+// Delat Phi
+inline float deltaPhi( float phi1 , float phi2 ) {
+  float dphi = fabs( phi1 - phi2 );
+  if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
+  return dphi;
+}
 
-bool hypsOverlap(int idxa, int idxb);
+bool   hypsOverlap(int idxa, int idxb);
 
-class DorkyEvent;
-class DorkyEventIdentifier;
-
-extern TH2D *rfhist;
+//double trkIsolation(int trk_index);
 
 #endif
