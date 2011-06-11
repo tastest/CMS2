@@ -27,14 +27,6 @@
 using std::vector;
 TH2D* rfhist = 0;
 
-double dRbetweenVectors(const LorentzVector &vec1, 
-			const LorentzVector &vec2 ){ 
-
-  double dphi = std::min(::fabs(vec1.Phi() - vec2.Phi()), 2 * M_PI - fabs(vec1.Phi() - vec2.Phi()));
-  double deta = vec1.Eta() - vec2.Eta();
-  return sqrt(dphi*dphi + deta*deta);
-}
-
 float deltaPhi( float phi1 , float phi2 ) {
   float dphi = fabs( phi1 - phi2 );
   if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
@@ -51,26 +43,11 @@ int match4vector(const LorentzVector &lvec,
   double x;
   int iret = -1;
   for ( unsigned int i=0; i < vec.size();++i) {
-    x = dRbetweenVectors(lvec,vec[i]);
+    x = ROOT::Math::VectorUtil::DeltaR( lvec, vec[i] );
     if (x < dR ) {dR = x; iret = i;}
   }
   return iret;
 }
-
-/* int num4vectorsmatched(ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lvec, 
-		 vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > vec, 
-		 double cut=0.4, double ptcut=0.0 ){
-
-  if( vec.size() == 0 ) return 0;
-  //cout << "size of vec = " << vec.size() << endl;
-  double dR = cut; 
-  int result = 0;
-  for ( unsigned int i=0; i < vec.size();++i) {
-    if ( vec[i].pt() > ptcut && dRbetweenVectors(lvec,vec[i]) < dR ) ++result;
-  }
-  return result;
-}
-*/
 
 std::vector<LorentzVector> p4sInCone(const LorentzVector &refvec, 
 				     const std::vector<LorentzVector> &invec, 
@@ -82,7 +59,7 @@ std::vector<LorentzVector> p4sInCone(const LorentzVector &refvec,
   double dR = coneSize; 
   double x = 0.0;
   for ( unsigned int i=0; i < invec.size();++i) {
-    x = dRbetweenVectors(refvec,invec[i]);
+    x = ROOT::Math::VectorUtil::DeltaR( refvec, invec[i] );
     if (x < dR ) {result.push_back(invec[i]);}
   }
   return result;
@@ -97,7 +74,7 @@ std::vector<unsigned int> idxInCone(const LorentzVector &refvec,
 
   double dR = coneSize; 
   for ( unsigned int i=0; i < invec.size();++i) {
-    if (dRbetweenVectors(refvec,invec[i]) < dR ) {result.push_back(i);}
+    if ( ROOT::Math::VectorUtil::DeltaR( refvec, invec[i] ) < dR ) {result.push_back(i);}
   }
   return result;
 }
