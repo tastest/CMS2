@@ -62,11 +62,11 @@
 161210 163262 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v3 eehad 0
 160329 161176 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v2 eehad 1
 161210 163262 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v3 eehad 1
-163265 999999 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v1 eehad 2
+163265 164236 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v1 eehad 2
 165088 165887 HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v2 eehad 2
-163265 999999 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v1 eehad 3
-165088 165887 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v2 emhad 3
-165922 999999 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v3 emhad 3
+163265 164236 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v1 eehad 3
+165088 165887 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v2 eehad 3
+165922 999999 HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v3 eehad 3
 
 #
 # muon had triggers
