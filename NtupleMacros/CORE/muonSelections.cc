@@ -1,10 +1,19 @@
-#include "CMS2.h"
+// Header
 #include "muonSelections.h"
-#include "trackSelections.h"
-#include "utilities.h"
+
+// C++ includes
 #include <iostream>
+
+// ROOT includes
+#include "Math/VectorUtil.h"
+
+// CMS2 Includes
 #include "eventSelections.h"
 #include "trackSelections.h"
+
+//#include "CMS2.cc"
+
+using namespace tas;
 
 //------------------------------------------------------------------
 // Apply various muon identification requirements
@@ -676,7 +685,7 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
     int mutkid = cms2.mus_trkidx().at(imu);
     float mudz = mutkid>=0 ? trks_dz_dapv(mutkid,idavtx).first : cms2.mus_sta_z0corr().at(imu);
     for (unsigned int ipf=0; ipf<cms2.pfcands_p4().size(); ++ipf){
-        float dR = dRbetweenVectors(cms2.pfcands_p4().at(ipf),cms2.mus_p4().at(imu));
+        float dR = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf), mus_p4().at(imu) );
         if (dR>coner) continue;
         float pfpt = cms2.pfcands_p4().at(ipf).pt();
         if (cms2.pfcands_charge().at(ipf)==0) {
