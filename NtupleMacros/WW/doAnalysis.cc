@@ -80,7 +80,7 @@ wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
 
-// wwcuts_t pass_all = PASSED_BaseLine | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_ZControlSampleTight;
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_ZControlSampleTight;
 
 bool applyJEC = false;
 bool applyFastJetCorrection = true;
@@ -514,7 +514,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
 	// jec *= 1 - 0.5*0.5*M_PI*cms2.evt_rho()/cms2.pfjets_p4().at(i).pt();
 	// jec *= cms2.pfjets_corL1FastL2L3().at(i)/cms2.pfjets_corL1L2L3().at(i);
 	// jec *= cms2.pfjets_corL1FastL2L3().at(i);
-	jec = (1-cms2.evt_rho()*M_PI*0.5*0.5/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
+	jec = (1-cms2.evt_rho()*cms2.pfjets_area().at(i)/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
       if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
       if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
@@ -1585,11 +1585,11 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   // monitor.count(cms2, type, "after vertex cut");
   
   if (cms2.hyp_p4().at(i_hyp).mass2()<0) return false;
-  // if (nGoodVertex()<1) return false;
   if (!isGoodVertex(primaryVertex())) return false;
 
   if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "trigger requirements",weight);
+  if (nGoodVertex()<1) return false;
 
   cuts_passed = PASSED_BaseLine;
   
@@ -2594,6 +2594,7 @@ void ScanChain( TChain* chain,
     unsigned int nEvents = tree->GetEntries();
   
     for( unsigned int event = 0; event < nEvents; ++event) {
+      tree->LoadTree(event);
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
       if (cms2.evt_event()%prescale!=0) continue;
       // Select the good runs from the json file
