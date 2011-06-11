@@ -9,7 +9,7 @@
 #include "MITConversionUtilities.h"
 #include "trackSelections.h"
 #include "utilities.h"
-
+#include "muonSelections.h"
 
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
 {
@@ -179,6 +179,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1ll<<ELEETA_250);
     if (fabs(cms2.els_p4()[index].eta()) < 2.4) cuts_passed |= (1ll<<ELEETA_240);
     if (electronId_noMuon(index)) cuts_passed |= (1ll<<ELENOMUON_010);
+    if (electronId_noMuon_SS(index)) cuts_passed |= (1ll<<ELENOMUON_010_SS);
 
     //
     // Pt
@@ -236,6 +237,18 @@ bool electronId_extra(const unsigned int index)
 bool electronId_noMuon(const unsigned int index)
 {
     if ( cms2.els_closestMuon().at(index) != -1) return false;
+    return true;
+}
+
+//
+// remove if close to a good muon
+//
+bool electronId_noMuon_SS(const unsigned int index)
+{
+    unsigned int idx = cms2.els_closestMuon().at(index);
+
+    if (idx < 0) return true;
+    if (muonId(idx, NominalSSv4)) return false;
     return true;
 }
 
