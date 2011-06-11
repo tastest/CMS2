@@ -245,7 +245,7 @@ bool electronId_noMuon(const unsigned int index)
 //
 bool electronId_noMuon_SS(const unsigned int index)
 {
-    unsigned int idx = cms2.els_closestMuon().at(index);
+    int idx = cms2.els_closestMuon().at(index);
 
     if (idx < 0) return true;
     if (muonId(idx, NominalSSv4)) return false;
