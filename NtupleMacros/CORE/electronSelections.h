@@ -5,12 +5,14 @@
 #include <stdint.h>
 #include <vector>
 
-// Root
+// ROOT
 #include "TMath.h"
-#include "CMS2.h"
 
 // Header
 #include "electronSelectionsParameters.h"
+
+// CMS2
+#include "CMS2.h"
 
 //
 typedef ULong64_t   uint64;

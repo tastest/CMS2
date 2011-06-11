@@ -1,15 +1,25 @@
-//
-// electron selections
-//
+/////////////////////////
+// Electron Selections //
+/////////////////////////
+
+// ROOT includes
+#include "Math/VectorUtil.h"
 
 // CMS2 includes
 #include "electronSelections.h"
 #include "eventSelections.h"
-//#include "MITConversionUtilities.cc"
 #include "MITConversionUtilities.h"
-#include "trackSelections.h"
-#include "utilities.h"
 #include "muonSelections.h"
+#include "trackSelections.h"
+
+//#include "CMS2.cc"
+//#include "electronSelectionsParameters.cc"
+//#include "eventSelections.cc"
+//#include "MITConversionUtilities.cc"
+//#include "muonSelections.cc"
+//#include "trackSelections.cc"
+
+using namespace tas;
 
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
 {
@@ -1032,7 +1042,8 @@ float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float cone
   float pfjurvetoq = 0.;
   for (unsigned int ipf=0; ipf<cms2.pfcands_p4().size(); ++ipf){
 
-    float dR = dRbetweenVectors(cms2.pfcands_p4().at(ipf),cms2.els_p4().at(iel));
+    float dR = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf), els_p4().at(iel) );
+
     if (dR>coner) continue;
 
     float pfpt = cms2.pfcands_p4().at(ipf).pt();    
@@ -1326,21 +1337,56 @@ electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int wo
   unsigned int answer = 0;
   float etaSC = cms2.els_etaSC().at(index);
   unsigned int nbrem = cms2.els_nSeed().at(index);
-  if (workingPoint==95) 
-    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>-4.274 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>-3.773 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>-5.092 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>-2.796)
+  if ( workingPoint == 95 ) {
+    if ( 
+      ( fabs(etaSC) < 1.479 && nbrem ==0 && lhValue > -4.274 ) || 
+      ( fabs(etaSC) < 1.479 && nbrem >=1 && lhValue >- 3.773 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem ==0 && lhValue > -5.092 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem >=1 && lhValue > -2.796 ) 
+    ) {
       answer |= (1<<ELEID_ID);
-  else if (workingPoint==90)
-    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>-1.497 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>-1.521 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>-2.571 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>-0.657)
+    }
+  }
+  else if ( workingPoint == 90 ) {
+    if ( 
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > -1.497 ) || 
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > -1.521 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > -2.571 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > -0.657 )
+    ) {
       answer |= (1<<ELEID_ID);
-  else if (workingPoint==85)
-    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>+0.163 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>+0.065 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>-0.683 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>+1.564)
+    }
+  }
+  else if ( workingPoint == 85 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +0.163 ) || 
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +0.065 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > -0.683 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +1.564 )
+    ) {
       answer |= (1<<ELEID_ID);
-  else if (workingPoint==80)
-    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>+1.193 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>+1.345 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>+0.810 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>+3.021)
+    }
+  }
+  else if ( workingPoint == 80 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +1.193 ) || 
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +1.345 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > +0.810 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +3.021 )
+    ) {
       answer |= (1<<ELEID_ID);
-  else if (workingPoint==70)
-    if (fabs(etaSC)<1.479&&nbrem==0&&lhValue>+1.781 || fabs(etaSC)<1.479&&nbrem>=1&&lhValue>+2.397 || fabs(etaSC)>1.479&&nbrem==0&&lhValue>+2.361 || fabs(etaSC)>1.479&&nbrem>=1&&lhValue>+4.052)
+    }
+  }
+  else if ( workingPoint == 70 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +1.781 ) || 
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +2.397 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > +2.361 ) || 
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +4.052 )
+    ) {
       answer |= (1<<ELEID_ID);
+    }
+  }
   else {
     cout << "Error! Likelihood WP not supported: " << workingPoint << ". Please choose 70, 80, 85, 90, 95" << endl;
   }
