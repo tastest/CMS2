@@ -760,6 +760,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
                     e1_numSSv4_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV4);
                     e1_foSSv4_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV4_ssVBTF80_v3);
+                    e1_numSSv5_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5);
+                    e1_foSSv5_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV5_ssVBTF80_v3);
 
                     e1_scet_        = cms2.els_eSC()[index1] / cosh(cms2.els_etaSC()[index1]);
                     e1_sceta_       = cms2.els_etaSC()[index1];
@@ -846,6 +848,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
                     e2_numSSv4_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV4);
                     e2_foSSv4_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV4_ssVBTF80_v3);
+                    e2_numSSv5_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5);
+                    e2_foSSv5_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV5_ssVBTF80_v3);
 
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
                     e2_sceta_       = cms2.els_etaSC()[index2];
@@ -1074,6 +1078,8 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_trkpt_        = -999999.;
 
     // electron stuff
+    e1_numSSv5_     = 0;
+    e1_foSSv5_      = 0;
     e1_numSSv4_     = 0;
     e1_foSSv4_      = 0;
     e1_numSSv3_     = 0;
@@ -1105,6 +1111,8 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_fbrem_       = -999999.;
     e1_mitConv_     = 0;
 
+    e2_numSSv5_     = 0;
+    e2_foSSv5_      = 0;
     e2_numSSv4_     = 0;
     e2_foSSv4_      = 0;
     e2_numSSv3_     = 0;
@@ -1353,6 +1361,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 
     // electron stuff
 
+    babyTree_->Branch("e1_numSSv5",    &e1_numSSv5_,    "e1_numSSv5/O"   );
+    babyTree_->Branch("e1_foSSv5",     &e1_foSSv5_,     "e1_foSSv5/O"    );
     babyTree_->Branch("e1_numSSv4",    &e1_numSSv4_,    "e1_numSSv4/O"   );
     babyTree_->Branch("e1_foSSv4",     &e1_foSSv4_,     "e1_foSSv4/O"    );
     babyTree_->Branch("e1_numSSv3",    &e1_numSSv3_,    "e1_numSSv3/O"   );
@@ -1383,6 +1393,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_scCharge",   &e1_scCharge_,   "e1_scCharge/I"  );
     babyTree_->Branch("e1_fbrem",      &e1_fbrem_,      "e1_fbrem/F"     );
     babyTree_->Branch("e1_mitConv",    &e1_mitConv_,    "e1_mitConv/O"   );
+    babyTree_->Branch("e2_numSSv5",    &e2_numSSv5_,    "e2_numSSv5/O"   );
+    babyTree_->Branch("e2_foSSv5",     &e2_foSSv5_,     "e2_foSSv5/O"    );
     babyTree_->Branch("e2_numSSv4",    &e2_numSSv4_,    "e2_numSSv4/O"   );
     babyTree_->Branch("e2_foSSv4",     &e2_foSSv4_,     "e2_foSSv4/O"    );
     babyTree_->Branch("e2_numSSv3",    &e2_numSSv3_,    "e2_numSSv3/O"   );

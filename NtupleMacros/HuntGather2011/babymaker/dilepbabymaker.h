@@ -220,6 +220,8 @@ private:
     Float_t mu2_trkpt_;
 
     // electron stuff
+    Bool_t  e1_numSSv5_;
+    Bool_t  e1_foSSv5_;
     Bool_t  e1_numSSv4_;
     Bool_t  e1_foSSv4_;
     Bool_t  e1_numSSv3_;
@@ -251,6 +253,8 @@ private:
     Float_t e1_fbrem_;
     Bool_t  e1_mitConv_;
 
+    Bool_t  e2_numSSv5_;
+    Bool_t  e2_foSSv5_;
     Bool_t  e2_numSSv4_;
     Bool_t  e2_foSSv4_;
     Bool_t  e2_numSSv3_;
