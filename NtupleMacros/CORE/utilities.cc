@@ -1,22 +1,11 @@
+// Header
+#include "utilities.h"
 
 // C++ includes
-//#include <algorithm>
-//#include <fstream>
-//#include <iostream>
-//#include <fstream>
-//#include <set>
-//#include <utility>
 #include <vector>
 
 // ROOT includes
 #include "Math/VectorUtil.h"
-//#include "Math/PtEtaPhiE4D.h"
-//#include "Math/PtEtaPhiM4D.h"
-//#include "Math/LorentzVector.h"
-
-// CMS2 includes
-#include "CMS2.cc"
-#include "utilities.h"
 
 using std::vector;
 
