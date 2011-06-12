@@ -8,11 +8,11 @@
 #include <cmath>
 
 
-#ifdef STANDALONE
-#include <stdexcept>
-#else
-#include "FWCore/Utilities/interface/Exception.h"
-#endif
+// #ifdef STANDALONE
+// #include <stdexcept>
+// #else
+// #include "FWCore/Utilities/interface/Exception.h"
+// #endif
 
 namespace 
 {
@@ -46,7 +46,7 @@ namespace
   //----------------------------------------------------------------------
   std::string getSection(const std::string& token) 
   {
-	size_t iFirst = token.find ('[');
+    size_t iFirst = token.find ('[');
     size_t iLast = token.find (']');
     if (iFirst != std::string::npos && iLast != std::string::npos && iFirst < iLast)
       return std::string (token, iFirst+1, iLast-iFirst-1); 
@@ -87,13 +87,9 @@ namespace
   //------------------------------------------------------------------------ 
   void handleError(const std::string& fClass, const std::string& fMessage)
   {
-#ifdef STANDALONE 
     std::stringstream sserr;
-    sserr<<fClass<<" ERROR: "<<fMessage;
-    throw std::runtime_error(sserr.str());
-#else
-    throw cms::Exception(fClass)<<fMessage;
-#endif
+    std::cout <<fClass<<" ERROR: "<<fMessage << std::endl;
+    assert(0);
   }
   //------------------------------------------------------------------------ 
   float quadraticInterpolation(float fZ, const float fX[3], const float fY[3])
