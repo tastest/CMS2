@@ -169,7 +169,7 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
 bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index){
 
     if ( cms2.mus_p4()[index].pt() < 5.0) {
-        std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
+      // std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
         return false;
     }
 
