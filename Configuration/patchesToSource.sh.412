@@ -3,6 +3,9 @@ cvs co -r V02-04-16     RecoJets/Configuration
 cvs co -r V04-01-00     RecoJets/JetAlgorithms                             
 cvs co -r V05-05-03-00  RecoJets/JetProducers                                
 
+#Likelihood electronID
+cvs co -r V00-03-30      RecoEgamma/ElectronIdentification 
+
 # tags needed on top of release, same for 3_11 and 4_1
 cvs co -r V02-02-03      JetMETCorrections/Algorithms                     
 cvs co -r V03-02-07      JetMETCorrections/Configuration                  
