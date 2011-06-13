@@ -32,6 +32,7 @@ namespace tas {
 	float &evt_bs_zErr() { return cms2.evt_bs_zErr(); }
 	float &evt_bField() { return cms2.evt_bField(); }
 	float &evt_rho() { return cms2.evt_rho(); }
+	float &evt_rhoJEC() { return cms2.evt_rhoJEC(); }
 	float &evt_kfactor() { return cms2.evt_kfactor(); }
 	float &evt_scale1fb() { return cms2.evt_scale1fb(); }
 	float &evt_xsec_excl() { return cms2.evt_xsec_excl(); }
@@ -383,6 +384,7 @@ namespace tas {
 	vector<float> &els_iso03_pf() { return cms2.els_iso03_pf(); }
 	vector<float> &els_iso04_pf() { return cms2.els_iso04_pf(); }
 	vector<float> &els_layer1_charge() { return cms2.els_layer1_charge(); }
+	vector<float> &els_lh() { return cms2.els_lh(); }
 	vector<float> &els_mva() { return cms2.els_mva(); }
 	vector<float> &els_ndof() { return cms2.els_ndof(); }
 	vector<float> &els_phiErr() { return cms2.els_phiErr(); }

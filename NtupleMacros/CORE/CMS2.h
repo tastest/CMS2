@@ -109,6 +109,9 @@ protected:
 	float evt_rho_;
 	TBranch *evt_rho_branch;
 	bool evt_rho_isLoaded;
+	float evt_rhoJEC_;
+	TBranch *evt_rhoJEC_branch;
+	bool evt_rhoJEC_isLoaded;
 	float	evt_kfactor_;
 	TBranch *evt_kfactor_branch;
 	bool evt_kfactor_isLoaded;
@@ -1162,6 +1165,9 @@ protected:
 	vector<float> els_layer1_charge_;
 	TBranch *els_layer1_charge_branch;
 	bool els_layer1_charge_isLoaded;
+	vector<float> els_lh_;
+	TBranch *els_lh_branch;
+	bool els_lh_isLoaded;
 	vector<float> els_mva_;
 	TBranch *els_mva_branch;
 	bool els_mva_isLoaded;
@@ -3813,6 +3819,11 @@ void Init(TTree *tree) {
 		evt_rho_branch = tree->GetBranch(tree->GetAlias("evt_rho"));
 		evt_rho_branch->SetAddress(&evt_rho_);
 	}
+	evt_rhoJEC_branch = 0;
+	if (tree->GetAlias("evt_rhoJEC") != 0) {
+		evt_rhoJEC_branch = tree->GetBranch(tree->GetAlias("evt_rhoJEC"));
+		evt_rhoJEC_branch->SetAddress(&evt_rhoJEC_);
+	}
 	evt_kfactor_branch = 0;
 	if (tree->GetAlias("evt_kfactor") != 0) {
 		evt_kfactor_branch = tree->GetBranch(tree->GetAlias("evt_kfactor"));
@@ -5117,6 +5128,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("els_layer1_charge") != 0) {
 		els_layer1_charge_branch = tree->GetBranch(tree->GetAlias("els_layer1_charge"));
 		els_layer1_charge_branch->SetAddress(&els_layer1_charge_);
+	}
+	els_lh_branch = 0;
+	if (tree->GetAlias("els_lh") != 0) {
+		els_lh_branch = tree->GetBranch(tree->GetAlias("els_lh"));
+		els_lh_branch->SetAddress(&els_lh_);
 	}
 	els_mva_branch = 0;
 	if (tree->GetAlias("els_mva") != 0) {
@@ -8560,6 +8576,7 @@ void GetEntry(unsigned int idx)
 		evt_bs_zErr_isLoaded = false;
 		evt_bField_isLoaded = false;
 		evt_rho_isLoaded = false;
+		evt_rhoJEC_isLoaded = false;
 		evt_kfactor_isLoaded = false;
 		evt_scale1fb_isLoaded = false;
 		evt_xsec_excl_isLoaded = false;
@@ -8911,6 +8928,7 @@ void GetEntry(unsigned int idx)
 		els_iso03_pf_isLoaded = false;
 		els_iso04_pf_isLoaded = false;
 		els_layer1_charge_isLoaded = false;
+		els_lh_isLoaded = false;
 		els_mva_isLoaded = false;
 		els_ndof_isLoaded = false;
 		els_phiErr_isLoaded = false;
@@ -9628,6 +9646,7 @@ void LoadAllBranches()
 	if (evt_bs_zErr_branch != 0) evt_bs_zErr();
 	if (evt_bField_branch != 0) evt_bField();
 	if (evt_rho_branch != 0) evt_rho();
+	if (evt_rhoJEC_branch != 0) evt_rhoJEC();
 	if (evt_kfactor_branch != 0) evt_kfactor();
 	if (evt_scale1fb_branch != 0) evt_scale1fb();
 	if (evt_xsec_excl_branch != 0) evt_xsec_excl();
@@ -9979,6 +9998,7 @@ void LoadAllBranches()
 	if (els_iso03_pf_branch != 0) els_iso03_pf();
 	if (els_iso04_pf_branch != 0) els_iso04_pf();
 	if (els_layer1_charge_branch != 0) els_layer1_charge();
+	if (els_lh_branch != 0) els_lh();
 	if (els_mva_branch != 0) els_mva();
 	if (els_ndof_branch != 0) els_ndof();
 	if (els_phiErr_branch != 0) els_phiErr();
@@ -11064,6 +11084,19 @@ void LoadAllBranches()
 			evt_rho_isLoaded = true;
 		}
 		return evt_rho_;
+	}
+	float &evt_rhoJEC()
+	{
+		if (not evt_rhoJEC_isLoaded) {
+			if (evt_rhoJEC_branch != 0) {
+				evt_rhoJEC_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_rhoJEC_branch does not exist!\n");
+				exit(1);
+			}
+			evt_rhoJEC_isLoaded = true;
+		}
+		return evt_rhoJEC_;
 	}
 	float &evt_kfactor()
 	{
@@ -15627,6 +15660,19 @@ void LoadAllBranches()
 			els_layer1_charge_isLoaded = true;
 		}
 		return els_layer1_charge_;
+	}
+	vector<float> &els_lh()
+	{
+		if (not els_lh_isLoaded) {
+			if (els_lh_branch != 0) {
+				els_lh_branch->GetEntry(index);
+			} else { 
+				printf("branch els_lh_branch does not exist!\n");
+				exit(1);
+			}
+			els_lh_isLoaded = true;
+		}
+		return els_lh_;
 	}
 	vector<float> &els_mva()
 	{
@@ -24643,6 +24689,7 @@ namespace tas {
 	float &evt_bs_zErr();
 	float &evt_bField();
 	float &evt_rho();
+	float &evt_rhoJEC();
 	float &evt_kfactor();
 	float &evt_scale1fb();
 	float &evt_xsec_excl();
@@ -24994,6 +25041,7 @@ namespace tas {
 	vector<float> &els_iso03_pf();
 	vector<float> &els_iso04_pf();
 	vector<float> &els_layer1_charge();
+	vector<float> &els_lh();
 	vector<float> &els_mva();
 	vector<float> &els_ndof();
 	vector<float> &els_phiErr();
