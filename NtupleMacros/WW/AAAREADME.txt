@@ -19,7 +19,35 @@ To get tables for example, do "make table"
    CURRENT WORKING REFERENCE
 #################################################################
 
-Current working reference (Smurf V3) 
+Current working reference (Smurf V6) 
+
+GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-07/DiLeptonFilter/merged_ntuple.root
+
+make Sync=1 t
+
+Total number of processed events:	106350
+trigger requirements				hyps: 22571/25342/47840/95753	nevts: 21515/22474/42159/81020
+basic selection					hyps: 21524/21869/42751/86144	nevts: 21047/20511/40999/78994
+lepton id					hyps: 19776/13439/32410/65625	nevts: 19729/13417/32343/65381
+iso						hyps: 16298/10683/25765/52746	nevts: 16298/10681/25760/52733
+conv rejection					hyps: 16298/10199/25186/51683	nevts: 16298/10199/25183/51677
+d0						hyps: 16289/9995/24956/51240	nevts: 16289/9995/24954/51237
+dZ						hyps: 16282/9972/24928/51182	nevts: 16282/9972/24926/51179
+lepton id/iso					hyps: 16282/9972/24928/51182	nevts: 16282/9972/24926/51179
+met>20						hyps: 15453/9442/23587/48482	nevts: 15453/9442/23585/48479
+tight_pt>20 && mll>12				hyps: 15181/9392/23446/48019	nevts: 15181/9392/23444/48016
+z veto						hyps: 14476/8953/23446/46875	nevts: 14476/8953/23444/46872
+Full MET cuts					hyps: 11563/7193/21804/40560	nevts: 11563/7193/21803/40559
+JetVeto cuts					hyps: 6685/4181/12473/23339	nevts: 6685/4181/12473/23339
+soft muon veto					hyps: 6662/4161/12435/23258	nevts: 6662/4161/12435/23258
+extra lepton veto				hyps: 6662/4161/12435/23258	nevts: 6662/4161/12435/23258
+all cuts (including soft and extra lepton veto)	      hyps: 6479/4061/12152/22692      nevts: 6479/4061/12152/22692
+
+
+############################################################################################################################################################################
+
+Smurf V3
+
 
 |     |      *DY ee* |    *DY mumu* |  *DY tautau* |      *ttbar* |         *TW* |      *Wjets*  |         *WZ* |         *ZZ* |  *Total BKG*  |
 |  mm |  0.00+/-0.00 |  2.52+/-1.45 |  0.00+/-0.00 |  6.96+/-1.01 |  3.25+/-0.27 |   8.72+/-4.36 |  3.06+/-0.16 |  2.33+/-0.08 |  26.83+/-4.72 |
