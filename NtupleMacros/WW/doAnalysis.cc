@@ -33,6 +33,7 @@ using namespace std;
 #include "CORE/muonSelections.h"
 #include "CORE/jetSelections.h"
 #include "CORE/metSelections.h"
+#include "jetcorr/FactorizedJetCorrector.h"
 #endif
 
 enum jetregion { HCAL, HF, ALLJET};
@@ -82,23 +83,16 @@ wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET 
 
 // wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_ZControlSampleTight;
 
-bool applyJEC = false;
-bool applyFastJetCorrection = true;
+bool applyJEC = true;
+bool applyFastJetCorrection = false;
 bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
-std::vector<std::string> jetcorr_filenames_jpt;
-FactorizedJetCorrector *jet_corrector_jpt;
-
 std::vector<std::string> jetcorr_filenames_pf;
 FactorizedJetCorrector *jet_corrector_pf;
-
-std::vector<std::string> jetcorr_filenames_calo;
-FactorizedJetCorrector *jet_corrector_calo;
-
-std::vector<std::string> jetcorr_filenames_trk;
-FactorizedJetCorrector *jet_corrector_trk;
+std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
+FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3;
 wwcuts_t cuts_passed = 0;
 
 //
@@ -305,15 +299,18 @@ bool ww_muBase(unsigned int index){
 bool ww_mud0(unsigned int index){
   return fabs(cms2.mus_d0corr()[index]) < 0.02;
 }
-bool ww_mud0PV(unsigned int index){
+double ww_mud0ValuePV(unsigned int index){
   int vtxIndex = primaryVertex();
-  if (vtxIndex<0) return false;
+  if (vtxIndex<0) return 9999;
   double dxyPV = cms2.mus_d0()[index]-
     cms2.davtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
     cms2.davtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
-  if ( cms2.mus_p4().at(index).pt() < 20. )
-    return fabs(dxyPV) < 0.01;
-  return fabs(dxyPV) < 0.02;
+  return fabs(dxyPV);
+}
+
+bool ww_mud0PV(unsigned int index){
+  if ( cms2.mus_p4().at(index).pt() < 20. ) return ww_mud0ValuePV(index) < 0.01;
+  return ww_mud0ValuePV(index) < 0.02;
 }
 bool ww_mudZPV(unsigned int index){
   int vtxIndex = primaryVertex();
@@ -368,11 +365,10 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
   unsigned int nMuons = 0;
   for (int imu=0; imu < int(cms2.mus_charge().size()); ++imu) {
     // quality cuts
-    // if (  ((cms2.mus_goodmask()[imu]) & (1<<14)) == 0 ) continue; // TMLastStationOptimizedLowPtTight
     if (  ((cms2.mus_goodmask()[imu]) & (1<<19)) == 0 ) continue; // TMLastStationAngTight
     if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
-    // if ( TMath::Abs(cms2.mus_d0corr()[imu]) > 0.2) continue;
-    if ( TMath::Abs(ww_mud0PV(imu)) > 0.2) continue;
+    if ( ww_mud0ValuePV(imu) > 0.2) continue;
+    if ( ! ww_mudZPV(imu) ) continue;
     if ( cms2.mus_validHits()[imu] < 11) continue;
     if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
     if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
@@ -491,13 +487,11 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
 {
   std::vector<JetPair> jets;
   const double vetoCone = 0.3;
-  double jec = 1.0;
   
   switch ( type ){
   case jptJet:
     for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
-      if(applyJEC)
-	jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+      double jec = 1.0;
       if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
       if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
@@ -508,18 +502,32 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
     break;
   case pfJet:
     for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
-      if(applyJEC)
-	jec = jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
-      if(applyFastJetCorrection)
-	// jec *= 1 - 0.5*0.5*M_PI*cms2.evt_rho()/cms2.pfjets_p4().at(i).pt();
-	// jec *= cms2.pfjets_corL1FastL2L3().at(i)/cms2.pfjets_corL1L2L3().at(i);
-	// jec *= cms2.pfjets_corL1FastL2L3().at(i);
-	jec = (1-cms2.evt_rho()*cms2.pfjets_area().at(i)/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
+      double jec = 1.0;
+      // cout << cms2.evt_event() << " \traw pt: " << cms2.pfjets_p4().at(i).pt() << endl;
+      if(applyJEC){
+	jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_rho());
+	jet_corrector_pfL1FastJetL2L3->setJetA(cms2.pfjets_area().at(i));
+	jet_corrector_pfL1FastJetL2L3->setJetPt(cms2.pfjets_p4()[i].pt());
+	jet_corrector_pfL1FastJetL2L3->setJetEta(cms2.pfjets_p4()[i].eta());
+	double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
+	jec *= corr;
+	// cout << " \tL1FastJetL2L3 corr: " << corr << " \tpt: " << cms2.pfjets_p4().at(i).pt()*corr << endl;
+	
+	// jec *= jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf);
+	// cout << " \tL2L3 corr: " << jetCorrection(cms2.pfjets_p4()[i], jet_corrector_pf) << endl;
+      }
+//       if(applyFastJetCorrection){
+// 	jec *= (1-cms2.evt_rho()*cms2.pfjets_area().at(i)/cms2.pfjets_p4().at(i).pt()); //*cms2.pfjets_cor().at(i);// It's full L1Fast*L2*L3
+// 	cout << " \tL1 corr: " << (1-cms2.evt_rho()*cms2.pfjets_area().at(i)/cms2.pfjets_p4().at(i).pt()) << " \t" << 
+// 	  (1-cms2.evt_rho()*cms2.pfjets_area().at(i)/cms2.pfjets_p4().at(i).pt())*cms2.pfjets_p4().at(i).pt() << 
+// 	  " \t" << cms2.evt_rho() << " \t" << cms2.pfjets_area().at(i) << endl;
+//       }
       if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
       if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
       if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
 	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+      // cout << " \tpassed all cuts" << endl;
       jets.push_back(JetPair(cms2.pfjets_p4()[i] * jec,i));
     }
     break;
@@ -545,8 +553,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
     //        break;
   case TrkJet:
     for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
-      if(applyJEC)
-	jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
+      double jec = 1.0;
       if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
       if ( btag && !defaultBTag(type,i) ) continue;
       if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
@@ -1205,8 +1212,8 @@ void find_leading_jptjet(int i_hyp, double etaMin, double etaMax, double vetoCon
      if ( TMath::Abs(cms2.jpts_p4()[i].eta()) < etaMin ) continue;
      if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ||
 	  TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.jpts_p4()[i])) < vetoCone ) continue;
-     if(applyJEC)
-       jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
+     //     if(applyJEC)
+     // jec = jetCorrection(cms2.jpts_p4()[i], jet_corrector_jpt);
      //jec =  cms2.jpts_cor()[i]; // use the one in CMS2 ntuple
      if ( cms2.jpts_p4()[i].pt() * jec < jptMax ) continue;
      jptMax = cms2.jpts_p4()[i].pt() * jec;
@@ -1240,8 +1247,8 @@ void find_leading_trkjet(int i_hyp, double etaMin, double etaMax, double vetoCon
     if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) < etaMin ) continue;
     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ||
 	 TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.trkjets_p4()[i])) < vetoCone ) continue;
-    if(applyJEC)
-      jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
+    // if(applyJEC)
+    // jec = jetCorrection(cms2.trkjets_p4()[i], jet_corrector_trk);
     //jec = cms2.trkjets_cor()[i];
     if ( cms2.trkjets_p4()[i].pt() * jec < trkJetMax ) continue;
     trkJetMax = cms2.trkjets_p4()[i].pt() * jec;
@@ -2526,41 +2533,22 @@ void ScanChain( TChain* chain,
   int i_permille_old = 0;
   
   try { 
-    jetcorr_filenames_jpt.clear();
-    //jetcorr_filenames_jpt.push_back("files/Spring10_L2Relative_AK5JPT.txt");
-    //jetcorr_filenames_jpt.push_back("files/Spring10_L3Absolute_AK5JPT.txt");
-    jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L2Relative.txt");
-    jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L3Absolute.txt");
-    if(realData)
-      jetcorr_filenames_jpt.push_back("files/START38_V13_AK5JPT_L2L3Residual.txt");
-    jet_corrector_jpt= makeJetCorrector(jetcorr_filenames_jpt);
-    
-    jetcorr_filenames_pf.clear();
-    //jetcorr_filenames_pf.push_back("files/Spring10_L2Relative_AK5PF.txt");
-    //jetcorr_filenames_pf.push_back("files/Spring10_L3Absolute_AK5PF.txt");
-    jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2Relative.txt");
-    jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L3Absolute.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.clear();
+    jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L1FastJet.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
     if (realData) 
-      //jetcorr_filenames_pf.push_back("files/Spring10DataV2_L2L3Residual_AK5PF.txt");
-      jetcorr_filenames_pf.push_back("files/START38_V13_AK5PF_L2L3Residual.txt");
+      jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2L3Residual.txt");
+    jet_corrector_pfL1FastJetL2L3= makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
+
+    // need to get rid of it
+    jetcorr_filenames_pf.clear();
+    jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2Relative.txt");
+    jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
+    if (realData) 
+      jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2L3Residual.txt");
     jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
     
-    jetcorr_filenames_calo.clear();
-    //jetcorr_filenames_calo.push_back("files/Spring10_L2Relative_AK5Calo.txt");
-    //jetcorr_filenames_calo.push_back("files/Spring10_L3Absolute_AK5Calo.txt");
-    jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L2Relative.txt");
-    jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L3Absolute.txt");
-    if(realData)
-      //jetcorr_filenames_calo.push_back("files/Spring10DataV2_L2L3Residual_AK5Calo.txt");
-      jetcorr_filenames_calo.push_back("files/START38_V13_AK5Calo_L2L3Residual.txt");
-    jet_corrector_calo= makeJetCorrector(jetcorr_filenames_calo);
-    
-    jetcorr_filenames_trk.clear();
-    //jetcorr_filenames_trk.push_back("files/Spring10_L2Relative_AK5TRK.txt");
-    //jetcorr_filenames_trk.push_back("files/Spring10_L3Absolute_AK5TRK.txt");
-    jetcorr_filenames_trk.push_back("files/START38_V13_AK5TRK_L2Relative.txt");
-    jetcorr_filenames_trk.push_back("files/START38_V13_AK5TRK_L3Absolute.txt");
-    jet_corrector_trk= makeJetCorrector(jetcorr_filenames_trk);
   } catch (...){
     cout << "\nFailed to setup correctors needed to get Jet Enetry Scale. Abort\n" << endl;
     assert(0);
@@ -2597,6 +2585,8 @@ void ScanChain( TChain* chain,
       tree->LoadTree(event);
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
       if (cms2.evt_event()%prescale!=0) continue;
+      // if (cms2.evt_event()<106921||cms2.evt_event()>106931) continue;
+      // if (cms2.evt_event()!=670) continue;
       // Select the good runs from the json file
       if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
