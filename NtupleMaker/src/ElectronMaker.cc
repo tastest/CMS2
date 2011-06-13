@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.cc,v 1.68 2011/06/13 13:08:02 dlevans Exp $
+// $Id: ElectronMaker.cc,v 1.67.2.2 2011/06/13 14:05:45 dmytro Exp $
 //
 //
 
@@ -711,10 +711,10 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 			  el_track->pz(), el_track->p() );
     double          mass = 0.000510998918;
     LorentzVector   p4In; 
-    math::XYZVectorF p3In = el->trackMomentumAtVtx();
+    math::XYZVector p3In = el->trackMomentumAtVtx();
     p4In.SetXYZT(   p3In.x(), p3In.y(), p3In.z(), sqrt(mass*mass+p3In.R()*p3In.R()));
     LorentzVector   p4Out; 
-    math::XYZVectorF p3Out = el->trackMomentumOut();
+    math::XYZVector p3Out = el->trackMomentumOut();
     p4Out.SetXYZT(  p3Out.x(), p3Out.y(), p3Out.z(), sqrt(mass*mass+p3Out.R()*p3Out.R()));
 
     els_p4                    ->push_back( LorentzVector( el->p4() )                 );
