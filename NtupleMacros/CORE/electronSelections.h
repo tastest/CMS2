@@ -794,6 +794,8 @@ static const cuts_t electronSelection_smurfV5  =
          electronSelection_smurfV5_convrej |
          electronSelection_smurfV5_iso |
          electronSelection_smurfV5_id;
+static const cuts_t electronSelection_smurfV6  = 
+         electronSelection_smurfV5;
 //--------end of SMURF V5 cuts--------------------------------
 
 //--------SMURF FakableObject cuts--------------------------------
