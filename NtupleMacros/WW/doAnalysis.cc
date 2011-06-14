@@ -87,6 +87,7 @@ bool applyJEC = true;
 bool applyFastJetCorrection = false;
 bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
+bool useLHeleId = false;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_pf;
@@ -194,8 +195,14 @@ bool ww_elId(unsigned int index){
   // if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
   // if (! (electronId_VBTF(index, VBTF_35X_70) & (1<<ELEID_ID)) ) return false;
   // if (! (electronId_CIC(index, 4, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
-  if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
-  
+
+  if (useLHeleId) {
+    if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId(index,cms2.els_lh().at(index),90) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+    if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId(index,cms2.els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+  } else {
+    if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+  }
+
   // MIT conversion
   if ( isFromConversionMIT(index) ) return false;
 
@@ -208,6 +215,7 @@ bool ww_elId(unsigned int index){
   // if ( ctfIndex >=0 && 
   //     cms2.els_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
   // if ( !electronId_smurf_v2(index) ) return false;
+  
   return true;
 }
  
@@ -1481,11 +1489,24 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
   
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-      ! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-      ! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-  
+  if (useLHeleId) {
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+      int index = cms2.hyp_lt_index()[i_hyp];
+      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId(index,cms2.els_lh().at(index),90) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId(index,cms2.els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+    }
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+      int index = cms2.hyp_ll_index()[i_hyp];
+      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId(index,cms2.els_lh().at(index),90) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId(index,cms2.els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+    }
+  } else {
+    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
+	! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
+	! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+  }
+
   monitor.count(cms2,type,"lepton id",weight);
 
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
@@ -1637,7 +1658,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
     
   // Z veto using additional leptons in the event
   // if (additionalZveto()) return;
- 
+
   // == MET
   if (zStudy) cuts_passed |= PASSED_MET;
   if ( passedMetRequirements(i_hyp) ) cuts_passed |= PASSED_MET;
@@ -2548,7 +2569,6 @@ void ScanChain( TChain* chain,
     if (realData) 
       jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2L3Residual.txt");
     jet_corrector_pf= makeJetCorrector(jetcorr_filenames_pf);
-    
   } catch (...){
     cout << "\nFailed to setup correctors needed to get Jet Enetry Scale. Abort\n" << endl;
     assert(0);
