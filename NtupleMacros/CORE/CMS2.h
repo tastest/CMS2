@@ -469,6 +469,15 @@ protected:
 	float evt_tcsumet_;
 	TBranch *evt_tcsumet_branch;
 	bool evt_tcsumet_isLoaded;
+	float evt_ww_rho_;
+	TBranch *evt_ww_rho_branch;
+	bool evt_ww_rho_isLoaded;
+	float evt_ww_rho_rnd_;
+	TBranch *evt_ww_rho_rnd_branch;
+	bool evt_ww_rho_rnd_isLoaded;
+	float evt_ww_rho_vor_;
+	TBranch *evt_ww_rho_vor_branch;
+	bool evt_ww_rho_vor_isLoaded;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  evt_bsp4_;
 	TBranch *evt_bsp4_branch;
 	bool evt_bsp4_isLoaded;
@@ -4418,6 +4427,21 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("evt_tcsumet") != 0) {
 		evt_tcsumet_branch = tree->GetBranch(tree->GetAlias("evt_tcsumet"));
 		evt_tcsumet_branch->SetAddress(&evt_tcsumet_);
+	}
+	evt_ww_rho_branch = 0;
+	if (tree->GetAlias("evt_ww_rho") != 0) {
+		evt_ww_rho_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho"));
+		evt_ww_rho_branch->SetAddress(&evt_ww_rho_);
+	}
+	evt_ww_rho_rnd_branch = 0;
+	if (tree->GetAlias("evt_ww_rho_rnd") != 0) {
+		evt_ww_rho_rnd_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho_rnd"));
+		evt_ww_rho_rnd_branch->SetAddress(&evt_ww_rho_rnd_);
+	}
+	evt_ww_rho_vor_branch = 0;
+	if (tree->GetAlias("evt_ww_rho_vor") != 0) {
+		evt_ww_rho_vor_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho_vor"));
+		evt_ww_rho_vor_branch->SetAddress(&evt_ww_rho_vor_);
 	}
 	els_convs_pos_p4_branch = 0;
 	if (tree->GetAlias("els_convs_pos_p4") != 0) {
@@ -8696,6 +8720,9 @@ void GetEntry(unsigned int idx)
 		evt_tcmetPhi_isLoaded = false;
 		evt_tcmetSig_isLoaded = false;
 		evt_tcsumet_isLoaded = false;
+		evt_ww_rho_isLoaded = false;
+		evt_ww_rho_rnd_isLoaded = false;
+		evt_ww_rho_vor_isLoaded = false;
 		evt_bsp4_isLoaded = false;
 		l1_met_p4_isLoaded = false;
 		l1_mht_p4_isLoaded = false;
@@ -9766,6 +9793,9 @@ void LoadAllBranches()
 	if (evt_tcmetPhi_branch != 0) evt_tcmetPhi();
 	if (evt_tcmetSig_branch != 0) evt_tcmetSig();
 	if (evt_tcsumet_branch != 0) evt_tcsumet();
+	if (evt_ww_rho_branch != 0) evt_ww_rho();
+	if (evt_ww_rho_rnd_branch != 0) evt_ww_rho_rnd();
+	if (evt_ww_rho_vor_branch != 0) evt_ww_rho_vor();
 	if (evt_bsp4_branch != 0) evt_bsp4();
 	if (l1_met_p4_branch != 0) l1_met_p4();
 	if (l1_mht_p4_branch != 0) l1_mht_p4();
@@ -12644,6 +12674,45 @@ void LoadAllBranches()
 			evt_tcsumet_isLoaded = true;
 		}
 		return evt_tcsumet_;
+	}
+	float &evt_ww_rho()
+	{
+		if (not evt_ww_rho_isLoaded) {
+			if (evt_ww_rho_branch != 0) {
+				evt_ww_rho_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_ww_rho_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ww_rho_isLoaded = true;
+		}
+		return evt_ww_rho_;
+	}
+	float &evt_ww_rho_rnd()
+	{
+		if (not evt_ww_rho_rnd_isLoaded) {
+			if (evt_ww_rho_rnd_branch != 0) {
+				evt_ww_rho_rnd_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_ww_rho_rnd_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ww_rho_rnd_isLoaded = true;
+		}
+		return evt_ww_rho_rnd_;
+	}
+	float &evt_ww_rho_vor()
+	{
+		if (not evt_ww_rho_vor_isLoaded) {
+			if (evt_ww_rho_vor_branch != 0) {
+				evt_ww_rho_vor_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_ww_rho_vor_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ww_rho_vor_isLoaded = true;
+		}
+		return evt_ww_rho_vor_;
 	}
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &evt_bsp4()
 	{
@@ -24809,6 +24878,9 @@ namespace tas {
 	float &evt_tcmetPhi();
 	float &evt_tcmetSig();
 	float &evt_tcsumet();
+	float &evt_ww_rho();
+	float &evt_ww_rho_rnd();
+	float &evt_ww_rho_vor();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &evt_bsp4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_met_p4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_mht_p4();

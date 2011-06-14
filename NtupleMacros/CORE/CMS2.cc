@@ -152,6 +152,9 @@ namespace tas {
 	float &evt_tcmetPhi() { return cms2.evt_tcmetPhi(); }
 	float &evt_tcmetSig() { return cms2.evt_tcmetSig(); }
 	float &evt_tcsumet() { return cms2.evt_tcsumet(); }
+	float &evt_ww_rho() { return cms2.evt_ww_rho(); }
+	float &evt_ww_rho_rnd() { return cms2.evt_ww_rho_rnd(); }
+	float &evt_ww_rho_vor() { return cms2.evt_ww_rho_vor(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &evt_bsp4() { return cms2.evt_bsp4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_met_p4() { return cms2.l1_met_p4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_mht_p4() { return cms2.l1_mht_p4(); }
