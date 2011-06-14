@@ -15,8 +15,10 @@
 #include "TObjArray.h"
 #include "TString.h"
 
-// TAS includes
 #include "myBabyMaker.h"
+
+#ifndef __CINT__
+// TAS includes
 #include "../CORE/utilities.cc"
 #include "../CORE/electronSelections.cc"
 #include "../CORE/electronSelectionsParameters.cc"
@@ -28,10 +30,11 @@
 #include "../CORE/trackSelections.cc"
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
-
 // namespaces
 using namespace std;
 using namespace tas;
+
+
 bool header1 = false;
 bool header2 = false;
 
@@ -285,6 +288,7 @@ bool is_duplicate (const DorkyEventIdentifier &id) {
 float Mt( LorentzVector p4, float met, float met_phi ){
     return sqrt( 2*met*( p4.pt() - ( p4.Px()*cos(met_phi) + p4.Py()*sin(met_phi) ) ) );
 }
+#endif
 
 //-----------------------------------
 // Looper code starts here
@@ -353,6 +357,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         TTree *tree = (TTree*)f.Get("Events");
         cms2.Init(tree);
         unsigned int nEntries = tree->GetEntries();
+	unsigned int nGoodEvents(0);
         unsigned int nLoop = nEntries;
         unsigned int z;
         for( z = 0; z < nLoop; z++) { // Event Loop
@@ -363,7 +368,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                 // Good  Runs
                 //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
 	          if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
-
 
                 // check for duplicated
                 DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
@@ -376,13 +380,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
             // looper progress
             ++nEventsTotal;
-            int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
-            if (i_permille != i_permilleOld) {
-                printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-                fflush(stdout);
-                i_permilleOld = i_permille;
-            }
-
+	    ++nGoodEvents;
+//             int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+//             if (i_permille != i_permilleOld) {
+//                 printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+//                 fflush(stdout);
+//                 i_permilleOld = i_permille;
+//             }
       
             // Event cleaning (careful, it requires technical bits)
             //if (!cleaning_BPTX(isData))   continue;
@@ -450,7 +454,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v3_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v3  );
 
                     // WW
-                    num_el_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5          );
+                    num_el_smurfV6_ = pass_electronSelection( iLep, electronSelection_smurfV6          );
+//                     num_el_smurfV6lh_ = false;
+// 		    if (els_p4().at(index).pt()>20 && (passLikelihoodId(index,els_lh().at(index),90) & (1<<ELEID_ID))==(1<<ELEID_ID) ) 
+// 		      num_el_smurfV6lh_ = true;
+// 		    if (els_p4().at(index).pt()<20 && (passLikelihoodId(index,els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) )
+// 		      num_el_smurfV6lh_ = true;
                     v1_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v1    );
                     v2_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v2    );
                     v3_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v3    );
@@ -1256,7 +1265,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     fo_wwV1_10_d0_  = muonId(iLep, muonSelectionFO_mu_wwV1_iso10_d0  );
  
                     // WW
-                    num_mu_smurfV5_    = muonId(iLep, NominalSmurfV5                    );
+                    num_mu_smurfV6_    = muonId(iLep, NominalSmurfV6                    );
                     fo_mu_smurf_04_    = muonId(iLep, muonSelectionFO_mu_smurf_04       );
                     fo_mu_smurf_10_    = muonId(iLep, muonSelectionFO_mu_smurf_10       );
 
@@ -1603,6 +1612,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             } // closes if statements about whether we want to fill muons
 
         }// closes loop over events
+	printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
+
     }  // closes loop over files
 
     cout << "   " <<endl;

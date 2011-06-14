@@ -154,14 +154,15 @@ private:
     // WW, HWW
 
     // Electrons
-    Bool_t num_el_smurfV5_;
+    Bool_t num_el_smurfV6_;
+    Bool_t num_el_smurfV6lh_;
     Bool_t v1_el_smurfV1_;
     Bool_t v2_el_smurfV1_;
     Bool_t v3_el_smurfV1_;
     Bool_t v4_el_smurfV1_;
 
     // Muons
-    Bool_t num_mu_smurfV5_;
+    Bool_t num_mu_smurfV6_;
     Bool_t fo_mu_smurf_04_;
     Bool_t fo_mu_smurf_10_;
 
@@ -617,14 +618,15 @@ void myBabyMaker::InitBabyNtuple () {
     // WW, HWW
 
     // Electrons
-    num_el_smurfV5_ = false;
+    num_el_smurfV6_ = false;
+    num_el_smurfV6lh_ = false;
     v1_el_smurfV1_  = false;
     v2_el_smurfV1_  = false;
     v3_el_smurfV1_  = false;
     v4_el_smurfV1_  = false;
 
     // Muons
-    num_mu_smurfV5_ = false;
+    num_mu_smurfV6_ = false;
     fo_mu_smurf_04_ = false;
     fo_mu_smurf_10_ = false;
 
@@ -1012,14 +1014,15 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // WW, HWW
 
     // Electrons
-    babyTree_->Branch("num_el_smurfV5", &num_el_smurfV5_ );
+    babyTree_->Branch("num_el_smurfV6", &num_el_smurfV6_ );
+    babyTree_->Branch("num_el_smurfV6lh", &num_el_smurfV6lh_ );
     babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
     babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
     babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
     babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
 
     // Muons
-    babyTree_->Branch("num_mu_smurfV5",  &num_mu_smurfV5_ );
+    babyTree_->Branch("num_mu_smurfV6",  &num_mu_smurfV6_ );
     babyTree_->Branch("fo_mu_smurf_04",  &fo_mu_smurf_04_ );
     babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_ );
   
