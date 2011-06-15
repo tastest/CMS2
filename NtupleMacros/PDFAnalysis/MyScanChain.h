@@ -11,28 +11,28 @@
 class TH1F;
 class TChain;
 class TDirectory;
+class TTree;
 
-#define MAXWEIGHT 101 
+#define MAXWEIGHT 110
 
 class MyScanChain {
 
     public:
 
-        MyScanChain() {};
+        MyScanChain();
         ~MyScanChain() {};
 
-        int ScanChain(std::string sampleName, TChain *chain, float kFactor = 1.0, int nEvents = -1, std::string skimFilePrefix="");
-        void specifyPDF(std::string pdfName1, std::string pdfName2);
+        int ScanChain(std::string sampleName, std::string pdfName, const char *file);
 
     private:
 
-        float GetGenMeff();
-        bool PassAnalysisSelection();
-
-        void Fill(TH1F** hist, const unsigned int hyp, const float &val, const float &weight);
-        void FormatHist(TH1F** hist, std::string sampleName, std::string name, int n, float min, float max);
-        std::string pdfName1_;
-        std::string pdfName2_;
+        // for the smurf tree
+        float scale1fb_;
+        float Q_;
+        float x1_, x2_;
+        float id1f_, id2f_;
+        int id1_, id2_;
+        float bdt_;
 
 };
 

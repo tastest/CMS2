@@ -19,14 +19,15 @@ endif
 CC = g++
 CMSROOT = ../
 #LHAPDF = /tas07/disk00/jribnik/lhapdf
-LHAPDF = /tas03/home/dlevans/lhapdf-5.8.6b2/
+LHAPDF = /tas03/home/dlevans/LHAPDF/
+#LHAPDF = /afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/full/
 
 #ROOFITINCLUDE = 
 #ifdef CMSSW_VERSION
 #	ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
 #endif
 #INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE) -I$(CMSROOT)/CORE -I$(CMSROOT)/Tools
-INCLUDE = -I$(CMSROOT) -I$(CMSROOT)/CORE -I$(CMSROOT)/Tools -I$(LHAPDF)/include
+INCLUDE = -I$(LHAPDF)/include
 
 CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
 
@@ -37,49 +38,20 @@ ifeq ($(shell root-config --platform),macosx)
 	LINKERFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace $(shell root-config --libs) -lEG -lGenVector
 endif
 
-#TOOLSSOURCES = $(wildcard $(CMSROOT)/Tools/*.cc)
-TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc \
-			   $(CMSROOT)/Tools/goodrun.cc 
-
-TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
-TOOLSLIB = libCMS2NtupleMacrosTOOLS.so
-
-CORESOURCES = \
-    $(CMSROOT)/CORE/CMS2.cc \
-    $(CMSROOT)/CORE/utilities.cc \
-    $(CMSROOT)/CORE/mcSelections.cc
-
-COREOBJECTS = $(CORESOURCES:.cc=.o) 
-CORELIB = libCMS2NtupleMacrosCORE.so
-
-SOURCES = $(wildcard *.cc) 
+SOURCES = $(wildcard *.cc)
 OBJECTS = $(SOURCES:.cc=.o) LinkDef_out.o
 LIB = libCMS2NtupleMacrosLooper.so
 
-FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
 
-LIBS = $(CORELIB) $(TOOLSLIB) $(LIB) $(FWLIB)
+LIBS = $(LIB)
 
 .PHONY: all help compile clean cms2env
 
 libs:	$(LIBS)
 
-$(CORELIB):	$(COREOBJECTS) 
-	$(QUIET) echo "Linking $(CORELIB)"; \
-	$(LINKER) $(LINKERFLAGS) -shared $(COREOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
-
-$(TOOLSLIB): $(TOOLSOBJECTS) 
-	$(QUIET) echo "Linking $(TOOLSLIB)"; \
-	$(LINKER) $(LINKERFLAGS) -shared $(TOOLSOBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
-
 $(LIB):	$(OBJECTS) 
 	$(QUIET) echo "Linking $(LIB)"; \
 	$(LINKER) $(LINKERFLAGS) -shared $(OBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
-
-$(FWLIB) :
-	$(QUITE) echo "making MiniFWLite"; \
-	cd ../Tools/MiniFWLite; \
-	$(MAKE) -f Makefile;
 
 LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Making CINT dictionaries"; \
@@ -109,13 +81,7 @@ b: build
 
 clean: # clean up 
 	$(QUIET) rm -f \
-	$(CMSROOT)/CORE/*.o \
-	$(CMSROOT)/CORE/*.d \
-	$(CMSROOT)/CORE/*.so \
-	$(CMSROOT)/Tools/*.o \
-	$(CMSROOT)/Tools/*.d \
-	$(CMSROOT)/Tools/*.so \
-	$(CORELIB) $(TOOLSLIB) $(LOOPERLIB) $(FWLIB) \
+	$(LOOPERLIB) \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 endif

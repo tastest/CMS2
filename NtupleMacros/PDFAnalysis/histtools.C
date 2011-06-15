@@ -567,6 +567,26 @@ namespace hist {
   {
   }
 
+  void writeHist(TFile* file, const char* pat)
+  {
+    TList* list = gDirectory->GetList() ;
+    TIterator* iter = list->MakeIterator();
+
+    TRegexp re(pat,kTRUE) ;
+    file->cd();
+    while(TObject* obj=iter->Next()) {
+      if (TString(obj->GetName()).Index(re)>=0) {
+    obj->Write();
+    cout << "." ;
+    cout.flush() ;
+      }
+    }
+    cout << endl ;
+
+    delete iter ;
+  }
+
+
   void saveHist(const char* filename, const char* pat)
   {
     TList* list = gDirectory->GetList() ;
