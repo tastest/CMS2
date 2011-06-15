@@ -76,15 +76,15 @@ void makeWWFakeRates(bool doels, bool domus) {
     TChain *ch_el = new TChain("tree");
     TFile* fout_el(0);
     if (doels) {
-      ch_el   ->Add("/smurf/dmytro/samples/fake_ntuples/FakeRates18May2011/DoubleElectron.root");
-      fout_el = TFile::Open("ww_el_fr_smurfV4.root","RECREATE");
+      ch_el   ->Add("/nfs-3/userdata/cms2/FRBabies/ww15June2011/DoubleElectron_Run2011A-PromptReco.root");
+      fout_el = TFile::Open("ww_el_fr.root","RECREATE");
     }
 
     TChain *ch_mu = new TChain("tree");
     TFile* fout_mu(0);
     if (domus) {
-        ch_mu->Add("/smurf/dmytro/samples/fake_ntuples/FakeRates18May2011/SingleMu.root");
-        fout_mu = TFile::Open("ww_mu_fr_smurfV4.root","RECREATE");
+        ch_mu->Add("/nfs-3/userdata/cms2/FRBabies/ww15June2011/SingleMu_Run2011A-PromptReco.root");
+        fout_mu = TFile::Open("ww_mu_fr.root","RECREATE");
     }
     // A cut against Ws
     TCut notWCut  = "tcmet<20 && mt<25"; 
@@ -99,6 +99,7 @@ void makeWWFakeRates(bool doels, bool domus) {
     TCut jetCut5    = "ptpfj1>5";
     TCut jetCut15   = "ptpfj1>15";
     TCut jetCut30   = "ptpfj1>30";
+    TCut jetCut35   = "ptpfj1>35";
     TCut jetCut50   = "ptpfj1>50";
 
     //
@@ -108,8 +109,8 @@ void makeWWFakeRates(bool doels, bool domus) {
     TCut trgCutMu = "mu5_vstar>1 || mu8_vstar>1 || mu12_vstar>1 || mu15_vstar>1";
 
     // Numerator selections
-    TCut is_el_num = "num_el_smurfV3&&abs(id)==11"+trgCutEl+ptCut+notWCut;
-    TCut is_mu_num = "num_mu_smurfV3&&abs(id)==13"+trgCutMu+ptCut+notWCut;
+    TCut is_el_num = "num_el_smurfV6&&abs(id)==11"+trgCutEl+ptCut+notWCut;
+    TCut is_mu_num = "num_mu_smurfV6&&abs(id)==13"+trgCutMu+ptCut+notWCut;
 
     // Denominator selections
     TCut is_el_fo_v1 = "v1_el_smurfV1 && abs(id)==11" +trgCutEl+ptCut+notWCut;
@@ -143,11 +144,11 @@ void makeWWFakeRates(bool doels, bool domus) {
     TH2F* el_v2_15    = new TH2F("el_v2_15", "Electrons passed V2 selection (JetPt>15)",    nbinsx,xbin,nbinsy,ybin);
     TH2F* el_v3_15    = new TH2F("el_v3_15", "Electrons passed V3 selection (JetPt>15)",    nbinsx,xbin,nbinsy,ybin);
     TH2F* el_v4_15    = new TH2F("el_v4_15", "Electrons passed V4 selection (JetPt>15)",    nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_num_30   = new TH2F("el_num_30","Electrons passed final selection (JetPt>30)", nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v1_30    = new TH2F("el_v1_30", "Electrons passed V1 selection (JetPt>30)",    nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v2_30    = new TH2F("el_v2_30", "Electrons passed V2 selection (JetPt>30)",    nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v3_30    = new TH2F("el_v3_30", "Electrons passed V3 selection (JetPt>30)",    nbinsx,xbin,nbinsy,ybin);
-    TH2F* el_v4_30    = new TH2F("el_v4_30", "Electrons passed V4 selection (JetPt>30)",    nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_num_35   = new TH2F("el_num_35","Electrons passed final selection (JetPt>35)", nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v1_35    = new TH2F("el_v1_35", "Electrons passed V1 selection (JetPt>35)",    nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v2_35    = new TH2F("el_v2_35", "Electrons passed V2 selection (JetPt>35)",    nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v3_35    = new TH2F("el_v3_35", "Electrons passed V3 selection (JetPt>35)",    nbinsx,xbin,nbinsy,ybin);
+    TH2F* el_v4_35    = new TH2F("el_v4_35", "Electrons passed V4 selection (JetPt>35)",    nbinsx,xbin,nbinsy,ybin);
     TH2F* el_num_50   = new TH2F("el_num_50","Electrons passed final selection (JetPt>50)", nbinsx,xbin,nbinsy,ybin);
     TH2F* el_v1_50    = new TH2F("el_v1_50", "Electrons passed V1 selection (JetPt>50)",    nbinsx,xbin,nbinsy,ybin);
     TH2F* el_v2_50    = new TH2F("el_v2_50", "Electrons passed V2 selection (JetPt>50)",    nbinsx,xbin,nbinsy,ybin);
@@ -184,11 +185,11 @@ void makeWWFakeRates(bool doels, bool domus) {
         ch_el->Draw("pt:abs(eta)>>el_v2_15",  is_el_fo_v2+jetCut15);
         ch_el->Draw("pt:abs(eta)>>el_v3_15",  is_el_fo_v3+jetCut15);
         ch_el->Draw("pt:abs(eta)>>el_v4_15",  is_el_fo_v4+jetCut15);
-        ch_el->Draw("pt:abs(eta)>>el_num_30", is_el_num+jetCut30);
-        ch_el->Draw("pt:abs(eta)>>el_v1_30",  is_el_fo_v1+jetCut30);
-        ch_el->Draw("pt:abs(eta)>>el_v2_30",  is_el_fo_v2+jetCut30);
-        ch_el->Draw("pt:abs(eta)>>el_v3_30",  is_el_fo_v3+jetCut30);
-        ch_el->Draw("pt:abs(eta)>>el_v4_30",  is_el_fo_v4+jetCut30);
+        ch_el->Draw("pt:abs(eta)>>el_num_35", is_el_num+jetCut35);
+        ch_el->Draw("pt:abs(eta)>>el_v1_35",  is_el_fo_v1+jetCut35);
+        ch_el->Draw("pt:abs(eta)>>el_v2_35",  is_el_fo_v2+jetCut35);
+        ch_el->Draw("pt:abs(eta)>>el_v3_35",  is_el_fo_v3+jetCut35);
+        ch_el->Draw("pt:abs(eta)>>el_v4_35",  is_el_fo_v4+jetCut35);
         ch_el->Draw("pt:abs(eta)>>el_num_50", is_el_num+jetCut50);
         ch_el->Draw("pt:abs(eta)>>el_v1_50",  is_el_fo_v1+jetCut50);
         ch_el->Draw("pt:abs(eta)>>el_v2_50",  is_el_fo_v2+jetCut50);
@@ -227,10 +228,10 @@ void makeWWFakeRates(bool doels, bool domus) {
       eff2(el_v2_15, el_num_15, "el_fr_v2_15");
       eff2(el_v3_15, el_num_15, "el_fr_v3_15");
       eff2(el_v4_15, el_num_15, "el_fr_v4_15");
-      eff2(el_v1_30, el_num_30, "el_fr_v1_30");
-      eff2(el_v2_30, el_num_30, "el_fr_v2_30");
-      eff2(el_v3_30, el_num_30, "el_fr_v3_30");
-      eff2(el_v4_30, el_num_30, "el_fr_v4_30");
+      eff2(el_v1_35, el_num_35, "el_fr_v1_35");
+      eff2(el_v2_35, el_num_35, "el_fr_v2_35");
+      eff2(el_v3_35, el_num_35, "el_fr_v3_35");
+      eff2(el_v4_35, el_num_35, "el_fr_v4_35");
       eff2(el_v1_50, el_num_50, "el_fr_v1_50");
       eff2(el_v2_50, el_num_50, "el_fr_v2_50");
       eff2(el_v3_50, el_num_50, "el_fr_v3_50");
