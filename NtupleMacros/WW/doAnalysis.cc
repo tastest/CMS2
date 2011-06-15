@@ -74,9 +74,9 @@ enum hyp_selection {
 };
 
 // DEFAULT
-wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
-// wwcuts_t pass_all = PASSED_Skim1;
+wwcuts_t pass_all = PASSED_Skim1;
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
@@ -513,7 +513,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
       double jec = 1.0;
       // cout << cms2.evt_event() << " \traw pt: " << cms2.pfjets_p4().at(i).pt() << endl;
       if(applyJEC){
-	jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_rho());
+	jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho());
 	jet_corrector_pfL1FastJetL2L3->setJetA(cms2.pfjets_area().at(i));
 	jet_corrector_pfL1FastJetL2L3->setJetPt(cms2.pfjets_p4()[i].pt());
 	jet_corrector_pfL1FastJetL2L3->setJetEta(cms2.pfjets_p4()[i].eta());
