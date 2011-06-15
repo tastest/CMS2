@@ -491,8 +491,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
     case NominalSmurfV3:
     case NominalSmurfV4:
     case NominalSmurfV5:
-    case muonSelectionFO_mu_smurf_04:
-    case muonSelectionFO_mu_smurf_10:
         if (type == NominalSmurfV3 || type == NominalSmurfV4 || type == NominalSmurfV5){
             if (cms2.mus_p4().at(index).pt()<20){
                 if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.01)    return false; // d0 from pvtx
@@ -617,19 +615,24 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         }
         return true;
         break;
+    case muonSelectionFO_mu_smurf_04:
+    case muonSelectionFO_mu_smurf_10:
     case NominalSmurfV6:
       {
-        if (cms2.mus_p4().at(index).pt()<20){
-	  if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.01)    return false; // d0 from pvtx
-	} else {
-	  if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.02)    return false; // d0 from pvtx
-	}
+        if (type == NominalSmurfV6){
+            if (cms2.mus_p4().at(index).pt()<20){
+                if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.01)    return false; // d0 from pvtx
+            } else {
+                if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.02)    return false; // d0 from pvtx
+            }
+        } else {
+            if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.2)    return false; // d0 from pvtx
+        }
         if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
         if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits  
         if (TMath::Abs(mudzPV_smurfV3(index)) >= 0.1)       return false; // dz from pvtx
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
         if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
-	//recipe from boris
 	bool goodMuonGlobalMuon = false;
         if (((cms2.mus_type().at(index)) & (1<<1)) != 0) { // global muon
 	  goodMuonGlobalMuon = true;
