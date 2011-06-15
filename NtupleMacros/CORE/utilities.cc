@@ -6,7 +6,7 @@
 
 // ROOT includes
 #include "Math/VectorUtil.h"
-
+#include "CMS2.h"
 using std::vector;
 
 //return true if one of the leptons is the same in both hyps
