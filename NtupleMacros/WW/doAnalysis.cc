@@ -1,4 +1,4 @@
-const char* config_info = "SmurfV5 selection (Baseline;Tight+Loose;FullMET); Spring11 samples"; //Skim1
+const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;FullMET); Spring11 samples"; //Skim1
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -106,7 +106,7 @@ bool goodElectronWithoutIsolation(unsigned int i){
 
 bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
-  bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV5);
+  bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV6);
   bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
   assert(!lockToCoreSelectors || core==internal);
   return internal;
@@ -129,7 +129,7 @@ bool goodMuonWithoutIsolation(unsigned int i){
 
 bool goodMuonIsolated(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  bool core = ptcut && muonId(i, NominalSmurfV5);
+  bool core = ptcut && muonId(i, NominalSmurfV6);
   bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
   assert(!lockToCoreSelectors || core==internal);
   return internal;
@@ -2295,7 +2295,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.met_         = metValue();
   tree.sumet_       = sumetValue();
   tree.metPhi_      = metPhiValue();
-  metStruct trkMET  = trackerMET(i_hyp,0.2);
+  metStruct trkMET  = trackerMET(i_hyp,0.1);
   tree.trackMet_    = trkMET.met;
   tree.trackMetPhi_ = trkMET.metphi;
   tree.pTrackMet_   = projectedMet(i_hyp, trkMET.met, trkMET.metphi);
