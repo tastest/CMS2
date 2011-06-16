@@ -2370,6 +2370,9 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
 	tree.jet3McId_ = cms2.pfjets_mc_id().at(jets.at(2).second);
       }
     }
+    tree.processId_ = cms2.genps_signalProcessID();
+    if (tree.processId_==10010 || tree.processId_==10001) tree.higgsPt_ = getHiggsPt();
+    else tree.higgsPt_ = -9999.;
   }
 
   tree.dstype_ = sample;
@@ -3360,3 +3363,11 @@ void fill_dyest_histograms(int i_hyp, float weight, unsigned int nJets)
   }
 }
 
+float getHiggsPt() {
+  for (unsigned int i=0; i<cms2.genps_id().size(); ++i) {
+    if (cms2.genps_status().at(i) == 3 && cms2.genps_id().at(i) == 25) {
+      return cms2.genps_p4().at(i).pt();
+    }
+  }
+  return -1.;
+}

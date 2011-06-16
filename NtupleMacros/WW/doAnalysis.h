@@ -157,6 +157,8 @@ void find_most_energetic_jets(int i_hyp, double weight, bool realData, double et
 void getJetResponseFromZBalance(int i_hyp, double weight, bool realData, double etaMin, double etaMax);
 void fill_val_plots(int i_hyp, wwcuts_t cuts_passed, double weight);
 void fill_dyest_histograms(int i_hyp, float weight, unsigned int nJets);
+
+float getHiggsPt();
 				
 unsigned int bestZHyp();
 bool hypo (int i_hyp, double weight, bool zStudy = false, bool realData = false ); 
