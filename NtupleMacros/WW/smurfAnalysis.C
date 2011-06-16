@@ -166,7 +166,7 @@ struct SmurfAnalysis{
 
   static const unsigned int cut_final_complete = SmurfTree::ChargeMatch|cut_base;
 
-  static const unsigned int cut_top1B = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::OneBJet;
+  static const unsigned int cut_top1B = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::OneBJet;
   static const unsigned int cut_topTagged = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::TopTag|SmurfTree::ExtraLeptonVeto;
   static const unsigned int cut_final_nomass    = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
   
@@ -269,15 +269,15 @@ SmurfAnalysis::SmurfAnalysis(double lumi, const char* dir,
 			     const char* mu_fakerate_file,
 			     const char* mu_fakerate_name):
   lumi_(lumi),processOnlyImportantSamples(true),dir_(dir),json_(0),
-  rInOutEl_(0.13), rInOutMu_(0.16), kElMu_(0.823352)
+  rInOutEl_(0.16), rInOutMu_(0.20), kElMu_(0.823352)
 {
   measurement_.type = WW0Jet;
   measurement_.sig_type = SmurfTree::qqww;
   TFile *el_fakeRateFile = TFile::Open(el_fakerate_file);
   assert(el_fakeRateFile);
-  elFakeRate0_ = dynamic_cast<TH2F*>( el_fakeRateFile->Get(Form("%s_5",el_fakerate_name)) );
+  elFakeRate0_ = dynamic_cast<TH2F*>( el_fakeRateFile->Get(Form("%s_15",el_fakerate_name)) );
   assert(elFakeRate0_);
-  elFakeRate1_ = dynamic_cast<TH2F*>( el_fakeRateFile->Get(Form("%s_15",el_fakerate_name)) );
+  elFakeRate1_ = dynamic_cast<TH2F*>( el_fakeRateFile->Get(Form("%s_35",el_fakerate_name)) );
   assert(elFakeRate1_);
   elFakeRate2_ = dynamic_cast<TH2F*>( el_fakeRateFile->Get(Form("%s_50",el_fakerate_name)) );
   assert(elFakeRate2_);
@@ -287,7 +287,7 @@ SmurfAnalysis::SmurfAnalysis(double lumi, const char* dir,
   assert(muFakeRate0_);
   muFakeRate1_ = dynamic_cast<TH2F*>( mu_fakeRateFile->Get(Form("%s_15",mu_fakerate_name)) );
   assert(muFakeRate1_);
-  muFakeRate2_ = dynamic_cast<TH2F*>( mu_fakeRateFile->Get(Form("%s_50",mu_fakerate_name)) );
+  muFakeRate2_ = dynamic_cast<TH2F*>( mu_fakeRateFile->Get(Form("%s_30",mu_fakerate_name)) );
   assert(muFakeRate2_);
 }
 
@@ -750,6 +750,7 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
 	entry.hist_el[tree.type_]->Fill(eta2,pt2,weight);
       else
 	entry.hist_el_ss[tree.type_]->Fill(eta2,pt2,weight);
+      // cout << "Second electron is fake. Type: " << tree.type_ << "\t integral: " << entry.hist_el[tree.type_]->Integral() << endl;
     }
     // first muon is fake
     if ( (tree.cuts_ & cut_mu_1)==cut_mu_1 && (tree.cuts_ & cut_final)!=cut_final ){
@@ -764,6 +765,7 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
 	entry.hist_mu[tree.type_]->Fill(eta2,pt2,weight);
       else
 	entry.hist_mu_ss[tree.type_]->Fill(eta2,pt2,weight);
+      // cout << "Second muon is fake. Type: " << tree.type_ << "\t integral: " << entry.hist_mu[tree.type_]->Integral() << endl;
     }	
     if ( (tree.cuts_ & cut_final)==cut_final ) {
       if ( tree.lq1_*tree.lq2_<0 ){
