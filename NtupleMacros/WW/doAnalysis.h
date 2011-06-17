@@ -159,6 +159,7 @@ void fill_val_plots(int i_hyp, wwcuts_t cuts_passed, double weight);
 void fill_dyest_histograms(int i_hyp, float weight, unsigned int nJets);
 
 float getHiggsPt();
+float getHiggsPtWeight(float pt, float mH);
 				
 unsigned int bestZHyp();
 bool hypo (int i_hyp, double weight, bool zStudy = false, bool realData = false ); 

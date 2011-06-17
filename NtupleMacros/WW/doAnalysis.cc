@@ -100,6 +100,8 @@ wwcuts_t cuts_passed = 0;
 // Key analysis method implementation
 //
 
+TH1D* HiggsPtKFactor = 0;
+
 bool goodElectronWithoutIsolation(unsigned int i){
   return ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i);
 }
@@ -2371,8 +2373,17 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
       }
     }
     tree.processId_ = cms2.genps_signalProcessID();
-    if (tree.processId_==10010 || tree.processId_==10001) tree.higgsPt_ = getHiggsPt();
-    else tree.higgsPt_ = -9999.;
+    tree.higgsPt_ = -9999.;
+    tree.hPtWeight_ = 1.;
+    if (tree.processId_==10010 || tree.processId_==10001) {
+      float pt = getHiggsPt();
+      tree.higgsPt_ = pt;
+      if (tree.processId_==10010) {
+	TString ss = tree.name(sample);//get higgs mass from sample name
+	ss.Remove(0,3);//get rid of hww
+	tree.hPtWeight_ = getHiggsPtWeight(pt,ss.Atoi());
+      }
+    }
   }
 
   tree.dstype_ = sample;
@@ -3370,4 +3381,22 @@ float getHiggsPt() {
     }
   }
   return -1.;
+}
+
+float getHiggsPtWeight(float pt, float mH) {
+  if (pt<0) return 1.;
+  int higgsMass = round(mH);
+  if (HiggsPtKFactor!=0 && TString(HiggsPtKFactor->GetName()).Contains(Form("%i",higgsMass))) 
+    return HiggsPtKFactor->GetBinContent( HiggsPtKFactor->GetXaxis()->FindFixBin(pt));
+  TFile *fHiggsPtKFactorFile = TFile::Open("./files/ggHWW_KFactors_PowhegToHQT.root");
+  assert(fHiggsPtKFactorFile);
+  char kfactorHistName[100];
+  sprintf(kfactorHistName, "KFactor_PowhegToHQT_mH%d", higgsMass);
+  HiggsPtKFactor = (TH1D*)(fHiggsPtKFactorFile->Get(kfactorHistName));
+  if (HiggsPtKFactor) HiggsPtKFactor->SetDirectory(0);
+  assert(HiggsPtKFactor);
+  fHiggsPtKFactorFile->Close();
+  delete fHiggsPtKFactorFile;
+  //cout << "Using new hist for higgs pT k-factors: " << HiggsPtKFactor->GetName() << endl;
+  return HiggsPtKFactor->GetBinContent( HiggsPtKFactor->GetXaxis()->FindFixBin(pt));
 }
