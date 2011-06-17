@@ -124,6 +124,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
   headerf << "#include \"TMath.h\"" << endl;
   headerf << "#include \"TBranch.h\"" << endl;
   headerf << "#include \"TTree.h\"" << endl;
+  headerf << "#include \"TTreeCache.h\"" << endl;
   headerf << "#include \"TH1F.h\""  << endl;
   headerf << "#include \"TFile.h\"" << endl;
   headerf << "#include <vector> " << endl;
@@ -673,7 +674,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "using namespace tas;" << endl;
   codef << endl;
   codef << endl;
-  codef << "int ScanChain( TChain* chain, int nEvents = -1, std::string skimFilePrefix=\"\") {" << endl;
+  codef << "int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, std::string skimFilePrefix = \"test\") {" << endl;
   codef << "" << endl;
   codef << "  // Example Histograms" << endl;
   codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl;
@@ -691,24 +692,29 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "  TFile *currentFile = 0;" << endl;
   codef << "  while ( (currentFile = (TFile*)fileIter.Next()) ) {" << endl;
   codef << "    // Get File Content" << endl;
-  codef << "    TFile f( currentFile->GetTitle() );" << endl;
-  codef << "    TTree *tree = (TTree*)f.Get(\"Events\");" << endl;
+  codef << "    TFile *file = new TFile( currentFile->GetTitle() );" << endl;
+  codef << "    TTree *tree = (TTree*)file->Get(\"Events\");" << endl;
+  codef << "    if(fast) TTreeCache::SetLearnEntries(10);" << endl;
+  codef << "    if(fast) tree->SetCacheSize(128*1024*1024);" << endl;
   codef << "    cms2.Init(tree);" << endl;
   codef << "    " << endl;
   codef << "    // Event Loop" << endl;
-  codef << "    unsigned int nEvents = tree->GetEntries();" << endl;
-  codef << "    for( unsigned int event = 0; event < nEvents; ++event) {" << endl;
+  codef << "    unsigned int nEventsTree = tree->GetEntriesFast();" << endl;
+  codef << "    for( unsigned int event = 0; event < nEventsTree; ++event) {" << endl;
   codef << "    " << endl;
   codef << "      // Get Event Content" << endl;
+  codef << "      if(fast) tree->LoadTree(event);" << endl;
   codef << "      cms2.GetEntry(event);" << endl;
   codef << "      ++nEventsTotal;" << endl;
   codef << "    " << endl;
   codef << "      // Progress" << endl;
-  codef << "      CMS2::progress( nEventsTotal, nEventsChain );" << endl;
+  codef << "      CMS2::progress( nEventsTotal, nEventsChain );" << endl << endl;
+  codef << "      // Analysis Code" << endl << endl;
   codef << "    }" << endl;
   codef << "  " << endl;
   codef << "    delete tree;" << endl;
-  codef << "    f.Close();" << endl;
+  codef << "    file->Close();" << endl;
+  codef << "    delete file;" << endl;
   codef << "  }" << endl;
   codef << "  if ( nEventsChain != nEventsTotal ) {" << endl;
   codef << "    std::cout << \"ERROR: number of events from files is not equal to total number of events\" << std::endl;" << endl;
@@ -756,26 +762,22 @@ void makeBranchFile(std::string branchNamesFile) {
     TString varName;
     //loop over v_line until you get to the first element thats not a space
     for(vector<TString>::iterator it = v_line.begin();
-	it != v_line.end(); it++) {
+	    it != v_line.end(); it++) {
       if( *it != " " ) {
-	varName = *it;
+	      varName = *it;
       }
     }
     
     v_varNames.push_back(varName.Strip());  //paranoid....strips trailing spaces
     TString datatype("");
     for(unsigned int i = 0; i < v_line.size()-1; i++) {
-      TString temp = v_line[i];
-      if(temp.Contains("vector") && !temp.Contains("std::")) 
-	temp.ReplaceAll("vector", "std::vector");
-      if(temp.Contains("LorentzVector") && !temp.Contains("ROOT::Math::LorentzVector"))
-	temp.ReplaceAll("LorentzVector", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >");
-      temp.ReplaceAll(">>", "> >");
-      temp.ReplaceAll(">>>", "> > >");
-      if(i!=0)
-	datatype = datatype+" " + temp;
-      else
-	datatype = datatype+temp;
+      TString temp2 = v_line[i];
+      if(temp2.Contains("vector") && !temp2.Contains("std::")) temp2.ReplaceAll("vector", "std::vector");
+      if(temp2.Contains("LorentzVector") && !temp2.Contains("ROOT::Math::LorentzVector")) temp2.ReplaceAll("LorentzVector", "ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >");
+      temp2.ReplaceAll(">>", "> >");
+      temp2.ReplaceAll(">>>", "> > >");
+      if(i!=0) datatype = datatype+" " + temp2;
+      else datatype = datatype+temp2;
     }
     v_datatypes.push_back(datatype);
     
@@ -787,14 +789,12 @@ void makeBranchFile(std::string branchNamesFile) {
   branchfile << "#include \"TTree.h\"" << endl << endl << endl << endl;
 
   for(unsigned int i = 0; i < v_datatypes.size(); i++) {
-    TString temp(v_varNames.at(i));
+    TString temp2(v_varNames.at(i));
     if(v_datatypes.at(i).Contains("vector") || v_datatypes.at(i).Contains("LorentzVector")) {
-      branchfile << v_datatypes.at(i) << " *" 
-		 << temp.ReplaceAll("_","")+"_;" << endl;
+      branchfile << v_datatypes.at(i) << " *" << temp2.ReplaceAll("_","")+"_;" << endl;
       continue;
     }
-    branchfile << v_datatypes.at(i) << " " 
-	       << temp.ReplaceAll("_","")+"_;" << endl;
+    branchfile << v_datatypes.at(i) << " " << temp2.ReplaceAll("_","")+"_;" << endl;
   }
 
 
