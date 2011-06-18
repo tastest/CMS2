@@ -674,18 +674,19 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << endl;
   codef << "int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFilePrefix = \"test\") {" << endl;
   codef << "" << endl;
+  codef << "  // Benchmark" << endl;
+  codef << "  TBenchmark *bmark = new TBenchmark();" << endl;
+  codef << "  bmark->Start(\"benchmark\");" << endl;
+  codef << "" << endl;
   codef << "  // Example Histograms" << endl;
   codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl;
   codef << "  TH1F *samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
   codef << "  samplehisto->SetDirectory(rootdir);" << endl;
   codef << "" << endl;
-  codef << "  // Benchmark" << endl;
-  codef << "  TBenchmark *bmark = new TBenchmark();" << endl;
-  codef << "  bmark->Start(\"benchmark\");" << endl;
-  codef << "" << endl;
   codef << "  // Loop over events to Analyze" << endl;
   codef << "  unsigned int nEventsTotal = 0;" << endl;
   codef << "  unsigned int nEventsChain = chain->GetEntries();" << endl;
+  codef << "  if( nEvents >= 0 ) nEventsChain = nEvents;" << endl;
   if(branchNamesFile!="")
   codef << "  InitSkimmedTree(skimFilePrefix);" << endl;
   codef << "  TObjArray *listOfFiles = chain->GetListOfFiles();" << endl;
@@ -703,10 +704,12 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "    cms2.Init(tree);" << endl;
   codef << "    " << endl;
   codef << "    // Loop over Events in current file" << endl;
+  codef << "    if( nEventsTotal >= nEventsChain ) continue;" << endl;
   codef << "    unsigned int nEventsTree = tree->GetEntriesFast();" << endl;
   codef << "    for( unsigned int event = 0; event < nEventsTree; ++event) {" << endl;
   codef << "    " << endl;
   codef << "      // Get Event Content" << endl;
+  codef << "      if( nEventsTotal >= nEventsChain ) continue;" << endl;
   codef << "      if(fast) tree->LoadTree(event);" << endl;
   codef << "      cms2.GetEntry(event);" << endl;
   codef << "      ++nEventsTotal;" << endl;
