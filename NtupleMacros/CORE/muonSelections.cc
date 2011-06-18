@@ -602,15 +602,15 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         // cut on d0, dz using first good DA vertex
         // if there isn't a good vertex, use the beamSpot
         if ((vertex_index < 0 && vtxidx < 0) || cms2.mus_trkidx().at(index) < 0) {
-            if (fabs(cms2.mus_d0corr().at(index)) > 0.02)
+            if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
                 return false;
         }
         else if (vertex_index >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index, true).first) > 0.02)
+            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index, true).first) > 0.2)
                 return false;
         }
         else if (vtxidx >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx, true).first) > 0.02)
+            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx, true).first) > 0.2)
                 return false;            
         }
         return true;
