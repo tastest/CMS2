@@ -124,7 +124,6 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
   headerf << "#include \"TMath.h\"" << endl;
   headerf << "#include \"TBranch.h\"" << endl;
   headerf << "#include \"TTree.h\"" << endl;
-  headerf << "#include \"TTreeCache.h\"" << endl;
   headerf << "#include \"TH1F.h\""  << endl;
   headerf << "#include \"TFile.h\"" << endl;
   headerf << "#include <vector> " << endl;
@@ -650,47 +649,52 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
 
   // TTree *ev = (TTree*)f->Get("Events");
   
-  codef << "/* Usage:" << endl;
-  codef << "   root [0] .L ScanChain.C++" << endl;
-  codef << "   root [1] TChain *chain = new TChain(\"Events\")" << endl;
-  codef << "   root [2] chain->Add(\"merged_ntuple.root\")" << endl;
-  codef << "   root [3] ScanChain(chain)" << endl;
-  codef << "*/" << endl;
+  codef << "// Usage:" << endl;
+  codef << "// > root -b doAll.C" << endl;
   codef << "" << endl;
   codef << "// C++" << endl;
   codef << "#include <iostream>" << endl;
   codef << "#include <vector>" << endl;
   codef << "" << endl;
   codef << "// ROOT" << endl;
+  codef << "#include \"TBenchmark.h\"" << endl;
   codef << "#include \"TChain.h\"" << endl;
-  codef << "#include \"TFile.h\"" << endl;
   codef << "#include \"TDirectory.h\"" << endl;
+  codef << "#include \"TFile.h\"" << endl;
   codef << "#include \"TROOT.h\"" << endl;
+  codef << "#include \"TTreeCache.h\"" << endl;
   codef << "" << endl;
   codef << "// CMS2" << endl;
   codef << "#include \"" + Classname+".cc\"" << endl;
   if(branchNamesFile!="")
     codef << "#include \"branches.h\"" << endl;
+  codef << "" << endl;
+  codef << "using namespace std;" << endl;
   codef << "using namespace tas;" << endl;
   codef << endl;
-  codef << endl;
-  codef << "int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, std::string skimFilePrefix = \"test\") {" << endl;
+  codef << "int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFilePrefix = \"test\") {" << endl;
   codef << "" << endl;
   codef << "  // Example Histograms" << endl;
   codef << "  TDirectory *rootdir = gDirectory->GetDirectory(\"Rint:\");" << endl;
   codef << "  TH1F *samplehisto = new TH1F(\"samplehisto\", \"Example histogram\", 200,0,200);" << endl;
   codef << "  samplehisto->SetDirectory(rootdir);" << endl;
   codef << "" << endl;
-  codef << "  // File Loop" << endl;
-  codef << "  if( nEvents == -1 ) nEvents = chain->GetEntries();" << endl;
-  codef << "  unsigned int nEventsChain = nEvents;" << endl;
+  codef << "  // Benchmark" << endl;
+  codef << "  TBenchmark *bmark = new TBenchmark();" << endl;
+  codef << "  bmark->Start(\"benchmark\");" << endl;
+  codef << "" << endl;
+  codef << "  // Loop over events to Analyze" << endl;
   codef << "  unsigned int nEventsTotal = 0;" << endl;
+  codef << "  unsigned int nEventsChain = chain->GetEntries();" << endl;
   if(branchNamesFile!="")
   codef << "  InitSkimmedTree(skimFilePrefix);" << endl;
   codef << "  TObjArray *listOfFiles = chain->GetListOfFiles();" << endl;
   codef << "  TIter fileIter(listOfFiles);" << endl;
   codef << "  TFile *currentFile = 0;" << endl;
+  codef << "" << endl;
+  codef << "  // File Loop" << endl;
   codef << "  while ( (currentFile = (TFile*)fileIter.Next()) ) {" << endl;
+  codef << "" << endl;
   codef << "    // Get File Content" << endl;
   codef << "    TFile *file = new TFile( currentFile->GetTitle() );" << endl;
   codef << "    TTree *tree = (TTree*)file->Get(\"Events\");" << endl;
@@ -698,7 +702,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "    if(fast) tree->SetCacheSize(128*1024*1024);" << endl;
   codef << "    cms2.Init(tree);" << endl;
   codef << "    " << endl;
-  codef << "    // Event Loop" << endl;
+  codef << "    // Loop over Events in current file" << endl;
   codef << "    unsigned int nEventsTree = tree->GetEntriesFast();" << endl;
   codef << "    for( unsigned int event = 0; event < nEventsTree; ++event) {" << endl;
   codef << "    " << endl;
@@ -712,14 +716,14 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "      // Analysis Code" << endl << endl;
   codef << "    }" << endl;
   codef << "  " << endl;
+  codef << "    // Clean Up" << endl;
   codef << "    delete tree;" << endl;
   codef << "    file->Close();" << endl;
   codef << "    delete file;" << endl;
   codef << "  }" << endl;
   codef << "  if ( nEventsChain != nEventsTotal ) {" << endl;
-  codef << "    std::cout << \"ERROR: number of events from files is not equal to total number of events\" << std::endl;" << endl;
+  codef << "    cout << Form( \"ERROR: number of events from files (\%d) is not equal to total number of events (\%d)\", nEventsChain, nEventsTotal ) << endl;" << endl;
   codef << "  }" << endl;
-  codef << "" << endl;
   if(branchNamesFile!="") {
     codef << "  outFile_->cd();" << endl;
     codef << "  outTree_->Write();" << endl;
@@ -730,6 +734,14 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
   codef << "  samplehisto->Draw();" << endl;
   codef << "  " << endl;
   codef << "  // return" << endl;
+  codef << "  bmark->Stop(\"benchmark\");" << endl;
+  codef << "  cout << endl;" << endl;
+  codef << "  cout << nEventsTotal << \" Events Processed\" << endl;" << endl;
+  codef << "  cout << \"------------------------------\" << endl;" << endl;
+  codef << "  cout << \"CPU  Time:\t\" << Form( \"\%.01f\", bmark->GetCpuTime(\"benchmark\")  ) << endl;" << endl;
+  codef << "  cout << \"Real Time:\t\" << Form( \"\%.01f\", bmark->GetRealTime(\"benchmark\") ) << endl;" << endl;
+  codef << "  cout << endl;" << endl;
+  codef << "  delete bmark;" << endl;
   codef << "  return 0;" << endl;
   codef << "}" << endl;
   
