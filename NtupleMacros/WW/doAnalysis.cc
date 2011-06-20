@@ -3383,9 +3383,8 @@ float getHiggsPt() {
   return -1.;
 }
 
-float getHiggsPtWeight(float pt, float mH) {
+float getHiggsPtWeight(float pt, int higgsMass) {
   if (pt<0) return 1.;
-  int higgsMass = round(mH);
   if (HiggsPtKFactor!=0 && TString(HiggsPtKFactor->GetName()).Contains(Form("%i",higgsMass))) 
     return HiggsPtKFactor->GetBinContent( HiggsPtKFactor->GetXaxis()->FindFixBin(pt));
   TFile *fHiggsPtKFactorFile = TFile::Open("./files/ggHWW_KFactors_PowhegToHQT.root");
