@@ -4,6 +4,7 @@
 #include "TString.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Common/interface/Wrapper.h"
+#include "TBits.h"
 
 namespace {
    struct dictionary {
@@ -30,5 +31,8 @@ namespace {
       
       std::vector<TString> vs;
       edm::Wrapper<std::vector<TString> > wvs;
+
+      TBits bits1;
+      edm::Wrapper<TBits> wbits1;
    };
 }
