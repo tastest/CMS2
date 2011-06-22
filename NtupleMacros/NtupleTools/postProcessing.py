@@ -289,8 +289,8 @@ if datapath.find("pnfs") != -1:
         dcachePrefix = 'dcap://cmsdca.fnal.gov:24125/pnfs/fnal.gov/'
         
 
-if datapath.find("hadooop") != -1:
-        dcachePrefix = ''
+if datapath.find("hadoop") != -1:
+        dcachePrefix = '/hadoop'
     
 
 if datapath.find("pnfs") != -1 or datapath.find("hadoop") != -1:
