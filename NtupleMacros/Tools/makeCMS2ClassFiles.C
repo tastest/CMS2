@@ -38,20 +38,6 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile);
 void makeBranchFile(std::string branchNamesFile);
 void makeDriverFile(std::string fname);
 
-struct hltcompare {
-  bool operator() (const TString& lhs, const TString& rhs) const {
-    string s_match = "hlt_bits";
-    string s_lhs   = (string) lhs;
-    string s_rhs   = (string) rhs;
-    s_lhs          = s_lhs.replace( s_lhs.find(s_match), s_match.length(), "" );
-    s_rhs          = s_rhs.replace( s_rhs.find(s_match), s_match.length(), "" );
-    int i_lhs      = atoi( s_lhs.c_str() );
-    int i_rhs      = atoi( s_rhs.c_str() );
-    return i_lhs < i_rhs;
-  }
-};
-
-
 
 //-------------------------------------------------------------------------------------------------
 void makeCMS2ClassFiles (std::string fname, bool paranoid = true, 
@@ -126,6 +112,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
   headerf << "#include \"TTree.h\"" << endl;
   headerf << "#include \"TH1F.h\""  << endl;
   headerf << "#include \"TFile.h\"" << endl;
+  headerf << "#include \"TBits.h\"" << endl;
   headerf << "#include <vector> " << endl;
   headerf << "typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;" << endl << endl;
   if (paranoid)
@@ -153,7 +140,8 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
        !branchtitle.EndsWith("/F") && 
        !branchtitle.EndsWith("/I") &&
        !branchtitle.EndsWith("/i") &&
-       !branchtitle.BeginsWith("TString"))
+       !branchtitle.BeginsWith("TString") &&
+       !branchtitle.BeginsWith("TBits"))
       continue;
     aliasarray->Add(fullarray->At(i));
   }
@@ -204,12 +192,13 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     
 
   // SetBranchAddresses for LorentzVectors
+  // TBits also needs SetMakeClass(0)...
   for(Int_t i = 0; i< aliasarray->GetSize(); i++) {
     TString aliasname(aliasarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString classname = branch->GetClassName();
     if ( !classname.Contains("vector<vector") ) {
-      if ( classname.Contains("Lorentz") || classname.Contains("PositionVector") ) {
+      if ( classname.Contains("Lorentz") || classname.Contains("PositionVector") || classname.Contains("TBits")) {
 	headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = 0;" << endl;
 	headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
 	headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
@@ -225,7 +214,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     TString aliasname(aliasarray->At(i)->GetName());
     TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
     TString classname = branch->GetClassName();
-    if ( ! (classname.Contains("Lorentz") || classname.Contains("PositionVector")) || classname.Contains("vector<vector") ) {
+    if ( ! (classname.Contains("Lorentz") || classname.Contains("PositionVector") || classname.Contains("TBits")) || classname.Contains("vector<vector") ) {
       headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = 0;" << endl;
       headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
       headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
@@ -425,36 +414,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t\t\t" << "cout << \"Cannot find Trigger \" << trigName << endl; " << endl;
     headerf << "\t\t\t" << "return 0;" << endl;
     headerf << "\t\t"   << "}" << endl << endl;
-    //get the list of branches that hold the HLT bitmasks
-    //store in a set 'cause its automatically sorted
-    //set<TString> s_HLTbitmasks;
-    set<TString, hltcompare> s_HLTbitmasks;
-    set<TString> s_L1bitmasks;
-    for(int j = 0; j < aliasarray->GetSize(); j++) {
-      TString aliasname(aliasarray->At(j)->GetName());
-      TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
-      TString classname = branch->GetClassName();
-      if(aliasname.Contains("hlt_bits") && classname.Contains("int")) {
-	      s_HLTbitmasks.insert(aliasname);
-      }
-    }
-    int i = 0;
-    for( set<TString>::const_iterator s_it = s_HLTbitmasks.begin(); s_it != s_HLTbitmasks.end(); s_it++, i++ ) {
-      if(i==0) {
-	      headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
-	      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-	      headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
-	      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
-	      headerf << "\t\t" << "}" << endl;
-	      continue;
-      }
-      headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
-      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-      headerf << "\t\t\t" << "bitmask <<= (trigIndx - " << Form("%d",32*i) << "); " << endl;	
-      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
-      headerf << "\t\t" << "}" << endl;
-    }
-    headerf << "\t" << "return 0;" << endl;
+    headerf << "\t" << "return hlt_bits().TestBitNumber(trigIndx);" << endl;
     headerf << "\t" << "}" << endl;
   }//if(haveHLTInfo) 
 
@@ -471,38 +431,7 @@ void makeHeaderFile(TFile *f, bool paranoid, string Classname) {
     headerf << "\t\t\t" << "cout << \"Cannot find Trigger \" << trigName << endl; " << endl;
     headerf << "\t\t\t" << "return 0;" << endl;
     headerf << "\t\t"   << "}" << endl << endl;
-    //get the list of branches that hold the HLT bitmasks
-    //store in a set 'cause its automatically sorted
-    set<TString> s_HLTbitmasks;
-    set<TString> s_L1bitmasks;
-    for(int j = 0; j < aliasarray->GetSize(); j++) {
-      TString aliasname(aliasarray->At(j)->GetName());
-      TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
-      TString classname = branch->GetClassName();
-      if(aliasname.Contains("hlt8e29_bits") && classname.Contains("int")) {
-	s_HLTbitmasks.insert(aliasname);
-      }
-     
-    }
-    int i = 0;
-    for(set<TString>::const_iterator s_it = s_HLTbitmasks.begin();
-	s_it != s_HLTbitmasks.end(); s_it++, i++) {
-      
-      if(i==0) {
-	headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
-	headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-	headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
-	headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
-	headerf << "\t\t" << "}" << endl;
-	continue;
-      }
-      headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
-      headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-      headerf << "\t\t\t" << "bitmask <<= (trigIndx - " << Form("%d",32*i) << "); " << endl;	
-      headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
-      headerf << "\t\t" << "}" << endl;
-    }
-    headerf << "\t" << "return 0;" << endl;
+    headerf << "\t" << "return hlt8e29_bits().TestBitNumber(trigIndx);" << endl;
     headerf << "\t" << "}" << endl;
   }//if(haveHLT8E29Info) 
 
