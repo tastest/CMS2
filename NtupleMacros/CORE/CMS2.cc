@@ -10,10 +10,6 @@ namespace tas {
 	vector<TString> &evt_errModule() { return cms2.evt_errModule(); }
 	vector<TString> &evt_errSeverity() { return cms2.evt_errSeverity(); }
 	bool &evt_eventHasHalo() { return cms2.evt_eventHasHalo(); }
-	bool &filter_ele10mu10IsoId_passed() { return cms2.filter_ele10mu10IsoId_passed(); }
-	bool &filter_ele10mu10IsoId_run() { return cms2.filter_ele10mu10IsoId_run(); }
-	bool &filter_ele10mu10IsoIdMET_passed() { return cms2.filter_ele10mu10IsoIdMET_passed(); }
-	bool &filter_ele10mu10IsoIdMET_run() { return cms2.filter_ele10mu10IsoIdMET_run(); }
 	bool &hcalnoise_HasBadRBXTS4TS5() { return cms2.hcalnoise_HasBadRBXTS4TS5(); }
 	bool &ls_isValid() { return cms2.ls_isValid(); }
 	bool &evt_hbheFilter() { return cms2.evt_hbheFilter(); }
@@ -38,6 +34,17 @@ namespace tas {
 	float &evt_bField() { return cms2.evt_bField(); }
 	float &evt_rho() { return cms2.evt_rho(); }
 	float &evt_rhoJEC() { return cms2.evt_rhoJEC(); }
+	float &evt_kfactor() { return cms2.evt_kfactor(); }
+	float &evt_scale1fb() { return cms2.evt_scale1fb(); }
+	float &evt_xsec_excl() { return cms2.evt_xsec_excl(); }
+	float &evt_xsec_incl() { return cms2.evt_xsec_incl(); }
+	float &gen_met() { return cms2.gen_met(); }
+	float &gen_metPhi() { return cms2.gen_metPhi(); }
+	float &genps_alphaQCD() { return cms2.genps_alphaQCD(); }
+	float &genps_pthat() { return cms2.genps_pthat(); }
+	float &genps_qScale() { return cms2.genps_qScale(); }
+	float &genps_weight() { return cms2.genps_weight(); }
+	float &gen_sumEt() { return cms2.gen_sumEt(); }
 	float &hcalnoise_eventChargeFraction() { return cms2.hcalnoise_eventChargeFraction(); }
 	float &hcalnoise_eventEMEnergy() { return cms2.hcalnoise_eventEMEnergy(); }
 	float &hcalnoise_eventEMFraction() { return cms2.hcalnoise_eventEMFraction(); }
@@ -128,6 +135,11 @@ namespace tas {
 	float &evt_sumetOptHO() { return cms2.evt_sumetOptHO(); }
 	float &evt_sumetOptNoHF() { return cms2.evt_sumetOptNoHF(); }
 	float &evt_sumetOptNoHFHO() { return cms2.evt_sumetOptNoHFHO(); }
+	float &pdfinfo_pdf1() { return cms2.pdfinfo_pdf1(); }
+	float &pdfinfo_pdf2() { return cms2.pdfinfo_pdf2(); }
+	float &pdfinfo_scale() { return cms2.pdfinfo_scale(); }
+	float &pdfinfo_x1() { return cms2.pdfinfo_x1(); }
+	float &pdfinfo_x2() { return cms2.pdfinfo_x2(); }
 	float &evt_fixgrid_rho_all() { return cms2.evt_fixgrid_rho_all(); }
 	float &evt_fixgrid_rho_ctr() { return cms2.evt_fixgrid_rho_ctr(); }
 	float &evt_fixgrid_rho_fwd() { return cms2.evt_fixgrid_rho_fwd(); }
@@ -150,6 +162,19 @@ namespace tas {
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &evt_bsp4() { return cms2.evt_bsp4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_met_p4() { return cms2.l1_met_p4(); }
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_mht_p4() { return cms2.l1_mht_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_mc_motherp4() { return cms2.els_mc_motherp4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_mc_p4() { return cms2.els_mc_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_mc_gp_p4() { return cms2.jets_mc_gp_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_mc_motherp4() { return cms2.jets_mc_motherp4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_mc_p4() { return cms2.jets_mc_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_mc_motherp4() { return cms2.mus_mc_motherp4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &mus_mc_p4() { return cms2.mus_mc_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfjets_mc_gp_p4() { return cms2.pfjets_mc_gp_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfjets_mc_motherp4() { return cms2.pfjets_mc_motherp4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfjets_mc_p4() { return cms2.pfjets_mc_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &photons_mc_motherp4() { return cms2.photons_mc_motherp4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &photons_mc_p4() { return cms2.photons_mc_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &trk_mcp4() { return cms2.trk_mcp4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &davtxs_position() { return cms2.davtxs_position(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_conv_pos_p4() { return cms2.els_conv_pos_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_inner_position() { return cms2.els_inner_position(); }
@@ -159,6 +184,9 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_p4Out() { return cms2.els_p4Out(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_trk_p4() { return cms2.els_trk_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &els_vertex_p4() { return cms2.els_vertex_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genjets_p4() { return cms2.genjets_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_p4() { return cms2.genps_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &genps_prod_vtx() { return cms2.genps_prod_vtx(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gsftrks_inner_position() { return cms2.gsftrks_inner_position(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gsftrks_outer_p4() { return cms2.gsftrks_outer_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &gsftrks_outer_position() { return cms2.gsftrks_outer_position(); }
@@ -171,6 +199,8 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_p4() { return cms2.hyp_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_FVFit_p4() { return cms2.hyp_FVFit_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_FVFit_v4() { return cms2.hyp_FVFit_v4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_ll_mc_p4() { return cms2.hyp_ll_mc_p4(); }
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &hyp_lt_mc_p4() { return cms2.hyp_lt_mc_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_p4() { return cms2.jets_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jets_vertex_p4() { return cms2.jets_vertex_p4(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &jpts_p4() { return cms2.jpts_p4(); }
@@ -220,6 +250,7 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &vtxs_position() { return cms2.vtxs_position(); }
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &bsvtxs_position() { return cms2.bsvtxs_position(); }
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &els_convs_pos_p4() { return cms2.els_convs_pos_p4(); }
+	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &genps_lepdaughter_p4() { return cms2.genps_lepdaughter_p4(); }
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hlt_trigObjs_p4() { return cms2.hlt_trigObjs_p4(); }
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hyp_jets_p4() { return cms2.hyp_jets_p4(); }
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hyp_other_jets_p4() { return cms2.hyp_other_jets_p4(); }
@@ -284,6 +315,28 @@ namespace tas {
 	vector<float> &trkjets_trackCountingHighEffBJetTag() { return cms2.trkjets_trackCountingHighEffBJetTag(); }
 	vector<float> &trkjets_trackCountingHighPurBJetTag() { return cms2.trkjets_trackCountingHighPurBJetTag(); }
 	vector<float> &evt_bs_covMatrix() { return cms2.evt_bs_covMatrix(); }
+	vector<float> &els_mc3dr() { return cms2.els_mc3dr(); }
+	vector<float> &els_mcdr() { return cms2.els_mcdr(); }
+	vector<float> &jets_mc3dr() { return cms2.jets_mc3dr(); }
+	vector<float> &jets_mcdr() { return cms2.jets_mcdr(); }
+	vector<float> &jets_mc_emEnergy() { return cms2.jets_mc_emEnergy(); }
+	vector<float> &jets_mc_gpdr() { return cms2.jets_mc_gpdr(); }
+	vector<float> &jets_mc_hadEnergy() { return cms2.jets_mc_hadEnergy(); }
+	vector<float> &jets_mc_invEnergy() { return cms2.jets_mc_invEnergy(); }
+	vector<float> &jets_mc_otherEnergy() { return cms2.jets_mc_otherEnergy(); }
+	vector<float> &mus_mc3dr() { return cms2.mus_mc3dr(); }
+	vector<float> &mus_mcdr() { return cms2.mus_mcdr(); }
+	vector<float> &pfjets_mc3dr() { return cms2.pfjets_mc3dr(); }
+	vector<float> &pfjets_mcdr() { return cms2.pfjets_mcdr(); }
+	vector<float> &pfjets_mc_emEnergy() { return cms2.pfjets_mc_emEnergy(); }
+	vector<float> &pfjets_mc_gpdr() { return cms2.pfjets_mc_gpdr(); }
+	vector<float> &pfjets_mc_hadEnergy() { return cms2.pfjets_mc_hadEnergy(); }
+	vector<float> &pfjets_mc_invEnergy() { return cms2.pfjets_mc_invEnergy(); }
+	vector<float> &pfjets_mc_otherEnergy() { return cms2.pfjets_mc_otherEnergy(); }
+	vector<float> &photons_mc3dr() { return cms2.photons_mc3dr(); }
+	vector<float> &photons_mcdr() { return cms2.photons_mcdr(); }
+	vector<float> &trk_mc3dr() { return cms2.trk_mc3dr(); }
+	vector<float> &trk_mcdr() { return cms2.trk_mcdr(); }
 	vector<float> &davtxs_chi2() { return cms2.davtxs_chi2(); }
 	vector<float> &davtxs_ndof() { return cms2.davtxs_ndof(); }
 	vector<float> &davtxs_sumpt() { return cms2.davtxs_sumpt(); }
@@ -677,6 +730,10 @@ namespace tas {
 	vector<vector<float> > &els_convs_dcot() { return cms2.els_convs_dcot(); }
 	vector<vector<float> > &els_convs_dist() { return cms2.els_convs_dist(); }
 	vector<vector<float> > &els_convs_radius() { return cms2.els_convs_radius(); }
+	vector<vector<float> > &puInfo_instLumi() { return cms2.puInfo_instLumi(); }
+	vector<vector<float> > &puInfo_sump_highpt() { return cms2.puInfo_sump_highpt(); }
+	vector<vector<float> > &puInfo_sumpt_lowpt() { return cms2.puInfo_sumpt_lowpt(); }
+	vector<vector<float> > &puInfo_zpositions() { return cms2.puInfo_zpositions(); }
 	vector<vector<float> > &vtxs_covMatrix() { return cms2.vtxs_covMatrix(); }
 	vector<vector<float> > &bsvtxs_covMatrix() { return cms2.bsvtxs_covMatrix(); }
 	int &evt_cscLooseHaloId() { return cms2.evt_cscLooseHaloId(); }
@@ -693,8 +750,6 @@ namespace tas {
 	int &evt_nHaloTriggerCandidates() { return cms2.evt_nHaloTriggerCandidates(); }
 	int &evt_tightHaloId() { return cms2.evt_tightHaloId(); }
 	int &evt_bsType() { return cms2.evt_bsType(); }
-	int &filter_ele10mu10IsoId_prescale() { return cms2.filter_ele10mu10IsoId_prescale(); }
-	int &filter_ele10mu10IsoIdMET_prescale() { return cms2.filter_ele10mu10IsoIdMET_prescale(); }
 	int &evt_bunchCrossing() { return cms2.evt_bunchCrossing(); }
 	int &evt_experimentType() { return cms2.evt_experimentType(); }
 	int &evt_isRealData() { return cms2.evt_isRealData(); }
@@ -720,9 +775,51 @@ namespace tas {
 	int &l1_njetst() { return cms2.l1_njetst(); }
 	int &l1_nmus() { return cms2.l1_nmus(); }
 	int &ls_lumiSecQual() { return cms2.ls_lumiSecQual(); }
+	int &pdfinfo_id1() { return cms2.pdfinfo_id1(); }
+	int &pdfinfo_id2() { return cms2.pdfinfo_id2(); }
 	vector<int> &evt_ecaliPhiSuspects() { return cms2.evt_ecaliPhiSuspects(); }
 	vector<int> &evt_globaliPhiSuspects() { return cms2.evt_globaliPhiSuspects(); }
 	vector<int> &evt_hcaliPhiSuspects() { return cms2.evt_hcaliPhiSuspects(); }
+	vector<int> &els_mc3_id() { return cms2.els_mc3_id(); }
+	vector<int> &els_mc3idx() { return cms2.els_mc3idx(); }
+	vector<int> &els_mc3_motherid() { return cms2.els_mc3_motherid(); }
+	vector<int> &els_mc3_motheridx() { return cms2.els_mc3_motheridx(); }
+	vector<int> &els_mc_id() { return cms2.els_mc_id(); }
+	vector<int> &els_mcidx() { return cms2.els_mcidx(); }
+	vector<int> &els_mc_motherid() { return cms2.els_mc_motherid(); }
+	vector<int> &jets_mc3_id() { return cms2.jets_mc3_id(); }
+	vector<int> &jets_mc3idx() { return cms2.jets_mc3idx(); }
+	vector<int> &jets_mc_gpidx() { return cms2.jets_mc_gpidx(); }
+	vector<int> &jets_mc_id() { return cms2.jets_mc_id(); }
+	vector<int> &jets_mcidx() { return cms2.jets_mcidx(); }
+	vector<int> &jets_mc_motherid() { return cms2.jets_mc_motherid(); }
+	vector<int> &mus_mc3_id() { return cms2.mus_mc3_id(); }
+	vector<int> &mus_mc3idx() { return cms2.mus_mc3idx(); }
+	vector<int> &mus_mc3_motherid() { return cms2.mus_mc3_motherid(); }
+	vector<int> &mus_mc3_motheridx() { return cms2.mus_mc3_motheridx(); }
+	vector<int> &mus_mc_id() { return cms2.mus_mc_id(); }
+	vector<int> &mus_mcidx() { return cms2.mus_mcidx(); }
+	vector<int> &mus_mc_motherid() { return cms2.mus_mc_motherid(); }
+	vector<int> &pfjets_mc3_id() { return cms2.pfjets_mc3_id(); }
+	vector<int> &pfjets_mc3idx() { return cms2.pfjets_mc3idx(); }
+	vector<int> &pfjets_mc_gpidx() { return cms2.pfjets_mc_gpidx(); }
+	vector<int> &pfjets_mc_id() { return cms2.pfjets_mc_id(); }
+	vector<int> &pfjets_mcidx() { return cms2.pfjets_mcidx(); }
+	vector<int> &pfjets_mc_motherid() { return cms2.pfjets_mc_motherid(); }
+	vector<int> &photons_mc3_id() { return cms2.photons_mc3_id(); }
+	vector<int> &photons_mc3idx() { return cms2.photons_mc3idx(); }
+	vector<int> &photons_mc3_motherid() { return cms2.photons_mc3_motherid(); }
+	vector<int> &photons_mc3_motheridx() { return cms2.photons_mc3_motheridx(); }
+	vector<int> &photons_mc_id() { return cms2.photons_mc_id(); }
+	vector<int> &photons_mcidx() { return cms2.photons_mcidx(); }
+	vector<int> &photons_mc_motherid() { return cms2.photons_mc_motherid(); }
+	vector<int> &trk_mc3_id() { return cms2.trk_mc3_id(); }
+	vector<int> &trk_mc3idx() { return cms2.trk_mc3idx(); }
+	vector<int> &trk_mc3_motherid() { return cms2.trk_mc3_motherid(); }
+	vector<int> &trk_mc3_motheridx() { return cms2.trk_mc3_motheridx(); }
+	vector<int> &trk_mc_id() { return cms2.trk_mc_id(); }
+	vector<int> &trk_mcidx() { return cms2.trk_mcidx(); }
+	vector<int> &trk_mc_motherid() { return cms2.trk_mc_motherid(); }
 	vector<int> &davtxs_isFake() { return cms2.davtxs_isFake(); }
 	vector<int> &davtxs_isValid() { return cms2.davtxs_isValid(); }
 	vector<int> &davtxs_tracksSize() { return cms2.davtxs_tracksSize(); }
@@ -758,6 +855,9 @@ namespace tas {
 	vector<int> &els_type() { return cms2.els_type(); }
 	vector<int> &els_validHits() { return cms2.els_validHits(); }
 	vector<int> &els_valid_pixelhits() { return cms2.els_valid_pixelhits(); }
+	vector<int> &genps_id() { return cms2.genps_id(); }
+	vector<int> &genps_id_mother() { return cms2.genps_id_mother(); }
+	vector<int> &genps_status() { return cms2.genps_status(); }
 	vector<int> &gsftrks_charge() { return cms2.gsftrks_charge(); }
 	vector<int> &gsftrks_exp_innerlayers() { return cms2.gsftrks_exp_innerlayers(); }
 	vector<int> &gsftrks_exp_outerlayers() { return cms2.gsftrks_exp_outerlayers(); }
@@ -787,6 +887,10 @@ namespace tas {
 	vector<int> &hyp_type() { return cms2.hyp_type(); }
 	vector<int> &hyp_FVFit_ndf() { return cms2.hyp_FVFit_ndf(); }
 	vector<int> &hyp_FVFit_status() { return cms2.hyp_FVFit_status(); }
+	vector<int> &hyp_ll_mc_id() { return cms2.hyp_ll_mc_id(); }
+	vector<int> &hyp_ll_mc_motherid() { return cms2.hyp_ll_mc_motherid(); }
+	vector<int> &hyp_lt_mc_id() { return cms2.hyp_lt_mc_id(); }
+	vector<int> &hyp_lt_mc_motherid() { return cms2.hyp_lt_mc_motherid(); }
 	vector<int> &hyp_quadlep_first_type() { return cms2.hyp_quadlep_first_type(); }
 	vector<int> &hyp_quadlep_fourth_type() { return cms2.hyp_quadlep_fourth_type(); }
 	vector<int> &hyp_quadlep_second_type() { return cms2.hyp_quadlep_second_type(); }
@@ -875,6 +979,8 @@ namespace tas {
 	vector<int> &pfmus_particleId() { return cms2.pfmus_particleId(); }
 	vector<int> &photons_fiduciality() { return cms2.photons_fiduciality(); }
 	vector<int> &photons_scindex() { return cms2.photons_scindex(); }
+	vector<int> &puInfo_bunchCrossing() { return cms2.puInfo_bunchCrossing(); }
+	vector<int> &puInfo_nPUvertices() { return cms2.puInfo_nPUvertices(); }
 	vector<int> &convs_algo() { return cms2.convs_algo(); }
 	vector<int> &convs_isConverted() { return cms2.convs_isConverted(); }
 	vector<int> &convs_quality() { return cms2.convs_quality(); }
@@ -916,10 +1022,14 @@ namespace tas {
 	vector<vector<int> > &els_convs_flag() { return cms2.els_convs_flag(); }
 	vector<vector<int> > &els_convs_gsftkidx() { return cms2.els_convs_gsftkidx(); }
 	vector<vector<int> > &els_convs_tkidx() { return cms2.els_convs_tkidx(); }
+	vector<vector<int> > &genps_lepdaughter_id() { return cms2.genps_lepdaughter_id(); }
+	vector<vector<int> > &genps_lepdaughter_idx() { return cms2.genps_lepdaughter_idx(); }
 	vector<vector<int> > &hlt_trigObjs_id() { return cms2.hlt_trigObjs_id(); }
 	vector<vector<int> > &hyp_jets_idx() { return cms2.hyp_jets_idx(); }
 	vector<vector<int> > &hyp_other_jets_idx() { return cms2.hyp_other_jets_idx(); }
 	vector<vector<int> > &pfjets_pfcandIndicies() { return cms2.pfjets_pfcandIndicies(); }
+	vector<vector<int> > &puInfo_ntrks_highpt() { return cms2.puInfo_ntrks_highpt(); }
+	vector<vector<int> > &puInfo_ntrks_lowpt() { return cms2.puInfo_ntrks_lowpt(); }
 	vector<vector<int> > &convs_nHitsBeforeVtx() { return cms2.convs_nHitsBeforeVtx(); }
 	vector<vector<int> > &convs_tkalgo() { return cms2.convs_tkalgo(); }
 	vector<vector<int> > &convs_tkidx() { return cms2.convs_tkidx(); }
@@ -929,23 +1039,13 @@ namespace tas {
 	unsigned int &evt_event() { return cms2.evt_event(); }
 	unsigned int &evt_lumiBlock() { return cms2.evt_lumiBlock(); }
 	unsigned int &evt_run() { return cms2.evt_run(); }
+	unsigned int &genps_flavorHistoryFilterResult() { return cms2.genps_flavorHistoryFilterResult(); }
+	unsigned int &evt_ngenjets() { return cms2.evt_ngenjets(); }
+	unsigned int &genps_signalProcessID() { return cms2.genps_signalProcessID(); }
 	unsigned int &hlt_bits1() { return cms2.hlt_bits1(); }
 	unsigned int &hlt_bits10() { return cms2.hlt_bits10(); }
 	unsigned int &hlt_bits11() { return cms2.hlt_bits11(); }
-	unsigned int &hlt_bits12() { return cms2.hlt_bits12(); }
-	unsigned int &hlt_bits13() { return cms2.hlt_bits13(); }
-	unsigned int &hlt_bits14() { return cms2.hlt_bits14(); }
-	unsigned int &hlt_bits15() { return cms2.hlt_bits15(); }
-	unsigned int &hlt_bits16() { return cms2.hlt_bits16(); }
-	unsigned int &hlt_bits17() { return cms2.hlt_bits17(); }
-	unsigned int &hlt_bits18() { return cms2.hlt_bits18(); }
-	unsigned int &hlt_bits19() { return cms2.hlt_bits19(); }
 	unsigned int &hlt_bits2() { return cms2.hlt_bits2(); }
-	unsigned int &hlt_bits20() { return cms2.hlt_bits20(); }
-	unsigned int &hlt_bits21() { return cms2.hlt_bits21(); }
-	unsigned int &hlt_bits22() { return cms2.hlt_bits22(); }
-	unsigned int &hlt_bits23() { return cms2.hlt_bits23(); }
-	unsigned int &hlt_bits24() { return cms2.hlt_bits24(); }
 	unsigned int &hlt_bits3() { return cms2.hlt_bits3(); }
 	unsigned int &hlt_bits4() { return cms2.hlt_bits4(); }
 	unsigned int &hlt_bits5() { return cms2.hlt_bits5(); }
@@ -982,6 +1082,8 @@ namespace tas {
 	vector<unsigned int> &hyp_trilep_third_index() { return cms2.hyp_trilep_third_index(); }
 	vector<unsigned int> &l1_prescales() { return cms2.l1_prescales(); }
 	vector<unsigned int> &l1_techtrigprescales() { return cms2.l1_techtrigprescales(); }
+	int &evt_nEvts() { return cms2.evt_nEvts(); }
+	float &evt_filt_eff() { return cms2.evt_filt_eff(); }
 	bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }
 	bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }
 }
