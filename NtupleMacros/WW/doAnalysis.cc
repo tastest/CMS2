@@ -1,4 +1,4 @@
-const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;FullMET); Spring11 samples"; //Skim1
+const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;FullMET); 42X"; //Skim1
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -76,7 +76,7 @@ enum hyp_selection {
 // DEFAULT
 // wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
-wwcuts_t pass_all = PASSED_Skim1;
+ wwcuts_t pass_all = PASSED_Skim1;
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
@@ -2620,7 +2620,7 @@ void ScanChain( TChain* chain,
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
       if (cms2.evt_event()%prescale!=0) continue;
       // if (cms2.evt_event()<106921||cms2.evt_event()>106931) continue;
-      // if (cms2.evt_event()!=670) continue;
+      // if (cms2.evt_event()!=13595393 && cms2.evt_event()!=227560649) continue;
       // Select the good runs from the json file
       if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
@@ -2629,7 +2629,7 @@ void ScanChain( TChain* chain,
       double weight = 1.0;
       if ( !realData && integratedLumi>0 ){
 	double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
-	   weight = integratedLumi * mcweight * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()) /
+	weight = integratedLumi * mcweight * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()*cms2.evt_filt_eff()) /
 	     (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
 	 }       
 	 ++nEventsTotal;
