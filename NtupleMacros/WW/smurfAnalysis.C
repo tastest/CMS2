@@ -17,6 +17,7 @@
 #include <string>
 #include "../../../Smurf/Core/SmurfTree.h"
 #include "../Tools/goodrun.cc"
+#include <fstream>
 
 struct Result{
   Result(){ 
@@ -32,6 +33,13 @@ struct Result{
   double total_yield(){ return yield[0]+yield[1]+yield[2]+yield[3]; }
   double total_error(){ return sqrt(err2[0]+err2[1]+err2[2]+err2[3]); }
 };
+
+// Selection bitmap:
+// * first 8 bits - SmurfTree::DataType
+// * 9-10 - nJets
+// * the rest is reserved
+// 
+
 enum SelectionType{
   WW0Jet,
   WW1Jet,
@@ -62,6 +70,39 @@ struct Measurement{
   SmurfTree::DataType sig_type;
 };
 
+struct YieldReport{
+  std::vector<std::string> lines[6];
+  void addColumn(std::string s1, std::string s2, std::string s3, std::string s4, std::string s5, std::string s6){
+    lines[0].push_back(s1);
+    lines[1].push_back(s2);
+    lines[2].push_back(s3);
+    lines[3].push_back(s4);
+    lines[4].push_back(s5);
+    lines[5].push_back(s6);
+  }
+};
+
+struct FakeReport{
+  std::string eleFakes;
+  std::string muFakes;
+  std::string allFakes;
+  std::string mcScaleFactor;
+};
+
+struct TopReport{
+  std::string eff1B;
+  std::string eff2B;
+  std::string topTaggedEvents;
+  std::string topBkgEstimate;
+  std::string mcScaleFactor;
+};
+
+struct DrellYanReport{
+  std::string yield[4];
+  std::string estimate;
+  std::string mcScaleFactor;
+};
+
 struct SmurfAnalysis{
   struct Entry {
     SmurfTree::DataType sample;
@@ -87,7 +128,9 @@ struct SmurfAnalysis{
 		const char* mu_fakerate_file = "files/ww_mu_fr.root",
 		const char* mu_fakerate_name = "mu_fr_m2");
   bool passedExtraCuts(SmurfTree& tree);
-  void showYields(double lumi = -1, bool tex_format=false); // -1 for lumi means internal lumi
+  void showYields(double lumi = -1, bool report=true); // -1 for lumi means internal lumi
+  void printEvents(const char* output_file_name);
+  void makeReport();
   void estimateFakeBackground(bool verbose = true);
   void estimateTopBackground();
   void estimateDYBackground();
@@ -125,13 +168,13 @@ struct SmurfAnalysis{
       sample==SmurfTree::ttbar;
   }
   bool isRelevantToTopBkg(SmurfTree::DataType sample){
-    return sample==SmurfTree::data || sample==SmurfTree::ttbar || sample==SmurfTree::tw || sample==SmurfTree::qqww;
+    return sample==SmurfTree::data || sample==SmurfTree::ttbar || sample==SmurfTree::tw || sample==SmurfTree::qqww || sample==SmurfTree::wjets;
   }
   bool isRelevantToBeProcessed(SmurfTree::DataType sample){
     switch (sample){
     case SmurfTree::qqww: case SmurfTree::ggww: case SmurfTree::ttbar: 
-    case SmurfTree::tw: // case SmurfTree::dyee: case SmurfTree::dymm: case SmurfTree::dytt:
-    case SmurfTree::wjets: //case SmurfTree::wz: case SmurfTree::zz: case SmurfTree::wgamma: case SmurfTree::qcd:
+    case SmurfTree::tw: case SmurfTree::dyee: case SmurfTree::dymm: case SmurfTree::dytt:
+    case SmurfTree::wjets: case SmurfTree::wz: case SmurfTree::zz: case SmurfTree::wgamma: case SmurfTree::qcd:
     case SmurfTree::hww130: case SmurfTree::hww160: case SmurfTree::data:
       return true;
     default:
@@ -141,6 +184,11 @@ struct SmurfAnalysis{
     // return sample==SmurfTree::data || isStandardModel(sample) || isGGHiggs(sample);
   }
 
+  std::map<SelectionType,YieldReport> wwSMYields_;
+  std::map<SelectionType,YieldReport> wwGGHYields_;
+  std::map<SelectionType,FakeReport> wwFakes_;
+
+  std::map<SelectionType,std::map<SmurfTree::DataType,YieldReport> > higgsYields_;
   double lumi_;
   bool processOnlyImportantSamples;
   TH2F *elFakeRate0_;
@@ -184,32 +232,36 @@ private:
   void getIntegral(const TH2F* h, double& integral, double& error, const TH2F* fakeRate, 
 		   int etaBin=-1, int ptBin=-1); // last two options for slicing in eta and pt bins
   void addSample(SmurfTree::DataType sample);
+  void printYieldReport(std::ofstream& report, const YieldReport& input, const char* caption);
 
 };
 
 bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type){
   if (tree.njets_!=0) return false;
   switch (sig_type){
-  case SmurfTree::hww120: 
   case SmurfTree::hww115: 
     return tree.lep1_.pt()>20 && tree.lep2_.pt()>10 &&
-      tree.dilep_.mass()<40 && fabs(tree.dPhi_)<2.0 && 
+      tree.dilep_.mass()<40 && fabs(tree.dPhi_)<M_PI*115/180 && 
+      tree.mt_>70 && tree.mt_<110;
+  case SmurfTree::hww120: 
+    return tree.lep1_.pt()>20 && tree.lep2_.pt()>10 &&
+      tree.dilep_.mass()<40 && fabs(tree.dPhi_)<M_PI*115/180 && 
       tree.mt_>70 && tree.mt_<120;
   case SmurfTree::hww130: 
     return tree.lep1_.pt()>25 && tree.lep2_.pt()>10 &&
-      tree.dilep_.mass()<45 && fabs(tree.dPhi_)<1.5 && 
+      tree.dilep_.mass()<45 && fabs(tree.dPhi_)<M_PI*90/180 && 
       tree.mt_>75 && tree.mt_<125;
   case SmurfTree::hww140:
     return tree.lep1_.pt()>25 && tree.lep2_.pt()>15 &&
-      tree.dilep_.mass()<45 && fabs(tree.dPhi_)<1.5 &&
+      tree.dilep_.mass()<45 && fabs(tree.dPhi_)<M_PI*90/180 &&
       tree.mt_>80 && tree.mt_<130;
   case SmurfTree::hww150:
     return tree.lep1_.pt()>27 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<50 && fabs(tree.dPhi_)<1.5 &&
+      tree.dilep_.mass()<50 && fabs(tree.dPhi_)<M_PI*90/180 &&
       tree.mt_>80 && tree.mt_<150;
   case SmurfTree::hww160:
     return tree.lep1_.pt()>30 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<50 && fabs(tree.dPhi_)<1.0 &&
+      tree.dilep_.mass()<50 && fabs(tree.dPhi_)<M_PI*60/180 &&
       tree.mt_>90 && tree.mt_<160;;
   case SmurfTree::hww170:
     return tree.lep1_.pt()>34 && tree.lep2_.pt()>25 &&
@@ -301,7 +353,7 @@ void SmurfAnalysis::processSamples()
 
 void SmurfAnalysis::estimateDYBackground()
 {
-  const bool binomialError = false;
+  // const bool binomialError = false;
   if (entries_.empty()){
     printf("No samples are processed.\n");
     return;
@@ -384,7 +436,7 @@ void SmurfAnalysis::estimateTopBackground()
     double B    = entries_.at(i).nTop1BJetEvents.total_yield();
     double errB = entries_.at(i).nTop1BJetEvents.total_error();
     double C    = entries_.at(i).nTopTaggedEvents.total_yield();
-    double errC = entries_.at(i).nTopTaggedEvents.total_error();
+    // double errC = entries_.at(i).nTopTaggedEvents.total_error();
     
     // compute efficiencies
     double eff_1b = B>0 ? A/B : 0;
@@ -417,9 +469,10 @@ void SmurfAnalysis::estimateTopBackground()
   }
 }
 
-void SmurfAnalysis::showYields(double lumi, bool tex_format)
+void SmurfAnalysis::showYields(double lumi, bool report)
 {
   printf("\nEvent yields:\n\b");;    
+  printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
   double weight = 1;
   if (lumi>0) weight = lumi/lumi_;
   for (unsigned int i=0; i<entries_.size(); ++i){
@@ -428,7 +481,61 @@ void SmurfAnalysis::showYields(double lumi, bool tex_format)
       printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j]*weight, pm, sqrt(entries_.at(i).finalSelection.err2[j])*weight);
     printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield()*weight, pm, entries_.at(i).finalSelection.total_error()*weight);
   }
+  if (report){
+    SelectionType selection_type = measurement_.type;
+    if ( selection_type==WW0Jet || selection_type==WW1Jet || selection_type==WW2Jets ){
+      wwSMYields_[selection_type] = YieldReport();
+      wwGGHYields_[selection_type] = YieldReport();
+      for (unsigned int i=0; i<entries_.size(); ++i){
+	if (isStandardModel(entries_.at(i).sample)){
+	  const char* plus_minus = "\\pm";
+	  wwSMYields_[selection_type].addColumn(SmurfTree::name(entries_.at(i).sample),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[0]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[0])*weight),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[1]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[1])*weight),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[2]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[2])*weight),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[3]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[3])*weight),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.total_yield()*weight, plus_minus, entries_.at(i).finalSelection.total_error()*weight));
+	}
+	if (entries_.at(i).sample==SmurfTree::data){
+	  wwSMYields_[selection_type].addColumn(SmurfTree::name(entries_.at(i).sample),
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[0]*weight),
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[1]*weight),
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[2]*weight),
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[3]*weight),
+						Form("$%5.0f$",entries_.at(i).finalSelection.total_yield()*weight));
+	}
+      }
+    }
+  }    
 }
+
+void SmurfAnalysis::printEvents(const char* output_file_name)
+{
+  FileStat_t buf;
+  std::string file_name = std::string(dir_)+"/"+SmurfTree::name(SmurfTree::data)+".root";
+  // check if file exists
+  if (gSystem->GetPathInfo(file_name.c_str(), buf)) return;
+
+  std::ofstream fout(output_file_name);
+  
+  SmurfTree tree;
+  tree.LoadTree(file_name.c_str());
+  tree.InitTree();
+  Long64_t nentries = tree.tree_->GetEntries();
+  for (Long64_t i = 0; i < nentries; i++){
+    tree.tree_->GetEntry(i);
+    if ( json_ )
+      if( !goodrun(tree.run_, tree.lumi_) ) continue;
+    if ( !passedExtraCuts(tree) ) continue;
+    if ( (tree.cuts_ & cut_final)==cut_final ) {
+      if ( tree.lq1_*tree.lq2_<0 ){
+	fout << tree.run_ << " \t" << tree.lumi_ << " \t" << tree.event_ << "\n";
+      }
+    }
+  }
+  fout.close();
+}
+
 
 void SmurfAnalysis::estimateFakeBackground(bool verbose)
 {
@@ -479,6 +586,15 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
   printf("      \t  EleFake-%s       \t  EleFake-%s       \t  EleFake-%s ", types[1], types[2], types[3]);
   printf("      \t  MuFake-%s       \t  MuFake-%s       \t  MuFake-%s       \t  Total-El       \t  Total-Mu       \t  Total\n", types[0], types[1], types[2]);
 	 
+  double total_el_fake(0);
+  double total_el_fake_stat(0);
+  double total_el_fake_psys(0);
+  double total_el_fake_msys(0);
+  double total_mu_fake(0);
+  double total_mu_fake_stat(0);
+  double total_mu_fake_psys(0);
+  double total_mu_fake_msys(0);
+
   for (unsigned int i=0; i<entries_.size(); ++i){
     if ( !isRelevantToFakeBkg(entries_.at(i).sample) ) continue;
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
@@ -531,6 +647,10 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
     printf(" \t%4.1f%s%3.1f+%3.1f-%3.1f", yield_el[1]+yield_mu[1], pm, sqrt(err_el[1]*err_el[1]+err_mu[1]*err_mu[1]),
 	   sqrt(err_el_p*err_el_p+err_mu_p*err_mu_p),sqrt(err_el_m*err_el_m+err_mu_m*err_mu_m));
     printf("\n");
+//     switch (entries_.at(i).sample){
+//       case SmurfTree::data:
+// 	total_el_fake += yield_el[1];
+//     }
   }
 
   //
@@ -878,5 +998,52 @@ void SmurfAnalysis::getIntegral(const TH2F* h, double& integral, double& error, 
     }
   }
   error = sqrt(error);
+}
+
+void SmurfAnalysis::printYieldReport(std::ofstream& report,
+				      const YieldReport& input,
+				      const char* caption)
+{
+  report << "\\begin{table}[!ht]\n";
+  report << "\\begin{center}\n{\\tiny\n";
+  report << "\\begin{tabular}{";
+  unsigned int nColumns = input.lines[0].size();
+  for(unsigned int i=0; i<nColumns+1;++i) report << "|c";
+  report << "|}\n";
+  report << "\\hline\n";
+  for(unsigned int i=0; i<nColumns;++i) report << " & " << input.lines[0].at(i);
+  report << "\\\\\n";
+  report << "\\hline\n";
+  report << "$\\mu\\mu$ ";  for(unsigned int i=0; i<nColumns;++i) report << " & " << input.lines[1].at(i);  report << "\\\\\n";
+  report << "$\\mu e$ ";    for(unsigned int i=0; i<nColumns;++i) report << " & " << input.lines[2].at(i);  report << "\\\\\n";
+  report << "$e\\mu$ ";     for(unsigned int i=0; i<nColumns;++i) report << " & " << input.lines[3].at(i);  report << "\\\\\n";
+  report << "$ee$ ";        for(unsigned int i=0; i<nColumns;++i) report << " & " << input.lines[4].at(i);  report << "\\\\\n";
+  report << "\\hline\n";
+  report << " all ";        for(unsigned int i=0; i<nColumns;++i) report << " & " << input.lines[5].at(i);  report << "\\\\\n";
+  report << "\\hline\n";
+  report << "\\end{tabular}\n";
+  report << "\\caption{" << caption << "}\n";
+  report << "}\n\\end{center}\n\\end{table}\n";
+}
+
+void SmurfAnalysis::makeReport()
+{
+  std::ofstream report("smurfAnalysis.tex");
+  report << "\\documentclass[12pt]{report}\n\\usepackage[left=0.5in, right=1in, top=0.5in, bottom=1in]{geometry}\n";
+  report << "\\begin{document}\n";
+  report << "\n\\section{WW 0-jet Selection}\n";
+  if ( wwSMYields_.find(WW0Jet)!=wwSMYields_.end() ){
+    printYieldReport(report, wwSMYields_[WW0Jet],
+		      "Expected number of events for Standard Model processes after applying the WW 0-jet selection requirements");
+  }
+  if ( wwGGHYields_.find(WW0Jet)!=wwGGHYields_.end() ){
+    printYieldReport(report, wwGGHYields_[WW0Jet],
+		      "Expected number of events for Higgs processes after applying the WW 0-jet selection requirements");
+  }
+  report << "\\clearpage\n\n";
+  report << "\\section{WW 1-jet Selection}\n";
+  report << "\\clearpage\n";
+  report << "\\end{document}\n";
+  report.close();
 }
 
