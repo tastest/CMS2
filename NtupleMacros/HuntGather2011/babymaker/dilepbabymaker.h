@@ -265,6 +265,7 @@ private:
     Float_t e1_dcot_;
     Float_t e1_dist_;
     Float_t e1_drmu_;
+    Float_t e1_drmuSS_;
     Bool_t  e1_isspike_;
     Int_t   e1_ctfCharge_;
     Int_t   e1_scCharge_;
@@ -298,6 +299,7 @@ private:
     Float_t e2_dcot_;
     Float_t e2_dist_;
     Float_t e2_drmu_;
+    Float_t e2_drmuSS_;
     Bool_t  e2_isspike_;
     Int_t   e2_ctfCharge_;
     Int_t   e2_scCharge_;
