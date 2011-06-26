@@ -12,6 +12,7 @@
 #include "TObjArray.h"
 #include "TTree.h"
 #include "TRandom3.h"
+#include "TTreeCache.h"
 
 // CMS2 CORE includes 
 #include "CORE/MT2/MT2.h"
@@ -76,6 +77,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
     {
         TFile f(currentFile->GetTitle());
         TTree *tree = (TTree*)f.Get("Events");
+        TTreeCache::SetLearnEntries(10);
+        tree->SetCacheSize(128*1024*1024);
         cms2.Init(tree);
 
         //Event Loop
@@ -83,6 +86,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
         unsigned int nEvents = tree->GetEntries();
         for(unsigned int event = 0; event < nEvents; ++event)
         {
+            tree->LoadTree(event);
             cms2.GetEntry(event);
             ++nEventsTotal;
 
@@ -139,8 +143,20 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mcid2_ = abs(ll_id) == 13 ? cms2.mus_mc_id()[ll_idx] : cms2.els_mc_id()[ll_idx];
                     mcmotherid1_ = abs(lt_id) == 13 ? cms2.mus_mc_motherid()[lt_idx] : cms2.els_mc_motherid()[lt_idx];
                     mcmotherid2_ = abs(ll_id) == 13 ? cms2.mus_mc_motherid()[ll_idx] : cms2.els_mc_motherid()[ll_idx];
+                    mc3id1_ = abs(lt_id) == 13 ? cms2.mus_mc3_id()[lt_idx] : cms2.els_mc3_id()[lt_idx];
+                    mc3id2_ = abs(ll_id) == 13 ? cms2.mus_mc3_id()[ll_idx] : cms2.els_mc3_id()[ll_idx];
+                    mc3motherid1_ = abs(lt_id) == 13 ? cms2.mus_mc3_motherid()[lt_idx] : cms2.els_mc3_motherid()[lt_idx];
+                    mc3motherid2_ = abs(ll_id) == 13 ? cms2.mus_mc3_motherid()[ll_idx] : cms2.els_mc3_motherid()[ll_idx];
                     lep1isFromW_ = leptonIsFromW(lt_idx, lt_id, true);
                     lep2isFromW_ = leptonIsFromW(ll_idx, ll_id, true);
+                    mcpt1_ = abs(lt_id) == 13 ? cms2.mus_mc_p4()[lt_idx].pt() : cms2.els_mc_p4()[lt_idx].pt();
+                    mcmotherpt1_ = abs(lt_id) == 13 ? cms2.mus_mc_motherp4()[lt_idx].pt() : cms2.els_mc_motherp4()[lt_idx].pt();
+                    mcpt2_ = abs(ll_id) == 13 ? cms2.mus_mc_p4()[ll_idx].pt() : cms2.els_mc_p4()[ll_idx].pt();
+                    mcmotherpt2_ = abs(ll_id) == 13 ? cms2.mus_mc_motherp4()[ll_idx].pt() : cms2.els_mc_motherp4()[ll_idx].pt();
+                    mc3pt1_ = abs(lt_id) == 13 ? cms2.genps_p4()[cms2.mus_mc3idx()[lt_idx]].pt() : cms2.genps_p4()[cms2.els_mc3idx()[lt_idx]].pt();
+                    mc3motherpt1_ = abs(lt_id) == 13 ? cms2.genps_p4()[cms2.mus_mc3_motheridx()[lt_idx]].pt() : cms2.genps_p4()[cms2.els_mc3_motheridx()[lt_idx]].pt();
+                    mc3pt2_ = abs(ll_id) == 13 ? cms2.genps_p4()[cms2.mus_mc3idx()[ll_idx]].pt() : cms2.genps_p4()[cms2.els_mc3idx()[ll_idx]].pt();
+                    mc3motherpt2_ = abs(ll_id) == 13 ? cms2.genps_p4()[cms2.mus_mc3_motheridx()[ll_idx]].pt() : cms2.genps_p4()[cms2.els_mc3_motheridx()[ll_idx]].pt();
                 }
 
                 //
@@ -618,6 +634,14 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 ntchembtags30_ = 0;
                 ntchembtags40_ = 0;
 
+                ntchelbtags20_ = 0;
+                ntchelbtags30_ = 0;
+                ntchelbtags40_ = 0;
+
+                nssvhembtags20_ = 0;
+                nssvhembtags30_ = 0;
+                nssvhembtags40_ = 0;
+                
                 for (unsigned int jeti = 0; jeti < theBtagJetIndices.size(); jeti++) {
                     
                     float pt = cms2.pfjets_p4()[theBtagJetIndices[jeti]].pt() * cms2.pfjets_corL1FastL2L3()[theBtagJetIndices[jeti]];
@@ -714,8 +738,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso1_   = muonIsoValue(index1);
                     ntiso1_ = muonIsoValue(index1, false); 
                     type1_  = cms2.mus_type()[index1];
-                    mu1_numSSv3_      = muonId(index1, NominalSSv4);
-                    mu1_foSSv3_       = muonId(index1, muonSelectionFO_ssV4);
+                    mu1_numSSv4_      = muonId(index1, NominalSSv4);
+                    mu1_foSSv4_       = muonId(index1, muonSelectionFO_ssV4);
+                    mu1_numSSv3_      = muonId(index1, NominalSSv3);
+                    mu1_foSSv3_       = muonId(index1, muonSelectionFO_ssV3);
                     mu1_muonidfull_   = muonId(index1, NominalTTbarV2);
                     mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2);
                     mu1_muonidfullV1_ = muonId(index1, NominalTTbar);
@@ -802,8 +828,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     iso2_   = muonIsoValue(index2);
                     ntiso2_ = muonIsoValue(index2, false);
                     type2_  = cms2.mus_type()[index2];
-                    mu2_numSSv3_      = muonId(index2, NominalSSv4);
-                    mu2_foSSv3_       = muonId(index2, muonSelectionFO_ssV4);
+                    mu2_numSSv4_      = muonId(index2, NominalSSv4);
+                    mu2_foSSv4_       = muonId(index2, muonSelectionFO_ssV4);
+                    mu2_numSSv3_      = muonId(index2, NominalSSv3);
+                    mu2_foSSv3_       = muonId(index2, muonSelectionFO_ssV3);
                     mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
                     mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
                     mu2_muonidfullV1_ = muonId(index2, NominalTTbar);
@@ -917,6 +945,9 @@ void dilepbabymaker::InitBabyNtuple ()
     scale1fb_     = -999999.;
     pthat_        = -999999.;
     hyp_type_     = -999999;
+    ngenjets_     = -999999;
+    genmet_       = -999999.;
+    gensumjetpt_  = -999999.;
     pfmet_        = -999999.;
     tcmet_        = -999999.;
     pfmetphi_   = -999999.;
@@ -1012,7 +1043,13 @@ void dilepbabymaker::InitBabyNtuple ()
     drjet1_       = -999999.;
     mcid1_        = -999999;
     mcmotherid1_  = -999999;
-    eormu2_       = -999999;
+    mcpt1_        = -999999;
+    mcmotherpt1_  = -999999.;
+    mc3id1_        = -999999;
+    mc3motherid1_  = -999999;
+    mc3pt1_        = -999999;
+    mc3motherpt1_  = -999999.;
+    eormu2_       = -999999.;
     type2_        = -999999;
     pt2_          = -999999.;
     eta2_         = -999999.;
@@ -1026,6 +1063,12 @@ void dilepbabymaker::InitBabyNtuple ()
     drjet2_       = -999999.;
     mcid2_        = -999999;
     mcmotherid2_  = -999999;
+    mcpt2_        = -999999.;
+    mcmotherpt2_  = -999999.;
+    mc3id2_        = -999999;
+    mc3motherid2_  = -999999;
+    mc3pt2_        = -999999.;
+    mc3motherpt2_  = -999999.;
     mt2_          = -999999.;
     mt2j_         = -999999.;
     extraZveto_   = 0;
@@ -1043,6 +1086,8 @@ void dilepbabymaker::InitBabyNtuple ()
     lep2isFromW_ = -999999;
 
     // muon stuff
+    mu1_numSSv4_      = 0;
+    mu1_foSSv4_       = 0;
     mu1_numSSv3_      = 0;
     mu1_foSSv3_       = 0;
     mu1_muonidfull_   = 0;
@@ -1060,6 +1105,8 @@ void dilepbabymaker::InitBabyNtuple ()
     mu1_relPtErr_     = -999999.;
     mu1_trkpt_        = -999999.;
 
+    mu2_numSSv4_      = 0;
+    mu2_foSSv4_       = 0;
     mu2_numSSv3_      = 0;
     mu2_foSSv3_       = 0;
     mu2_muonidfull_   = 0;
@@ -1200,6 +1247,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("scale1fb",     &scale1fb_,    "scale1fb/F"    );
     babyTree_->Branch("pthat",        &pthat_,       "pthat/F"       );
     babyTree_->Branch("hyp_type",     &hyp_type_,    "hyp_type/I"    );
+    babyTree_->Branch("ngenjets", &ngenjets_, "gen_jets/I");
+    babyTree_->Branch("genmet", &genmet_, "genmet/F");
+    babyTree_->Branch("gensumjetpt", &gensumjetpt_, "gensumjetpt/F");
     babyTree_->Branch("pfmet",        &pfmet_,       "pfmet/F"       );
     babyTree_->Branch("tcmet",        &tcmet_,       "tcmet/F"       );
     babyTree_->Branch("pfmetphi",        &pfmetphi_,       "pfmetphi/F"       );
@@ -1294,6 +1344,12 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drjet1",     &drjet1_,     "drjet1/F"    );
     babyTree_->Branch("mcid1",      &mcid1_,      "mcid1/I"     );
     babyTree_->Branch("mcmotherid1",&mcmotherid1_,"mcmotherid1/I");
+    babyTree_->Branch("mcpt1",      &mcpt1_,      "mcpt1/F"     );
+    babyTree_->Branch("mcmotherpt1",&mcmotherpt1_,"mcmotherpt1/F");
+    babyTree_->Branch("mc3id1",      &mc3id1_,      "mc3id1/I"     );
+    babyTree_->Branch("mc3motherid1",&mc3motherid1_,"mc3motherid1/I");
+    babyTree_->Branch("mc3pt1",      &mc3pt1_,      "mc3pt1/F"     );
+    babyTree_->Branch("mc3motherpt1",&mc3motherpt1_,"mc3motherpt1/F");
     babyTree_->Branch("eormu2",     &eormu2_,     "eormu2/I"    );
     babyTree_->Branch("type2",      &type2_,      "type2/I"     );
     babyTree_->Branch("pt2",        &pt2_,        "pt2/F"       );
@@ -1308,6 +1364,12 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("drjet2",     &drjet2_,     "drjet2/F"    );
     babyTree_->Branch("mcid2",      &mcid2_,      "mcid2/I"     );
     babyTree_->Branch("mcmotherid2",&mcmotherid2_,"mcmotherid2/I");
+    babyTree_->Branch("mcpt2",      &mcpt2_,      "mcpt2/F"     );
+    babyTree_->Branch("mcmotherpt2",&mcmotherpt2_,"mcmotherpt2/F");
+    babyTree_->Branch("mc3id2",      &mc3id2_,      "mc3id2/I"     );
+    babyTree_->Branch("mc3motherid2",&mc3motherid2_,"mc3motherid2/I");
+    babyTree_->Branch("mc3pt2",      &mc3pt2_,      "mc3pt2/F"     );
+    babyTree_->Branch("mc3motherpt2",&mc3motherpt2_,"mc3motherpt2/F");
     babyTree_->Branch("mt2",        &mt2_,        "mt2/F"       );
     babyTree_->Branch("mt2j",       &mt2j_,       "mt2j/F"      );
     babyTree_->Branch("extraZveto", &extraZveto_, "extraZveto/O");
@@ -1325,6 +1387,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("lep2isFromW", &lep2isFromW_, "lep2isFromW/I");
 
     // Muon stuff
+    babyTree_->Branch("mu1_numSSv4",      &mu1_numSSv4_,      "mu1_numSSv4/O"     );
+    babyTree_->Branch("mu1_foSSv4",       &mu1_foSSv4_,       "mu1_foSSv4/O"      );
     babyTree_->Branch("mu1_numSSv3",      &mu1_numSSv3_,      "mu1_numSSv3/O"     );
     babyTree_->Branch("mu1_foSSv3",       &mu1_foSSv3_,       "mu1_foSSv3/O"      );
     babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );
@@ -1342,6 +1406,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu1_relPtErr",     &mu1_relPtErr_,     "mu1_relPtErr/F"    );
     babyTree_->Branch("mu1_trkpt",     &mu1_trkpt_,     "mu1_trkpt/F"    );
 
+    babyTree_->Branch("mu2_numSSv4",      &mu2_numSSv4_,      "mu2_numSSv4/O"     );
+    babyTree_->Branch("mu2_foSSv4",       &mu2_foSSv4_,       "mu2_foSSv4/O"      );
     babyTree_->Branch("mu2_numSSv3",      &mu2_numSSv3_,      "mu2_numSSv3/O"     );
     babyTree_->Branch("mu2_foSSv3",       &mu2_foSSv3_,       "mu2_foSSv3/O"      );
     babyTree_->Branch("mu2_muonidfull",   &mu2_muonidfull_,   "mu2_muonidfull/O"  );
@@ -1519,7 +1585,21 @@ void dilepbabymaker::SetEventLevelInfo ()
     if (!isdata_) {
         int nlep  = leptonGenpCount_lepTauDecays(ngenels_, ngenmus_, ngentaus_);
         scale1fb_ = cms2.evt_scale1fb();
-        pthat_    = cms2.genps_pthat();
+        pthat_    = cms2.genps_qScale();
+        genmet_   = cms2.gen_met();
+        unsigned int ngjets = 0;
+        float ght = 0.;
+        for (unsigned int gidx = 0; gidx < cms2.genps_p4().size(); gidx++) {
+            if (fabs(cms2.genps_p4().at(gidx).eta()) > 2.5)
+                continue;
+            if (cms2.genps_p4().at(gidx).pt() < 40.)
+                continue;
+
+            ++ngjets;
+            ght += cms2.genps_p4().at(gidx).pt();
+        }
+        ngenjets_ = ngjets;
+        gensumjetpt_ = ght;
     }
 
     ntrks_      = cms2.trks_trk_p4().size();

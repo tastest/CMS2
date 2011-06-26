@@ -62,6 +62,9 @@ private:
     Float_t scale1fb_;
     Float_t pthat_;
     Int_t   hyp_type_;
+    Int_t   ngenjets_;
+    Float_t genmet_;
+    Float_t gensumjetpt_;
     Float_t pfmet_;
     Float_t tcmet_;
     Float_t pfmetphi_;
@@ -153,7 +156,13 @@ private:
     Float_t dphitcmet1_;
     Float_t drjet1_;
     Int_t   mcid1_;
+    Float_t mcpt1_;
     Int_t   mcmotherid1_;
+    Float_t mcmotherpt1_;
+    Int_t   mc3id1_;
+    Float_t mc3pt1_;
+    Int_t   mc3motherid1_;
+    Float_t mc3motherpt1_;
     Int_t   eormu2_;
     Int_t   type2_;
     Float_t pt2_;
@@ -167,7 +176,13 @@ private:
     Float_t dphitcmet2_;
     Float_t drjet2_;
     Int_t   mcid2_;
+    Float_t   mcpt2_;
     Int_t   mcmotherid2_;
+    Float_t mcmotherpt2_;
+    Int_t   mc3id2_;
+    Float_t mc3pt2_;
+    Int_t   mc3motherid2_;
+    Float_t mc3motherpt2_;
     Float_t mt2_;
     Float_t mt2j_;
     Bool_t  extraZveto_;
@@ -185,6 +200,8 @@ private:
     Int_t   lep2isFromW_;
 
     // muon stuff
+    Bool_t  mu1_numSSv4_;
+    Bool_t  mu1_foSSv4_;
     Bool_t  mu1_numSSv3_;
     Bool_t  mu1_foSSv3_;
     Bool_t  mu1_muonidfull_;
@@ -202,6 +219,8 @@ private:
     Bool_t  mu1_cosmic_;
     Float_t mu1_trkpt_;
 
+    Bool_t  mu2_numSSv4_;
+    Bool_t  mu2_foSSv4_;
     Bool_t  mu2_numSSv3_;
     Bool_t  mu2_foSSv3_;
     Bool_t  mu2_muonidfull_;
