@@ -8,16 +8,20 @@
 #include "TTree.h"
 #include "TH1F.h"
 #include "TFile.h"
+#include "TBits.h"
 #include <vector> 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
-//#define PARANOIA
+#define PARANOIA
 
 using namespace std; 
 class CMS2 {
 private: 
 protected: 
 	unsigned int index;
+	TBits hlt_bits_;
+	TBranch *hlt_bits_branch;
+	bool hlt_bits_isLoaded;
 	TString evt_CMS2tag_;
 	TBranch *evt_CMS2tag_branch;
 	bool evt_CMS2tag_isLoaded;
@@ -483,6 +487,15 @@ protected:
 	float evt_tcsumet_;
 	TBranch *evt_tcsumet_branch;
 	bool evt_tcsumet_isLoaded;
+	float evt_ww_rho_;
+	TBranch *evt_ww_rho_branch;
+	bool evt_ww_rho_isLoaded;
+	float evt_ww_rho_rnd_;
+	TBranch *evt_ww_rho_rnd_branch;
+	bool evt_ww_rho_rnd_isLoaded;
+	float evt_ww_rho_vor_;
+	TBranch *evt_ww_rho_vor_branch;
+	bool evt_ww_rho_vor_isLoaded;
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  evt_bsp4_;
 	TBranch *evt_bsp4_branch;
 	bool evt_bsp4_isLoaded;
@@ -750,6 +763,9 @@ protected:
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > vtxs_position_;
 	TBranch *vtxs_position_branch;
 	bool vtxs_position_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > bsvtxs_position_;
+	TBranch *bsvtxs_position_branch;
+	bool bsvtxs_position_isLoaded;
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > els_convs_pos_p4_;
 	TBranch *els_convs_pos_p4_branch;
 	bool els_convs_pos_p4_isLoaded;
@@ -777,6 +793,9 @@ protected:
 	vector<float> jpts_jetProbabilityBJetTag_;
 	TBranch *jpts_jetProbabilityBJetTag_branch;
 	bool jpts_jetProbabilityBJetTag_isLoaded;
+	vector<float> jpts_simpleSecondaryVertexBJetTag_;
+	TBranch *jpts_simpleSecondaryVertexBJetTag_branch;
+	bool jpts_simpleSecondaryVertexBJetTag_isLoaded;
 	vector<float> jpts_simpleSecondaryVertexHighEffBJetTag_;
 	TBranch *jpts_simpleSecondaryVertexHighEffBJetTag_branch;
 	bool jpts_simpleSecondaryVertexHighEffBJetTag_isLoaded;
@@ -789,6 +808,9 @@ protected:
 	vector<float> jpts_softElectronByPtBJetTag_;
 	TBranch *jpts_softElectronByPtBJetTag_branch;
 	bool jpts_softElectronByPtBJetTag_isLoaded;
+	vector<float> jpts_softElectronTag_;
+	TBranch *jpts_softElectronTag_branch;
+	bool jpts_softElectronTag_isLoaded;
 	vector<float> jpts_softMuonBJetTag_;
 	TBranch *jpts_softMuonBJetTag_branch;
 	bool jpts_softMuonBJetTag_isLoaded;
@@ -816,6 +838,9 @@ protected:
 	vector<float> jets_jetProbabilityBJetTag_;
 	TBranch *jets_jetProbabilityBJetTag_branch;
 	bool jets_jetProbabilityBJetTag_isLoaded;
+	vector<float> jets_simpleSecondaryVertexBJetTag_;
+	TBranch *jets_simpleSecondaryVertexBJetTag_branch;
+	bool jets_simpleSecondaryVertexBJetTag_isLoaded;
 	vector<float> jets_simpleSecondaryVertexHighEffBJetTag_;
 	TBranch *jets_simpleSecondaryVertexHighEffBJetTag_branch;
 	bool jets_simpleSecondaryVertexHighEffBJetTag_isLoaded;
@@ -828,6 +853,9 @@ protected:
 	vector<float> jets_softElectronByPtBJetTag_;
 	TBranch *jets_softElectronByPtBJetTag_branch;
 	bool jets_softElectronByPtBJetTag_isLoaded;
+	vector<float> jets_softElectronTag_;
+	TBranch *jets_softElectronTag_branch;
+	bool jets_softElectronTag_isLoaded;
 	vector<float> jets_softMuonBJetTag_;
 	TBranch *jets_softMuonBJetTag_branch;
 	bool jets_softMuonBJetTag_isLoaded;
@@ -855,6 +883,9 @@ protected:
 	vector<float> pfjets_jetProbabilityBJetTag_;
 	TBranch *pfjets_jetProbabilityBJetTag_branch;
 	bool pfjets_jetProbabilityBJetTag_isLoaded;
+	vector<float> pfjets_simpleSecondaryVertexBJetTag_;
+	TBranch *pfjets_simpleSecondaryVertexBJetTag_branch;
+	bool pfjets_simpleSecondaryVertexBJetTag_isLoaded;
 	vector<float> pfjets_simpleSecondaryVertexHighEffBJetTag_;
 	TBranch *pfjets_simpleSecondaryVertexHighEffBJetTag_branch;
 	bool pfjets_simpleSecondaryVertexHighEffBJetTag_isLoaded;
@@ -867,6 +898,9 @@ protected:
 	vector<float> pfjets_softElectronByPtBJetTag_;
 	TBranch *pfjets_softElectronByPtBJetTag_branch;
 	bool pfjets_softElectronByPtBJetTag_isLoaded;
+	vector<float> pfjets_softElectronTag_;
+	TBranch *pfjets_softElectronTag_branch;
+	bool pfjets_softElectronTag_isLoaded;
 	vector<float> pfjets_softMuonBJetTag_;
 	TBranch *pfjets_softMuonBJetTag_branch;
 	bool pfjets_softMuonBJetTag_isLoaded;
@@ -894,6 +928,9 @@ protected:
 	vector<float> trkjets_jetProbabilityBJetTag_;
 	TBranch *trkjets_jetProbabilityBJetTag_branch;
 	bool trkjets_jetProbabilityBJetTag_isLoaded;
+	vector<float> trkjets_simpleSecondaryVertexBJetTag_;
+	TBranch *trkjets_simpleSecondaryVertexBJetTag_branch;
+	bool trkjets_simpleSecondaryVertexBJetTag_isLoaded;
 	vector<float> trkjets_simpleSecondaryVertexHighEffBJetTag_;
 	TBranch *trkjets_simpleSecondaryVertexHighEffBJetTag_branch;
 	bool trkjets_simpleSecondaryVertexHighEffBJetTag_isLoaded;
@@ -906,6 +943,9 @@ protected:
 	vector<float> trkjets_softElectronByPtBJetTag_;
 	TBranch *trkjets_softElectronByPtBJetTag_branch;
 	bool trkjets_softElectronByPtBJetTag_isLoaded;
+	vector<float> trkjets_softElectronTag_;
+	TBranch *trkjets_softElectronTag_branch;
+	bool trkjets_softElectronTag_isLoaded;
 	vector<float> trkjets_softMuonBJetTag_;
 	TBranch *trkjets_softMuonBJetTag_branch;
 	bool trkjets_softMuonBJetTag_isLoaded;
@@ -1176,6 +1216,9 @@ protected:
 	vector<float> els_layer1_charge_;
 	TBranch *els_layer1_charge_branch;
 	bool els_layer1_charge_isLoaded;
+	vector<float> els_lh_;
+	TBranch *els_lh_branch;
+	bool els_lh_isLoaded;
 	vector<float> els_mva_;
 	TBranch *els_mva_branch;
 	bool els_mva_isLoaded;
@@ -1797,6 +1840,9 @@ protected:
 	vector<float> pfels_rawHcalE_;
 	TBranch *pfels_rawHcalE_branch;
 	bool pfels_rawHcalE_isLoaded;
+	vector<float> pfjets_area_;
+	TBranch *pfjets_area_branch;
+	bool pfjets_area_isLoaded;
 	vector<float> pfjets_chargedEmE_;
 	TBranch *pfjets_chargedEmE_branch;
 	bool pfjets_chargedEmE_isLoaded;
@@ -2133,6 +2179,24 @@ protected:
 	vector<float> vtxs_zError_;
 	TBranch *vtxs_zError_branch;
 	bool vtxs_zError_isLoaded;
+	vector<float> bsvtxs_chi2_;
+	TBranch *bsvtxs_chi2_branch;
+	bool bsvtxs_chi2_isLoaded;
+	vector<float> bsvtxs_ndof_;
+	TBranch *bsvtxs_ndof_branch;
+	bool bsvtxs_ndof_isLoaded;
+	vector<float> bsvtxs_sumpt_;
+	TBranch *bsvtxs_sumpt_branch;
+	bool bsvtxs_sumpt_isLoaded;
+	vector<float> bsvtxs_xError_;
+	TBranch *bsvtxs_xError_branch;
+	bool bsvtxs_xError_isLoaded;
+	vector<float> bsvtxs_yError_;
+	TBranch *bsvtxs_yError_branch;
+	bool bsvtxs_yError_isLoaded;
+	vector<float> bsvtxs_zError_;
+	TBranch *bsvtxs_zError_branch;
+	bool bsvtxs_zError_isLoaded;
 	vector<vector<float> > davtxs_covMatrix_;
 	TBranch *davtxs_covMatrix_branch;
 	bool davtxs_covMatrix_isLoaded;
@@ -2160,6 +2224,9 @@ protected:
 	vector<vector<float> > vtxs_covMatrix_;
 	TBranch *vtxs_covMatrix_branch;
 	bool vtxs_covMatrix_isLoaded;
+	vector<vector<float> > bsvtxs_covMatrix_;
+	TBranch *bsvtxs_covMatrix_branch;
+	bool bsvtxs_covMatrix_isLoaded;
 	int evt_cscLooseHaloId_;
 	TBranch *evt_cscLooseHaloId_branch;
 	bool evt_cscLooseHaloId_isLoaded;
@@ -2997,6 +3064,15 @@ protected:
 	vector<int> vtxs_tracksSize_;
 	TBranch *vtxs_tracksSize_branch;
 	bool vtxs_tracksSize_isLoaded;
+	vector<int> bsvtxs_isFake_;
+	TBranch *bsvtxs_isFake_branch;
+	bool bsvtxs_isFake_isLoaded;
+	vector<int> bsvtxs_isValid_;
+	TBranch *bsvtxs_isValid_branch;
+	bool bsvtxs_isValid_isLoaded;
+	vector<int> bsvtxs_tracksSize_;
+	TBranch *bsvtxs_tracksSize_branch;
+	bool bsvtxs_tracksSize_isLoaded;
 	vector<vector<int> > els_convs_delMissHits_;
 	TBranch *els_convs_delMissHits_branch;
 	bool els_convs_delMissHits_isLoaded;
@@ -3069,39 +3145,6 @@ protected:
 	unsigned int genps_signalProcessID_;
 	TBranch *genps_signalProcessID_branch;
 	bool genps_signalProcessID_isLoaded;
-	unsigned int hlt_bits1_;
-	TBranch *hlt_bits1_branch;
-	bool hlt_bits1_isLoaded;
-	unsigned int hlt_bits10_;
-	TBranch *hlt_bits10_branch;
-	bool hlt_bits10_isLoaded;
-	unsigned int hlt_bits11_;
-	TBranch *hlt_bits11_branch;
-	bool hlt_bits11_isLoaded;
-	unsigned int hlt_bits2_;
-	TBranch *hlt_bits2_branch;
-	bool hlt_bits2_isLoaded;
-	unsigned int hlt_bits3_;
-	TBranch *hlt_bits3_branch;
-	bool hlt_bits3_isLoaded;
-	unsigned int hlt_bits4_;
-	TBranch *hlt_bits4_branch;
-	bool hlt_bits4_isLoaded;
-	unsigned int hlt_bits5_;
-	TBranch *hlt_bits5_branch;
-	bool hlt_bits5_isLoaded;
-	unsigned int hlt_bits6_;
-	TBranch *hlt_bits6_branch;
-	bool hlt_bits6_isLoaded;
-	unsigned int hlt_bits7_;
-	TBranch *hlt_bits7_branch;
-	bool hlt_bits7_isLoaded;
-	unsigned int hlt_bits8_;
-	TBranch *hlt_bits8_branch;
-	bool hlt_bits8_isLoaded;
-	unsigned int hlt_bits9_;
-	TBranch *hlt_bits9_branch;
-	bool hlt_bits9_isLoaded;
 	unsigned int evt_njets_;
 	TBranch *evt_njets_branch;
 	bool evt_njets_isLoaded;
@@ -3150,6 +3193,9 @@ protected:
 	unsigned int evt_nvtxs_;
 	TBranch *evt_nvtxs_branch;
 	bool evt_nvtxs_isLoaded;
+	unsigned int evt_nbsvtxs_;
+	TBranch *evt_nbsvtxs_branch;
+	bool evt_nbsvtxs_isLoaded;
 	vector<unsigned int> hlt_prescales_;
 	TBranch *hlt_prescales_branch;
 	bool hlt_prescales_isLoaded;
@@ -3188,6 +3234,11 @@ protected:
 	bool l1_techtrigprescales_isLoaded;
 public: 
 void Init(TTree *tree) {
+	hlt_bits_branch = 0;
+	if (tree->GetAlias("hlt_bits") != 0) {
+		hlt_bits_branch = tree->GetBranch(tree->GetAlias("hlt_bits"));
+		hlt_bits_branch->SetAddress(&hlt_bits_);
+	}
 	evt_bsp4_branch = 0;
 	if (tree->GetAlias("evt_bsp4") != 0) {
 		evt_bsp4_branch = tree->GetBranch(tree->GetAlias("evt_bsp4"));
@@ -3632,6 +3683,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("vtxs_position") != 0) {
 		vtxs_position_branch = tree->GetBranch(tree->GetAlias("vtxs_position"));
 		vtxs_position_branch->SetAddress(&vtxs_position_);
+	}
+	bsvtxs_position_branch = 0;
+	if (tree->GetAlias("bsvtxs_position") != 0) {
+		bsvtxs_position_branch = tree->GetBranch(tree->GetAlias("bsvtxs_position"));
+		bsvtxs_position_branch->SetAddress(&bsvtxs_position_);
 	}
   tree->SetMakeClass(1);
 	evt_CMS2tag_branch = 0;
@@ -4409,6 +4465,21 @@ void Init(TTree *tree) {
 		evt_tcsumet_branch = tree->GetBranch(tree->GetAlias("evt_tcsumet"));
 		evt_tcsumet_branch->SetAddress(&evt_tcsumet_);
 	}
+	evt_ww_rho_branch = 0;
+	if (tree->GetAlias("evt_ww_rho") != 0) {
+		evt_ww_rho_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho"));
+		evt_ww_rho_branch->SetAddress(&evt_ww_rho_);
+	}
+	evt_ww_rho_rnd_branch = 0;
+	if (tree->GetAlias("evt_ww_rho_rnd") != 0) {
+		evt_ww_rho_rnd_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho_rnd"));
+		evt_ww_rho_rnd_branch->SetAddress(&evt_ww_rho_rnd_);
+	}
+	evt_ww_rho_vor_branch = 0;
+	if (tree->GetAlias("evt_ww_rho_vor") != 0) {
+		evt_ww_rho_vor_branch = tree->GetBranch(tree->GetAlias("evt_ww_rho_vor"));
+		evt_ww_rho_vor_branch->SetAddress(&evt_ww_rho_vor_);
+	}
 	els_convs_pos_p4_branch = 0;
 	if (tree->GetAlias("els_convs_pos_p4") != 0) {
 		els_convs_pos_p4_branch = tree->GetBranch(tree->GetAlias("els_convs_pos_p4"));
@@ -4454,6 +4525,11 @@ void Init(TTree *tree) {
 		jpts_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_jetProbabilityBJetTag"));
 		jpts_jetProbabilityBJetTag_branch->SetAddress(&jpts_jetProbabilityBJetTag_);
 	}
+	jpts_simpleSecondaryVertexBJetTag_branch = 0;
+	if (tree->GetAlias("jpts_simpleSecondaryVertexBJetTag") != 0) {
+		jpts_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_simpleSecondaryVertexBJetTag"));
+		jpts_simpleSecondaryVertexBJetTag_branch->SetAddress(&jpts_simpleSecondaryVertexBJetTag_);
+	}
 	jpts_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		jpts_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_simpleSecondaryVertexHighEffBJetTag"));
@@ -4473,6 +4549,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("jpts_softElectronByPtBJetTag") != 0) {
 		jpts_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jpts_softElectronByPtBJetTag"));
 		jpts_softElectronByPtBJetTag_branch->SetAddress(&jpts_softElectronByPtBJetTag_);
+	}
+	jpts_softElectronTag_branch = 0;
+	if (tree->GetAlias("jpts_softElectronTag") != 0) {
+		jpts_softElectronTag_branch = tree->GetBranch(tree->GetAlias("jpts_softElectronTag"));
+		jpts_softElectronTag_branch->SetAddress(&jpts_softElectronTag_);
 	}
 	jpts_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("jpts_softMuonBJetTag") != 0) {
@@ -4519,6 +4600,11 @@ void Init(TTree *tree) {
 		jets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_jetProbabilityBJetTag"));
 		jets_jetProbabilityBJetTag_branch->SetAddress(&jets_jetProbabilityBJetTag_);
 	}
+	jets_simpleSecondaryVertexBJetTag_branch = 0;
+	if (tree->GetAlias("jets_simpleSecondaryVertexBJetTag") != 0) {
+		jets_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_simpleSecondaryVertexBJetTag"));
+		jets_simpleSecondaryVertexBJetTag_branch->SetAddress(&jets_simpleSecondaryVertexBJetTag_);
+	}
 	jets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("jets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		jets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_simpleSecondaryVertexHighEffBJetTag"));
@@ -4538,6 +4624,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("jets_softElectronByPtBJetTag") != 0) {
 		jets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("jets_softElectronByPtBJetTag"));
 		jets_softElectronByPtBJetTag_branch->SetAddress(&jets_softElectronByPtBJetTag_);
+	}
+	jets_softElectronTag_branch = 0;
+	if (tree->GetAlias("jets_softElectronTag") != 0) {
+		jets_softElectronTag_branch = tree->GetBranch(tree->GetAlias("jets_softElectronTag"));
+		jets_softElectronTag_branch->SetAddress(&jets_softElectronTag_);
 	}
 	jets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("jets_softMuonBJetTag") != 0) {
@@ -4584,6 +4675,11 @@ void Init(TTree *tree) {
 		pfjets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_jetProbabilityBJetTag"));
 		pfjets_jetProbabilityBJetTag_branch->SetAddress(&pfjets_jetProbabilityBJetTag_);
 	}
+	pfjets_simpleSecondaryVertexBJetTag_branch = 0;
+	if (tree->GetAlias("pfjets_simpleSecondaryVertexBJetTag") != 0) {
+		pfjets_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_simpleSecondaryVertexBJetTag"));
+		pfjets_simpleSecondaryVertexBJetTag_branch->SetAddress(&pfjets_simpleSecondaryVertexBJetTag_);
+	}
 	pfjets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		pfjets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_simpleSecondaryVertexHighEffBJetTag"));
@@ -4603,6 +4699,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("pfjets_softElectronByPtBJetTag") != 0) {
 		pfjets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softElectronByPtBJetTag"));
 		pfjets_softElectronByPtBJetTag_branch->SetAddress(&pfjets_softElectronByPtBJetTag_);
+	}
+	pfjets_softElectronTag_branch = 0;
+	if (tree->GetAlias("pfjets_softElectronTag") != 0) {
+		pfjets_softElectronTag_branch = tree->GetBranch(tree->GetAlias("pfjets_softElectronTag"));
+		pfjets_softElectronTag_branch->SetAddress(&pfjets_softElectronTag_);
 	}
 	pfjets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("pfjets_softMuonBJetTag") != 0) {
@@ -4649,6 +4750,11 @@ void Init(TTree *tree) {
 		trkjets_jetProbabilityBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_jetProbabilityBJetTag"));
 		trkjets_jetProbabilityBJetTag_branch->SetAddress(&trkjets_jetProbabilityBJetTag_);
 	}
+	trkjets_simpleSecondaryVertexBJetTag_branch = 0;
+	if (tree->GetAlias("trkjets_simpleSecondaryVertexBJetTag") != 0) {
+		trkjets_simpleSecondaryVertexBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_simpleSecondaryVertexBJetTag"));
+		trkjets_simpleSecondaryVertexBJetTag_branch->SetAddress(&trkjets_simpleSecondaryVertexBJetTag_);
+	}
 	trkjets_simpleSecondaryVertexHighEffBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_simpleSecondaryVertexHighEffBJetTag") != 0) {
 		trkjets_simpleSecondaryVertexHighEffBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_simpleSecondaryVertexHighEffBJetTag"));
@@ -4668,6 +4774,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("trkjets_softElectronByPtBJetTag") != 0) {
 		trkjets_softElectronByPtBJetTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softElectronByPtBJetTag"));
 		trkjets_softElectronByPtBJetTag_branch->SetAddress(&trkjets_softElectronByPtBJetTag_);
+	}
+	trkjets_softElectronTag_branch = 0;
+	if (tree->GetAlias("trkjets_softElectronTag") != 0) {
+		trkjets_softElectronTag_branch = tree->GetBranch(tree->GetAlias("trkjets_softElectronTag"));
+		trkjets_softElectronTag_branch->SetAddress(&trkjets_softElectronTag_);
 	}
 	trkjets_softMuonBJetTag_branch = 0;
 	if (tree->GetAlias("trkjets_softMuonBJetTag") != 0) {
@@ -5118,6 +5229,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("els_layer1_charge") != 0) {
 		els_layer1_charge_branch = tree->GetBranch(tree->GetAlias("els_layer1_charge"));
 		els_layer1_charge_branch->SetAddress(&els_layer1_charge_);
+	}
+	els_lh_branch = 0;
+	if (tree->GetAlias("els_lh") != 0) {
+		els_lh_branch = tree->GetBranch(tree->GetAlias("els_lh"));
+		els_lh_branch->SetAddress(&els_lh_);
 	}
 	els_mva_branch = 0;
 	if (tree->GetAlias("els_mva") != 0) {
@@ -6154,6 +6270,11 @@ void Init(TTree *tree) {
 		pfels_rawHcalE_branch = tree->GetBranch(tree->GetAlias("pfels_rawHcalE"));
 		pfels_rawHcalE_branch->SetAddress(&pfels_rawHcalE_);
 	}
+	pfjets_area_branch = 0;
+	if (tree->GetAlias("pfjets_area") != 0) {
+		pfjets_area_branch = tree->GetBranch(tree->GetAlias("pfjets_area"));
+		pfjets_area_branch->SetAddress(&pfjets_area_);
+	}
 	pfjets_chargedEmE_branch = 0;
 	if (tree->GetAlias("pfjets_chargedEmE") != 0) {
 		pfjets_chargedEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedEmE"));
@@ -6714,6 +6835,36 @@ void Init(TTree *tree) {
 		vtxs_zError_branch = tree->GetBranch(tree->GetAlias("vtxs_zError"));
 		vtxs_zError_branch->SetAddress(&vtxs_zError_);
 	}
+	bsvtxs_chi2_branch = 0;
+	if (tree->GetAlias("bsvtxs_chi2") != 0) {
+		bsvtxs_chi2_branch = tree->GetBranch(tree->GetAlias("bsvtxs_chi2"));
+		bsvtxs_chi2_branch->SetAddress(&bsvtxs_chi2_);
+	}
+	bsvtxs_ndof_branch = 0;
+	if (tree->GetAlias("bsvtxs_ndof") != 0) {
+		bsvtxs_ndof_branch = tree->GetBranch(tree->GetAlias("bsvtxs_ndof"));
+		bsvtxs_ndof_branch->SetAddress(&bsvtxs_ndof_);
+	}
+	bsvtxs_sumpt_branch = 0;
+	if (tree->GetAlias("bsvtxs_sumpt") != 0) {
+		bsvtxs_sumpt_branch = tree->GetBranch(tree->GetAlias("bsvtxs_sumpt"));
+		bsvtxs_sumpt_branch->SetAddress(&bsvtxs_sumpt_);
+	}
+	bsvtxs_xError_branch = 0;
+	if (tree->GetAlias("bsvtxs_xError") != 0) {
+		bsvtxs_xError_branch = tree->GetBranch(tree->GetAlias("bsvtxs_xError"));
+		bsvtxs_xError_branch->SetAddress(&bsvtxs_xError_);
+	}
+	bsvtxs_yError_branch = 0;
+	if (tree->GetAlias("bsvtxs_yError") != 0) {
+		bsvtxs_yError_branch = tree->GetBranch(tree->GetAlias("bsvtxs_yError"));
+		bsvtxs_yError_branch->SetAddress(&bsvtxs_yError_);
+	}
+	bsvtxs_zError_branch = 0;
+	if (tree->GetAlias("bsvtxs_zError") != 0) {
+		bsvtxs_zError_branch = tree->GetBranch(tree->GetAlias("bsvtxs_zError"));
+		bsvtxs_zError_branch->SetAddress(&bsvtxs_zError_);
+	}
 	davtxs_covMatrix_branch = 0;
 	if (tree->GetAlias("davtxs_covMatrix") != 0) {
 		davtxs_covMatrix_branch = tree->GetBranch(tree->GetAlias("davtxs_covMatrix"));
@@ -6758,6 +6909,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("vtxs_covMatrix") != 0) {
 		vtxs_covMatrix_branch = tree->GetBranch(tree->GetAlias("vtxs_covMatrix"));
 		vtxs_covMatrix_branch->SetAddress(&vtxs_covMatrix_);
+	}
+	bsvtxs_covMatrix_branch = 0;
+	if (tree->GetAlias("bsvtxs_covMatrix") != 0) {
+		bsvtxs_covMatrix_branch = tree->GetBranch(tree->GetAlias("bsvtxs_covMatrix"));
+		bsvtxs_covMatrix_branch->SetAddress(&bsvtxs_covMatrix_);
 	}
 	evt_cscLooseHaloId_branch = 0;
 	if (tree->GetAlias("evt_cscLooseHaloId") != 0) {
@@ -8154,6 +8310,21 @@ void Init(TTree *tree) {
 		vtxs_tracksSize_branch = tree->GetBranch(tree->GetAlias("vtxs_tracksSize"));
 		vtxs_tracksSize_branch->SetAddress(&vtxs_tracksSize_);
 	}
+	bsvtxs_isFake_branch = 0;
+	if (tree->GetAlias("bsvtxs_isFake") != 0) {
+		bsvtxs_isFake_branch = tree->GetBranch(tree->GetAlias("bsvtxs_isFake"));
+		bsvtxs_isFake_branch->SetAddress(&bsvtxs_isFake_);
+	}
+	bsvtxs_isValid_branch = 0;
+	if (tree->GetAlias("bsvtxs_isValid") != 0) {
+		bsvtxs_isValid_branch = tree->GetBranch(tree->GetAlias("bsvtxs_isValid"));
+		bsvtxs_isValid_branch->SetAddress(&bsvtxs_isValid_);
+	}
+	bsvtxs_tracksSize_branch = 0;
+	if (tree->GetAlias("bsvtxs_tracksSize") != 0) {
+		bsvtxs_tracksSize_branch = tree->GetBranch(tree->GetAlias("bsvtxs_tracksSize"));
+		bsvtxs_tracksSize_branch->SetAddress(&bsvtxs_tracksSize_);
+	}
 	els_convs_delMissHits_branch = 0;
 	if (tree->GetAlias("els_convs_delMissHits") != 0) {
 		els_convs_delMissHits_branch = tree->GetBranch(tree->GetAlias("els_convs_delMissHits"));
@@ -8274,61 +8445,6 @@ void Init(TTree *tree) {
 		genps_signalProcessID_branch = tree->GetBranch(tree->GetAlias("genps_signalProcessID"));
 		genps_signalProcessID_branch->SetAddress(&genps_signalProcessID_);
 	}
-	hlt_bits1_branch = 0;
-	if (tree->GetAlias("hlt_bits1") != 0) {
-		hlt_bits1_branch = tree->GetBranch(tree->GetAlias("hlt_bits1"));
-		hlt_bits1_branch->SetAddress(&hlt_bits1_);
-	}
-	hlt_bits10_branch = 0;
-	if (tree->GetAlias("hlt_bits10") != 0) {
-		hlt_bits10_branch = tree->GetBranch(tree->GetAlias("hlt_bits10"));
-		hlt_bits10_branch->SetAddress(&hlt_bits10_);
-	}
-	hlt_bits11_branch = 0;
-	if (tree->GetAlias("hlt_bits11") != 0) {
-		hlt_bits11_branch = tree->GetBranch(tree->GetAlias("hlt_bits11"));
-		hlt_bits11_branch->SetAddress(&hlt_bits11_);
-	}
-	hlt_bits2_branch = 0;
-	if (tree->GetAlias("hlt_bits2") != 0) {
-		hlt_bits2_branch = tree->GetBranch(tree->GetAlias("hlt_bits2"));
-		hlt_bits2_branch->SetAddress(&hlt_bits2_);
-	}
-	hlt_bits3_branch = 0;
-	if (tree->GetAlias("hlt_bits3") != 0) {
-		hlt_bits3_branch = tree->GetBranch(tree->GetAlias("hlt_bits3"));
-		hlt_bits3_branch->SetAddress(&hlt_bits3_);
-	}
-	hlt_bits4_branch = 0;
-	if (tree->GetAlias("hlt_bits4") != 0) {
-		hlt_bits4_branch = tree->GetBranch(tree->GetAlias("hlt_bits4"));
-		hlt_bits4_branch->SetAddress(&hlt_bits4_);
-	}
-	hlt_bits5_branch = 0;
-	if (tree->GetAlias("hlt_bits5") != 0) {
-		hlt_bits5_branch = tree->GetBranch(tree->GetAlias("hlt_bits5"));
-		hlt_bits5_branch->SetAddress(&hlt_bits5_);
-	}
-	hlt_bits6_branch = 0;
-	if (tree->GetAlias("hlt_bits6") != 0) {
-		hlt_bits6_branch = tree->GetBranch(tree->GetAlias("hlt_bits6"));
-		hlt_bits6_branch->SetAddress(&hlt_bits6_);
-	}
-	hlt_bits7_branch = 0;
-	if (tree->GetAlias("hlt_bits7") != 0) {
-		hlt_bits7_branch = tree->GetBranch(tree->GetAlias("hlt_bits7"));
-		hlt_bits7_branch->SetAddress(&hlt_bits7_);
-	}
-	hlt_bits8_branch = 0;
-	if (tree->GetAlias("hlt_bits8") != 0) {
-		hlt_bits8_branch = tree->GetBranch(tree->GetAlias("hlt_bits8"));
-		hlt_bits8_branch->SetAddress(&hlt_bits8_);
-	}
-	hlt_bits9_branch = 0;
-	if (tree->GetAlias("hlt_bits9") != 0) {
-		hlt_bits9_branch = tree->GetBranch(tree->GetAlias("hlt_bits9"));
-		hlt_bits9_branch->SetAddress(&hlt_bits9_);
-	}
 	evt_njets_branch = 0;
 	if (tree->GetAlias("evt_njets") != 0) {
 		evt_njets_branch = tree->GetBranch(tree->GetAlias("evt_njets"));
@@ -8409,6 +8525,11 @@ void Init(TTree *tree) {
 		evt_nvtxs_branch = tree->GetBranch(tree->GetAlias("evt_nvtxs"));
 		evt_nvtxs_branch->SetAddress(&evt_nvtxs_);
 	}
+	evt_nbsvtxs_branch = 0;
+	if (tree->GetAlias("evt_nbsvtxs") != 0) {
+		evt_nbsvtxs_branch = tree->GetBranch(tree->GetAlias("evt_nbsvtxs"));
+		evt_nbsvtxs_branch->SetAddress(&evt_nbsvtxs_);
+	}
 	hlt_prescales_branch = 0;
 	if (tree->GetAlias("hlt_prescales") != 0) {
 		hlt_prescales_branch = tree->GetBranch(tree->GetAlias("hlt_prescales"));
@@ -8475,6 +8596,7 @@ void GetEntry(unsigned int idx)
 	// this only marks branches as not loaded, saving a lot of time
 	{
 		index = idx;
+		hlt_bits_isLoaded = false;
 		evt_CMS2tag_isLoaded = false;
 		evt_dataset_isLoaded = false;
 		hlt_trigNames_isLoaded = false;
@@ -8630,6 +8752,9 @@ void GetEntry(unsigned int idx)
 		evt_tcmetPhi_isLoaded = false;
 		evt_tcmetSig_isLoaded = false;
 		evt_tcsumet_isLoaded = false;
+		evt_ww_rho_isLoaded = false;
+		evt_ww_rho_rnd_isLoaded = false;
+		evt_ww_rho_vor_isLoaded = false;
 		evt_bsp4_isLoaded = false;
 		l1_met_p4_isLoaded = false;
 		l1_mht_p4_isLoaded = false;
@@ -8719,6 +8844,7 @@ void GetEntry(unsigned int idx)
 		trks_vertex_p4_isLoaded = false;
 		trkjets_p4_isLoaded = false;
 		vtxs_position_isLoaded = false;
+		bsvtxs_position_isLoaded = false;
 		els_convs_pos_p4_isLoaded = false;
 		genps_lepdaughter_p4_isLoaded = false;
 		hlt_trigObjs_p4_isLoaded = false;
@@ -8728,10 +8854,12 @@ void GetEntry(unsigned int idx)
 		jpts_combinedSecondaryVertexMVABJetTag_isLoaded = false;
 		jpts_jetBProbabilityBJetTag_isLoaded = false;
 		jpts_jetProbabilityBJetTag_isLoaded = false;
+		jpts_simpleSecondaryVertexBJetTag_isLoaded = false;
 		jpts_simpleSecondaryVertexHighEffBJetTag_isLoaded = false;
 		jpts_simpleSecondaryVertexHighPurBJetTags_isLoaded = false;
 		jpts_softElectronByIP3dBJetTag_isLoaded = false;
 		jpts_softElectronByPtBJetTag_isLoaded = false;
+		jpts_softElectronTag_isLoaded = false;
 		jpts_softMuonBJetTag_isLoaded = false;
 		jpts_softMuonByIP3dBJetTag_isLoaded = false;
 		jpts_softMuonByPtBJetTag_isLoaded = false;
@@ -8741,10 +8869,12 @@ void GetEntry(unsigned int idx)
 		jets_combinedSecondaryVertexMVABJetTag_isLoaded = false;
 		jets_jetBProbabilityBJetTag_isLoaded = false;
 		jets_jetProbabilityBJetTag_isLoaded = false;
+		jets_simpleSecondaryVertexBJetTag_isLoaded = false;
 		jets_simpleSecondaryVertexHighEffBJetTag_isLoaded = false;
 		jets_simpleSecondaryVertexHighPurBJetTags_isLoaded = false;
 		jets_softElectronByIP3dBJetTag_isLoaded = false;
 		jets_softElectronByPtBJetTag_isLoaded = false;
+		jets_softElectronTag_isLoaded = false;
 		jets_softMuonBJetTag_isLoaded = false;
 		jets_softMuonByIP3dBJetTag_isLoaded = false;
 		jets_softMuonByPtBJetTag_isLoaded = false;
@@ -8754,10 +8884,12 @@ void GetEntry(unsigned int idx)
 		pfjets_combinedSecondaryVertexMVABJetTag_isLoaded = false;
 		pfjets_jetBProbabilityBJetTag_isLoaded = false;
 		pfjets_jetProbabilityBJetTag_isLoaded = false;
+		pfjets_simpleSecondaryVertexBJetTag_isLoaded = false;
 		pfjets_simpleSecondaryVertexHighEffBJetTag_isLoaded = false;
 		pfjets_simpleSecondaryVertexHighPurBJetTags_isLoaded = false;
 		pfjets_softElectronByIP3dBJetTag_isLoaded = false;
 		pfjets_softElectronByPtBJetTag_isLoaded = false;
+		pfjets_softElectronTag_isLoaded = false;
 		pfjets_softMuonBJetTag_isLoaded = false;
 		pfjets_softMuonByIP3dBJetTag_isLoaded = false;
 		pfjets_softMuonByPtBJetTag_isLoaded = false;
@@ -8767,10 +8899,12 @@ void GetEntry(unsigned int idx)
 		trkjets_combinedSecondaryVertexMVABJetTag_isLoaded = false;
 		trkjets_jetBProbabilityBJetTag_isLoaded = false;
 		trkjets_jetProbabilityBJetTag_isLoaded = false;
+		trkjets_simpleSecondaryVertexBJetTag_isLoaded = false;
 		trkjets_simpleSecondaryVertexHighEffBJetTag_isLoaded = false;
 		trkjets_simpleSecondaryVertexHighPurBJetTags_isLoaded = false;
 		trkjets_softElectronByIP3dBJetTag_isLoaded = false;
 		trkjets_softElectronByPtBJetTag_isLoaded = false;
+		trkjets_softElectronTag_isLoaded = false;
 		trkjets_softMuonBJetTag_isLoaded = false;
 		trkjets_softMuonByIP3dBJetTag_isLoaded = false;
 		trkjets_softMuonByPtBJetTag_isLoaded = false;
@@ -8861,6 +8995,7 @@ void GetEntry(unsigned int idx)
 		els_iso03_pf_isLoaded = false;
 		els_iso04_pf_isLoaded = false;
 		els_layer1_charge_isLoaded = false;
+		els_lh_isLoaded = false;
 		els_mva_isLoaded = false;
 		els_ndof_isLoaded = false;
 		els_phiErr_isLoaded = false;
@@ -9068,6 +9203,7 @@ void GetEntry(unsigned int idx)
 		pfels_pS2E_isLoaded = false;
 		pfels_rawEcalE_isLoaded = false;
 		pfels_rawHcalE_isLoaded = false;
+		pfjets_area_isLoaded = false;
 		pfjets_chargedEmE_isLoaded = false;
 		pfjets_chargedHadronE_isLoaded = false;
 		pfjets_cor_isLoaded = false;
@@ -9180,6 +9316,12 @@ void GetEntry(unsigned int idx)
 		vtxs_xError_isLoaded = false;
 		vtxs_yError_isLoaded = false;
 		vtxs_zError_isLoaded = false;
+		bsvtxs_chi2_isLoaded = false;
+		bsvtxs_ndof_isLoaded = false;
+		bsvtxs_sumpt_isLoaded = false;
+		bsvtxs_xError_isLoaded = false;
+		bsvtxs_yError_isLoaded = false;
+		bsvtxs_zError_isLoaded = false;
 		davtxs_covMatrix_isLoaded = false;
 		els_convs_dcot_isLoaded = false;
 		els_convs_dist_isLoaded = false;
@@ -9189,6 +9331,7 @@ void GetEntry(unsigned int idx)
 		puInfo_sumpt_lowpt_isLoaded = false;
 		puInfo_zpositions_isLoaded = false;
 		vtxs_covMatrix_isLoaded = false;
+		bsvtxs_covMatrix_isLoaded = false;
 		evt_cscLooseHaloId_isLoaded = false;
 		evt_cscTightHaloId_isLoaded = false;
 		evt_ecalLooseHaloId_isLoaded = false;
@@ -9468,6 +9611,9 @@ void GetEntry(unsigned int idx)
 		vtxs_isFake_isLoaded = false;
 		vtxs_isValid_isLoaded = false;
 		vtxs_tracksSize_isLoaded = false;
+		bsvtxs_isFake_isLoaded = false;
+		bsvtxs_isValid_isLoaded = false;
+		bsvtxs_tracksSize_isLoaded = false;
 		els_convs_delMissHits_isLoaded = false;
 		els_convs_flag_isLoaded = false;
 		els_convs_gsftkidx_isLoaded = false;
@@ -9492,17 +9638,6 @@ void GetEntry(unsigned int idx)
 		genps_flavorHistoryFilterResult_isLoaded = false;
 		evt_ngenjets_isLoaded = false;
 		genps_signalProcessID_isLoaded = false;
-		hlt_bits1_isLoaded = false;
-		hlt_bits10_isLoaded = false;
-		hlt_bits11_isLoaded = false;
-		hlt_bits2_isLoaded = false;
-		hlt_bits3_isLoaded = false;
-		hlt_bits4_isLoaded = false;
-		hlt_bits5_isLoaded = false;
-		hlt_bits6_isLoaded = false;
-		hlt_bits7_isLoaded = false;
-		hlt_bits8_isLoaded = false;
-		hlt_bits9_isLoaded = false;
 		evt_njets_isLoaded = false;
 		evt_njpts_isLoaded = false;
 		l1_bits1_isLoaded = false;
@@ -9519,6 +9654,7 @@ void GetEntry(unsigned int idx)
 		evt_nscs_isLoaded = false;
 		evt_ntrkjets_isLoaded = false;
 		evt_nvtxs_isLoaded = false;
+		evt_nbsvtxs_isLoaded = false;
 		hlt_prescales_isLoaded = false;
 		hyp_quadlep_bucket_isLoaded = false;
 		hyp_quadlep_first_index_isLoaded = false;
@@ -9536,6 +9672,7 @@ void GetEntry(unsigned int idx)
 void LoadAllBranches() 
 	// load all branches
 {
+	if (hlt_bits_branch != 0) hlt_bits();
 	if (evt_CMS2tag_branch != 0) evt_CMS2tag();
 	if (evt_dataset_branch != 0) evt_dataset();
 	if (hlt_trigNames_branch != 0) hlt_trigNames();
@@ -9691,6 +9828,9 @@ void LoadAllBranches()
 	if (evt_tcmetPhi_branch != 0) evt_tcmetPhi();
 	if (evt_tcmetSig_branch != 0) evt_tcmetSig();
 	if (evt_tcsumet_branch != 0) evt_tcsumet();
+	if (evt_ww_rho_branch != 0) evt_ww_rho();
+	if (evt_ww_rho_rnd_branch != 0) evt_ww_rho_rnd();
+	if (evt_ww_rho_vor_branch != 0) evt_ww_rho_vor();
 	if (evt_bsp4_branch != 0) evt_bsp4();
 	if (l1_met_p4_branch != 0) l1_met_p4();
 	if (l1_mht_p4_branch != 0) l1_mht_p4();
@@ -9780,6 +9920,7 @@ void LoadAllBranches()
 	if (trks_vertex_p4_branch != 0) trks_vertex_p4();
 	if (trkjets_p4_branch != 0) trkjets_p4();
 	if (vtxs_position_branch != 0) vtxs_position();
+	if (bsvtxs_position_branch != 0) bsvtxs_position();
 	if (els_convs_pos_p4_branch != 0) els_convs_pos_p4();
 	if (genps_lepdaughter_p4_branch != 0) genps_lepdaughter_p4();
 	if (hlt_trigObjs_p4_branch != 0) hlt_trigObjs_p4();
@@ -9789,10 +9930,12 @@ void LoadAllBranches()
 	if (jpts_combinedSecondaryVertexMVABJetTag_branch != 0) jpts_combinedSecondaryVertexMVABJetTag();
 	if (jpts_jetBProbabilityBJetTag_branch != 0) jpts_jetBProbabilityBJetTag();
 	if (jpts_jetProbabilityBJetTag_branch != 0) jpts_jetProbabilityBJetTag();
+	if (jpts_simpleSecondaryVertexBJetTag_branch != 0) jpts_simpleSecondaryVertexBJetTag();
 	if (jpts_simpleSecondaryVertexHighEffBJetTag_branch != 0) jpts_simpleSecondaryVertexHighEffBJetTag();
 	if (jpts_simpleSecondaryVertexHighPurBJetTags_branch != 0) jpts_simpleSecondaryVertexHighPurBJetTags();
 	if (jpts_softElectronByIP3dBJetTag_branch != 0) jpts_softElectronByIP3dBJetTag();
 	if (jpts_softElectronByPtBJetTag_branch != 0) jpts_softElectronByPtBJetTag();
+	if (jpts_softElectronTag_branch != 0) jpts_softElectronTag();
 	if (jpts_softMuonBJetTag_branch != 0) jpts_softMuonBJetTag();
 	if (jpts_softMuonByIP3dBJetTag_branch != 0) jpts_softMuonByIP3dBJetTag();
 	if (jpts_softMuonByPtBJetTag_branch != 0) jpts_softMuonByPtBJetTag();
@@ -9802,10 +9945,12 @@ void LoadAllBranches()
 	if (jets_combinedSecondaryVertexMVABJetTag_branch != 0) jets_combinedSecondaryVertexMVABJetTag();
 	if (jets_jetBProbabilityBJetTag_branch != 0) jets_jetBProbabilityBJetTag();
 	if (jets_jetProbabilityBJetTag_branch != 0) jets_jetProbabilityBJetTag();
+	if (jets_simpleSecondaryVertexBJetTag_branch != 0) jets_simpleSecondaryVertexBJetTag();
 	if (jets_simpleSecondaryVertexHighEffBJetTag_branch != 0) jets_simpleSecondaryVertexHighEffBJetTag();
 	if (jets_simpleSecondaryVertexHighPurBJetTags_branch != 0) jets_simpleSecondaryVertexHighPurBJetTags();
 	if (jets_softElectronByIP3dBJetTag_branch != 0) jets_softElectronByIP3dBJetTag();
 	if (jets_softElectronByPtBJetTag_branch != 0) jets_softElectronByPtBJetTag();
+	if (jets_softElectronTag_branch != 0) jets_softElectronTag();
 	if (jets_softMuonBJetTag_branch != 0) jets_softMuonBJetTag();
 	if (jets_softMuonByIP3dBJetTag_branch != 0) jets_softMuonByIP3dBJetTag();
 	if (jets_softMuonByPtBJetTag_branch != 0) jets_softMuonByPtBJetTag();
@@ -9815,10 +9960,12 @@ void LoadAllBranches()
 	if (pfjets_combinedSecondaryVertexMVABJetTag_branch != 0) pfjets_combinedSecondaryVertexMVABJetTag();
 	if (pfjets_jetBProbabilityBJetTag_branch != 0) pfjets_jetBProbabilityBJetTag();
 	if (pfjets_jetProbabilityBJetTag_branch != 0) pfjets_jetProbabilityBJetTag();
+	if (pfjets_simpleSecondaryVertexBJetTag_branch != 0) pfjets_simpleSecondaryVertexBJetTag();
 	if (pfjets_simpleSecondaryVertexHighEffBJetTag_branch != 0) pfjets_simpleSecondaryVertexHighEffBJetTag();
 	if (pfjets_simpleSecondaryVertexHighPurBJetTags_branch != 0) pfjets_simpleSecondaryVertexHighPurBJetTags();
 	if (pfjets_softElectronByIP3dBJetTag_branch != 0) pfjets_softElectronByIP3dBJetTag();
 	if (pfjets_softElectronByPtBJetTag_branch != 0) pfjets_softElectronByPtBJetTag();
+	if (pfjets_softElectronTag_branch != 0) pfjets_softElectronTag();
 	if (pfjets_softMuonBJetTag_branch != 0) pfjets_softMuonBJetTag();
 	if (pfjets_softMuonByIP3dBJetTag_branch != 0) pfjets_softMuonByIP3dBJetTag();
 	if (pfjets_softMuonByPtBJetTag_branch != 0) pfjets_softMuonByPtBJetTag();
@@ -9828,10 +9975,12 @@ void LoadAllBranches()
 	if (trkjets_combinedSecondaryVertexMVABJetTag_branch != 0) trkjets_combinedSecondaryVertexMVABJetTag();
 	if (trkjets_jetBProbabilityBJetTag_branch != 0) trkjets_jetBProbabilityBJetTag();
 	if (trkjets_jetProbabilityBJetTag_branch != 0) trkjets_jetProbabilityBJetTag();
+	if (trkjets_simpleSecondaryVertexBJetTag_branch != 0) trkjets_simpleSecondaryVertexBJetTag();
 	if (trkjets_simpleSecondaryVertexHighEffBJetTag_branch != 0) trkjets_simpleSecondaryVertexHighEffBJetTag();
 	if (trkjets_simpleSecondaryVertexHighPurBJetTags_branch != 0) trkjets_simpleSecondaryVertexHighPurBJetTags();
 	if (trkjets_softElectronByIP3dBJetTag_branch != 0) trkjets_softElectronByIP3dBJetTag();
 	if (trkjets_softElectronByPtBJetTag_branch != 0) trkjets_softElectronByPtBJetTag();
+	if (trkjets_softElectronTag_branch != 0) trkjets_softElectronTag();
 	if (trkjets_softMuonBJetTag_branch != 0) trkjets_softMuonBJetTag();
 	if (trkjets_softMuonByIP3dBJetTag_branch != 0) trkjets_softMuonByIP3dBJetTag();
 	if (trkjets_softMuonByPtBJetTag_branch != 0) trkjets_softMuonByPtBJetTag();
@@ -9922,6 +10071,7 @@ void LoadAllBranches()
 	if (els_iso03_pf_branch != 0) els_iso03_pf();
 	if (els_iso04_pf_branch != 0) els_iso04_pf();
 	if (els_layer1_charge_branch != 0) els_layer1_charge();
+	if (els_lh_branch != 0) els_lh();
 	if (els_mva_branch != 0) els_mva();
 	if (els_ndof_branch != 0) els_ndof();
 	if (els_phiErr_branch != 0) els_phiErr();
@@ -10129,6 +10279,7 @@ void LoadAllBranches()
 	if (pfels_pS2E_branch != 0) pfels_pS2E();
 	if (pfels_rawEcalE_branch != 0) pfels_rawEcalE();
 	if (pfels_rawHcalE_branch != 0) pfels_rawHcalE();
+	if (pfjets_area_branch != 0) pfjets_area();
 	if (pfjets_chargedEmE_branch != 0) pfjets_chargedEmE();
 	if (pfjets_chargedHadronE_branch != 0) pfjets_chargedHadronE();
 	if (pfjets_cor_branch != 0) pfjets_cor();
@@ -10241,6 +10392,12 @@ void LoadAllBranches()
 	if (vtxs_xError_branch != 0) vtxs_xError();
 	if (vtxs_yError_branch != 0) vtxs_yError();
 	if (vtxs_zError_branch != 0) vtxs_zError();
+	if (bsvtxs_chi2_branch != 0) bsvtxs_chi2();
+	if (bsvtxs_ndof_branch != 0) bsvtxs_ndof();
+	if (bsvtxs_sumpt_branch != 0) bsvtxs_sumpt();
+	if (bsvtxs_xError_branch != 0) bsvtxs_xError();
+	if (bsvtxs_yError_branch != 0) bsvtxs_yError();
+	if (bsvtxs_zError_branch != 0) bsvtxs_zError();
 	if (davtxs_covMatrix_branch != 0) davtxs_covMatrix();
 	if (els_convs_dcot_branch != 0) els_convs_dcot();
 	if (els_convs_dist_branch != 0) els_convs_dist();
@@ -10250,6 +10407,7 @@ void LoadAllBranches()
 	if (puInfo_sumpt_lowpt_branch != 0) puInfo_sumpt_lowpt();
 	if (puInfo_zpositions_branch != 0) puInfo_zpositions();
 	if (vtxs_covMatrix_branch != 0) vtxs_covMatrix();
+	if (bsvtxs_covMatrix_branch != 0) bsvtxs_covMatrix();
 	if (evt_cscLooseHaloId_branch != 0) evt_cscLooseHaloId();
 	if (evt_cscTightHaloId_branch != 0) evt_cscTightHaloId();
 	if (evt_ecalLooseHaloId_branch != 0) evt_ecalLooseHaloId();
@@ -10529,6 +10687,9 @@ void LoadAllBranches()
 	if (vtxs_isFake_branch != 0) vtxs_isFake();
 	if (vtxs_isValid_branch != 0) vtxs_isValid();
 	if (vtxs_tracksSize_branch != 0) vtxs_tracksSize();
+	if (bsvtxs_isFake_branch != 0) bsvtxs_isFake();
+	if (bsvtxs_isValid_branch != 0) bsvtxs_isValid();
+	if (bsvtxs_tracksSize_branch != 0) bsvtxs_tracksSize();
 	if (els_convs_delMissHits_branch != 0) els_convs_delMissHits();
 	if (els_convs_flag_branch != 0) els_convs_flag();
 	if (els_convs_gsftkidx_branch != 0) els_convs_gsftkidx();
@@ -10553,17 +10714,6 @@ void LoadAllBranches()
 	if (genps_flavorHistoryFilterResult_branch != 0) genps_flavorHistoryFilterResult();
 	if (evt_ngenjets_branch != 0) evt_ngenjets();
 	if (genps_signalProcessID_branch != 0) genps_signalProcessID();
-	if (hlt_bits1_branch != 0) hlt_bits1();
-	if (hlt_bits10_branch != 0) hlt_bits10();
-	if (hlt_bits11_branch != 0) hlt_bits11();
-	if (hlt_bits2_branch != 0) hlt_bits2();
-	if (hlt_bits3_branch != 0) hlt_bits3();
-	if (hlt_bits4_branch != 0) hlt_bits4();
-	if (hlt_bits5_branch != 0) hlt_bits5();
-	if (hlt_bits6_branch != 0) hlt_bits6();
-	if (hlt_bits7_branch != 0) hlt_bits7();
-	if (hlt_bits8_branch != 0) hlt_bits8();
-	if (hlt_bits9_branch != 0) hlt_bits9();
 	if (evt_njets_branch != 0) evt_njets();
 	if (evt_njpts_branch != 0) evt_njpts();
 	if (l1_bits1_branch != 0) l1_bits1();
@@ -10580,6 +10730,7 @@ void LoadAllBranches()
 	if (evt_nscs_branch != 0) evt_nscs();
 	if (evt_ntrkjets_branch != 0) evt_ntrkjets();
 	if (evt_nvtxs_branch != 0) evt_nvtxs();
+	if (evt_nbsvtxs_branch != 0) evt_nbsvtxs();
 	if (hlt_prescales_branch != 0) hlt_prescales();
 	if (hyp_quadlep_bucket_branch != 0) hyp_quadlep_bucket();
 	if (hyp_quadlep_first_index_branch != 0) hyp_quadlep_first_index();
@@ -10594,6 +10745,21 @@ void LoadAllBranches()
 	if (l1_techtrigprescales_branch != 0) l1_techtrigprescales();
 }
 
+	TBits &hlt_bits()
+	{
+		if (not hlt_bits_isLoaded) {
+			if (hlt_bits_branch != 0) {
+				hlt_bits_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch hlt_bits_branch does not exist!\n");
+				exit(1);
+			}
+			hlt_bits_isLoaded = true;
+		}
+		return hlt_bits_;
+	}
 	TString &evt_CMS2tag()
 	{
 		if (not evt_CMS2tag_isLoaded) {
@@ -13471,6 +13637,63 @@ void LoadAllBranches()
 		}
 		return evt_tcsumet_;
 	}
+	float &evt_ww_rho()
+	{
+		if (not evt_ww_rho_isLoaded) {
+			if (evt_ww_rho_branch != 0) {
+				evt_ww_rho_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(evt_ww_rho_)) {
+					printf("branch evt_ww_rho_branch contains a bad float: %f\n", evt_ww_rho_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_ww_rho_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ww_rho_isLoaded = true;
+		}
+		return evt_ww_rho_;
+	}
+	float &evt_ww_rho_rnd()
+	{
+		if (not evt_ww_rho_rnd_isLoaded) {
+			if (evt_ww_rho_rnd_branch != 0) {
+				evt_ww_rho_rnd_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(evt_ww_rho_rnd_)) {
+					printf("branch evt_ww_rho_rnd_branch contains a bad float: %f\n", evt_ww_rho_rnd_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_ww_rho_rnd_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ww_rho_rnd_isLoaded = true;
+		}
+		return evt_ww_rho_rnd_;
+	}
+	float &evt_ww_rho_vor()
+	{
+		if (not evt_ww_rho_vor_isLoaded) {
+			if (evt_ww_rho_vor_branch != 0) {
+				evt_ww_rho_vor_branch->GetEntry(index);
+				#ifdef PARANOIA
+				if (not isfinite(evt_ww_rho_vor_)) {
+					printf("branch evt_ww_rho_vor_branch contains a bad float: %f\n", evt_ww_rho_vor_);
+					exit(1);
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_ww_rho_vor_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ww_rho_vor_isLoaded = true;
+		}
+		return evt_ww_rho_vor_;
+	}
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &evt_bsp4()
 	{
 		if (not evt_bsp4_isLoaded) {
@@ -15512,6 +15735,29 @@ void LoadAllBranches()
 		}
 		return vtxs_position_;
 	}
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &bsvtxs_position()
+	{
+		if (not bsvtxs_position_isLoaded) {
+			if (bsvtxs_position_branch != 0) {
+				bsvtxs_position_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >::const_iterator i = bsvtxs_position_.begin(); i != bsvtxs_position_.end(); ++i) {
+					int e;
+					frexp(i->pt(), &e);
+					if (not isfinite(i->pt()) || e > 30) {
+						printf("branch bsvtxs_position_branch contains a bad float: %f\n", i->pt());
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_position_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_position_isLoaded = true;
+		}
+		return bsvtxs_position_;
+	}
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &els_convs_pos_p4()
 	{
 		if (not els_convs_pos_p4_isLoaded) {
@@ -15721,6 +15967,27 @@ void LoadAllBranches()
 		}
 		return jpts_jetProbabilityBJetTag_;
 	}
+	vector<float> &jpts_simpleSecondaryVertexBJetTag()
+	{
+		if (not jpts_simpleSecondaryVertexBJetTag_isLoaded) {
+			if (jpts_simpleSecondaryVertexBJetTag_branch != 0) {
+				jpts_simpleSecondaryVertexBJetTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jpts_simpleSecondaryVertexBJetTag_.begin(); i != jpts_simpleSecondaryVertexBJetTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jpts_simpleSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jpts_simpleSecondaryVertexBJetTag_branch does not exist!\n");
+				exit(1);
+			}
+			jpts_simpleSecondaryVertexBJetTag_isLoaded = true;
+		}
+		return jpts_simpleSecondaryVertexBJetTag_;
+	}
 	vector<float> &jpts_simpleSecondaryVertexHighEffBJetTag()
 	{
 		if (not jpts_simpleSecondaryVertexHighEffBJetTag_isLoaded) {
@@ -15804,6 +16071,27 @@ void LoadAllBranches()
 			jpts_softElectronByPtBJetTag_isLoaded = true;
 		}
 		return jpts_softElectronByPtBJetTag_;
+	}
+	vector<float> &jpts_softElectronTag()
+	{
+		if (not jpts_softElectronTag_isLoaded) {
+			if (jpts_softElectronTag_branch != 0) {
+				jpts_softElectronTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jpts_softElectronTag_.begin(); i != jpts_softElectronTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jpts_softElectronTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jpts_softElectronTag_branch does not exist!\n");
+				exit(1);
+			}
+			jpts_softElectronTag_isLoaded = true;
+		}
+		return jpts_softElectronTag_;
 	}
 	vector<float> &jpts_softMuonBJetTag()
 	{
@@ -15994,6 +16282,27 @@ void LoadAllBranches()
 		}
 		return jets_jetProbabilityBJetTag_;
 	}
+	vector<float> &jets_simpleSecondaryVertexBJetTag()
+	{
+		if (not jets_simpleSecondaryVertexBJetTag_isLoaded) {
+			if (jets_simpleSecondaryVertexBJetTag_branch != 0) {
+				jets_simpleSecondaryVertexBJetTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_simpleSecondaryVertexBJetTag_.begin(); i != jets_simpleSecondaryVertexBJetTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_simpleSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_simpleSecondaryVertexBJetTag_branch does not exist!\n");
+				exit(1);
+			}
+			jets_simpleSecondaryVertexBJetTag_isLoaded = true;
+		}
+		return jets_simpleSecondaryVertexBJetTag_;
+	}
 	vector<float> &jets_simpleSecondaryVertexHighEffBJetTag()
 	{
 		if (not jets_simpleSecondaryVertexHighEffBJetTag_isLoaded) {
@@ -16077,6 +16386,27 @@ void LoadAllBranches()
 			jets_softElectronByPtBJetTag_isLoaded = true;
 		}
 		return jets_softElectronByPtBJetTag_;
+	}
+	vector<float> &jets_softElectronTag()
+	{
+		if (not jets_softElectronTag_isLoaded) {
+			if (jets_softElectronTag_branch != 0) {
+				jets_softElectronTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = jets_softElectronTag_.begin(); i != jets_softElectronTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch jets_softElectronTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch jets_softElectronTag_branch does not exist!\n");
+				exit(1);
+			}
+			jets_softElectronTag_isLoaded = true;
+		}
+		return jets_softElectronTag_;
 	}
 	vector<float> &jets_softMuonBJetTag()
 	{
@@ -16267,6 +16597,27 @@ void LoadAllBranches()
 		}
 		return pfjets_jetProbabilityBJetTag_;
 	}
+	vector<float> &pfjets_simpleSecondaryVertexBJetTag()
+	{
+		if (not pfjets_simpleSecondaryVertexBJetTag_isLoaded) {
+			if (pfjets_simpleSecondaryVertexBJetTag_branch != 0) {
+				pfjets_simpleSecondaryVertexBJetTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pfjets_simpleSecondaryVertexBJetTag_.begin(); i != pfjets_simpleSecondaryVertexBJetTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pfjets_simpleSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pfjets_simpleSecondaryVertexBJetTag_branch does not exist!\n");
+				exit(1);
+			}
+			pfjets_simpleSecondaryVertexBJetTag_isLoaded = true;
+		}
+		return pfjets_simpleSecondaryVertexBJetTag_;
+	}
 	vector<float> &pfjets_simpleSecondaryVertexHighEffBJetTag()
 	{
 		if (not pfjets_simpleSecondaryVertexHighEffBJetTag_isLoaded) {
@@ -16350,6 +16701,27 @@ void LoadAllBranches()
 			pfjets_softElectronByPtBJetTag_isLoaded = true;
 		}
 		return pfjets_softElectronByPtBJetTag_;
+	}
+	vector<float> &pfjets_softElectronTag()
+	{
+		if (not pfjets_softElectronTag_isLoaded) {
+			if (pfjets_softElectronTag_branch != 0) {
+				pfjets_softElectronTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pfjets_softElectronTag_.begin(); i != pfjets_softElectronTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pfjets_softElectronTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pfjets_softElectronTag_branch does not exist!\n");
+				exit(1);
+			}
+			pfjets_softElectronTag_isLoaded = true;
+		}
+		return pfjets_softElectronTag_;
 	}
 	vector<float> &pfjets_softMuonBJetTag()
 	{
@@ -16540,6 +16912,27 @@ void LoadAllBranches()
 		}
 		return trkjets_jetProbabilityBJetTag_;
 	}
+	vector<float> &trkjets_simpleSecondaryVertexBJetTag()
+	{
+		if (not trkjets_simpleSecondaryVertexBJetTag_isLoaded) {
+			if (trkjets_simpleSecondaryVertexBJetTag_branch != 0) {
+				trkjets_simpleSecondaryVertexBJetTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = trkjets_simpleSecondaryVertexBJetTag_.begin(); i != trkjets_simpleSecondaryVertexBJetTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch trkjets_simpleSecondaryVertexBJetTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trkjets_simpleSecondaryVertexBJetTag_branch does not exist!\n");
+				exit(1);
+			}
+			trkjets_simpleSecondaryVertexBJetTag_isLoaded = true;
+		}
+		return trkjets_simpleSecondaryVertexBJetTag_;
+	}
 	vector<float> &trkjets_simpleSecondaryVertexHighEffBJetTag()
 	{
 		if (not trkjets_simpleSecondaryVertexHighEffBJetTag_isLoaded) {
@@ -16623,6 +17016,27 @@ void LoadAllBranches()
 			trkjets_softElectronByPtBJetTag_isLoaded = true;
 		}
 		return trkjets_softElectronByPtBJetTag_;
+	}
+	vector<float> &trkjets_softElectronTag()
+	{
+		if (not trkjets_softElectronTag_isLoaded) {
+			if (trkjets_softElectronTag_branch != 0) {
+				trkjets_softElectronTag_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = trkjets_softElectronTag_.begin(); i != trkjets_softElectronTag_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch trkjets_softElectronTag_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch trkjets_softElectronTag_branch does not exist!\n");
+				exit(1);
+			}
+			trkjets_softElectronTag_isLoaded = true;
+		}
+		return trkjets_softElectronTag_;
 	}
 	vector<float> &trkjets_softMuonBJetTag()
 	{
@@ -18513,6 +18927,27 @@ void LoadAllBranches()
 			els_layer1_charge_isLoaded = true;
 		}
 		return els_layer1_charge_;
+	}
+	vector<float> &els_lh()
+	{
+		if (not els_lh_isLoaded) {
+			if (els_lh_branch != 0) {
+				els_lh_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_lh_.begin(); i != els_lh_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_lh_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_lh_branch does not exist!\n");
+				exit(1);
+			}
+			els_lh_isLoaded = true;
+		}
+		return els_lh_;
 	}
 	vector<float> &els_mva()
 	{
@@ -22861,6 +23296,27 @@ void LoadAllBranches()
 		}
 		return pfels_rawHcalE_;
 	}
+	vector<float> &pfjets_area()
+	{
+		if (not pfjets_area_isLoaded) {
+			if (pfjets_area_branch != 0) {
+				pfjets_area_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = pfjets_area_.begin(); i != pfjets_area_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch pfjets_area_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch pfjets_area_branch does not exist!\n");
+				exit(1);
+			}
+			pfjets_area_isLoaded = true;
+		}
+		return pfjets_area_;
+	}
 	vector<float> &pfjets_chargedEmE()
 	{
 		if (not pfjets_chargedEmE_isLoaded) {
@@ -25213,6 +25669,132 @@ void LoadAllBranches()
 		}
 		return vtxs_zError_;
 	}
+	vector<float> &bsvtxs_chi2()
+	{
+		if (not bsvtxs_chi2_isLoaded) {
+			if (bsvtxs_chi2_branch != 0) {
+				bsvtxs_chi2_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = bsvtxs_chi2_.begin(); i != bsvtxs_chi2_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch bsvtxs_chi2_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_chi2_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_chi2_isLoaded = true;
+		}
+		return bsvtxs_chi2_;
+	}
+	vector<float> &bsvtxs_ndof()
+	{
+		if (not bsvtxs_ndof_isLoaded) {
+			if (bsvtxs_ndof_branch != 0) {
+				bsvtxs_ndof_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = bsvtxs_ndof_.begin(); i != bsvtxs_ndof_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch bsvtxs_ndof_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_ndof_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_ndof_isLoaded = true;
+		}
+		return bsvtxs_ndof_;
+	}
+	vector<float> &bsvtxs_sumpt()
+	{
+		if (not bsvtxs_sumpt_isLoaded) {
+			if (bsvtxs_sumpt_branch != 0) {
+				bsvtxs_sumpt_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = bsvtxs_sumpt_.begin(); i != bsvtxs_sumpt_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch bsvtxs_sumpt_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_sumpt_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_sumpt_isLoaded = true;
+		}
+		return bsvtxs_sumpt_;
+	}
+	vector<float> &bsvtxs_xError()
+	{
+		if (not bsvtxs_xError_isLoaded) {
+			if (bsvtxs_xError_branch != 0) {
+				bsvtxs_xError_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = bsvtxs_xError_.begin(); i != bsvtxs_xError_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch bsvtxs_xError_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_xError_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_xError_isLoaded = true;
+		}
+		return bsvtxs_xError_;
+	}
+	vector<float> &bsvtxs_yError()
+	{
+		if (not bsvtxs_yError_isLoaded) {
+			if (bsvtxs_yError_branch != 0) {
+				bsvtxs_yError_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = bsvtxs_yError_.begin(); i != bsvtxs_yError_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch bsvtxs_yError_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_yError_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_yError_isLoaded = true;
+		}
+		return bsvtxs_yError_;
+	}
+	vector<float> &bsvtxs_zError()
+	{
+		if (not bsvtxs_zError_isLoaded) {
+			if (bsvtxs_zError_branch != 0) {
+				bsvtxs_zError_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = bsvtxs_zError_.begin(); i != bsvtxs_zError_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch bsvtxs_zError_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_zError_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_zError_isLoaded = true;
+		}
+		return bsvtxs_zError_;
+	}
 	vector<vector<float> > &davtxs_covMatrix()
 	{
 		if (not davtxs_covMatrix_isLoaded) {
@@ -25419,6 +26001,29 @@ void LoadAllBranches()
 			vtxs_covMatrix_isLoaded = true;
 		}
 		return vtxs_covMatrix_;
+	}
+	vector<vector<float> > &bsvtxs_covMatrix()
+	{
+		if (not bsvtxs_covMatrix_isLoaded) {
+			if (bsvtxs_covMatrix_branch != 0) {
+				bsvtxs_covMatrix_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<vector<float> >::const_iterator i = bsvtxs_covMatrix_.begin(); i != bsvtxs_covMatrix_.end(); ++i) {
+					for (vector<float>::const_iterator j = i->begin(); j != i->end(); ++j) {
+						if (not isfinite(*j)) {
+							printf("branch bsvtxs_covMatrix_branch contains a bad float: %f\n", *j);
+							exit(1);
+						}
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_covMatrix_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_covMatrix_isLoaded = true;
+		}
+		return bsvtxs_covMatrix_;
 	}
 	int &evt_cscLooseHaloId()
 	{
@@ -29605,6 +30210,51 @@ void LoadAllBranches()
 		}
 		return vtxs_tracksSize_;
 	}
+	vector<int> &bsvtxs_isFake()
+	{
+		if (not bsvtxs_isFake_isLoaded) {
+			if (bsvtxs_isFake_branch != 0) {
+				bsvtxs_isFake_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_isFake_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_isFake_isLoaded = true;
+		}
+		return bsvtxs_isFake_;
+	}
+	vector<int> &bsvtxs_isValid()
+	{
+		if (not bsvtxs_isValid_isLoaded) {
+			if (bsvtxs_isValid_branch != 0) {
+				bsvtxs_isValid_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_isValid_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_isValid_isLoaded = true;
+		}
+		return bsvtxs_isValid_;
+	}
+	vector<int> &bsvtxs_tracksSize()
+	{
+		if (not bsvtxs_tracksSize_isLoaded) {
+			if (bsvtxs_tracksSize_branch != 0) {
+				bsvtxs_tracksSize_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch bsvtxs_tracksSize_branch does not exist!\n");
+				exit(1);
+			}
+			bsvtxs_tracksSize_isLoaded = true;
+		}
+		return bsvtxs_tracksSize_;
+	}
 	vector<vector<int> > &els_convs_delMissHits()
 	{
 		if (not els_convs_delMissHits_isLoaded) {
@@ -29965,171 +30615,6 @@ void LoadAllBranches()
 		}
 		return genps_signalProcessID_;
 	}
-	unsigned int &hlt_bits1()
-	{
-		if (not hlt_bits1_isLoaded) {
-			if (hlt_bits1_branch != 0) {
-				hlt_bits1_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits1_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits1_isLoaded = true;
-		}
-		return hlt_bits1_;
-	}
-	unsigned int &hlt_bits10()
-	{
-		if (not hlt_bits10_isLoaded) {
-			if (hlt_bits10_branch != 0) {
-				hlt_bits10_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits10_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits10_isLoaded = true;
-		}
-		return hlt_bits10_;
-	}
-	unsigned int &hlt_bits11()
-	{
-		if (not hlt_bits11_isLoaded) {
-			if (hlt_bits11_branch != 0) {
-				hlt_bits11_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits11_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits11_isLoaded = true;
-		}
-		return hlt_bits11_;
-	}
-	unsigned int &hlt_bits2()
-	{
-		if (not hlt_bits2_isLoaded) {
-			if (hlt_bits2_branch != 0) {
-				hlt_bits2_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits2_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits2_isLoaded = true;
-		}
-		return hlt_bits2_;
-	}
-	unsigned int &hlt_bits3()
-	{
-		if (not hlt_bits3_isLoaded) {
-			if (hlt_bits3_branch != 0) {
-				hlt_bits3_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits3_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits3_isLoaded = true;
-		}
-		return hlt_bits3_;
-	}
-	unsigned int &hlt_bits4()
-	{
-		if (not hlt_bits4_isLoaded) {
-			if (hlt_bits4_branch != 0) {
-				hlt_bits4_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits4_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits4_isLoaded = true;
-		}
-		return hlt_bits4_;
-	}
-	unsigned int &hlt_bits5()
-	{
-		if (not hlt_bits5_isLoaded) {
-			if (hlt_bits5_branch != 0) {
-				hlt_bits5_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits5_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits5_isLoaded = true;
-		}
-		return hlt_bits5_;
-	}
-	unsigned int &hlt_bits6()
-	{
-		if (not hlt_bits6_isLoaded) {
-			if (hlt_bits6_branch != 0) {
-				hlt_bits6_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits6_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits6_isLoaded = true;
-		}
-		return hlt_bits6_;
-	}
-	unsigned int &hlt_bits7()
-	{
-		if (not hlt_bits7_isLoaded) {
-			if (hlt_bits7_branch != 0) {
-				hlt_bits7_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits7_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits7_isLoaded = true;
-		}
-		return hlt_bits7_;
-	}
-	unsigned int &hlt_bits8()
-	{
-		if (not hlt_bits8_isLoaded) {
-			if (hlt_bits8_branch != 0) {
-				hlt_bits8_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits8_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits8_isLoaded = true;
-		}
-		return hlt_bits8_;
-	}
-	unsigned int &hlt_bits9()
-	{
-		if (not hlt_bits9_isLoaded) {
-			if (hlt_bits9_branch != 0) {
-				hlt_bits9_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch hlt_bits9_branch does not exist!\n");
-				exit(1);
-			}
-			hlt_bits9_isLoaded = true;
-		}
-		return hlt_bits9_;
-	}
 	unsigned int &evt_njets()
 	{
 		if (not evt_njets_isLoaded) {
@@ -30370,6 +30855,21 @@ void LoadAllBranches()
 		}
 		return evt_nvtxs_;
 	}
+	unsigned int &evt_nbsvtxs()
+	{
+		if (not evt_nbsvtxs_isLoaded) {
+			if (evt_nbsvtxs_branch != 0) {
+				evt_nbsvtxs_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_nbsvtxs_branch does not exist!\n");
+				exit(1);
+			}
+			evt_nbsvtxs_isLoaded = true;
+		}
+		return evt_nbsvtxs_;
+	}
 	vector<unsigned int> &hlt_prescales()
 	{
 		if (not hlt_prescales_isLoaded) {
@@ -30562,62 +31062,7 @@ void LoadAllBranches()
 			return 0;
 		}
 
-		if(trigIndx <= 31) {
-			unsigned int bitmask = 1;
-			bitmask <<= trigIndx;
-			return hlt_bits1() & bitmask;
-		}
-		if(trigIndx >= 32 && trigIndx <= 63) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 32); 
-			return hlt_bits2() & bitmask;
-		}
-		if(trigIndx >= 64 && trigIndx <= 95) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 64); 
-			return hlt_bits3() & bitmask;
-		}
-		if(trigIndx >= 96 && trigIndx <= 127) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 96); 
-			return hlt_bits4() & bitmask;
-		}
-		if(trigIndx >= 128 && trigIndx <= 159) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 128); 
-			return hlt_bits5() & bitmask;
-		}
-		if(trigIndx >= 160 && trigIndx <= 191) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 160); 
-			return hlt_bits6() & bitmask;
-		}
-		if(trigIndx >= 192 && trigIndx <= 223) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 192); 
-			return hlt_bits7() & bitmask;
-		}
-		if(trigIndx >= 224 && trigIndx <= 255) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 224); 
-			return hlt_bits8() & bitmask;
-		}
-		if(trigIndx >= 256 && trigIndx <= 287) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 256); 
-			return hlt_bits9() & bitmask;
-		}
-		if(trigIndx >= 288 && trigIndx <= 319) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 288); 
-			return hlt_bits10() & bitmask;
-		}
-		if(trigIndx >= 320 && trigIndx <= 351) {
-			unsigned int bitmask = 1;
-			bitmask <<= (trigIndx - 320); 
-			return hlt_bits11() & bitmask;
-		}
-	return 0;
+	return hlt_bits().TestBitNumber(trigIndx);
 	}
 	bool passL1Trigger(TString trigName) {
 		int trigIndx;
@@ -30681,6 +31126,7 @@ extern CMS2 cms2;
 #endif
 
 namespace tas {
+	TBits &hlt_bits();
 	TString &evt_CMS2tag();
 	TString &evt_dataset();
 	vector<TString> &hlt_trigNames();
@@ -30836,6 +31282,9 @@ namespace tas {
 	float &evt_tcmetPhi();
 	float &evt_tcmetSig();
 	float &evt_tcsumet();
+	float &evt_ww_rho();
+	float &evt_ww_rho_rnd();
+	float &evt_ww_rho_vor();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &evt_bsp4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_met_p4();
 	ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >  &l1_mht_p4();
@@ -30925,6 +31374,7 @@ namespace tas {
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &trks_vertex_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &trkjets_p4();
 	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &vtxs_position();
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &bsvtxs_position();
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &els_convs_pos_p4();
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &genps_lepdaughter_p4();
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hlt_trigObjs_p4();
@@ -30934,10 +31384,12 @@ namespace tas {
 	vector<float> &jpts_combinedSecondaryVertexMVABJetTag();
 	vector<float> &jpts_jetBProbabilityBJetTag();
 	vector<float> &jpts_jetProbabilityBJetTag();
+	vector<float> &jpts_simpleSecondaryVertexBJetTag();
 	vector<float> &jpts_simpleSecondaryVertexHighEffBJetTag();
 	vector<float> &jpts_simpleSecondaryVertexHighPurBJetTags();
 	vector<float> &jpts_softElectronByIP3dBJetTag();
 	vector<float> &jpts_softElectronByPtBJetTag();
+	vector<float> &jpts_softElectronTag();
 	vector<float> &jpts_softMuonBJetTag();
 	vector<float> &jpts_softMuonByIP3dBJetTag();
 	vector<float> &jpts_softMuonByPtBJetTag();
@@ -30947,10 +31399,12 @@ namespace tas {
 	vector<float> &jets_combinedSecondaryVertexMVABJetTag();
 	vector<float> &jets_jetBProbabilityBJetTag();
 	vector<float> &jets_jetProbabilityBJetTag();
+	vector<float> &jets_simpleSecondaryVertexBJetTag();
 	vector<float> &jets_simpleSecondaryVertexHighEffBJetTag();
 	vector<float> &jets_simpleSecondaryVertexHighPurBJetTags();
 	vector<float> &jets_softElectronByIP3dBJetTag();
 	vector<float> &jets_softElectronByPtBJetTag();
+	vector<float> &jets_softElectronTag();
 	vector<float> &jets_softMuonBJetTag();
 	vector<float> &jets_softMuonByIP3dBJetTag();
 	vector<float> &jets_softMuonByPtBJetTag();
@@ -30960,10 +31414,12 @@ namespace tas {
 	vector<float> &pfjets_combinedSecondaryVertexMVABJetTag();
 	vector<float> &pfjets_jetBProbabilityBJetTag();
 	vector<float> &pfjets_jetProbabilityBJetTag();
+	vector<float> &pfjets_simpleSecondaryVertexBJetTag();
 	vector<float> &pfjets_simpleSecondaryVertexHighEffBJetTag();
 	vector<float> &pfjets_simpleSecondaryVertexHighPurBJetTags();
 	vector<float> &pfjets_softElectronByIP3dBJetTag();
 	vector<float> &pfjets_softElectronByPtBJetTag();
+	vector<float> &pfjets_softElectronTag();
 	vector<float> &pfjets_softMuonBJetTag();
 	vector<float> &pfjets_softMuonByIP3dBJetTag();
 	vector<float> &pfjets_softMuonByPtBJetTag();
@@ -30973,10 +31429,12 @@ namespace tas {
 	vector<float> &trkjets_combinedSecondaryVertexMVABJetTag();
 	vector<float> &trkjets_jetBProbabilityBJetTag();
 	vector<float> &trkjets_jetProbabilityBJetTag();
+	vector<float> &trkjets_simpleSecondaryVertexBJetTag();
 	vector<float> &trkjets_simpleSecondaryVertexHighEffBJetTag();
 	vector<float> &trkjets_simpleSecondaryVertexHighPurBJetTags();
 	vector<float> &trkjets_softElectronByIP3dBJetTag();
 	vector<float> &trkjets_softElectronByPtBJetTag();
+	vector<float> &trkjets_softElectronTag();
 	vector<float> &trkjets_softMuonBJetTag();
 	vector<float> &trkjets_softMuonByIP3dBJetTag();
 	vector<float> &trkjets_softMuonByPtBJetTag();
@@ -31067,6 +31525,7 @@ namespace tas {
 	vector<float> &els_iso03_pf();
 	vector<float> &els_iso04_pf();
 	vector<float> &els_layer1_charge();
+	vector<float> &els_lh();
 	vector<float> &els_mva();
 	vector<float> &els_ndof();
 	vector<float> &els_phiErr();
@@ -31274,6 +31733,7 @@ namespace tas {
 	vector<float> &pfels_pS2E();
 	vector<float> &pfels_rawEcalE();
 	vector<float> &pfels_rawHcalE();
+	vector<float> &pfjets_area();
 	vector<float> &pfjets_chargedEmE();
 	vector<float> &pfjets_chargedHadronE();
 	vector<float> &pfjets_cor();
@@ -31386,6 +31846,12 @@ namespace tas {
 	vector<float> &vtxs_xError();
 	vector<float> &vtxs_yError();
 	vector<float> &vtxs_zError();
+	vector<float> &bsvtxs_chi2();
+	vector<float> &bsvtxs_ndof();
+	vector<float> &bsvtxs_sumpt();
+	vector<float> &bsvtxs_xError();
+	vector<float> &bsvtxs_yError();
+	vector<float> &bsvtxs_zError();
 	vector<vector<float> > &davtxs_covMatrix();
 	vector<vector<float> > &els_convs_dcot();
 	vector<vector<float> > &els_convs_dist();
@@ -31395,6 +31861,7 @@ namespace tas {
 	vector<vector<float> > &puInfo_sumpt_lowpt();
 	vector<vector<float> > &puInfo_zpositions();
 	vector<vector<float> > &vtxs_covMatrix();
+	vector<vector<float> > &bsvtxs_covMatrix();
 	int &evt_cscLooseHaloId();
 	int &evt_cscTightHaloId();
 	int &evt_ecalLooseHaloId();
@@ -31674,6 +32141,9 @@ namespace tas {
 	vector<int> &vtxs_isFake();
 	vector<int> &vtxs_isValid();
 	vector<int> &vtxs_tracksSize();
+	vector<int> &bsvtxs_isFake();
+	vector<int> &bsvtxs_isValid();
+	vector<int> &bsvtxs_tracksSize();
 	vector<vector<int> > &els_convs_delMissHits();
 	vector<vector<int> > &els_convs_flag();
 	vector<vector<int> > &els_convs_gsftkidx();
@@ -31698,17 +32168,6 @@ namespace tas {
 	unsigned int &genps_flavorHistoryFilterResult();
 	unsigned int &evt_ngenjets();
 	unsigned int &genps_signalProcessID();
-	unsigned int &hlt_bits1();
-	unsigned int &hlt_bits10();
-	unsigned int &hlt_bits11();
-	unsigned int &hlt_bits2();
-	unsigned int &hlt_bits3();
-	unsigned int &hlt_bits4();
-	unsigned int &hlt_bits5();
-	unsigned int &hlt_bits6();
-	unsigned int &hlt_bits7();
-	unsigned int &hlt_bits8();
-	unsigned int &hlt_bits9();
 	unsigned int &evt_njets();
 	unsigned int &evt_njpts();
 	unsigned int &l1_bits1();
@@ -31725,6 +32184,7 @@ namespace tas {
 	unsigned int &evt_nscs();
 	unsigned int &evt_ntrkjets();
 	unsigned int &evt_nvtxs();
+	unsigned int &evt_nbsvtxs();
 	vector<unsigned int> &hlt_prescales();
 	vector<unsigned int> &hyp_quadlep_bucket();
 	vector<unsigned int> &hyp_quadlep_first_index();
