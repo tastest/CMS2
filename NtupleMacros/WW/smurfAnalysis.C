@@ -15,8 +15,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "../../../Smurf/Core/SmurfTree.h"
-#include "../Tools/goodrun.cc"
+#include "smurfAnalysis.h"
 #include <fstream>
 
 struct Result{
@@ -27,6 +26,12 @@ struct Result{
   void add(unsigned int i, double value){
     yield[i] += value;
     err2[i] += value*value;
+  }
+  void add(const Result& iResult, double scale=1){
+    for (unsigned int i=0; i<4; i++){
+      yield[i] += iResult.yield[i]*scale;
+      err2[i]  += iResult.err2[i]*scale*scale;
+    }
   }
   double yield[4];
   double err2[4];
@@ -103,6 +108,10 @@ struct DrellYanReport{
   std::string mcScaleFactor;
 };
 
+//
+// ========================================================================== 
+//
+
 struct SmurfAnalysis{
   struct Entry {
     SmurfTree::DataType sample;
@@ -120,6 +129,9 @@ struct SmurfAnalysis{
     Result nTop1BJetTopTaggedEvents;
     Result finalSelection;
     Result nZpeak;
+    Result nZpeakForTop;
+    Result nZpeakTopTaggedEvents;
+    Result nZMCMatched;
   };
   SmurfAnalysis(double lumi,
 		const char* dir = "/smurf/dmytro/samples/smurf",
@@ -167,23 +179,32 @@ struct SmurfAnalysis{
     return sample==SmurfTree::wjets || sample==SmurfTree::data || sample==SmurfTree::qqww ||
       sample==SmurfTree::ttbar;
   }
+  bool isRelevantToDY(SmurfTree::DataType sample){
+    return sample==SmurfTree::data || sample==SmurfTree::qqww || sample==SmurfTree::dyee || sample==SmurfTree::dymm ||
+      sample==SmurfTree::dytt || sample==SmurfTree::wz || sample==SmurfTree::zz;
+  }
   bool isRelevantToTopBkg(SmurfTree::DataType sample){
     return sample==SmurfTree::data || sample==SmurfTree::ttbar || sample==SmurfTree::tw || sample==SmurfTree::qqww || sample==SmurfTree::wjets;
   }
   bool isRelevantToBeProcessed(SmurfTree::DataType sample){
-    switch (sample){
-    case SmurfTree::qqww: case SmurfTree::ggww: case SmurfTree::ttbar: 
-    case SmurfTree::tw: case SmurfTree::dyee: case SmurfTree::dymm: case SmurfTree::dytt:
-    case SmurfTree::wjets: case SmurfTree::wz: case SmurfTree::zz: case SmurfTree::wgamma: case SmurfTree::qcd:
-    case SmurfTree::hww130: case SmurfTree::hww160: case SmurfTree::data:
-      return true;
-    default:
-      return false;
-    }
+//     switch (sample){
+//     case SmurfTree::qqww: case SmurfTree::ggww: case SmurfTree::ttbar: 
+//     case SmurfTree::tw: case SmurfTree::dyee: case SmurfTree::dymm: case SmurfTree::dytt:
+//     case SmurfTree::wjets: case SmurfTree::wz: case SmurfTree::zz: case SmurfTree::wgamma: case SmurfTree::qcd:
+//     case SmurfTree::hww130: case SmurfTree::hww160: case SmurfTree::data:
+//       return true;
+//     default:
+//       return false;
+//     }
     // return sample==SmurfTree::data;
-    // return sample==SmurfTree::data || isStandardModel(sample) || isGGHiggs(sample);
+    return sample==SmurfTree::data || isStandardModel(sample) || isGGHiggs(sample);
   }
-
+  void resetKFactors(){
+      kWjets_ = 1;
+      kTop_ = 1;
+      kDrellYan_ = 1;
+  }
+  
   std::map<SelectionType,YieldReport> wwSMYields_;
   std::map<SelectionType,YieldReport> wwGGHYields_;
   std::map<SelectionType,FakeReport> wwFakes_;
@@ -204,7 +225,13 @@ struct SmurfAnalysis{
   double rInOutEl_; // R in/out for Zee
   double rInOutMu_; // R in/out for Zmm
   double kElMu_; // yield difference between els and mus k=sqrt(Nee/Nmm) in Z peak
-      
+  
+  // kFactors
+  double kWjets_;
+  double kTop_;
+  double kDrellYan_;
+
+  // cuts
   static const unsigned int cut_base  = SmurfTree::BaseLine|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
   static const unsigned int cut_el_1  = SmurfTree::Lep2FullSelection|SmurfTree::Lep1LooseEleV4|cut_base;
   static const unsigned int cut_el_2  = SmurfTree::Lep1FullSelection|SmurfTree::Lep2LooseEleV4|cut_base;
@@ -217,6 +244,7 @@ struct SmurfAnalysis{
   static const unsigned int cut_top1B = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::OneBJet;
   static const unsigned int cut_topTagged = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::TopTag|SmurfTree::ExtraLeptonVeto;
   static const unsigned int cut_final_nomass    = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
+  static const unsigned int cut_dy    = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch;
   
   // same binning for electrons and muons
   static const unsigned int nPtPoints = 6;
@@ -235,6 +263,10 @@ private:
   void printYieldReport(std::ofstream& report, const YieldReport& input, const char* caption);
 
 };
+
+//
+// ========================================================================== 
+//
 
 bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type){
   if (tree.njets_!=0) return false;
@@ -321,8 +353,9 @@ SmurfAnalysis::SmurfAnalysis(double lumi, const char* dir,
 			     const char* mu_fakerate_file,
 			     const char* mu_fakerate_name):
   lumi_(lumi),processOnlyImportantSamples(true),dir_(dir),json_(0),
-  rInOutEl_(0.16), rInOutMu_(0.20), kElMu_(0.823352)
+  rInOutEl_(0.22), rInOutMu_(0.25), kElMu_(0.823352)
 {
+  resetKFactors();
   measurement_.type = WW0Jet;
   measurement_.sig_type = SmurfTree::qqww;
   TFile *el_fakeRateFile = TFile::Open(el_fakerate_file);
@@ -353,60 +386,46 @@ void SmurfAnalysis::processSamples()
 
 void SmurfAnalysis::estimateDYBackground()
 {
-  // const bool binomialError = false;
   if (entries_.empty()){
     printf("No samples are processed.\n");
     return;
   }
+  double total_dy(0);
   printf("\nDrell-Yan background estimation inputs :\n\b");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
   for (unsigned int i=0; i<entries_.size(); ++i){
-    if ( !isRelevantToTopBkg(entries_.at(i).sample) ) continue;
+    if ( !isRelevantToDY(entries_.at(i).sample) ) continue;
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
     for (unsigned int j=0; j<4; ++j){
       printf(" \t%4.1f+/-%3.1f", entries_.at(i).nZpeak.yield[j], sqrt(entries_.at(i).nZpeak.err2[j]));
     }
-    printf(" \t%4.1f+/-%3.1f\n", entries_.at(i).nZpeak.total_yield(),
-	   entries_.at(i).nZpeak.total_error());
+    double nee = rInOutEl_*(entries_.at(i).nZpeak.yield[3]-0.5*kElMu_*(entries_.at(i).nZpeak.yield[1]+entries_.at(i).nZpeak.yield[2]));
+    double nmm = rInOutMu_*(entries_.at(i).nZpeak.yield[0]-0.5/kElMu_*(entries_.at(i).nZpeak.yield[1]+entries_.at(i).nZpeak.yield[2]));
+    printf(" \t%4.1f+/-%3.1f \testimate Nee: %4.1f+/-XXX \testimate Nmm: %4.1f+/-XXX\n", 
+	   entries_.at(i).nZpeak.total_yield(), entries_.at(i).nZpeak.total_error(),
+	   nee, nmm );
+    if (entries_.at(i).sample==SmurfTree::data) total_dy = nee+nmm;
   }
-  /*
-    double A    = entries_.at(i).nTop1BJetTopTaggedEvents.total_yield();
-    double errA = entries_.at(i).nTop1BJetTopTaggedEvents.total_error();
-    double B    = entries_.at(i).nTop1BJetEvents.total_yield();
-    double errB = entries_.at(i).nTop1BJetEvents.total_error();
-    double C    = entries_.at(i).nTopTaggedEvents.total_yield();
-    double errC = entries_.at(i).nTopTaggedEvents.total_error();
-    
-    // compute efficiencies
-    double eff_1b = B>0 ? A/B : 0;
-    double eff_1b_err(0);
-    if ( binomialError ){
-      eff_1b_err = sqrt(eff_1b*(1-eff_1b)/B);
-    } else {
-      eff_1b_err = eff_1b>0 ? eff_1b * sqrt(pow(errA/A,2)+pow(errB/B,2)): 0;
-    }
-    double eff = 1-pow(1-eff_1b,2);
-    double eff_err = 2*(1-eff_1b)*eff_1b_err;
-
-    double scale = eff > 0 ? (1-eff)/eff : 0;
-    printf("\ttag eff: %0.3f+/-%0.3f \ttop bkg: %0.2f+/-%0.2f\n", 
-	   eff, eff_err, C*scale, sqrt(C)*scale);
-  }  
-
   //
   // MC prediction
   //
-  printf("\nTop yield MC estimation:\n\b");;    
+  printf("\nDrell-Yan yield MC estimation:\n\b");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
-
+  double total_from_Z(0);
+  double total_from_Zerr2(0);
   for (unsigned int i=0; i<entries_.size(); ++i){
-    if (entries_.at(i).sample!=SmurfTree::ttbar && entries_.at(i).sample!=SmurfTree::tw) continue;
+    if ( !isRelevantToDY(entries_.at(i).sample) ) continue;
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
     for (unsigned int j=0; j<4; ++j)
       printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j], pm, sqrt(entries_.at(i).finalSelection.err2[j]));
-    printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield(), pm, entries_.at(i).finalSelection.total_error());
+    printf(" \t%5.2f%s%4.2f \tfrom Z: %5.2f%s%4.2f\n", 
+	   entries_.at(i).finalSelection.total_yield(), pm, entries_.at(i).finalSelection.total_error(),
+	   entries_.at(i).nZMCMatched.total_yield(), pm, entries_.at(i).nZMCMatched.total_error());
+    total_from_Z += entries_.at(i).nZMCMatched.total_yield();
+    total_from_Zerr2 += pow(entries_.at(i).nZMCMatched.total_error(),2);
   }
-  */
+  printf("\nTotal from Z MC prediction: %0.1f+/-%0.1f\n", total_from_Z, sqrt(total_from_Zerr2));
+  printf("k-Factor: %0.1f\n", total_from_Z>0?total_dy/total_from_Z:1);
 }
 
 void SmurfAnalysis::estimateTopBackground()
@@ -418,6 +437,14 @@ void SmurfAnalysis::estimateTopBackground()
     printf("No samples are processed.\n");
     return;
   }
+  double top_tag_eff(0);
+  double top_tag_eff_err(0);
+  double top_estimate(0);
+  double top_estimate_err(0);
+  double top_mistag(0);
+  double top_mistag_err(0);
+  unsigned int total_yield(0);
+
   for (unsigned int i=0; i<entries_.size(); ++i){
     if ( !isRelevantToTopBkg(entries_.at(i).sample) ) continue;
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
@@ -452,11 +479,49 @@ void SmurfAnalysis::estimateTopBackground()
     double scale = eff > 0 ? (1-eff)/eff : 0;
     printf("\ttag eff: %0.3f+/-%0.3f \ttop bkg: %0.2f+/-%0.2f\n", 
 	   eff, eff_err, C*scale, sqrt(C)*scale);
+    if ( entries_.at(i).sample==SmurfTree::data ){
+      top_tag_eff = eff;
+      top_tag_eff_err = eff_err;
+      top_estimate = C*scale;
+      top_estimate_err = sqrt(C)*scale;
+    }
   }  
 
+  printf("\nTop mistag rate on Z (nZpeakForTop/nZpeakTopTaggedEvents):\n");;    
+  printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
+  if (entries_.empty()){
+    printf("No samples are processed.\n");
+    return;
+  }
+  for (unsigned int i=0; i<entries_.size(); ++i){
+    if ( !isRelevantToTopBkg(entries_.at(i).sample) ) continue;
+    printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
+    for (unsigned int j=0; j<4; ++j){
+      printf(" \t%4.1f/%4.1f", entries_.at(i).nZpeakForTop.yield[j], 
+	     entries_.at(i).nZpeakTopTaggedEvents.yield[j]);
+    }
+    printf(" \t%4.1f/%4.1f", 
+	   entries_.at(i).nZpeakForTop.total_yield(), 
+	   entries_.at(i).nZpeakTopTaggedEvents.total_yield());
+    double A    = entries_.at(i).nZpeakTopTaggedEvents.total_yield();
+    double errA = entries_.at(i).nZpeakTopTaggedEvents.total_error();
+    double B    = entries_.at(i).nZpeakForTop.total_yield();
+    double errB = entries_.at(i).nZpeakForTop.total_error();
+
+    double mistag = B>0 ? A/B : 0;
+    double mistag_err = mistag>0 ? mistag * sqrt(pow(errA/A,2)+pow(errB/B,2)): 0;
+    printf("\tmis-tag: %0.3f+/-%0.3f\n", mistag, mistag_err);
+    if ( entries_.at(i).sample==SmurfTree::data ){
+      total_yield = entries_.at(i).finalSelection.total_yield();
+      top_mistag = mistag;
+      top_mistag_err = mistag_err;
+    }
+  }  
+  
   //
   // MC prediction
   //
+  double top_mc(0);
   printf("\nTop yield MC estimation:\n\b");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
 
@@ -466,20 +531,56 @@ void SmurfAnalysis::estimateTopBackground()
     for (unsigned int j=0; j<4; ++j)
       printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j], pm, sqrt(entries_.at(i).finalSelection.err2[j]));
     printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield(), pm, entries_.at(i).finalSelection.total_error());
+    if (entries_.at(i).sample==SmurfTree::ttbar || entries_.at(i).sample==SmurfTree::tw) top_mc+=entries_.at(i).finalSelection.total_yield();
   }
+
+  printf("\nFinal top background estimation taking into account mis-tag derived from data:\n");
+  // printf("\ttotal_yield: %d\n",total_yield);
+  // FIXME - do proper error propagation
+  double c = top_tag_eff>0 ? top_mistag*(1-top_tag_eff)/top_tag_eff : 0;
+  double d = (top_estimate-total_yield*c)*(1+c);
+  printf("\testimate: %0.1f+/-%0.1f\n",
+	 d, top_estimate_err);
+  kTop_ = d/top_mc;
+  printf("\tk-factor: %0.1f\n",kTop_);
+
 }
 
 void SmurfAnalysis::showYields(double lumi, bool report)
 {
-  printf("\nEvent yields:\n\b");;    
+  printf("\nStandard Model process event yields:\n");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
   double weight = 1;
   if (lumi>0) weight = lumi/lumi_;
+  Result total;
   for (unsigned int i=0; i<entries_.size(); ++i){
+    if (!isStandardModel(entries_.at(i).sample)&&entries_.at(i).sample!=SmurfTree::data) continue;
+    double scale = 1;
+    if (entries_.at(i).sample==SmurfTree::wjets) scale = kWjets_;
+    if (entries_.at(i).sample==SmurfTree::ttbar||entries_.at(i).sample==SmurfTree::tw) scale = kTop_;
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
     for (unsigned int j=0; j<4; ++j)
-      printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j]*weight, pm, sqrt(entries_.at(i).finalSelection.err2[j])*weight);
-    printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield()*weight, pm, entries_.at(i).finalSelection.total_error()*weight);
+      printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j]*weight*scale, pm, sqrt(entries_.at(i).finalSelection.err2[j])*weight*scale);
+    printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield()*weight*scale, pm, entries_.at(i).finalSelection.total_error()*weight*scale);
+    if ( isStandardModel(entries_.at(i).sample) ){
+      total.add(entries_.at(i).finalSelection, weight*scale);
+    }
+  }
+  for (unsigned int j=0; j<4; ++j)
+    printf("Total:\t%5.2f%s%4.2f", total.yield[j], pm, sqrt(total.err2[j]));
+  printf(" \t%5.2f%s%4.2f\n", total.total_yield(), pm, total.total_error());
+
+  printf("\nHiggs expected event yields:\n");;    
+  printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
+  for (unsigned int i=0; i<entries_.size(); ++i){
+    if (isStandardModel(entries_.at(i).sample)||entries_.at(i).sample==SmurfTree::data) continue;
+    double scale = 1;
+    if (entries_.at(i).sample==SmurfTree::wjets) scale = kWjets_;
+    if (entries_.at(i).sample==SmurfTree::ttbar||entries_.at(i).sample==SmurfTree::tw) scale = kTop_;
+    printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
+    for (unsigned int j=0; j<4; ++j)
+      printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j]*weight*scale, pm, sqrt(entries_.at(i).finalSelection.err2[j])*weight*scale);
+    printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield()*weight*scale, pm, entries_.at(i).finalSelection.total_error()*weight*scale);
   }
   if (report){
     SelectionType selection_type = measurement_.type;
@@ -487,22 +588,25 @@ void SmurfAnalysis::showYields(double lumi, bool report)
       wwSMYields_[selection_type] = YieldReport();
       wwGGHYields_[selection_type] = YieldReport();
       for (unsigned int i=0; i<entries_.size(); ++i){
+	double scale = 1;
+	if (entries_.at(i).sample==SmurfTree::wjets) scale = kWjets_;
+	if (entries_.at(i).sample==SmurfTree::ttbar||entries_.at(i).sample==SmurfTree::tw) scale = kTop_;
 	if (isStandardModel(entries_.at(i).sample)){
 	  const char* plus_minus = "\\pm";
 	  wwSMYields_[selection_type].addColumn(SmurfTree::name(entries_.at(i).sample),
-						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[0]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[0])*weight),
-						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[1]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[1])*weight),
-						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[2]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[2])*weight),
-						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[3]*weight, plus_minus, sqrt(entries_.at(i).finalSelection.err2[3])*weight),
-						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.total_yield()*weight, plus_minus, entries_.at(i).finalSelection.total_error()*weight));
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[0]*weight*scale, plus_minus, sqrt(entries_.at(i).finalSelection.err2[0])*weight*scale),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[1]*weight*scale, plus_minus, sqrt(entries_.at(i).finalSelection.err2[1])*weight*scale),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[2]*weight*scale, plus_minus, sqrt(entries_.at(i).finalSelection.err2[2])*weight*scale),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.yield[3]*weight*scale, plus_minus, sqrt(entries_.at(i).finalSelection.err2[3])*weight*scale),
+						Form("$%5.1f%s%4.1f$",entries_.at(i).finalSelection.total_yield()*weight*scale, plus_minus, entries_.at(i).finalSelection.total_error()*weight*scale));
 	}
 	if (entries_.at(i).sample==SmurfTree::data){
 	  wwSMYields_[selection_type].addColumn(SmurfTree::name(entries_.at(i).sample),
-						Form("$%5.0f$",entries_.at(i).finalSelection.yield[0]*weight),
-						Form("$%5.0f$",entries_.at(i).finalSelection.yield[1]*weight),
-						Form("$%5.0f$",entries_.at(i).finalSelection.yield[2]*weight),
-						Form("$%5.0f$",entries_.at(i).finalSelection.yield[3]*weight),
-						Form("$%5.0f$",entries_.at(i).finalSelection.total_yield()*weight));
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[0]*weight*scale),
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[1]*weight*scale),
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[2]*weight*scale),
+						Form("$%5.0f$",entries_.at(i).finalSelection.yield[3]*weight*scale),
+						Form("$%5.0f$",entries_.at(i).finalSelection.total_yield()*weight*scale));
 	}
       }
     }
@@ -587,13 +691,13 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
   printf("      \t  MuFake-%s       \t  MuFake-%s       \t  MuFake-%s       \t  Total-El       \t  Total-Mu       \t  Total\n", types[0], types[1], types[2]);
 	 
   double total_el_fake(0);
-  double total_el_fake_stat(0);
-  double total_el_fake_psys(0);
-  double total_el_fake_msys(0);
+  double total_el_fake_stat2(0);
+  double total_el_fake_psys2(0);
+  double total_el_fake_msys2(0);
   double total_mu_fake(0);
-  double total_mu_fake_stat(0);
-  double total_mu_fake_psys(0);
-  double total_mu_fake_msys(0);
+  double total_mu_fake_stat2(0);
+  double total_mu_fake_psys2(0);
+  double total_mu_fake_msys2(0);
 
   for (unsigned int i=0; i<entries_.size(); ++i){
     if ( !isRelevantToFakeBkg(entries_.at(i).sample) ) continue;
@@ -647,12 +751,39 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
     printf(" \t%4.1f%s%3.1f+%3.1f-%3.1f", yield_el[1]+yield_mu[1], pm, sqrt(err_el[1]*err_el[1]+err_mu[1]*err_mu[1]),
 	   sqrt(err_el_p*err_el_p+err_mu_p*err_mu_p),sqrt(err_el_m*err_el_m+err_mu_m*err_mu_m));
     printf("\n");
-//     switch (entries_.at(i).sample){
-//       case SmurfTree::data:
-// 	total_el_fake += yield_el[1];
-//     }
+    switch (entries_.at(i).sample){
+    case SmurfTree::data:
+      total_el_fake += yield_el[1];
+      total_el_fake_stat2 += err_el[1]*err_el[1];
+      total_el_fake_psys2 = err_el_p*err_el_p;
+      total_el_fake_msys2 = err_el_m*err_el_m;
+      total_mu_fake += yield_mu[1];
+      total_mu_fake_stat2 += err_mu[1]*err_mu[1];
+      total_mu_fake_psys2 = err_mu_p*err_mu_p;
+      total_mu_fake_msys2 = err_mu_m*err_mu_m;
+      break;
+    case SmurfTree::qqww:
+    case SmurfTree::ttbar:
+    case SmurfTree::tw:
+      // spillage correction
+      total_el_fake -= yield_el[1];
+      total_el_fake_stat2 += err_el[1]*err_el[1];
+      total_mu_fake -= yield_mu[1];
+      total_mu_fake_stat2 += err_mu[1]*err_mu[1];
+      break;
+    default:
+      break;
+    }
   }
-
+  printf("Final estimation of the jet induced background with spillage correction:\n");
+  printf("\tele fakes: %4.1f+%3.1f-%3.1f\n", total_el_fake, 
+	 sqrt(total_el_fake_stat2+total_el_fake_psys2), sqrt(total_el_fake_stat2+total_el_fake_msys2));
+  printf("\tmu fakes: %4.1f+%3.1f-%3.1f\n", total_mu_fake, 
+	 sqrt(total_mu_fake_stat2+total_mu_fake_psys2), sqrt(total_mu_fake_stat2+total_mu_fake_msys2));
+  printf("\ttotal: %4.1f+%3.1f-%3.1f\n", total_el_fake+total_mu_fake, 
+	 sqrt(total_el_fake_stat2+total_el_fake_psys2+total_mu_fake_stat2+total_mu_fake_psys2), 
+	 sqrt(total_el_fake_stat2+total_el_fake_msys2+total_mu_fake_stat2+total_mu_fake_msys2));
+	 
   //
   // MC prediction
   //
@@ -664,12 +795,20 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
     for (unsigned int j=0; j<4; ++j)
       printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j], pm, sqrt(entries_.at(i).finalSelection.err2[j]));
     printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield(), pm, entries_.at(i).finalSelection.total_error());
+    if ( entries_.at(i).sample==SmurfTree::wjets ){
+      kWjets_ = entries_.at(i).finalSelection.total_yield()>0?(total_el_fake+total_mu_fake)/entries_.at(i).finalSelection.total_yield():0;
+    }
   }
+  printf("kFactor for Wjets: %0.2f\n",kWjets_);
 
   //
   // SS closure test
   //
 
+  double total_ss_fake(0);
+  double total_ss_fake_stat(0);
+  double total_ss_fake_psys(0);
+  double total_ss_fake_msys(0);
   printf("\nJet induced fake background estimation (same-sign):\n\b");;    
   printf("      \t  EleFake-%s       \t  EleFake-%s       \t  EleFake-%s ", types[1], types[2], types[3]);
   printf("      \t  MuFake-%s       \t  MuFake-%s       \t  MuFake-%s       \t  Total-El       \t  Total-Mu       \t  Total\n", types[0], types[1], types[2]);
@@ -727,6 +866,12 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
     printf(" \t%4.1f%s%3.1f+%3.1f-%3.1f", yield_el[1]+yield_mu[1], pm, sqrt(err_el[1]*err_el[1]+err_mu[1]*err_mu[1]),
 	   sqrt(err_el_p*err_el_p+err_mu_p*err_mu_p),sqrt(err_el_m*err_el_m+err_mu_m*err_mu_m));
     printf("\n");
+    if (entries_.at(i).sample==SmurfTree::data){
+      total_ss_fake = yield_el[1]+yield_mu[1];
+      total_ss_fake_stat = sqrt(err_el[1]*err_el[1]+err_mu[1]*err_mu[1]);
+      total_ss_fake_psys = sqrt(err_el_p*err_el_p+err_mu_p*err_mu_p);
+      total_ss_fake_msys = sqrt(err_el_m*err_el_m+err_mu_m*err_mu_m);
+    }
   }
 
   //
@@ -734,7 +879,9 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
   //
   printf("\nSame-sign yeilds:\n\b");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
-
+  unsigned int total_ss_data(0);
+  double total_ss_nonfake(0);
+  double total_ss_nonfake_err2(0);
   for (unsigned int i=0; i<entries_.size(); ++i){
     if (!isRelevantToBeProcessed(entries_.at(i).sample) && 
 	entries_.at(i).sample!=SmurfTree::data) continue;
@@ -750,7 +897,19 @@ void SmurfAnalysis::estimateFakeBackground(bool verbose)
     }
     printf(" \t%5.2f%s%4.2f", t, pm, sqrt(t2));
     printf("\n");
+    if (entries_.at(i).sample==SmurfTree::wz||entries_.at(i).sample==SmurfTree::qqww){
+      total_ss_nonfake += t;
+      total_ss_nonfake_err2 += t2;
+    }
+    if (entries_.at(i).sample==SmurfTree::data) total_ss_data = t;
   }
+
+  printf("\nSame-sign closure test for fake background:\n");
+  printf("\tObserved in data: %d\n",total_ss_data);
+  printf("\tpredicted fake contribution: %4.1f%s%3.1f+%3.1f-%3.1f\n",total_ss_fake, pm, total_ss_fake_stat,total_ss_fake_psys,total_ss_fake_msys);
+  printf("\tMC based nonfake estimate: %4.1f%s%3.1f\n",total_ss_nonfake, pm, sqrt(total_ss_nonfake_err2));
+
+
 //   for (unsigned int i=0; i<entries_.size(); ++i){
 //     if (entries_.at(i).sample!=SmurfTree::wjets) continue;
 //     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
@@ -844,6 +1003,12 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
       entry.nTop1BJetEvents.add(tree.type_,weight);
       if ( (tree.cuts_ & SmurfTree::TopTagNotInJets) > 0 ) entry.nTop1BJetTopTaggedEvents.add(tree.type_,weight);
     }
+    if ( (tree.cuts_ & cut_dy) == cut_dy && tree.njets_==0){
+      if ( fabs(tree.dilep_.mass() - 91.1876) < 10 ){
+	entry.nZpeakForTop.add(tree.type_,weight);
+	if ( (tree.cuts_ & SmurfTree::TopTagNotInJets) > 0 ) entry.nZpeakTopTaggedEvents.add(tree.type_,weight);
+      }
+    }
 
     // Proper event selection
     if ( !passedExtraCuts(tree) ) continue;
@@ -891,6 +1056,7 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
       if ( tree.lq1_*tree.lq2_<0 ){
 	entry.hist_final[tree.type_]->Fill(eta1,pt1,weight);
 	entry.finalSelection.add(tree.type_,weight);
+	if (tree.lep1MotherMcId_==23 && tree.lep2MotherMcId_==23) entry.nZMCMatched.add(tree.type_,weight);
 	++nEvents;
       } else {
 	entry.hist_final_ss[tree.type_]->Fill(eta1,pt1,weight);
