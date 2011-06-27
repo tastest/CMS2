@@ -1,0 +1,8 @@
+#MIT conversion stuff
+cvs co -d MitCommon  -r ConvRejection-10-06-09 UserCode/MitCommon
+cvs co -d MitEdm     -r ConvRejection-10-06-09 UserCode/MitEdm
+for f in $(find MitEdm/Filters/ -type f); do sed 's!FWCore/ParameterSet/interface/InputTag!FWCore/Utilities/interface/InputTag!g' $f > blah; mv blah $f; done
+
+echo;echo checkingdeps;echo
+
+checkdeps -a

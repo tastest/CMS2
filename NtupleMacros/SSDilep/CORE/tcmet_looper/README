@@ -1,0 +1,26 @@
+This package is used to calculate tcMET on-the-fly
+inside a looper. To use, do:
+
+----------------------------------------
+
+#include "getTcmetFromCaloMet.cc"
+#include "getResponseFunction_fit.C"
+.
+.
+.
+TH2F* rf = getResponseFunction_fit();
+
+for(int i=0;i<nevents;i++){
+  .
+  .
+  .
+  metStruct tcmetStruct = getTcmetFromCaloMet( rf );
+  float tcmet    = tcmetStruct.met;
+  float tcmetx   = tcmetStruct.metx;
+  float tcmety   = tcmetStruct.mety;
+  float tcmetphi = tcmetStruct.metphi;
+  float tcsumet  = tcmetStruct.sumet;	
+  .
+  .
+  .
+}

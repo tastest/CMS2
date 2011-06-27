@@ -1,0 +1,58 @@
+//-----------------------------------------------------------------
+//Statistics Package For Calculating Upper Limits and Significances
+//-----------------------------------------------------------------
+
+
+1) bayes.f
+-------------------------------------------------------------------
+Calculation of upper limit using Bayesian technique
+
+Usage) 
+1) Compile : f77 bayes.f -L/tas03/home/jribnik/devel/bayes -lkernlib -o bayes
+2) Run     : ./bayes
+
+Input) ***make sure to enter decimal points for all reals, 10. instead of 10***
+1) enter number of observed events (integer): 
+2) enter relative error on acceptance (real): 
+3) enter expected number of background events (real):  
+4) enter error on number of background events (real):  ***absolute error***
+5) enter desired confidence level (real): ***probably 0.9 or 0.95***
+6) enter integration upper limit (real): ***make this much larger than anticipated upper limit)***
+7) enter integration step size (recommend 0.02 or less):
+
+Output) 
+ limit: less than     X signal events 
+
+The output is the upper limit on the signal yield at the given confidence level
+
+2) zbi.C
+-------------------------------------------------------------------
+Calculation of ZBi significance
+
+Usage)
+1) Compile in root:
+root -l
+.L zbi.C
+2) Run:
+zbi(num_observed_events , background_prediction , relative_syst_bkg_uncertainty)
+
+Output) 
+  The function returns the ZBi value
+
+3) zn.cc
+-------------------------------------------------------------------
+Calculation of Zn significance
+
+Usage)
+1) Compile : g++ zn.cc -o zn 
+2) Run     : ./zn
+
+  Usage: zn.exe Nsig Nbgr [Sbgr^2 [Dbgr]]
+  where  Nsig - number of signal events
+         Nbgr - number of background events
+         Sbgr - statistical background uncertainty
+                (usually Sbgr^2 = Nbgr)
+         Dbgr - systematic background uncertainty (in percent)
+
+Output)
+ The program returns the Zn value
