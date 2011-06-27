@@ -13,7 +13,7 @@
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: METMaker.cc,v 1.28 2011/03/14 20:56:35 kalavase Exp $
+// $Id: METMaker.cc,v 1.28.8.1 2011/06/27 16:20:01 fgolf Exp $
 //
 //
 
@@ -295,7 +295,8 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      edm::Handle< reco::MuonCollection > muon_h;
      edm::Handle<bool> filter_h;     
 
-     iEvent.getByLabel(hbheNoiseFilterInputTag, filter_h);
+     if (hbheNoiseFilterInputTag.label() != "")
+         iEvent.getByLabel(hbheNoiseFilterInputTag, filter_h);
      iEvent.getByLabel(met_tag      , met_h       );
      iEvent.getByLabel(metHO_tag    , metHO_h     );
      iEvent.getByLabel(metNoHF_tag  , metNoHF_h   );
@@ -312,7 +313,10 @@ void METMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
      iEvent.getByLabel(muon_vm_tag, muon_vm_h );
      iEvent.getByLabel(muon_tag   , muon_h    );
     
-     *evt_hbheFilter   = *filter_h;
+     if (hbheNoiseFilterInputTag.label() != "")
+         *evt_hbheFilter   = *filter_h;
+     else
+         *evt_hbheFilter = 1.;
      *evt_met			= met_h.isValid()		 ? ( met_h->front()		 ).et()			: -9999;
      *evt_metPhi		= met_h.isValid()		 ? ( met_h->front()		 ).phi()		: -9999;
      *evt_metSig		= met_h.isValid()		 ? ( met_h->front()		 ).metSignificance()	: -9999;
