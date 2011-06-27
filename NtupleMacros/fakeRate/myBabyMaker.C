@@ -305,27 +305,31 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     // Set the JSON file
     if(isData) {
-      //set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
-      //set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
-      //set_goodrun_file_json("json/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt");
-      set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
+        //set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
+        //set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
+        //set_goodrun_file_json("json/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt");
+        set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
     }
 
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
-    jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
-    jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
+    // jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
+    // jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
+    jetcorr_pf_L2L3_filenames.push_back("files/START41_V0_AK5PF_L2Relative.txt");
+    jetcorr_pf_L2L3_filenames.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 /*
-    std::vector<std::string> jetcorr_pf_L1FastL2L3_filenames;
-    //jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Jec10V1_L1FastJet_AK5PF.txt");
-    jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
-    jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
-    FactorizedJetCorrector *jet_pf_L1FastL2L3corrector = makeJetCorrector(jetcorr_pf_L1FastL2L3_filenames);
+  std::vector<std::string> jetcorr_pf_L1FastL2L3_filenames;
+  //jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Jec10V1_L1FastJet_AK5PF.txt");
+  jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
+  jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
+  FactorizedJetCorrector *jet_pf_L1FastL2L3corrector = makeJetCorrector(jetcorr_pf_L1FastL2L3_filenames);
 */
     std::vector<std::string> jetcorr_jpt_L2L3_filenames;
-    jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5JPT.txt");
-    jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5JPT.txt");
+    // jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5JPT.txt");
+    // jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5JPT.txt");
+    jetcorr_jpt_L2L3_filenames.push_back("files/START38_V13_AK5JPT_L2Relative.txt");
+    jetcorr_jpt_L2L3_filenames.push_back("files/START38_V13_AK5JPT_L3Absolute.txt");
     FactorizedJetCorrector *jet_jpt_L2L3corrector = makeJetCorrector(jetcorr_jpt_L2L3_filenames);
 
 
@@ -357,7 +361,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
         TTree *tree = (TTree*)f.Get("Events");
         cms2.Init(tree);
         unsigned int nEntries = tree->GetEntries();
-	unsigned int nGoodEvents(0);
+        unsigned int nGoodEvents(0);
         unsigned int nLoop = nEntries;
         unsigned int z;
         for( z = 0; z < nLoop; z++) { // Event Loop
@@ -367,7 +371,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             if(isData){
                 // Good  Runs
                 //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-	          if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+                if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
 
                 // check for duplicated
                 DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
@@ -380,7 +384,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
             // looper progress
             ++nEventsTotal;
-	    ++nGoodEvents;
+            ++nGoodEvents;
 //             int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 //             if (i_permille != i_permilleOld) {
 //                 printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
@@ -452,6 +456,11 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v1_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v1  );
                     v2_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v2  );
                     v3_el_ssV4_     = pass_electronSelection( iLep, electronSelectionFOV4_ssVBTF80_v3  );
+
+                    num_el_ssV5_    = pass_electronSelection( iLep, electronSelection_ssV5             );
+                    v1_el_ssV5_     = pass_electronSelection( iLep, electronSelectionFOV5_ssVBTF80_v1  );
+                    v2_el_ssV5_     = pass_electronSelection( iLep, electronSelectionFOV5_ssVBTF80_v2  );
+                    v3_el_ssV5_     = pass_electronSelection( iLep, electronSelectionFOV5_ssVBTF80_v3  );
 
                     // WW
                     num_el_smurfV6_ = pass_electronSelection( iLep, electronSelection_smurfV6          );
@@ -545,8 +554,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         (!v1SSV2_)        && (!v2SSV2_)        && (!v3SSV2_)        &&                      // SS 2010
                         (!v1_el_ssV3_)    && (!v2_el_ssV3_)    && (!v3_el_ssV3_)    &&                      // SS 2011
                         (!v1OSOct18_)     && (!v2OSOct18_)     && (!v3OSOct18_)     &&                      // OS
-			(!fo_el_OSV2_)    &&                                                                // OS 2011
-			(!fo_el_OSV3_)    &&                                                                // OS 2011
+                        (!fo_el_OSV2_)    &&                                                                // OS 2011
+                        (!fo_el_OSV3_)    &&                                                                // OS 2011
                         (!v1_wwV1_)       && (!v2_wwV1_)       && (!v3_wwV1_)       && (!v4_wwV1_)       && // WW 2010
                         (!v1_el_smurfV1_) && (!v1_el_smurfV1_) && (!v3_el_smurfV1_) && (!v4_el_smurfV1_)    // WW 2011
                         ){ 
@@ -591,16 +600,30 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     weight_ = isData ? 1. : evt_scale1fb();
   
                     if(!isData){
-                        // Pileup - PUSummaryInfoMaker
-                        pu_nPUvertices_ = puInfo_nPUvertices();
+                        // Pileup - PUSummaryInfoMaker                        
+                        for (unsigned int vidx = 0; vidx < cms2.puInfo_nPUvertices().size(); vidx++) {
+                            if (cms2.puInfo_bunchCrossing().at(vidx) != 0)
+                                continue;
+                            pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
+                        }
+
                     } else {
   
                         // Pileup - VertexMaker
-                        evt_nvtxs_       = evt_nvtxs();
+                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                            if (!isGoodVertex(vidx))
+                                continue;
+
+                            ++evt_nvtxs_;
+                        }
     
                         // Pileup - VertexMaker
-                        evt_ndavtxs_       = evt_ndavtxs();
-
+                        for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
+                            if (!isGoodDAVertex(vidx))
+                                continue;
+                            
+                            ++evt_ndavtxs_;
+                        }
                     }
 
                     /////////////////////////// 
@@ -730,14 +753,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     triggerMatchStruct struct_ele8_CaloIdL_TrkIdVL_vstar                           = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_TrkIdVL_regexp);
                     triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                   = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_Jet40_regexp);
                     triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                         = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_regexp);
-                    triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                        = MatchTriggerClass( els_p4().at(iLep), ele17_CaloIdL_CaloIsoVL_regexp);  
+                    triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                        = MatchTriggerClass( els_p4().at(iLep), ele17_CaloIdL_CaloIsoVL_regexp);
+                    triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar        = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp);
+                    triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar        = MatchTriggerClass( els_p4().at(iLep), ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_regexp);
                     triggerMatchStruct struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar  = MatchTriggerClass( els_p4().at(iLep), photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
   
                     ele8_vstar_                                              = struct_ele8_vstar.nHLTObjects_;
                     ele8_CaloIdL_TrkIdVL_vstar_                              = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
                     ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                      = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.nHLTObjects_;
                     ele8_CaloIdL_CaloIsoVL_vstar_                            = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-                    ele17_CaloIdL_CaloIsoVL_vstar_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_; 
+                    ele17_CaloIdL_CaloIsoVL_vstar_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_           = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.nHLTObjects_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_           = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
                     photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
 
                     ele8_version_                                              = struct_ele8_vstar.version_;
@@ -745,6 +772,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ele8_CaloIdL_CaloIsoVL_Jet40_version_                      = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.version_;
                     ele8_CaloIdL_CaloIsoVL_version_                            = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
                     ele17_CaloIdL_CaloIsoVL_version_                           = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_; 
+                    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_           = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.version_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_           = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
                     photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_     = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
           
                     dr_ele8_vstar_                                           = struct_ele8_vstar.dR_;
@@ -752,10 +781,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                   = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.dR_;
                     dr_ele8_CaloIdL_CaloIsoVL_vstar_                         = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
                     dr_ele17_CaloIdL_CaloIsoVL_vstar_                        = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
+                    dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_        = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.dR_;
+                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
                     dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
 /*
-                    if ( (ele8_vstar_ == 0) && (ele8_CaloIdL_TrkIdVL_vstar_ == 0) && (ele8_CaloIdL_CaloIsoVL_Jet40_vstar_ == 0)
-                         && (ele8_CaloIdL_CaloIsoVL_vstar_  == 0) && (ele17_CaloIdL_CaloIsoVL_vstar_ == 0) ) { continue; }
+  if ( (ele8_vstar_ == 0) && (ele8_CaloIdL_TrkIdVL_vstar_ == 0) && (ele8_CaloIdL_CaloIsoVL_Jet40_vstar_ == 0)
+  && (ele8_CaloIdL_CaloIsoVL_vstar_  == 0) && (ele17_CaloIdL_CaloIsoVL_vstar_ == 0) ) { continue; }
 */
 
                     ///////////////////////  
@@ -1138,14 +1169,28 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                     if(!isData){
                         // Pileup - PUSummaryInfoMaker
-                        pu_nPUvertices_ = puInfo_nPUvertices();
+                        for (unsigned int vidx = 0; vidx < cms2.puInfo_nPUvertices().size(); vidx++) {
+                            if (cms2.puInfo_bunchCrossing().at(vidx) != 0)
+                                continue;
+                            pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
+                        }
                     } 
                     else {
                         // Pileup - VertexMaker
-                        evt_nvtxs_       = evt_nvtxs();
-  
+                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                            if (!isGoodVertex(vidx))
+                                continue;
+
+                            ++evt_nvtxs_;
+                        }
+    
                         // Pileup - VertexMaker
-                        evt_ndavtxs_       = evt_ndavtxs();
+                        for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
+                            if (!isGoodDAVertex(vidx))
+                                continue;
+
+                            ++evt_ndavtxs_;
+                        }
                     }
 
                     /////////////////////////// 
@@ -1236,7 +1281,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     num_mu_OSZV2_     = muonId(iLep, OSZ_v2);
                     fo_mu_OSGV2_      = muonId(iLep, OSGeneric_v2_FO);
 
-		    //OS
+                    //OS
                     num_mu_OSGV3_     = muonId(iLep, OSGeneric_v3);
                     fo_mu_OSGV3_      = muonId(iLep, OSGeneric_v3_FO);
 
@@ -1275,8 +1320,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     if( 
                         !fo_04_ && !fo_10_ &&                                      // ttbar
                         !fo_mussV2_04_   && !fo_mussV2_10_   && !fo_mussV3_04_  && // SS
-			!fo_mu_OSGV2_    &&                                        // OS2011
-			!fo_mu_OSGV3_    &&                                        // OS2011
+                        !fo_mu_OSGV2_    &&                                        // OS2011
+                        !fo_mu_OSGV3_    &&                                        // OS2011
                         !fo_wwV1_04_     && !fo_wwV1_10_     && !fo_wwV1_10_d0_ && // WW
                         !fo_mu_smurf_04_ && !fo_mu_smurf_10_                       // WW
                         ){ 
@@ -1334,9 +1379,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     dr_mu30_vstar_      = struct_mu30_vstar.dR_;
                     dr_mu8_Jet40_vstar_ = struct_mu8_Jet40_vstar.dR_;
 /*
-                    if ( (mu3_vstar_ == 0) && (mu5_vstar_ == 0) && (mu8_vstar_ == 0)
-                         && (mu12_vstar_ == 0) && (mu15_vstar_ == 0) && (mu20_vstar_ == 0)
-                         && (mu24_vstar_ == 0) && (mu30_vstar_ == 0) && (mu8_Jet40_vstar_ == 0) ) { continue; }
+  if ( (mu3_vstar_ == 0) && (mu5_vstar_ == 0) && (mu8_vstar_ == 0)
+  && (mu12_vstar_ == 0) && (mu15_vstar_ == 0) && (mu20_vstar_ == 0)
+  && (mu24_vstar_ == 0) && (mu30_vstar_ == 0) && (mu8_Jet40_vstar_ == 0) ) { continue; }
 */
                     ///////////////////////  
                     // End 2011 Triggers //
@@ -1612,13 +1657,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             } // closes if statements about whether we want to fill muons
 
         }// closes loop over events
-	printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
+        printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
 
     }  // closes loop over files
 
     cout << "   " <<endl;
     CloseBabyNtuple();
     return;
-
+    
 } // closes myLooper function  
 

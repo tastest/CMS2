@@ -8,7 +8,7 @@
 #include "TTree.h"
 #include "TPRegexp.h"
 
-// TAS Includes
+// TAS includes
 #include "CMS2.cc"
 
 class myBabyMaker {
@@ -142,14 +142,20 @@ private:
     Bool_t v1_el_ssV4_;
     Bool_t v2_el_ssV4_;
     Bool_t v3_el_ssV4_;
+
+    // Electrons
+    Bool_t num_el_ssV5_;
+    Bool_t v1_el_ssV5_;
+    Bool_t v2_el_ssV5_;
+    Bool_t v3_el_ssV5_;
     
     // Muons
     Bool_t numNomSSv3_;   // NominalSSv3
     Bool_t fo_mussV3_04_; // muonSelectionFO_mu_ssV3
 
     // Muons
-    Bool_t numNomSSv4_;   // NominalSSv3
-    Bool_t fo_mussV4_04_; // muonSelectionFO_mu_ssV3
+    Bool_t numNomSSv4_;   // NominalSSv4
+    Bool_t fo_mussV4_04_; // muonSelectionFO_mu_ssV4
 
     // WW, HWW
 
@@ -257,7 +263,9 @@ private:
     Int_t ele8_CaloIdL_TrkIdVL_vstar_;                               // HLT_Ele8_CaloIdL_TrkIdVL_v*
     Int_t ele8_CaloIdL_CaloIsoVL_Jet40_vstar_;                       // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v*
     Int_t ele8_CaloIdL_CaloIsoVL_vstar_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v*
-    Int_t ele17_CaloIdL_CaloIsoVL_vstar_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v*  
+    Int_t ele17_CaloIdL_CaloIsoVL_vstar_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v*
+    Int_t ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_;            // HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*
+    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;            // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
     Int_t photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_;      // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v*
 
     Int_t ele8_version_;                                               // HLT_Ele8_v*
@@ -265,6 +273,8 @@ private:
     Int_t ele8_CaloIdL_CaloIsoVL_Jet40_version_;                       // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v*
     Int_t ele8_CaloIdL_CaloIsoVL_version_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v*
     Int_t ele17_CaloIdL_CaloIsoVL_version_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v*  
+    Int_t ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_;            // HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*
+    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_;            // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
     Int_t photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_;      // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v*
 
     Float_t dr_ele8_vstar_;                                          // HLT_Ele8_v*
@@ -272,6 +282,8 @@ private:
     Float_t dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_;                  // HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v*
     Float_t dr_ele8_CaloIdL_CaloIsoVL_vstar_;                        // HLT_Ele8_CaloIdL_CaloIsoVL_v*
     Float_t dr_ele17_CaloIdL_CaloIsoVL_vstar_;                       // HLT_Ele17_CaloIdL_CaloIsoVL_v*  
+    Float_t dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_;       // HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v*
+    Float_t dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;       // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
     Float_t dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_; // HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v*
 
     // Muons
@@ -483,6 +495,8 @@ private:
     TPMERegexp* ele8_CaloIdL_CaloIsoVL_Jet40_regexp;
     TPMERegexp* ele8_CaloIdL_TrkIdVL_regexp;
     TPMERegexp* ele17_CaloIdL_CaloIsoVL_regexp;
+    TPMERegexp* ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp;
+    TPMERegexp* ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_regexp;
     TPMERegexp* photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp;
     TPMERegexp* mu3_regexp;      
     TPMERegexp* mu5_regexp;          
@@ -608,6 +622,11 @@ void myBabyMaker::InitBabyNtuple () {
     v2_el_ssV4_     = false;
     v3_el_ssV4_     = false;
 
+    num_el_ssV5_    = false;
+    v1_el_ssV5_     = false;
+    v2_el_ssV5_     = false;
+    v3_el_ssV5_     = false;
+
     // Muons
     numNomSSv3_     = false;
     fo_mussV3_04_   = false;
@@ -703,6 +722,8 @@ void myBabyMaker::InitBabyNtuple () {
     ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     = 0;
     ele8_CaloIdL_CaloIsoVL_vstar_                           = 0;
     ele17_CaloIdL_CaloIsoVL_vstar_                          = 0;
+    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_          = 0;
+    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_          = 0;
     photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    = 0;
 
     ele8_version_                                           = -1;
@@ -710,13 +731,17 @@ void myBabyMaker::InitBabyNtuple () {
     ele8_CaloIdL_CaloIsoVL_Jet40_version_                   = -1;
     ele8_CaloIdL_CaloIsoVL_version_                         = -1;
     ele17_CaloIdL_CaloIsoVL_version_                        = -1;
+    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_        = -1;
+    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_        = -1;
     photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_  = -1;
 
     dr_ele8_vstar_                                          = 99.0; 
     dr_ele8_CaloIdL_TrkIdVL_vstar_                          = 99.0; 
     dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = 99.0; 
     dr_ele8_CaloIdL_CaloIsoVL_vstar_                        = 99.0; 
-    dr_ele17_CaloIdL_CaloIsoVL_vstar_                       = 99.0;    
+    dr_ele17_CaloIdL_CaloIsoVL_vstar_                       = 99.0;
+    dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       = 99.0;
+    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = 99.0;    
     dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = 99.0; 
 
     // Muons
@@ -1004,6 +1029,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2_el_ssV4"    , &v2_el_ssV4_     );
     babyTree_->Branch("v3_el_ssV4"    , &v3_el_ssV4_     );
 
+    babyTree_->Branch("num_el_ssV5"   , &num_el_ssV5_    );
+    babyTree_->Branch("v1_el_ssV5"    , &v1_el_ssV5_     );
+    babyTree_->Branch("v2_el_ssV5"    , &v2_el_ssV5_     );
+    babyTree_->Branch("v3_el_ssV5"    , &v3_el_ssV5_     );
+
     // Muons
     babyTree_->Branch("numNomSSv3",   &numNomSSv3_       );
     babyTree_->Branch("fo_mussV3_04", &fo_mussV3_04_     );
@@ -1089,6 +1119,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_vstar"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     );
     babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_vstar"                          , &ele8_CaloIdL_CaloIsoVL_vstar_                           );
     babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_vstar"                         , &ele17_CaloIdL_CaloIsoVL_vstar_                          );
+    babyTree_->Branch("ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar"         , &ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_          );
+    babyTree_->Branch("ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"         , &ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_          );
     babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    );
 
     babyTree_->Branch("ele8_version"                                            , &ele8_version_                                             );
@@ -1096,6 +1128,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_Jet40_version"                    , &ele8_CaloIdL_CaloIsoVL_Jet40_version_                     );
     babyTree_->Branch("ele8_CaloIdL_CaloIsoVL_version"                          , &ele8_CaloIdL_CaloIsoVL_version_                           );
     babyTree_->Branch("ele17_CaloIdL_CaloIsoVL_version"                         , &ele17_CaloIdL_CaloIsoVL_version_                          );
+    babyTree_->Branch("ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version"         , &ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_          );
+    babyTree_->Branch("ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version"         , &ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_          );
     babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version"   , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_    );
 
     babyTree_->Branch("dr_ele8_vstar"                                         , &dr_ele8_vstar_                                          );
@@ -1103,6 +1137,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar"                 , &dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  );
     babyTree_->Branch("dr_ele8_CaloIdL_CaloIsoVL_vstar"                       , &dr_ele8_CaloIdL_CaloIsoVL_vstar_                        );
     babyTree_->Branch("dr_ele17_CaloIdL_CaloIsoVL_vstar"                      , &dr_ele17_CaloIdL_CaloIsoVL_vstar_                       );
+    babyTree_->Branch("dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar"      , &dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       );
+    babyTree_->Branch("dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"      , &dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       );
     babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar", &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ );
 
     babyTree_->Branch("mu3_vstar"          , &mu3_vstar_          );
@@ -1295,6 +1331,8 @@ myBabyMaker::myBabyMaker () {
     ele8_CaloIdL_CaloIsoVL_Jet40_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v(\\d+)", "o");
     ele8_CaloIdL_TrkIdVL_regexp = new TPMERegexp("HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)", "o");
     ele17_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Ele17_CaloIdL_CaloIsoVL_v(\\d+)", "o");
+    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp = new TPMERegexp("HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v(\\d+)", "o");
+    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_regexp = new TPMERegexp("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)", "o");
     photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp = new TPMERegexp("HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)", "o");
     mu3_regexp = new TPMERegexp("HLT_Mu3_v(\\d+)", "o");
     mu5_regexp = new TPMERegexp("HLT_Mu5_v(\\d+)", "o");          
