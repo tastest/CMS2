@@ -39,6 +39,12 @@ export SCRAM_ARCH=slc5_amd64_gcc434
 if [ "$GATHER_SITE" == "HADOOP" ]; then
     INPUT_DATA_DIR=/hadoop/cms/store/user/yanjuntu/$GATHER_SAMPLE
     OUTPUT_DATA_DIR=/nfs-3/userdata/cms2/gather/$GATHER_TAG/$GATHER_SAMPLE
+elif [ "$GATHER_SITE" == "HADOOPIAN" ]; then
+    GATHER_INPUT=/hadoop/cms/store/user/imacneill/
+    GATHER_OUTPUT=/nfs-3/userdata/cms2/gather/$GATHER_TAG/
+elif [ "$GATHER_SITE" == "HADOOPJAE" ]; then
+    GATHER_INPUT=/hadoop/cms/store/user/jaehyeok/
+    GATHER_OUTPUT=/nfs-3/userdata/cms2/gather/$GATHER_TAG/
 
 elif [ "$GATHER_SITE" == "NFS3" ]; then
     INPUT_DATA_DIR=/nfs-3/userdata/cms2/$GATHER_SAMPLE

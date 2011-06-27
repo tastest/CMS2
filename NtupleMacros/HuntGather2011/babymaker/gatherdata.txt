@@ -1,24 +1,30 @@
 
 # 2010
-./makeGatherMC.sh UCSD Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/
-./makeGatherMC.sh UCSD Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
-./makeGatherMC.sh UCSD Mu_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
-./makeGatherMC.sh UCSD EG_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
+#./makeGatherMC.sh UCSD Mu_Run2010B-Nov4ReReco_v1_RECO/V03-06-17/diLepPt1020Skim/
+#./makeGatherMC.sh UCSD Electron_Run2010B-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
+#./makeGatherMC.sh UCSD Mu_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
+#./makeGatherMC.sh UCSD EG_Run2010A-Nov4ReReco_v1_RECO/V03-06-16/diLepPt1020Skim/
 
 # 2011 datasets that are done
-#./makeGatherMC.sh NFS4 huntgather2011_V00-01-07 ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/
-#./makeGatherMC.sh NFS4 huntgather2011_V00-01-07 MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/
-#./makeGatherMC.sh NFS4 huntgather2011_V00-01-07 ElectronHad_Run2011A-PromptReco-v2_AOD/V04-01-03/
-#./makeGatherMC.sh NFS4 huntgather2011_V00-01-07 MuHad_Run2011A-PromptReco-v2_AOD/V04-01-03/
+#./makeGatherMC.sh NFS4 huntgather2011_V00-01-14 ElectronHad_Run2011A-PromptReco-v1_AOD/V04-01-02/
+#./makeGatherMC.sh NFS4 huntgather2011_V00-01-14 MuHad_Run2011A-PromptReco-v1_AOD/V04-00-13/
+#./makeGatherMC.sh NFS4 huntgather2011_V00-01-14 ElectronHad_Run2011A-PromptReco-v2_AOD/V04-01-03/
+#./makeGatherMC.sh NFS4 huntgather2011_V00-01-14 MuHad_Run2011A-PromptReco-v2_AOD/V04-01-03/
 
-./makeGatherMC.sh HADOOP huntgather2011_V00-01-07 CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/
-./makeGatherMC.sh HADOOP huntgather2011_V00-01-07 CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/
-./makeGatherMC.sh HADOOP huntgather2011_V00-01-07 CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/
-#./makeGatherMC.sh HADOOP huntgather2011_V00-01-07 CMSSW_4_1_2_patch1_V04-01-05/DoubleElectron_Run2011A-Apr22ReReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-05_merged/V04-01-05/
-./makeGatherMC.sh UCSD huntgather2011_V00-01-07 ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/
+#./makeGatherMC.sh HADOOP huntgather2011_V00-01-14 CMSSW_4_1_2_patch1_V04-00-13/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/
+#./makeGatherMC.sh HADOOP huntgather2011_V00-01-14 CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/
+#./makeGatherMC.sh HADOOP huntgather2011_V00-01-14 CMSSW_4_1_2_patch1_V04-00-13/MuEG_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/
+./makeGatherMC.sh UCSD huntgather2011_V00-01-14 ExpressPhysicsRun2011A-Express-v1FEVT/V04-00-08/
 
-./makeGatherMC.sh HADOOP huntgather2011_V00-01-07 /CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/
-./makeGatherMC.sh HADOOP huntgather2011_V00-01-07 /CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/
-./makeGatherMC.sh HADOOP huntgather2011_V00-01-07 /CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/
-./makeGatherMC.sh NFS4 huntgather2011_V00-01-07 ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/
+#./makeGatherMC.sh HADOOP huntgather2011_V00-01-14 /CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/
+#./makeGatherMC.sh HADOOP huntgather2011_V00-01-14 /CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/
+#./makeGatherMC.sh HADOOP huntgather2011_V00-01-14 /CMSSW_4_1_2_patch1_V04-01-03/MuEG_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/
+./makeGatherMC.sh NFS4 huntgather2011_V00-01-14 ExpressPhysics_Run2011A-Express-v2_FEVT/V04-01-02/
 
+# May10 ReReco (10329 - 163869.... covers all of promptv1 + a bit of promptv2)
+./makeGatherMC.sh NFS4 huntgather2011_V00-01-14 /DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleElectronTriggerSkim
+./makeGatherMC.sh NFS4 huntgather2011_V00-01-14/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleElectronTriggerSkim
+./makeGatherMC.sh NFS4 huntgather2011_V00-01-14/DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleElectronTriggerSkim
+
+./makeGatherMC.sh NFS4 huntgather2011_V00-01-14 /DoubleElectron_Run2011A-May10ReReco-v1_AOD/V04-02-15/DoubleElectronTriggerSkim 
+./makeGatherMC.sh HADOOPIAN huntgather2011_V00-01-14 /CMSSW_4_2_3_patch1_V04-02-15/MuHad_Run2011A-May10ReReco-v1_AOD/CMSSW_4_2_3_patch1_V04-02-15_merged/V04-02-15/
