@@ -194,6 +194,11 @@ float TMt2::GetMt2 (
     exit(1);
   }
 
+  // Get the ( transverse ) 4-vectors of the neutrinos chosen by MT2
+  p4_nu1_.SetPxPyPzE( nu1Px, nu1Py, 0.0, sqrt( pow( nu1Px, 2) + pow( nu1Py, 2) ) );
+  p4_nu2_.SetPxPyPzE( nu2Px, nu2Py, 0.0, sqrt( pow( nu2Px, 2) + pow( nu2Py, 2) ) );
+
+  //
   mt2_ = Min;
   return mt2_;
 
