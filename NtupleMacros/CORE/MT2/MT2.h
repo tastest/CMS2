@@ -1,3 +1,13 @@
+//---------------------------------------------------------------------------------
+// Filename      MT2.cc
+// Author:       dbarge
+// Created:      February 22 2010
+// Modified:     February 09 2011
+// Description:  Library to calculate MT2 and MT2J
+// References:   http://arxiv.org/PS_cache/hep-ph/pdf/0304/0304226v1.pdf
+//               http://arxiv.org/PS_cache/arxiv/pdf/0810/0810.5178v2.pdf
+//---------------------------------------------------------------------------------
+
 #ifndef MT2_H
 #define MT2_H
 
@@ -5,31 +15,13 @@
 #include "Math/LorentzVector.h"
 #include "TMath.h"
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
+
 enum enum_mt2_method { BISECT, GRID };
 
-// MT2 Container
-class TMt2 {
-  private:
-    double Mt2_;
-    double Nu1Px_;
-    double Nu1Py_;
-    double Nu2Px_;
-    double Nu2Py_;
-  public:
-    TMt2( double, double, double, double, double );
-    inline double Mt2   (void) { return Mt2_;   }
-    inline double Nu1Px (void) { return Nu1Px_; }
-    inline double Nu1Py (void) { return Nu1Py_; }
-    inline double Nu2Px (void) { return Nu2Px_; }
-    inline double Nu2Py (void) { return Nu2Py_; }
-};
-TMt2::TMt2( double Mt2_arg, double Nu1Px_arg, double Nu1Py_arg, double Nu2Px_arg, double Nu2Py_arg ){
-  Mt2_   = Mt2_arg;
-  Nu1Px_ = Nu1Px_arg;
-  Nu1Py_ = Nu1Py_arg;
-  Nu2Px_ = Nu2Px_arg;
-  Nu2Py_ = Nu2Py_arg;
-}
+///////////////////////////////////////////////////////////////
+// MT2 Calculated with the Bisection method from Cheng & Han //
+///////////////////////////////////////////////////////////////
 
 // MT2 declaration
 double MT2(
@@ -37,17 +29,6 @@ double MT2(
   const float,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  float = 0.0,
-  bool = false
-);
-
-TMt2* MT2_GRID(
-  const float,
-  const float,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  int = 500,
-  int = 1,
   float = 0.0,
   bool = false
 );
@@ -64,26 +45,42 @@ double MT2J(
   bool = false
 );
 
-/*
-double MT2J_GRID(
-  const float,
-  const float,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
-  float = 0.0,
-  bool = false
-);
-*/
+///////////////////////////////////////////////
+// MT2 Calculated Using a Simple Grid Method //
+///////////////////////////////////////////////
 
-vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > CleanJets(
-  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  const float,
-  const float,
-  const float
-);
+class TMt2 {
+
+  private:
+    
+    int           grid_size_;
+    int           grid_spacing_;
+    float         mt2_;
+    LorentzVector p4_nu1_;
+    LorentzVector p4_nu2_;
+
+  public:
+
+    TMt2    (void);
+    ~TMt2   (void);
+
+    float GetMt2  ( const float , const float , const LorentzVector , const LorentzVector ,                               const float = 0.0, bool = false );
+    float GetMt2j ( const float , const float , const LorentzVector , const LorentzVector , const vector<LorentzVector> , const float = 0.0, bool = false );
+
+    inline float         Mt2   (void) { return mt2_;    }
+    inline LorentzVector Nu1p4 (void) { return p4_nu1_; }
+    inline LorentzVector Nu2p4 (void) { return p4_nu2_; }
+
+};
+
+// Constructor & Destructor
+TMt2::TMt2  (void) { 
+  grid_size_    = 500;
+  grid_spacing_ = 2;
+  mt2_          = -999.0;
+};
+TMt2::~TMt2 (void) { };
+
 
 #endif
 
