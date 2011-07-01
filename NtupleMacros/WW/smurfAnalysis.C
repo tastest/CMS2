@@ -139,7 +139,7 @@ struct SmurfAnalysis{
 		const char* el_fakerate_name = "el_fr_v4",
 		const char* mu_fakerate_file = "files/ww_mu_fr.root",
 		const char* mu_fakerate_name = "mu_fr_m2");
-  bool passedExtraCuts(SmurfTree& tree);
+  bool passedExtraCuts(SmurfTree& tree, bool noMassCut = false);
   void showYields(double lumi = -1, bool report=true); // -1 for lumi means internal lumi
   void printEvents(const char* output_file_name);
   void makeReport();
@@ -208,7 +208,7 @@ struct SmurfAnalysis{
   std::map<SelectionType,YieldReport> wwSMYields_;
   std::map<SelectionType,YieldReport> wwGGHYields_;
   std::map<SelectionType,FakeReport> wwFakes_;
-
+  
   std::map<SelectionType,std::map<SmurfTree::DataType,YieldReport> > higgsYields_;
   double lumi_;
   bool processOnlyImportantSamples;
@@ -222,14 +222,17 @@ struct SmurfAnalysis{
   const char* dir_;
   Measurement measurement_;
   const char* json_;
-  double rInOutEl_; // R in/out for Zee
-  double rInOutMu_; // R in/out for Zmm
+  double rOutInEl_; // R out/in for Zee
+  double rOutInMu_; // R out/in for Zmm
+  double rOutInElRelativeErr_; // R out/in for Zee (error)
+  double rOutInMuRelativeErr_; // R out/in for Zmm (error)
   double kElMu_; // yield difference between els and mus k=sqrt(Nee/Nmm) in Z peak
   
   // kFactors
   double kWjets_;
   double kTop_;
   double kDrellYan_;
+  bool useNewCuts_;
 
   // cuts
   static const unsigned int cut_base  = SmurfTree::BaseLine|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
@@ -268,72 +271,93 @@ private:
 // ========================================================================== 
 //
 
-bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type){
+bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type, bool noMassCut = false){
   if (tree.njets_!=0) return false;
   switch (sig_type){
   case SmurfTree::hww115: 
     return tree.lep1_.pt()>20 && tree.lep2_.pt()>10 &&
-      tree.dilep_.mass()<40 && fabs(tree.dPhi_)<M_PI*115/180 && 
-      tree.mt_>70 && tree.mt_<110;
+      fabs(tree.dPhi_)<M_PI*115/180 && (noMassCut || 
+					( tree.dilep_.mass()<40 && tree.mt_>70 && tree.mt_<110 ) );
   case SmurfTree::hww120: 
     return tree.lep1_.pt()>20 && tree.lep2_.pt()>10 &&
-      tree.dilep_.mass()<40 && fabs(tree.dPhi_)<M_PI*115/180 && 
-      tree.mt_>70 && tree.mt_<120;
+      fabs(tree.dPhi_)<M_PI*115/180 && (noMassCut || 
+					( tree.dilep_.mass()<40 && tree.mt_>70 && tree.mt_<120 ) );
   case SmurfTree::hww130: 
     return tree.lep1_.pt()>25 && tree.lep2_.pt()>10 &&
-      tree.dilep_.mass()<45 && fabs(tree.dPhi_)<M_PI*90/180 && 
-      tree.mt_>75 && tree.mt_<125;
+      fabs(tree.dPhi_)<M_PI*90/180 && (noMassCut || 
+				       ( tree.dilep_.mass()<45 && tree.mt_>75 && tree.mt_<125 ) );
   case SmurfTree::hww140:
     return tree.lep1_.pt()>25 && tree.lep2_.pt()>15 &&
-      tree.dilep_.mass()<45 && fabs(tree.dPhi_)<M_PI*90/180 &&
-      tree.mt_>80 && tree.mt_<130;
+      fabs(tree.dPhi_)<M_PI*90/180 && (noMassCut || 
+				       // ( tree.dilep_.mass()<45 && tree.mt_>80 && tree.mt_<130 ) );
+				       ( tree.dilep_.mass()<45 )) && ((tree.mt_>80 && tree.mt_<130 ) );
   case SmurfTree::hww150:
     return tree.lep1_.pt()>27 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<50 && fabs(tree.dPhi_)<M_PI*90/180 &&
-      tree.mt_>80 && tree.mt_<150;
+      fabs(tree.dPhi_)<M_PI*90/180 && (noMassCut ||
+				       // ( tree.dilep_.mass()<50 && tree.mt_>80 && tree.mt_<150 ) );
+				       // ( tree.dilep_.mass()<50 ) );
+				       ( tree.dilep_.mass()<50 )) && (( tree.mt_>80 && tree.mt_<150 ) );
   case SmurfTree::hww160:
     return tree.lep1_.pt()>30 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<50 && fabs(tree.dPhi_)<M_PI*60/180 &&
-      tree.mt_>90 && tree.mt_<160;;
+      fabs(tree.dPhi_)<M_PI*60/180 && (noMassCut ||
+				       ( tree.dilep_.mass()<50 && tree.mt_>90 && tree.mt_<160 ) );
   case SmurfTree::hww170:
     return tree.lep1_.pt()>34 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<50 && fabs(tree.dPhi_)<M_PI/180*60;
+      fabs(tree.dPhi_)<M_PI/180*60 && (noMassCut ||
+				       ( tree.dilep_.mass()<50 && tree.mt_>110 && tree.mt_<170 ) );
   case SmurfTree::hww180:
     return tree.lep1_.pt()>36 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<60 && fabs(tree.dPhi_)<M_PI/180*70;
+      fabs(tree.dPhi_)<M_PI/180*70 && (noMassCut ||
+				       ( tree.dilep_.mass()<60 && tree.mt_>120 && tree.mt_<180 ) );
   case SmurfTree::hww190:
     return tree.lep1_.pt()>38 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<80 && fabs(tree.dPhi_)<M_PI/180*90;
+      fabs(tree.dPhi_)<M_PI/180*90 && (noMassCut ||
+				       ( tree.dilep_.mass()<80 && tree.mt_>120 && tree.mt_<190 ) );
   case SmurfTree::hww200:
     return tree.lep1_.pt()>40 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<90 && fabs(tree.dPhi_)<M_PI/180*100;
+      fabs(tree.dPhi_)<M_PI/180*100 && (noMassCut ||
+				       ( tree.dilep_.mass()<90 && tree.mt_>120 && tree.mt_<200 ) );
   case SmurfTree::hww210:
     return tree.lep1_.pt()>44 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<110 && fabs(tree.dPhi_)<M_PI/180*110;
+      fabs(tree.dPhi_)<M_PI/180*110 && (noMassCut ||
+					(tree.dilep_.mass()<110 && tree.mt_>120 && tree.mt_<210 ) );
   case SmurfTree::hww220:
     return tree.lep1_.pt()>48 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<120 && fabs(tree.dPhi_)<M_PI/180*120;
+      fabs(tree.dPhi_)<M_PI/180*120 && (noMassCut ||
+					(tree.dilep_.mass()<120 && tree.mt_>120 && tree.mt_<220 ) );
   case SmurfTree::hww230:
     return tree.lep1_.pt()>52 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<130 && fabs(tree.dPhi_)<M_PI/180*130;
+      fabs(tree.dPhi_)<M_PI/180*130 && (noMassCut ||
+					(tree.dilep_.mass()<130 && tree.mt_>120 && tree.mt_<230 ) );
   case SmurfTree::hww250:
     return tree.lep1_.pt()>55 && tree.lep2_.pt()>25 &&
-      tree.dilep_.mass()<150 && fabs(tree.dPhi_)<M_PI/180*140;
+      fabs(tree.dPhi_)<M_PI/180*140 && (noMassCut ||
+					   (tree.dilep_.mass()<150 && tree.mt_>120 && tree.mt_<250 ) );
   default: return false;
   }
 }
 
-bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree){
+bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree, bool noMassCut){
+  // bool vetoRecoilingJet = tree.type_==1||tree.type_==2||tree.jet1_.pt()<15||cos(tree.dPhiDiLepJet1_)>-0.95;
+  bool vetoRecoilingJet = tree.type_==1||tree.type_==2||tree.jet1_.pt()<15||tree.dPhiDiLepJet1_<M_PI/180*165;
+  // bool vetoRecoilingJet = cos(tree.dPhiDiLepJet1_)>-0.95;
+  bool zeroJetVeto25 = tree.jet1_.pt()<25;
+  bool tightMET = tree.type_==1||tree.type_==2||std::min(tree.pmet_,tree.pTrackMet_)>40;
   switch (measurement_.type){
   case WW0Jet:
-    return tree.njets_==0;
+    return (tree.njets_==0 ) && //|| (tree.njets_==1 && fabs(tree.jet1_.eta())>3.0))  && 
+      (!useNewCuts_ || (zeroJetVeto25 && vetoRecoilingJet && tightMET));
+    // return tree.njets_==0;
   case WW1Jet:
     return tree.njets_==1 && 
       (tree.type_==1 || tree.type_==2 || fabs(tree.dPhiDiLepJet1_)<M_PI*165/180);
   case WW2Jets:
     return tree.njets_==2;
   case HWWCutBased0Jet:
-    return tree.njets_==0 && HWWCuts_SmurfV5(tree,measurement_.sig_type);
+    // return tree.njets_==0 && HWWCuts_SmurfV5(tree,measurement_.sig_type);
+    return (tree.njets_==0) && //|| (tree.njets_==1 && fabs(tree.jet1_.eta())>3.0)) && 
+      HWWCuts_SmurfV5(tree,measurement_.sig_type,noMassCut) &&
+      (!useNewCuts_ || (zeroJetVeto25 && vetoRecoilingJet && tightMET));
   default:
     return false;
   }
@@ -353,7 +377,7 @@ SmurfAnalysis::SmurfAnalysis(double lumi, const char* dir,
 			     const char* mu_fakerate_file,
 			     const char* mu_fakerate_name):
   lumi_(lumi),processOnlyImportantSamples(true),dir_(dir),json_(0),
-  rInOutEl_(0.22), rInOutMu_(0.25), kElMu_(0.823352)
+  rOutInEl_(0.22), rOutInMu_(0.25), rOutInElRelativeErr_(0.6), rOutInMuRelativeErr_(0.6), kElMu_(0.823352), useNewCuts_(false)
 {
   resetKFactors();
   measurement_.type = WW0Jet;
@@ -399,11 +423,20 @@ void SmurfAnalysis::estimateDYBackground()
     for (unsigned int j=0; j<4; ++j){
       printf(" \t%4.1f+/-%3.1f", entries_.at(i).nZpeak.yield[j], sqrt(entries_.at(i).nZpeak.err2[j]));
     }
-    double nee = rInOutEl_*(entries_.at(i).nZpeak.yield[3]-0.5*kElMu_*(entries_.at(i).nZpeak.yield[1]+entries_.at(i).nZpeak.yield[2]));
-    double nmm = rInOutMu_*(entries_.at(i).nZpeak.yield[0]-0.5/kElMu_*(entries_.at(i).nZpeak.yield[1]+entries_.at(i).nZpeak.yield[2]));
-    printf(" \t%4.1f+/-%3.1f \testimate Nee: %4.1f+/-XXX \testimate Nmm: %4.1f+/-XXX\n", 
+    double nZem = entries_.at(i).nZpeak.yield[1]+entries_.at(i).nZpeak.yield[2];
+    double nZee = entries_.at(i).nZpeak.yield[3];
+    double nZmm = entries_.at(i).nZpeak.yield[0];
+    double see = (nZee-0.5*kElMu_*nZem);
+    double see_err2 = nZee + kElMu_*kElMu_/4*nZem;
+    double nee = rOutInEl_*see;
+    double nee_err = rOutInEl_*sqrt(see_err2+see*see*rOutInElRelativeErr_*rOutInElRelativeErr_);
+    double smm = (nZmm-0.5/kElMu_*nZem);
+    double smm_err2 = nZmm + nZem/kElMu_/kElMu_/4;
+    double nmm = rOutInMu_*smm;
+    double nmm_err = rOutInMu_*sqrt(smm_err2+smm*smm*rOutInMuRelativeErr_*rOutInMuRelativeErr_);
+    printf(" \t%4.1f+/-%3.1f \testimate Nee: %4.1f+/-%3.1f \testimate Nmm: %4.1f+/-%3.1f\n", 
 	   entries_.at(i).nZpeak.total_yield(), entries_.at(i).nZpeak.total_error(),
-	   nee, nmm );
+	   nee, nee_err, nmm, nmm_err );
     if (entries_.at(i).sample==SmurfTree::data) total_dy = nee+nmm;
   }
   //
@@ -1010,8 +1043,25 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
       }
     }
 
-    // Proper event selection
-    if ( !passedExtraCuts(tree) ) continue;
+    // Proper event selection (non mass cut for Z control sample)
+    if ( !passedExtraCuts(tree,true) ) continue;
+    if ( (tree.cuts_ & cut_final_nomass) == cut_final_nomass ){
+      // cuts need to be symmetrized 
+      bool vetoRecoilingJet = tree.jet1_.pt()<15||tree.dPhiDiLepJet1_<M_PI/180*165;
+      bool zeroJetVeto25 = tree.jet1_.pt()<25;
+      bool tightMET = std::min(tree.pmet_,tree.pTrackMet_)>40;
+      if (std::min(tree.pmet_,tree.pTrackMet_)>35 && 
+	  (!useNewCuts_ || (vetoRecoilingJet && zeroJetVeto25 && tightMET)) ){ // use the same MET cut in all final states
+	if ( fabs(tree.dilep_.mass() - 91.1876) < 15 ){
+	  // if ( fabs(tree.dilep_.mass() - 91.1876) < 5 ){
+	  entry.nZpeak.add(tree.type_,weight);
+	  // std::cout << "Found event in Z window (run/lumi/event): " 
+	  // << tree.run_ << " / " << tree.lumi_ << " / " << tree.event_ << std::endl; 
+	}
+      }
+    }
+    // Proper event selection (with mass cuts)
+    if ( !passedExtraCuts(tree,false) ) continue;
 
     // overflow goes into last bin
     double eta1 = fabs(tree.lep1_.eta());
@@ -1063,15 +1113,6 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
       }	
     }
     if ( (tree.cuts_ & cut_topTagged) == cut_topTagged ) entry.nTopTaggedEvents.add(tree.type_,weight);
-    if ( (tree.cuts_ & cut_final_nomass) == cut_final_nomass ){
-      if (std::min(tree.pmet_,tree.pTrackMet_)>35){ // use the same MET cut in all final states
-	if ( fabs(tree.dilep_.mass() - 91.1876) < 15 ){
-	  entry.nZpeak.add(tree.type_,weight);
-	  // std::cout << "Found event in Z window (run/lumi/event): " 
-	  // << tree.run_ << " / " << tree.lumi_ << " / " << tree.event_ << std::endl; 
-	}
-      }
-    }
   }
   // std::cout << "Events passed full selection: " << nEvents << std::endl;
   // fill histograms
