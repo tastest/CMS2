@@ -11,37 +11,20 @@
 #include "eventSelections.h"
 #include "trackSelections.h"
 #include "CMS2.h"
-//#include "CMS2.cc"
 
 using namespace tas;
 
-//------------------------------------------------------------------
-// Apply various muon identification requirements
-//------------------------------------------------------------------
+////////////////////
+// Identification //
+////////////////////
+
 bool muonId(unsigned int index, SelectionType type, int vertex_index){
 
-    float isovalue;
-    bool truncated = true;
+  float isovalue;
+  bool  truncated = true;
+    
+  switch(type) {
 
-    switch(type) {
-    case Nominal:
-        isovalue = 0.1;
-        break;
-    case NominalTTbar:
-        isovalue = 0.15;
-        break;
-    case NominalTTbarV2:
-        isovalue = 0.15;
-        break;
-    case muonSelectionFO_mu_v1:
-        isovalue = 0.40;
-        break;
-    case muonSelectionFO_mu_ttbar:
-        isovalue = 0.40;
-        break;
-    case muonSelectionFO_mu_ttbar_iso10:
-        isovalue = 1.0;
-        break;
     case NominalWWV0:
     case NominalWWV1:
         isovalue = 0.15;
@@ -63,33 +46,6 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         if (!muonIdNotIsolated( index, type )) return false;
         return muonIsoValuePF(index,0) < 1.0;
         break;
-    case NominalSS:
-    case NominalSSv2:
-        isovalue = 0.1;
-        break;
-    case NominalSSd0PV:
-        isovalue = 0.1;
-        break;
-    case NominalSSnod0:
-        isovalue = 0.1;
-        break;
-    case muonSelectionFO_mu_ss:
-    case muonSelectionFO_mu_ssV2:
-        isovalue = 0.40;
-        break;
-    case muonSelectionFO_mu_ss_iso10:
-    case muonSelectionFO_mu_ssV2_iso10:
-        isovalue = 1.0;
-        break;
-    case OSGeneric_v1:
-        isovalue = 0.15;
-        break;
-    case OSGeneric_v2:
-        isovalue  = 0.15;
-        break;
-    case OSGeneric_v2_FO:
-        isovalue  = 0.4;
-        break;
     case OSGeneric_v3:
 	    truncated = false;
 	    isovalue  = 0.15;
@@ -98,18 +54,9 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
 	    truncated = false;
         isovalue  = 0.4;
         break;
-    case OSZ_v1:
-        isovalue = 0.15;
-        break;
     case OSZ_v2:
         isovalue = 0.15;
         break;
-    case NominalTTbar_pass6:
-        isovalue = 0.15;
-        break;
-    case muonSelectionFO_mu_ttbar_pass6:
-        isovalue = 0.4;
-        break; 
     case NominalSmurfV3:
         if (!muonIdNotIsolated( index, type )) return false;
         if (cms2.mus_p4().at(index).pt()<20) 
@@ -161,11 +108,16 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
         exit(1);
         return false;
-    } 
-    return 
-        muonIdNotIsolated( index, type, vertex_index ) && 
-        muonIsoValue(index,truncated) < isovalue;          // Isolation cut
+  } 
+  return 
+    muonIdNotIsolated( index, type, vertex_index ) &&   // Id
+    muonIsoValue(index,truncated) < isovalue;           // Isolation cut
 }
+
+////////////////////
+// Identification //
+////////////////////
+
 bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index){
 
     if ( cms2.mus_p4()[index].pt() < 5.0) {
@@ -176,71 +128,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
     int vtxidx = firstGoodDAvertex();    
 
     switch (type) {
-
-    case Nominal:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)       return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-        return true;
-        break;
-
-
-    case NominalTTbar:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-        return true;
-
-    case NominalTTbarV2:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-        return true;
-
-    case muonSelectionFO_mu_v1:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false;
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 12)       return false;
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-        return true;
-        break;
-
-    case muonSelectionFO_mu_ttbar:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-        return true;
-        break;
-
-    case muonSelectionFO_mu_ttbar_iso10:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.5)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-        return true;
-        break;
 
     case NominalWWV0:
         if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
@@ -305,79 +192,9 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (TMath::Abs(mud0PV(index)) >= 0.02)              return false; // d0 from pvtx
         return true;
 
-
-    case NominalSS:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)       return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-        return true;
-        break;
-
-    case NominalSSd0PV:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)       return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(mud0PV(index)) > 0.02) return false; // d0 from beamspot
-        return true;
-        break;
-
-    case NominalSSnod0:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)       return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        return true;
-        break;
-
-    case muonSelectionFO_mu_ss:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-        return true;
-        break;
-
-    case muonSelectionFO_mu_ss_iso10:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-        return true;
-        break;
-
-    case OSGeneric_v1:
-        //this selector is NominalTTbarV2 + eta < 2.4 + dpt/pt < 0.1
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02)                      return false; // d0 from beamspot
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt 
-        return true;
-
-    case OSGeneric_v2:
+    case OSGeneric_v3:
         //baseline selector for 2011 OS analysis
+        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
         if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
         if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
@@ -389,42 +206,19 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
         return true;
 
-    case OSGeneric_v3:
-        // copy of OSGeneric_v2 ID, with different iso requirement
-	    return muonIdNotIsolated( index, OSGeneric_v2, -1 );
-
-    case OSGeneric_v2_FO:
+    case OSGeneric_v3_FO:
 	    //baseline FO for 2011 OS analysis
 	    //relax cuts: chi2/ndf < 50, d0 < 0.2, reliso < 0.4
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(mud0PV_smurfV3(index)) > 0.2)                             return false; // d0(PV) < 0.2 cm
-        if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
-        return true;
-
-    case OSGeneric_v3_FO:
-        // copy of OSGeneric_v2_FO ID, with different iso requirement
-	    return muonIdNotIsolated( index, OSGeneric_v2_FO, -1 );
-
-    case OSZ_v1:
-        //this selector is Nominal + eta < 2.4 + dpt/pt < 0.1
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6 
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02)                      return false; // d0 from beamspot
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt 
-        return true;
-        break;
+      if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
+      if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
+      if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
+      if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
+      if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
+      if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
+      if (TMath::Abs(mud0PV_smurfV3(index)) > 0.2)                             return false; // d0(PV) < 0.2 cm
+      if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
+      if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
+      return true;
 
     case OSZ_v2:
         // baseline selector for 2011 Z+MET analysis
@@ -444,50 +238,6 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         return true;
         break;
 
-    case NominalSSv2:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)       return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)       return false; // HCalE < 6 
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
-        return true;
-        break;
-
-    case muonSelectionFO_mu_ssV2:
-    case muonSelectionFO_mu_ssV2_iso10:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
-        return true;
-        break;
-    case NominalTTbar_pass6:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)    return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.02) return false; // d0 from beamspot
-        return true;
-        break;
-    case muonSelectionFO_mu_ttbar_pass6:
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)  return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; //glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-        if (TMath::Abs(cms2.mus_d0corr().at(index)) > 0.2) return false; // d0 from beamspot
-        return true;
-        break;
     case NominalSmurfV3:
     case NominalSmurfV4:
     case NominalSmurfV5:
@@ -653,14 +403,14 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         return false;
     }
 }
-//------------------------------------------------------------------------------
-// Calculate relative muon isolation variable.  Below 20 GeV, special treatment
-//-------------------------------------------------------------------------------
-double muonIsoValueOriginal(unsigned int index){
-    double sum =  cms2.mus_iso03_sumPt().at(index) + cms2.mus_iso03_emEt().at(index) + cms2.mus_iso03_hadEt().at(index);
-    double pt  = cms2.mus_p4().at(index).pt();
-    return sum/max(pt,20.);
-}
+
+
+
+
+////////////////////////////
+// Isolation Calculations //
+////////////////////////////
+
 double muonIsoValue(unsigned int index, bool truncated ){
     return ( muonIsoValue_TRK( index, truncated ) + muonIsoValue_ECAL( index, truncated ) + muonIsoValue_HCAL( index, truncated ) );
 }
@@ -688,7 +438,6 @@ double muonIsoValue_HCAL(unsigned int index, bool truncated){
     if(truncated) pt = max( pt, 20.0 );
     return cms2.mus_iso03_hadEt().at(index) / pt;
 }
-
 double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
     float pfciso = 0;
     float pfniso = 0;
@@ -728,10 +477,10 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
 }
 
 
-//--------------------------------------------------------------
-//  Remove cosmics by looking for back-to-back muon-track pairs
-//--------------------------------------------------------------
-// http://indico.cern.ch/contributionDisplay.py?contribId=2&confId=86834
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Remove cosmics by looking for back-to-back muon-track pairs ( http://indico.cern.ch/contributionDisplay.py?contribId=2&confId=86834 ) //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 bool isCosmics(unsigned int index){
     for (int itrk=0; itrk < int(cms2.trks_trk_p4().size()); ++itrk) {
         const LorentzVector& mu_p4  = cms2.mus_trk_p4().at(index);
@@ -744,14 +493,9 @@ bool isCosmics(unsigned int index){
     return false;
 }
 
-bool passedMuonTriggerRequirements()
-{
-    return cms2.passHLTTrigger("HLT_Mu9");
-}
-
-//------------------------------------------------------------------------------
-// Muon d0 corrected by PV
-//-------------------------------------------------------------------------------
+/////////////////////////////
+// Muon d0 corrected by PV //
+////////////////////////////
 
 double mud0PV(unsigned int index){
     if ( cms2.vtxs_sumpt().empty() ) return 9999.;
@@ -767,7 +511,6 @@ double mud0PV(unsigned int index){
         cms2.vtxs_position()[iMax].y()*cos(cms2.mus_trk_p4()[index].phi());
     return dxyPV;
 }
-
 
 double mud0PV_wwV1(unsigned int index){
     if ( cms2.vtxs_sumpt().empty() ) return 9999.;
@@ -838,7 +581,6 @@ double mudzPV_wwV1(unsigned int index){
        return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
        }*/
 }
-
 
 bool isPFMuon( int index , bool requireSamePt , float dpt_max ){
 
