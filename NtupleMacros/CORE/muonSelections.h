@@ -6,26 +6,55 @@
 ///////////////
 
 enum SelectionType { 
-    NominalWWV0 = 8,
-    muonSelectionFO_mu_ww = 9,
-    muonSelectionFO_mu_ww_iso10 = 10,
-    NominalWWV1 = 16,
-    muonSelectionFO_mu_wwV1 = 17,
-    muonSelectionFO_mu_wwV1_iso10 = 18,
-    muonSelectionFO_mu_wwV1_iso10_d0 = 24,
-    NominalSmurfV3 = 28,
-    muonSelectionFO_mu_smurf_04 = 29,
-    muonSelectionFO_mu_smurf_10 = 30,
-    NominalSSv3 = 31,
-    muonSelectionFO_ssV3 = 32,
-    OSZ_v2 = 33,
-    NominalSmurfV4 = 34,
-    NominalSmurfV5 = 36,
-    OSGeneric_v3 = 37,
-    OSGeneric_v3_FO = 38,
-    NominalSSv4 = 39,
-    muonSelectionFO_ssV4 = 40,
-    NominalSmurfV6 = 41
+
+    ///////////////////
+    // Opposite Sign //
+    ///////////////////
+
+      // OS Analysis
+      OSGeneric_v3,
+
+      // OS Fakes
+      OSGeneric_v3_FO,
+
+      // OSZ
+      OSZ_v2,
+
+    ///////////////
+    // Same Sign //
+    ///////////////
+
+      // Analysis
+      NominalSSv3,
+      NominalSSv4,
+   
+      // Fakes
+      muonSelectionFO_ssV3,
+      muonSelectionFO_ssV4,
+
+    ///////////////
+    // Higgs, WW //
+    ///////////////
+
+      // WW
+      NominalWWV0,
+      muonSelectionFO_mu_ww,
+      muonSelectionFO_mu_ww_iso10,
+      NominalWWV1,
+      muonSelectionFO_mu_wwV1,
+      muonSelectionFO_mu_wwV1_iso10,
+      muonSelectionFO_mu_wwV1_iso10_d0,
+
+      // Analysis
+      NominalSmurfV3,
+      NominalSmurfV4,
+      NominalSmurfV5,
+      NominalSmurfV6,
+
+      // Fakes
+      muonSelectionFO_mu_smurf_04,
+      muonSelectionFO_mu_smurf_10
+
 }; 
 
 ////////////////////

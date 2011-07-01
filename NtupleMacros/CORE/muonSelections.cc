@@ -25,6 +25,48 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
     
   switch(type) {
 
+    ///////////////////
+    // Opposite Sign //
+    ///////////////////
+
+    case OSGeneric_v3:
+      truncated = false;
+      isovalue  = 0.15;
+      break;
+    case OSGeneric_v3_FO:
+      truncated = false;
+      isovalue  = 0.4;
+      break;
+    case OSZ_v2:
+      isovalue = 0.15;
+      break;
+
+    ///////////////
+    // Same Sign //
+    ///////////////
+  
+    case NominalSSv3:
+      if (!muonIdNotIsolated(index, type, vertex_index)) return false;
+      return (muonIsoValue(index, false) < 0.15);
+      break;
+    case muonSelectionFO_ssV3:
+      if (!muonIdNotIsolated(index, type, vertex_index)) return false;
+      return (muonIsoValue(index, false) < 0.40);
+      break;
+    case NominalSSv4:
+      if (!muonIdNotIsolated(index, type)) return false;
+      return (muonIsoValue(index, false) < 0.15);
+      break;
+    case muonSelectionFO_ssV4:
+      if (!muonIdNotIsolated(index, type)) return false;
+      return (muonIsoValue(index, false) < 0.40);
+      break;
+
+    ///////////////
+    // Higgs, WW //
+    ///////////////
+
+    // WW
     case NominalWWV0:
     case NominalWWV1:
         isovalue = 0.15;
@@ -42,20 +84,11 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
     case muonSelectionFO_mu_ww_iso10:
         isovalue = 1.0;
         break;
+
+    // SMURF
     case muonSelectionFO_mu_smurf_10:
         if (!muonIdNotIsolated( index, type )) return false;
         return muonIsoValuePF(index,0) < 1.0;
-        break;
-    case OSGeneric_v3:
-	    truncated = false;
-	    isovalue  = 0.15;
-        break;
-    case OSGeneric_v3_FO:
-	    truncated = false;
-        isovalue  = 0.4;
-        break;
-    case OSZ_v2:
-        isovalue = 0.15;
         break;
     case NominalSmurfV3:
         if (!muonIdNotIsolated( index, type )) return false;
@@ -63,26 +96,6 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
             return muonIsoValue(index,false) < 0.1;
         else
             return muonIsoValue(index,false) < 0.15;
-        break;
-    case NominalSSv3:
-        if (!muonIdNotIsolated(index, type, vertex_index))
-            return false;
-        return (muonIsoValue(index, false) < 0.15);
-        break;
-    case muonSelectionFO_ssV3:
-        if (!muonIdNotIsolated(index, type, vertex_index))
-            return false;
-        return (muonIsoValue(index, false) < 0.40);
-        break;
-    case NominalSSv4: 
-        if (!muonIdNotIsolated(index, type))
-            return false;
-        return (muonIsoValue(index, false) < 0.15);
-        break;
-   case muonSelectionFO_ssV4:
-        if (!muonIdNotIsolated(index, type))
-            return false;
-        return (muonIsoValue(index, false) < 0.40);
         break;
     case NominalSmurfV4:
         if (!muonIdNotIsolated( index, type )) return false;
@@ -104,10 +117,14 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
             else return muonIsoValuePF(index,0,0.3) < 0.05;
         }
         break;
+
+    /////////////
+    // Default //
+    /////////////
     default:
-        std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
-        exit(1);
-        return false;
+      std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
+      exit(1);
+      return false;
   } 
   return 
     muonIdNotIsolated( index, type, vertex_index ) &&   // Id
@@ -126,7 +143,19 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
     }
 
     int vtxidx = firstGoodDAvertex();    
+    
+    // Muon Selections that are standard for Analysis & Fake Selections
+    bool standardMuon = true;
+    if ( TMath::Abs( mus_p4()[index].eta() ) > 2.4 )              standardMuon = false;
+    if ( mus_gfit_chi2()[index] / mus_gfit_ndof()[index] >= 50 )  standardMuon = false;
+    if ( ( ( mus_type()[index] ) & (1<<1) ) == 0 )                standardMuon = false;
+    if ( ( ( mus_type()[index] ) & (1<<2) ) == 0 )                standardMuon = false;
+    if ( mus_validHits()[index] < 11 )                            standardMuon = false;
+    if ( mus_gfit_validSTAHits()[index] == 0)                     standardMuon = false;
+    if ( mus_ptErr()[index] / mus_p4()[index].pt() > 0.1 )        standardMuon = false;
 
+
+    //
     switch (type) {
 
     case NominalWWV0:
@@ -193,31 +222,18 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         return true;
 
     case OSGeneric_v3:
-        //baseline selector for 2011 OS analysis
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
-        if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-        if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
-        if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
-        return true;
+      //baseline selector for 2011 OS analysis
+      if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
+      if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
+      if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
+      if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
+      return true;
 
     case OSGeneric_v3_FO:
-	    //baseline FO for 2011 OS analysis
-	    //relax cuts: chi2/ndf < 50, d0 < 0.2, reliso < 0.4
-      if ( TMath::Abs(cms2.mus_p4()[index].eta()) > 2.4)                       return false; // eta cut
-      if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
-      if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-      if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-      if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
-      if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
+	    // Fakes for 2011: reliso < 0.4, d0 < 0.2, chisq/ndof < 50
+      if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
       if (TMath::Abs(mud0PV_smurfV3(index)) > 0.2)                             return false; // d0(PV) < 0.2 cm
       if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
-      if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt < 0.1
       return true;
 
     case OSZ_v2:
