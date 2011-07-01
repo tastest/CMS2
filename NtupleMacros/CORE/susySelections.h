@@ -43,8 +43,7 @@ unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps);
 /*****************************************************************************************/
 //generalized Z veto
 /*****************************************************************************************/
-bool ZVetoGeneral( float ptcut = 20 , float minmass = 76 ,  float maxmass = 106 , 
-                   SelectionType mutype = OSGeneric_v1 );
+bool ZVetoGeneral( float ptcut = 20 , float minmass = 76 ,  float maxmass = 106 , SelectionType = OSGeneric_v3 );
 
 /*****************************************************************************************/
 //get k-factor for LM points
