@@ -45,7 +45,7 @@ bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool r
   //muons
   if(abs(id) == 13) {
 
-    if(muonIdNotIsolated(lepIdx, NominalTTbar_pass6)) 
+    if(muonIdNotIsolated(lepIdx, OSGeneric_v3 )) 
       return true;
 
     return false;
