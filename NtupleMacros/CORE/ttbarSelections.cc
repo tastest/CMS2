@@ -24,6 +24,9 @@ using namespace tas;
 // good lepton (either mu or electron, no isolation cuts)
 /******************************************************************************************/
 bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
+  cout << "This function is deprecated." << endl;
+  exit(1);
+  /*
 
   //electrons
   if(abs(id) == 11) {
@@ -51,7 +54,7 @@ bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool r
     return false;
       
   }
-
+  */
   return false;
 }
 
@@ -60,7 +63,10 @@ bool isGoodLeptonNoIso(int id, int lepIdx, bool applyAlignmentCorrection, bool r
 // isolated lepton (either mu or electron)
 /******************************************************************************************/
 bool isGoodLeptonwIso(int id, int lepIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
+  cout << "This function is deprecated." << endl;
+  exit(1);
 
+/*
   if(!isGoodLeptonNoIso(id, lepIdx, applyAlignmentCorrection, removedEtaCutInEndcap))
     return false;
 
@@ -74,7 +80,8 @@ bool isGoodLeptonwIso(int id, int lepIdx, bool applyAlignmentCorrection, bool re
   // 13 is a muon
   if(abs(id) == 13) 
     if(muonIsoValue(lepIdx) > 0.15)  return false;
-        
+*/  
+      
   return true;
 }
 
@@ -84,11 +91,14 @@ bool isGoodLeptonwIso(int id, int lepIdx, bool applyAlignmentCorrection, bool re
 /******************************************************************************************/
 bool isGoodHypNoIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
  
+  cout << "This function is deprecated." << endl;
+  exit(1);
+/*
   if(!isGoodLeptonNoIso(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))//, used0wrtPV)
      return false;
   if(!isGoodLeptonNoIso(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))//, used0wrtPV)
     return false;
-
+*/
   return true;
 }
 
@@ -98,11 +108,14 @@ bool isGoodHypNoIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCu
 /******************************************************************************************/     
 bool isGoodHypwIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCutInEndcap) {
 
+  cout << "This function is deprecated." << endl;
+  exit(1);
+/*
   if(!isGoodLeptonwIso(hyp_lt_id()[hypIdx], hyp_lt_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
     return false;
   if(!isGoodLeptonwIso(hyp_ll_id()[hypIdx], hyp_ll_index()[hypIdx], applyAlignmentCorrection, removedEtaCutInEndcap))
     return false;
-
+*/
 
   return true;
 }
@@ -113,6 +126,9 @@ bool isGoodHypwIso(int hypIdx, bool applyAlignmentCorrection, bool removedEtaCut
 /******************************************************************************************/     
 bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, double absEtaCut, double dRCut, bool muJetClean) {
 
+  cout << "This function is deprecated." << endl;
+  exit(1);
+/*
  if(jetp4.Pt() < ptCut)
     return false;  
   if(fabs(jetp4.Eta()) > absEtaCut)
@@ -136,7 +152,7 @@ bool isGoodDilHypJet(LorentzVector jetp4, unsigned int& hypIdx, double ptCut, do
       if (dR_lt < dRCut) return false;
     }
   }
-
+*/
   return true;
 }
 
@@ -247,6 +263,9 @@ unsigned int selectHypByHighestSumPt(const vector<unsigned int> &v_goodHyps) {
 /*****************************************************************************************/
 bool passEGTrigger(bool mc) {
 
+  cout << "This function is deprecated." << endl;
+  exit(1);
+/*
   if (mc) {
  
     int e10 = nHLTObjects("HLT_Ele10_SW_L1R");
@@ -369,6 +388,7 @@ bool passEGTrigger(bool mc) {
     }
     
   }
+*/
   return false;
 }
 
@@ -377,7 +397,9 @@ bool passEGTrigger(bool mc) {
 /*****************************************************************************************/
   bool passMuTrigger(bool mc) {
   
-
+  cout << "This function is deprecated." << endl;
+  exit(1);
+/*
   if(mc) {
     if(passHLTTrigger("HLT_Mu9"))
       return true;
@@ -402,7 +424,7 @@ bool passEGTrigger(bool mc) {
 
   }
 
-
+*/
   return false;
 
 }
@@ -415,7 +437,10 @@ bool passEGTrigger(bool mc) {
 /*****************************************************************************************/
 double getd0wrtPV(LorentzVector p4, float d0) {
 
+  cout << "This function is deprecated." << endl;
+  exit(1);
    
+/*
   double max_sumpt = -1;
   int i_max = -1;
   assert(cms2.vtxs_sumpt().size() == cms2.vtxs_isFake().size());
@@ -440,6 +465,7 @@ double getd0wrtPV(LorentzVector p4, float d0) {
 
    
    cout << "did not find a PV!!!" << endl;
+*/
    return 99999;
 
 
@@ -452,6 +478,10 @@ double getd0wrtPV(LorentzVector p4, float d0) {
 // the working points are hard coded
 /*****************************************************************************************/
 int getNbtags(const vector<unsigned int> v_jetsIdx, const string jetAlgo, const string bTagDiscriminator) {
+
+  cout << "This function is deprecated." << endl;
+  exit(1);
+/*
 
   if(jetAlgo != "jptJets" && jetAlgo != "caloJets" && jetAlgo != "pfJets") {
     cout << "Unknown jet algorithm. Returning spurious value" << endl;
@@ -543,6 +573,7 @@ int getNbtags(const vector<unsigned int> v_jetsIdx, const string jetAlgo, const 
   std::string name;
   name = system("whoami");
   cout << "You're somewhere you're not supposed to be. Naught " << name << "!" << endl;
+*/
   return -9999;
 
 }

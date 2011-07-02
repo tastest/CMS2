@@ -299,8 +299,8 @@ bool ZVetoGeneral( float ptcut , float minmass ,  float maxmass , SelectionType 
     if ( abs( cms2.hyp_lt_id().at(i) ) == 13  && !( muonId( cms2.hyp_lt_index().at(i) , mutype ) ) )   continue;
           
     //electron ID
-    if ( abs( cms2.hyp_ll_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_ll_index().at(i) , electronSelection_el_OSV1 , false , false ))) continue;
-    if ( abs( cms2.hyp_lt_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_lt_index().at(i) , electronSelection_el_OSV1 , false , false ))) continue;
+    if ( abs( cms2.hyp_ll_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_ll_index().at(i) , electronSelection_el_OSV3 , false , false ))) continue;
+    if ( abs( cms2.hyp_lt_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_lt_index().at(i) , electronSelection_el_OSV3 , false , false ))) continue;
           
     if( cms2.hyp_p4().at(i).mass() > minmass && cms2.hyp_p4().at(i).mass() < maxmass ){
       //cout << "General Z veto: mass " << cms2.hyp_p4().at(i).mass() << endl;
