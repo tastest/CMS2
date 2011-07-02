@@ -12,35 +12,28 @@
 #include "muonSelections.h"
 #include "trackSelections.h"
 
-//#include "CMS2.cc"
-//#include "electronSelectionsParameters.cc"
-//#include "eventSelections.cc"
-//#include "MITConversionUtilities.cc"
-//#include "muonSelections.cc"
-//#include "trackSelections.cc"
-
 using namespace tas;
 
-bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType)
-{
+bool pass_electronSelectionCompareMask( const cuts_t cuts_passed, const cuts_t selectionType ) {
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index)
-{
+bool pass_electronSelection( const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index ) {
   checkElectronSelections();
   cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
-    if ((cuts_passed & selectionType) == selectionType) return true;
-    return false;
+  if ( (cuts_passed & selectionType) == selectionType ) return true;
+  return false;
 }
 
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index) 
-{
+cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index ) {
+
     // keep track of which cuts passed
     cuts_t cuts_passed = 0;
 
-    // isolation
+    /////////////// 
+    // Isolation //
+    ///////////////
 
     // relative isolation non truncated
     if( electronIsolation_rel_v1(index, true ) < 0.10) cuts_passed |= (1ll<<ELEISO_RELNT010);       // Relative Isolation
@@ -67,11 +60,6 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronIsolation_rel_ww(index, true) < 0.40) cuts_passed |= (1ll<<ELEISO_REL040_WW);
     if (electronIsolation_rel_ww(index, true) < 1.00) cuts_passed |= (1ll<<ELEISO_REL100_WW);
 
-    //sliding isolation
-//     if( cms2.els_p4()[index].pt() < 15.0 && electronIsolation_rel_v1(index, true) < 0.05) cuts_passed |= (1ll<<ELEISO_SMURFV1);
-//     else if( cms2.els_p4()[index].pt() < 20.0 && electronIsolation_rel_v1(index, true) < 0.07) cuts_passed |= (1ll<<ELEISO_SMURFV1);
-//     else if( electronIsolation_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_SMURFV1);
-
     //pf iso
     float pfiso = electronIsoValuePF(index,0);
     if (fabs(cms2.els_p4()[index].eta()) < 1.479){
@@ -81,8 +69,10 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
       cuts_passed |= (1ll<<ELEISO_SMURFV4);
       cuts_passed |= (1ll<<ELEISO_SMURFV5);
     }
-    // ip
 
+    ////////
+    // d0 //
+    ////////
     if (fabs(cms2.els_d0corr()[index]) < 0.02) cuts_passed |= (1ll<<ELEIP_200);
     if (fabs(cms2.els_d0corr()[index]) < 0.04) cuts_passed |= (1ll<<ELEIP_400);
     if (fabs(electron_d0PV(index)) < 0.02) cuts_passed |= (1ll<<ELEIP_PV_200);
@@ -91,7 +81,6 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (fabs(electron_dzPV_smurfV3(index)) < 0.1 ) cuts_passed |= (1ll<<ELEIP_PV_DZ_1MM);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.04 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.20 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2_FO);
-
     if (vertex_index < 0) {
         int vtxidx = firstGoodDAvertex();
         if (vtxidx >= 0) {
@@ -122,7 +111,9 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
         }
     }
 
-    // id
+    ////////////////////
+    // Identification //
+    ////////////////////
 
     // SMURF ID
     if (electronId_smurf_v1(index)) cuts_passed |= (1ll<<ELEID_SMURFV1_EXTRA);
@@ -131,9 +122,7 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     if (electronId_smurf_v1ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV1SS_EXTRA);
     if (electronId_smurf_v2ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV2SS_EXTRA);
 
-    //
     // VBTF ID
-    //
     electronIdComponent_t answer_vbtf = 0;
     // VBTF95 (optimised in 35X)
     answer_vbtf = electronId_VBTF(index, VBTF_35X_95, applyAlignmentCorrection, removedEtaCutInEndcap);
@@ -165,144 +154,68 @@ cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection
     // VBTF90 with H/E and dPhiIn tuned to match HLT (CaloIdT+TrkIdVL)
     answer_vbtf = electronId_VBTF(index, VBTF_90_HLT_CALOIDT_TRKIDVL, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL);
-    //
     // CIC ID  
-    //
     // MEDIUM (V03 optimisation)
     electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_cic & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_CIC_V03_MEDIUM);
 
-    //
-    // conversion rejection cuts
-    //
-
+    //////////////////////////
+    // Conversion Rejection //
+    //////////////////////////
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
     if(!isFromConversionMIT(index)) cuts_passed |= (1ll<<ELENOTCONV_MIT);
 
-    //
-    // fiduciality/other cuts
-    //
-
+    /////////////////
+    // Fiduciality //
+    /////////////////
     if ((cms2.els_type()[index] & (1ll<<ISECALDRIVEN))) cuts_passed |= (1ll<<ELESEED_ECAL);
     if (fabs(cms2.els_p4()[index].eta()) < 2.5) cuts_passed |= (1ll<<ELEETA_250);
     if (fabs(cms2.els_p4()[index].eta()) < 2.4) cuts_passed |= (1ll<<ELEETA_240);
     if (electronId_noMuon(index)) cuts_passed |= (1ll<<ELENOMUON_010);
     if (electronId_noMuon_SS(index)) cuts_passed |= (1ll<<ELENOMUON_010_SS);
 
-    //
-    // Pt
-    //
+    ////////
+    // Pt //
+    ////////
     if( cms2.els_p4()[index].pt() > 10.0 ) cuts_passed |= (1ll<<ELEPT_010);
-    if( cms2.els_p4()[index].pt() > 15.0 ) cuts_passed |= (1ll<<ELEPT_015);
-    if( cms2.els_p4()[index].pt() > 20.0 ) cuts_passed |= (1ll<<ELEPT_020);
 
-    //
-    // Super Cluster Et
-    //
-    if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 10.0 ) cuts_passed |= (1ll<<ELESCET_010);
-    if( ( cms2.els_eSC()[index] / cosh(cms2.els_etaSC()[index]) ) > 15.0 ) cuts_passed |= (1ll<<ELESCET_015);
-
-    //
     // Veto electron in transition region
-    //
     if( fabs(cms2.els_etaSC()[index]) < 1.4442 || fabs(cms2.els_etaSC()[index]) > 1.566 )  cuts_passed |= (1ll<<ELE_NOT_TRANSITION);
 
-    //
-    // chargeflip
-    //
-
-    if (!isChargeFlip(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP); 
+    /////////////////
+    // Charge Flip //
+    /////////////////
     if (!isChargeFlip3agree(index)) cuts_passed |= (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
-    //
-    // spike rejection
-    //
-    if (!isSpikeElectron(index)) cuts_passed |= (1ll<<ELENOSPIKE_SWISS005);
-
-    //
     // return which selections passed
-    //
-
     return cuts_passed;
 
 }
 
-//
-// if fbrem is low then cut on e/p_in
-//
-bool electronId_extra(const unsigned int index)
-{
-    if (cms2.els_fbrem()[index] < 0.2) {
-        if (cms2.els_eOverPIn()[index] < 0.7 || cms2.els_eOverPIn()[index] > 1.5) return false;
-    }
+///////////////
+// Muon Veto //
+//////////////
 
-    return true;
-}
-
-//
-// remove if close to a muon
-//
-bool electronId_noMuon(const unsigned int index)
-{
+bool electronId_noMuon( const unsigned int index ) {
     if ( cms2.els_closestMuon().at(index) != -1) return false;
     return true;
 }
 
-//
-// remove if close to a good muon
-//
-bool electronId_noMuon_SS(const unsigned int index)
-{
+bool electronId_noMuon_SS( const unsigned int index ) {
     int idx = cms2.els_closestMuon().at(index);
-
     if (idx < 0) return true;
     if (muonId(idx, NominalSSv4)) return false;
     return true;
 }
 
-//
-// candidate electron id function
-//
-bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
-{
 
-    std::vector<double> relisoThresholds;
-    std::vector<double> dEtaInThresholds;
-    std::vector<double> dPhiInThresholds;
-    std::vector<double> hoeThresholds;
-    std::vector<double> latThresholds;
+////////////////////
+// Identification //
+////////////////////
 
-    eidGetCand(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, latThresholds);
-
-    //
-    // get corrected dEtaIn and dPhiIn
-    //
-
-    float dEtaIn = cms2.els_dEtaIn()[index];
-    float dPhiIn = cms2.els_dPhiIn()[index];
-    if (applyAlignementCorrection) electronCorrection_pos(index, dEtaIn, dPhiIn);
-
-    //
-    // apply cuts
-    //
-    if (fabs(cms2.els_etaSC()[index]) < 1.479) {
-        if (fabs(dEtaIn) > dEtaInThresholds[0]) 	return false;
-        if (fabs(dPhiIn) > dPhiInThresholds[0]) 	return false;
-        if (cms2.els_hOverE()[index] > hoeThresholds[0]) 		    return false;
-        if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < latThresholds[0]) return false;
-    }
-    if (fabs(cms2.els_etaSC()[index]) > 1.479) {
-        if (!removedEtaCutInEndcap && (fabs(dEtaIn) > dEtaInThresholds[1])) 	return false;
-        if (fabs(dPhiIn) > dPhiInThresholds[1]) 	return false;
-        if (cms2.els_hOverE()[index] > hoeThresholds[1]) 		    return false;
-        if (cms2.els_sigmaIEtaIEta()[index] > latThresholds[1])  return false;	
-    }
-
-    return true;
-
-}
+// SMURF
 
 bool electronId_smurf_v1(const unsigned int index)
 {
@@ -397,11 +310,7 @@ bool electronId_smurf_v2(const unsigned int index)
  }
 
 
-
-//
-// class based id that is new/experimental
-//
-
+// CIC
 electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned int version, const cic_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
 
@@ -455,16 +364,10 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
     if (cms2.els_fiduciality()[index] & (1<<ISEB)) eb = 0;
     else eb = 1;
 
-    //
     // Version V02
-    //
-
     if (version == 2) {
 
-        //
         // set the parameters for the chosen tightness
-        //
-
         std::vector<double> cutdeta;
         std::vector<double> cutdphi;
         std::vector<double> cuteopin;
@@ -527,10 +430,7 @@ electronIdComponent_t electronId_CIC(const unsigned int index, const unsigned in
         return result;
     }
 
-    //
     // version V03, V04 or V05
-    //
-
     if (version == 3 || version == 4 || version == 5) {
 
         //
@@ -725,9 +625,7 @@ unsigned int eidClassify(const unsigned int version, const unsigned int index) {
         return cat;
     }
 
-    //
     // version V02
-    //
     if (version == 2) {
         if (isEB) {       // BARREL
             if(fBrem < 0.12)
@@ -825,10 +723,7 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
   return accept;
 }
 
-//
 // VBTF stuff
-//
-
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
 
@@ -880,14 +775,121 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
     return answer;
 
 }
+electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint) {
+  unsigned int answer = 0;
+  float etaSC = cms2.els_etaSC().at(index);
+  unsigned int nbrem = cms2.els_nSeed().at(index);
+  if ( workingPoint == 95 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem ==0 && lhValue > -4.274 ) ||
+      ( fabs(etaSC) < 1.479 && nbrem >=1 && lhValue >- 3.773 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem ==0 && lhValue > -5.092 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem >=1 && lhValue > -2.796 )
+    ) {
+      answer |= (1<<ELEID_ID);
+    }
+  }
+  else if ( workingPoint == 90 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > -1.497 ) ||
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > -1.521 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > -2.571 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > -0.657 )
+    ) {
+      answer |= (1<<ELEID_ID);
+    }
+  }
+  else if ( workingPoint == 85 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +0.163 ) ||
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +0.065 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > -0.683 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +1.564 )
+    ) {
+      answer |= (1<<ELEID_ID);
+    }
+  }
+  else if ( workingPoint == 80 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +1.193 ) ||
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +1.345 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > +0.810 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +3.021 )
+    ) {
+      answer |= (1<<ELEID_ID);
+    }
+  }
+  else if ( workingPoint == 70 ) {
+    if (
+      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +1.781 ) ||
+      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +2.397 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > +2.361 ) ||
+      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +4.052 )
+    ) {
+      answer |= (1<<ELEID_ID);
+    }
+  }
+  else {
+    cout << "Error! Likelihood WP not supported: " << workingPoint << ". Please choose 70, 80, 85, 90, 95" << endl;
+  }
+  return answer;
+}
+ 
+/*
+// candidate electron id function
+bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap) {
 
-//
-// electron isolation definitions 
-//
+    std::vector<double> relisoThresholds;
+    std::vector<double> dEtaInThresholds;
+    std::vector<double> dPhiInThresholds;
+    std::vector<double> hoeThresholds;
+    std::vector<double> latThresholds;
 
-//relative truncated
-float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
-{
+    eidGetCand(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, latThresholds);
+
+    // get corrected dEtaIn and dPhiIn
+
+    float dEtaIn = cms2.els_dEtaIn()[index];
+    float dPhiIn = cms2.els_dPhiIn()[index];
+    if (applyAlignementCorrection) electronCorrection_pos(index, dEtaIn, dPhiIn);
+
+    // apply cuts
+    if (fabs(cms2.els_etaSC()[index]) < 1.479) {
+        if (fabs(dEtaIn) > dEtaInThresholds[0])   return false;
+        if (fabs(dPhiIn) > dPhiInThresholds[0])   return false;
+        if (cms2.els_hOverE()[index] > hoeThresholds[0])        return false;
+        if ((cms2.els_e2x5Max()[index]/cms2.els_e5x5()[index]) < latThresholds[0]) return false;
+    }
+    if (fabs(cms2.els_etaSC()[index]) > 1.479) {
+        if (!removedEtaCutInEndcap && (fabs(dEtaIn) > dEtaInThresholds[1]))   return false;
+        if (fabs(dPhiIn) > dPhiInThresholds[1])   return false;
+        if (cms2.els_hOverE()[index] > hoeThresholds[1])        return false;
+        if (cms2.els_sigmaIEtaIEta()[index] > latThresholds[1])  return false;  
+    }
+
+    return true;
+
+}
+*/
+      
+/*
+// if fbrem is low then cut on e/p_in
+bool electronId_extra( const unsigned int index ) {
+    if (cms2.els_fbrem()[index] < 0.2) {
+        if (cms2.els_eOverPIn()[index] < 0.7 || cms2.els_eOverPIn()[index] > 1.5) return false;
+    }
+
+    return true;
+}
+*/
+                                                                
+
+///////////////
+// Isolation //
+///////////////
+
+// relative truncated
+float electronIsolation_rel( const unsigned int index, bool use_calo_iso ) {
     float sum = cms2.els_tkIso().at(index);
     if (use_calo_iso) {
         if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
@@ -898,13 +900,10 @@ float electronIsolation_rel(const unsigned int index, bool use_calo_iso)
     return sum/max(pt, 20.);
 }
 
-//relative truncated, fast-jet corrected
-float electronIsolation_rel_FastJet(const unsigned int index, bool use_calo_iso)
-{
+// relative truncated, fast-jet corrected
+float electronIsolation_rel_FastJet( const unsigned int index, bool use_calo_iso ) {
     float sum = cms2.els_tkIso().at(index);
-
     float offset = cms2.evt_rho() * TMath::Pi() * pow( 0.3 , 2 );
-    
     if (use_calo_iso) {
         float caloiso = 0.;
 
@@ -919,24 +918,8 @@ float electronIsolation_rel_FastJet(const unsigned int index, bool use_calo_iso)
     return sum/max(pt, 20.);
 }
 
-
-/*
-//relative non-truncated
-float electronIsolation_rel_v1Original(const unsigned int index, bool use_calo_iso)
-{
-    float sum = cms2.els_tkIso().at(index);
-    if (use_calo_iso) {
-        if (fabs(cms2.els_etaSC().at(index)) > 1.479) sum += cms2.els_ecalIso().at(index);
-        if (fabs(cms2.els_etaSC().at(index)) <= 1.479) sum += max(0., (cms2.els_ecalIso().at(index) -1.));
-        sum += cms2.els_hcalIso().at(index);
-    }
-    double pt = cms2.els_p4().at(index).pt();
-    return sum/pt;
-}
-*/
-
 // Relative Isolation, Non-Truncated
-float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso){
+float electronIsolation_rel_v1( const unsigned int index, bool use_calo_iso ) {
     float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
     float TRCK_sum_over_pt = cms2.els_tkIso().at(index) / pt;       // Tracker Relative Isolation, Non-Truncated
     float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v1(index);  // ECAL    Relative Isolation, Non-Truncated
@@ -951,7 +934,7 @@ float electronIsolation_rel_v1(const unsigned int index, bool use_calo_iso){
 }
 
 // Relative Isolation, Non-Truncated, FastJet-corrected
-float electronIsolation_rel_v1_FastJet(const unsigned int index, bool use_calo_iso){
+float electronIsolation_rel_v1_FastJet( const unsigned int index, bool use_calo_iso ){
     float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
     float TRCK_sum_over_pt = cms2.els_tkIso().at(index) / pt;       // Tracker Relative Isolation, Non-Truncated
     float ECAL_sum_over_pt = electronIsolation_ECAL_rel_v1(index);  // ECAL    Relative Isolation, Non-Truncated
@@ -966,7 +949,7 @@ float electronIsolation_rel_v1_FastJet(const unsigned int index, bool use_calo_i
 }
 
 // ECAL Relative Isolation, Non-Truncated
-float electronIsolation_ECAL_rel_v1(const unsigned int index, bool useEBps){
+float electronIsolation_ECAL_rel_v1( const unsigned int index, bool useEBps ) {
   float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
   float ecal_sum_over_pt = 0.0;                                                                                           // ECAL Relative Isolation, NT
   if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap  
@@ -981,20 +964,20 @@ float electronIsolation_ECAL_rel_v1(const unsigned int index, bool useEBps){
 }
 
 // HCAL Relative Isolation, Non-Truncated
-float electronIsolation_HCAL_rel_v1(const unsigned int index){
+float electronIsolation_HCAL_rel_v1( const unsigned int index ){
   float pt               = cms2.els_p4().at(index).pt();      // Electron Pt
   float hcal_sum_over_pt = cms2.els_hcalIso().at(index) / pt; // HCAL Relative Isolation, NT
   return hcal_sum_over_pt;
 }
 
-float el_fastjet_rel_offset(const unsigned int index){
+float el_fastjet_rel_offset( const unsigned int index ){
   double pt     = cms2.els_p4().at(index).pt();
   double offset = TMath::Pi() * pow( 0.3 , 2 ) * cms2.evt_rho();
   return offset / pt;
 }
 
 // ECAL Relative Isolation, Truncated
-float electronIsolation_ECAL_rel(const unsigned int index){
+float electronIsolation_ECAL_rel( const unsigned int index ){
   float pt               = cms2.els_p4().at(index).pt();                                                                  // Electron Pt
   float ecal_sum_over_pt = 0.0;                                                                                           // ECAL Relative Isolation
   if( fabs(cms2.els_etaSC().at(index)) > 1.479  ) ecal_sum_over_pt += cms2.els_ecalIso().at(index);                       // EE: Ecal Endcap
@@ -1004,19 +987,14 @@ float electronIsolation_ECAL_rel(const unsigned int index){
 }
 
 // HCAL Relative Isolation, Truncated
-float electronIsolation_HCAL_rel(const unsigned int index){
+float electronIsolation_HCAL_rel( const unsigned int index ){
   float pt               = max( cms2.els_p4().at(index).pt() , (float) 20.0 ) ;      // Electron Pt
   float hcal_sum_over_pt = cms2.els_hcalIso().at(index) / pt;                        // HCAL Relative Isolation, NT
   return hcal_sum_over_pt;
 }
 
-
-
-//
 // electron isolation definitions for WW analysis
-//
-float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso)
-{
+float electronIsolation_rel_ww( const unsigned int index, bool use_calo_iso ) {
     float sum = cms2.els_tkIso().at(index);
     if(use_calo_iso)
         sum += max(0., (cms2.els_ecalIso().at(index) -1.));
@@ -1026,8 +1004,7 @@ float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso)
 }
 
 
-float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, 
-			 float footprintdr, float gammastripveto, float elestripveto){
+float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
 
   int elgsftkid = cms2.els_gsftrkidx().at(iel);
   int eltkid = cms2.els_trkidx().at(iel);
@@ -1092,29 +1069,29 @@ float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float cone
 
 }
 
+//////////////////////////
+// Conversion Rejection //
+//////////////////////////
 
-
-//
-//conversion rejection
-//
-bool isFromConversionHitPattern(const unsigned int index)
-{
+bool isFromConversionHitPattern( const unsigned int index ) {
     if(cms2.els_exp_innerlayers().at(index) > 1) return true;
     return false;
 }
 
 bool isFromConversionPartnerTrack(const unsigned int index) {
-
-    if(fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
-            fabs(cms2.els_conv_dcot().at(index)) < 0.02)
-        return true;
-
+    if( fabs(cms2.els_conv_dist().at(index)) < 0.02 && fabs(cms2.els_conv_dcot().at(index)) < 0.02 ) return true;
     return false;
-
+}
+bool isFromConversionMIT(const unsigned int index){
+  return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
 }
 
-int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits) {
 
+/////////////////
+// Charge Flip //
+/////////////////
+
+int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits) {
     if(cms2.els_sccharge()[elIdx]*cms2.els_trk_charge()[elIdx] > 0 || (cms2.els_trkidx()[elIdx] < 0 || cms2.els_trkshFrac()[elIdx] < minFracSharedHits))
         return cms2.els_sccharge()[elIdx];
     else 
@@ -1123,35 +1100,28 @@ int getChargeUsingMajorityLogic(int elIdx, float minFracSharedHits) {
 }
 
 bool isChargeFlip(int elIndex){
-    //true if electron is likely to be a charge flip
     if ((cms2.els_trkidx().at(elIndex) >= 0) && (cms2.els_trk_charge().at(elIndex) != cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))) ) return true;
     if ((cms2.els_trkidx().at(elIndex) < 0)  && (cms2.els_trk_charge().at(elIndex) != cms2.els_sccharge().at(elIndex))) return true;
-
     return false;
 }
 
 bool isChargeFlip3agree(int elIndex){
-
-    if (cms2.els_trkidx().at(elIndex) >= 0) 
-    {
-        // false if 3 charge measurements agree
-        if(
-                (cms2.els_trk_charge().at(elIndex)          // gsf
-                 == cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))) // ctf 
-                &&
-                (cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)) // ctf 
-                 == cms2.els_sccharge().at(elIndex)) )      // sc
-            return false;  
-    }
-
-    return true;
+  if (cms2.els_trkidx().at(elIndex) >= 0) {
+  // false if 3 charge measurements agree
+    if(
+        (cms2.els_trk_charge().at(elIndex)                        // gsf
+        == cms2.trks_charge().at(cms2.els_trkidx().at(elIndex)))  // ctf 
+        &&
+        (cms2.trks_charge().at(cms2.els_trkidx().at(elIndex))     // ctf 
+        == cms2.els_sccharge().at(elIndex)) )                     // sc
+    return false;  
+  }
+  return true;
 }
 
-
-//
-// spike rejection for electrons
-//
-
+/////////////////////
+// Spike rejection //
+/////////////////////
 bool isSpikeElectron(const unsigned int index) {
 
     const int scidx = cms2.els_scindex()[index];
@@ -1166,12 +1136,10 @@ bool isSpikeElectron(const unsigned int index) {
 
 }
 
-//
-// position correction for electrons
-//
-
-void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhiIn)
-{
+/////////////////////////
+// position correction //
+/////////////////////////
+void electronCorrection_pos( const unsigned int index, float &dEtaIn, float &dPhiIn ) {
 
     //
     // uncorrected dEtaIn and dPhiIn
@@ -1227,6 +1195,9 @@ void electronCorrection_pos(const unsigned int index, float &dEtaIn, float &dPhi
 
 }
 
+////////
+// d0 //
+////////
 
 double electron_d0PV(unsigned int index){
     if ( cms2.vtxs_sumpt().empty() ) return false;
@@ -1261,7 +1232,6 @@ double electron_dzPV_smurfV3(unsigned int index){
   return dzpv;
 }
 
-
 double electron_dzPV_wwV1(unsigned int index){ 
     if ( cms2.vtxs_sumpt().empty() ) return 9999.;
     double sumPtMax = -1;
@@ -1285,7 +1255,6 @@ double electron_dzPV_wwV1(unsigned int index){
        return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
        }*/
 }
-
 
 double electron_d0PV_wwV1(unsigned int index){ 
     if ( cms2.vtxs_sumpt().empty() ) return 9999.;
@@ -1329,66 +1298,3 @@ double electron_d0PV_mindz(unsigned int index){
     return dxyPV;
 }
 
-bool isFromConversionMIT(const unsigned int index){
-  return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
-}
-
-electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint) {
-  unsigned int answer = 0;
-  float etaSC = cms2.els_etaSC().at(index);
-  unsigned int nbrem = cms2.els_nSeed().at(index);
-  if ( workingPoint == 95 ) {
-    if ( 
-      ( fabs(etaSC) < 1.479 && nbrem ==0 && lhValue > -4.274 ) || 
-      ( fabs(etaSC) < 1.479 && nbrem >=1 && lhValue >- 3.773 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem ==0 && lhValue > -5.092 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem >=1 && lhValue > -2.796 ) 
-    ) {
-      answer |= (1<<ELEID_ID);
-    }
-  }
-  else if ( workingPoint == 90 ) {
-    if ( 
-      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > -1.497 ) || 
-      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > -1.521 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > -2.571 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > -0.657 )
-    ) {
-      answer |= (1<<ELEID_ID);
-    }
-  }
-  else if ( workingPoint == 85 ) {
-    if (
-      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +0.163 ) || 
-      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +0.065 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > -0.683 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +1.564 )
-    ) {
-      answer |= (1<<ELEID_ID);
-    }
-  }
-  else if ( workingPoint == 80 ) {
-    if (
-      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +1.193 ) || 
-      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +1.345 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > +0.810 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +3.021 )
-    ) {
-      answer |= (1<<ELEID_ID);
-    }
-  }
-  else if ( workingPoint == 70 ) {
-    if (
-      ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > +1.781 ) || 
-      ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > +2.397 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > +2.361 ) || 
-      ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > +4.052 )
-    ) {
-      answer |= (1<<ELEID_ID);
-    }
-  }
-  else {
-    cout << "Error! Likelihood WP not supported: " << workingPoint << ". Please choose 70, 80, 85, 90, 95" << endl;
-  }
-  return answer;
-}
