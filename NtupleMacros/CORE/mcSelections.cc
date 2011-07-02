@@ -404,7 +404,8 @@ int dumpDocLines() {
     // Lepton daughters of the jth gen particle //
     //////////////////////////////////////////////
     if(cms2.genps_lepdaughter_id()[j].size() > 0) {
-      cout << "Daughters:" << endl;
+      cout << endl;
+      cout << "  Daughters:" << endl;
       for(unsigned int i = 0; i < cms2.genps_lepdaughter_id()[j].size(); i++) {
 
         // mass
@@ -414,7 +415,7 @@ int dumpDocLines() {
         ///////////////////////////////////////////
         // Print information about the daughters //
         ///////////////////////////////////////////
-	      cout << setw(2)  << left  <<                    "  " << i 
+	      cout << setw(2)  << left  <<                    "    " << i << " "
 	           << setw(10) << left  <<                    pdg->GetParticle(cms2.genps_lepdaughter_id().at(j).at(i))->GetName() << " "
 	           << setw(7)  << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).pt()                         << "  "
 	           << setw(7)  << right << setprecision(4) << cms2.genps_lepdaughter_p4().at(j).at(i).phi()                        << "  "
@@ -423,6 +424,7 @@ int dumpDocLines() {
              << endl;
       
       }
+      cout << endl;
     }
   
   }
