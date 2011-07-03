@@ -277,15 +277,15 @@ bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type, bool noMassC
   case SmurfTree::hww115: 
     return tree.lep1_.pt()>20 && tree.lep2_.pt()>10 &&
       fabs(tree.dPhi_)<M_PI*115/180 && (noMassCut || 
-					( tree.dilep_.mass()<40 && tree.mt_>70 && tree.mt_<110 ) );
+					( tree.dilep_.mass()<40))  && (( tree.mt_>70 && tree.mt_<110 ) );
   case SmurfTree::hww120: 
     return tree.lep1_.pt()>20 && tree.lep2_.pt()>10 &&
       fabs(tree.dPhi_)<M_PI*115/180 && (noMassCut || 
-					( tree.dilep_.mass()<40 && tree.mt_>70 && tree.mt_<120 ) );
+					( tree.dilep_.mass()<40))  && (( tree.mt_>70 && tree.mt_<120 ) );
   case SmurfTree::hww130: 
     return tree.lep1_.pt()>25 && tree.lep2_.pt()>10 &&
       fabs(tree.dPhi_)<M_PI*90/180 && (noMassCut || 
-				       ( tree.dilep_.mass()<45 && tree.mt_>75 && tree.mt_<125 ) );
+				       ( tree.dilep_.mass()<45))  && (( tree.mt_>75 && tree.mt_<125 ) );
   case SmurfTree::hww140:
     return tree.lep1_.pt()>25 && tree.lep2_.pt()>15 &&
       fabs(tree.dPhi_)<M_PI*90/180 && (noMassCut || 
@@ -300,44 +300,45 @@ bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type, bool noMassC
   case SmurfTree::hww160:
     return tree.lep1_.pt()>30 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI*60/180 && (noMassCut ||
-				       ( tree.dilep_.mass()<50 && tree.mt_>90 && tree.mt_<160 ) );
+				       ( tree.dilep_.mass()<50)) && (( tree.mt_>90 && tree.mt_<160 ) );
   case SmurfTree::hww170:
     return tree.lep1_.pt()>34 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*60 && (noMassCut ||
-				       ( tree.dilep_.mass()<50 && tree.mt_>110 && tree.mt_<170 ) );
+				       ( tree.dilep_.mass()<50)) && (( tree.mt_>110 && tree.mt_<170 ) );
   case SmurfTree::hww180:
     return tree.lep1_.pt()>36 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*70 && (noMassCut ||
-				       ( tree.dilep_.mass()<60 && tree.mt_>120 && tree.mt_<180 ) );
+				       ( tree.dilep_.mass()<60)) && (( tree.mt_>120 && tree.mt_<180 ) );
   case SmurfTree::hww190:
     return tree.lep1_.pt()>38 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*90 && (noMassCut ||
-				       ( tree.dilep_.mass()<80 && tree.mt_>120 && tree.mt_<190 ) );
+				       ( tree.dilep_.mass()<80)) && (( tree.mt_>120 && tree.mt_<190 ) );
   case SmurfTree::hww200:
     return tree.lep1_.pt()>40 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*100 && (noMassCut ||
-				       ( tree.dilep_.mass()<90 && tree.mt_>120 && tree.mt_<200 ) );
+				       ( tree.dilep_.mass()<90)) && (( tree.mt_>120 && tree.mt_<200 ) );
   case SmurfTree::hww210:
     return tree.lep1_.pt()>44 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*110 && (noMassCut ||
-					(tree.dilep_.mass()<110 && tree.mt_>120 && tree.mt_<210 ) );
+					(tree.dilep_.mass()<110)) && (( tree.mt_>120 && tree.mt_<210 ) );
   case SmurfTree::hww220:
     return tree.lep1_.pt()>48 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*120 && (noMassCut ||
-					(tree.dilep_.mass()<120 && tree.mt_>120 && tree.mt_<220 ) );
+					(tree.dilep_.mass()<120)) && (( tree.mt_>120 && tree.mt_<220 ) );
   case SmurfTree::hww230:
     return tree.lep1_.pt()>52 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*130 && (noMassCut ||
-					(tree.dilep_.mass()<130 && tree.mt_>120 && tree.mt_<230 ) );
+					(tree.dilep_.mass()<130)) && (( tree.mt_>120 && tree.mt_<230 ) );
   case SmurfTree::hww250:
     return tree.lep1_.pt()>55 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI/180*140 && (noMassCut ||
-					   (tree.dilep_.mass()<150 && tree.mt_>120 && tree.mt_<250 ) );
+					   (tree.dilep_.mass()<150)) && (( tree.mt_>120 && tree.mt_<250 ) );
   default: return false;
   }
 }
 
 bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree, bool noMassCut){
+  // if (tree.type_==1 || tree.type_==2) return false;
   // bool vetoRecoilingJet = tree.type_==1||tree.type_==2||tree.jet1_.pt()<15||cos(tree.dPhiDiLepJet1_)>-0.95;
   bool vetoRecoilingJet = tree.type_==1||tree.type_==2||tree.jet1_.pt()<15||tree.dPhiDiLepJet1_<M_PI/180*165;
   // bool vetoRecoilingJet = cos(tree.dPhiDiLepJet1_)>-0.95;
