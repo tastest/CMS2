@@ -342,7 +342,7 @@ bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree, bool noMassCut){
   bool vetoRecoilingJet = tree.type_==1||tree.type_==2||tree.jet1_.pt()<15||tree.dPhiDiLepJet1_<M_PI/180*165;
   // bool vetoRecoilingJet = cos(tree.dPhiDiLepJet1_)>-0.95;
   bool zeroJetVeto25 = tree.jet1_.pt()<25;
-  bool tightMET = tree.type_==1||tree.type_==2||std::min(tree.pmet_,tree.pTrackMet_)>40;
+  bool tightMET = true; //tree.type_==1||tree.type_==2||std::min(tree.pmet_,tree.pTrackMet_)>40;
   switch (measurement_.type){
   case WW0Jet:
     return (tree.njets_==0 ) && //|| (tree.njets_==1 && fabs(tree.jet1_.eta())>3.0))  && 
@@ -429,14 +429,20 @@ void SmurfAnalysis::estimateDYBackground()
     double see = (nZee-0.5*kElMu_*nZem);
     double see_err2 = nZee + kElMu_*kElMu_/4*nZem;
     double nee = rOutInEl_*see;
-    double nee_err = rOutInEl_*sqrt(see_err2+see*see*rOutInElRelativeErr_*rOutInElRelativeErr_);
+    // double nee_err = rOutInEl_*sqrt(see_err2+see*see*rOutInElRelativeErr_*rOutInElRelativeErr_);
     double smm = (nZmm-0.5/kElMu_*nZem);
     double smm_err2 = nZmm + nZem/kElMu_/kElMu_/4;
     double nmm = rOutInMu_*smm;
-    double nmm_err = rOutInMu_*sqrt(smm_err2+smm*smm*rOutInMuRelativeErr_*rOutInMuRelativeErr_);
-    printf(" \t%4.1f+/-%3.1f \testimate Nee: %4.1f+/-%3.1f \testimate Nmm: %4.1f+/-%3.1f\n", 
+    // double nmm_err = rOutInMu_*sqrt(smm_err2+smm*smm*rOutInMuRelativeErr_*rOutInMuRelativeErr_);
+    double nee_err_stat = sqrt(see_err2)*rOutInEl_;
+    double nee_err_syst = nee*rOutInElRelativeErr_;
+    double nmm_err_stat = sqrt(smm_err2)*rOutInMu_;
+    double nmm_err_syst = nmm*rOutInMuRelativeErr_;
+    printf(" \t%4.1f+/-%3.1f \testimate Nee: %4.1f+/-%3.1f+/-%3.1f \testimate Nmm: %4.1f+/-%3.1f+/-%3.1f \tTotal: %4.1f+/-%3.1f+/-%3.1f\n", 
 	   entries_.at(i).nZpeak.total_yield(), entries_.at(i).nZpeak.total_error(),
-	   nee, nee_err, nmm, nmm_err );
+	   nee, nee_err_stat, nee_err_syst, nmm, nmm_err_stat, nmm_err_syst,
+	   nee+nmm, nee_err_stat+nmm_err_stat, nee_err_syst+nmm_err_syst); //they are all correlated 
+    //	   nee, nee_err, nmm, nmm_err );
     if (entries_.at(i).sample==SmurfTree::data) total_dy = nee+nmm;
   }
   //
@@ -1049,7 +1055,7 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
       // cuts need to be symmetrized 
       bool vetoRecoilingJet = tree.jet1_.pt()<15||tree.dPhiDiLepJet1_<M_PI/180*165;
       bool zeroJetVeto25 = tree.jet1_.pt()<25;
-      bool tightMET = std::min(tree.pmet_,tree.pTrackMet_)>40;
+      bool tightMET = true; //std::min(tree.pmet_,tree.pTrackMet_)>40;
       if (std::min(tree.pmet_,tree.pTrackMet_)>35 && 
 	  (!useNewCuts_ || (vetoRecoilingJet && zeroJetVeto25 && tightMET)) ){ // use the same MET cut in all final states
 	if ( fabs(tree.dilep_.mass() - 91.1876) < 15 ){
