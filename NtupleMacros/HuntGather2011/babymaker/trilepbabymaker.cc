@@ -108,7 +108,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                 float cmetx = calotcmet_ * cos(theCaloTCMetPhi);
                 float cmety = calotcmet_ * sin(theCaloTCMetPhi);
                 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
-                    if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2)) {
+                    if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, OSGeneric_v3)) {
                         fixMetForThisMuon(muj, metx, mety, usingTcMet);
                         fixMetForThisMuon(muj, cmetx, cmety, usingTcMet);
                     }
@@ -123,13 +123,13 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                 ngoodmus_ = 0;
                 ngoodels_ = 0;
                 for (unsigned muii = 0; muii < cms2.mus_p4().size(); ++muii) {
-                    if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, NominalTTbarV2)) {
+                    if (cms2.mus_p4()[muii].pt() > 20. && muonId(muii, OSGeneric_v3)) {
                         ++ngoodlep_;
                         ++ngoodmus_;
                     }
                 }
                 for (unsigned eli = 0; eli < cms2.els_p4().size(); ++eli) {
-                    if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_ttbarV1)) {
+                    if (cms2.els_p4()[eli].pt() > 20. && pass_electronSelection(eli, electronSelection_el_OSV3)) {
                         ++ngoodlep_;
                         ++ngoodels_;
                     }
@@ -180,12 +180,12 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                     bool jetIsLep = false;
                     for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
                         LorentzVector vlep = cms2.mus_p4()[muj];
-                        if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.mus_p4()[muj].pt() > 20. && muonId(muj, NominalTTbarV2))
+                        if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.mus_p4()[muj].pt() > 20. && muonId(muj, OSGeneric_v3))
                             jetIsLep = true;
                     }
                     for (unsigned int elj = 0; elj < cms2.els_p4().size(); ++elj) {
                         LorentzVector vlep = cms2.els_p4()[elj];
-                        if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 20. && pass_electronSelection(elj, electronSelection_ttbarV1))
+                        if (dRbetweenVectors(vjet, vlep) < 0.4 && cms2.els_p4()[elj].pt() > 20. && pass_electronSelection(elj, electronSelection_el_OSV3))
                             jetIsLep = true;
                     }
                     if (jetIsLep) continue;
@@ -303,10 +303,10 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                 {
                     iso1_   = muonIsoValue(index1);
                     type1_  = cms2.mus_type()[index1];					 
-                    mu1_muonidfull_   = muonId(index1, NominalTTbarV2); 
-                    mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2); 
-                    mu1_muonidfullV1_ = muonId(index1, NominalTTbar); 
-                    mu1_muonidV1_     = muonIdNotIsolated(index1, NominalTTbar); 
+                    mu1_muonidfull_   = muonId(index1, OSGeneric_v3); 
+                    mu1_muonid_       = muonIdNotIsolated(index1, OSGeneric_v3); 
+                    mu1_muonidfullV1_ = muonId(index1, OSGeneric_v3); 
+                    mu1_muonidV1_     = muonIdNotIsolated(index1, OSGeneric_v3); 
                     mu1_goodmask_     = cms2.mus_goodmask()[index1];
                     mu1_gfitchi2_     = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
                     mu1_cosmic_       = isCosmics(index1);
@@ -325,7 +325,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                     iso1_   = electronIsolation_rel(index1, true);
                     type1_  = cms2.els_type()[index1];
 
-                    e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_ttbarV1);
+                    e1_vbtf90full_  = pass_electronSelection(index1, electronSelection_el_OSV3);
                     electronIdComponent_t answer_vbtf90 = electronId_VBTF(index1, VBTF_35X_90);
                     e1_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     electronIdComponent_t answer_vbtf85 = electronId_VBTF(index1, VBTF_35X_85);
@@ -360,10 +360,10 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                 {
                     iso2_   = muonIsoValue(index2);
                     type2_  = cms2.mus_type()[index2];					 
-                    mu2_muonidfull_   = muonId(index2, NominalTTbarV2); 
-                    mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2); 
-                    mu2_muonidfullV1_ = muonId(index2, NominalTTbar); 
-                    mu2_muonidV1_     = muonIdNotIsolated(index2, NominalTTbar); 
+                    mu2_muonidfull_   = muonId(index2, OSGeneric_v3); 
+                    mu2_muonid_       = muonIdNotIsolated(index2, OSGeneric_v3); 
+                    mu2_muonidfullV1_ = muonId(index2, OSGeneric_v3); 
+                    mu2_muonidV1_     = muonIdNotIsolated(index2, OSGeneric_v3); 
                     mu2_goodmask_     = cms2.mus_goodmask()[index2];
                     mu2_gfitchi2_     = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
                     mu2_cosmic_       = isCosmics(index2);
@@ -382,7 +382,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                     iso2_   = electronIsolation_rel(index2, true);
                     type2_  = cms2.els_type()[index2];
 
-                    e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_ttbarV1);
+                    e2_vbtf90full_  = pass_electronSelection(index2, electronSelection_el_OSV3);
                     electronIdComponent_t answer_vbtf90 = electronId_VBTF(index2, VBTF_35X_90);
                     e2_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     electronIdComponent_t answer_vbtf85 = electronId_VBTF(index2, VBTF_35X_85);
@@ -417,10 +417,10 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                 {
                     iso3_   = muonIsoValue(index3);
                     type3_  = cms2.mus_type()[index3];					 
-                    mu3_muonidfull_   = muonId(index3, NominalTTbarV2); 
-                    mu3_muonid_       = muonIdNotIsolated(index3, NominalTTbarV2); 
-                    mu3_muonidfullV1_ = muonId(index3, NominalTTbar); 
-                    mu3_muonidV1_     = muonIdNotIsolated(index3, NominalTTbar); 
+                    mu3_muonidfull_   = muonId(index3, OSGeneric_v3); 
+                    mu3_muonid_       = muonIdNotIsolated(index3, OSGeneric_v3); 
+                    mu3_muonidfullV1_ = muonId(index3, OSGeneric_v3); 
+                    mu3_muonidV1_     = muonIdNotIsolated(index3, OSGeneric_v3); 
                     mu3_goodmask_     = cms2.mus_goodmask()[index3];
                     mu3_gfitchi2_     = cms2.mus_gfit_chi2()[index3] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index3]/cms2.mus_gfit_ndof()[index3];
                     mu3_cosmic_       = isCosmics(index3);
@@ -439,7 +439,7 @@ void trilepbabymaker::ScanChain (const char *inputFilename, const char *babyFile
                     iso3_   = electronIsolation_rel(index3, true);
                     type3_  = cms2.els_type()[index3];
 
-                    e3_vbtf90full_  = pass_electronSelection(index3, electronSelection_ttbarV2);
+                    e3_vbtf90full_  = pass_electronSelection(index3, electronSelection_el_OSV3);
                     electronIdComponent_t answer_vbtf90 = electronId_VBTF(index3, VBTF_35X_90);
                     e3_vbtf90_      = (answer_vbtf90 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
                     electronIdComponent_t answer_vbtf85 = electronId_VBTF(index3, VBTF_35X_85);

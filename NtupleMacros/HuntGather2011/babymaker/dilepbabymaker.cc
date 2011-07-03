@@ -294,7 +294,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 float pfmety = pfmet_ * sin(thePFMetPhi);
                 for (unsigned int muj = 0; muj < cms2.mus_p4().size(); ++muj) {
                     if (cms2.mus_p4()[muj].Pt() <= 10.0) continue;
-                    if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, NominalTTbarV2)) {
+                    if (!wasMetCorrectedForThisMuon(muj, usingTcMet) && muonIdNotIsolated(muj, OSGeneric_v3)) {
                         fixMetForThisMuon(muj, metx, mety, usingTcMet);
                         fixMetForThisMuon(muj, cmetx, cmety, usingTcMet);
                     }
@@ -335,7 +335,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         ++ngoodmusSS_;
                     }
                     // for TTBarV2
-                    if (cms2.mus_p4()[muii].pt() > 10. && muonId(muii, NominalTTbarV2)) {
+                    if (cms2.mus_p4()[muii].pt() > 10. && muonId(muii, OSGeneric_v3)) {
                         goodMuonIndicesTTBarV2.push_back(muii);
                         ++ngoodlep_;
                         ++ngoodmus_;
@@ -355,7 +355,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                         }
                     }
                     // for TTBarV2
-                    if(cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_ttbarV2)) {
+                    if(cms2.els_p4()[eli].pt() > 10. && pass_electronSelectionCompareMask(cuts_passed, electronSelection_el_OSV3)) {
                         goodElectronIndicesTTBarV2.push_back(eli);
                         ++ngoodlep_;
                         ++ngoodels_;
@@ -751,10 +751,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_foSSv4_       = muonId(index1, muonSelectionFO_ssV4);
                     mu1_numSSv3_      = muonId(index1, NominalSSv3);
                     mu1_foSSv3_       = muonId(index1, muonSelectionFO_ssV3);
-                    mu1_muonidfull_   = muonId(index1, NominalTTbarV2);
-                    mu1_muonid_       = muonIdNotIsolated(index1, NominalTTbarV2);
-                    mu1_muonidfullV1_ = muonId(index1, NominalTTbar);
-                    mu1_muonidV1_     = muonIdNotIsolated(index1, NominalTTbar);
+                    mu1_muonidfull_   = muonId(index1, OSGeneric_v3);
+                    mu1_muonid_       = muonIdNotIsolated(index1, OSGeneric_v3);
+                    mu1_muonidfullV1_ = muonId(index1, OSGeneric_v3);
+                    mu1_muonidV1_     = muonIdNotIsolated(index1, OSGeneric_v3);
                     mu1_goodmask_     = cms2.mus_goodmask()[index1];
                     mu1_gfitchi2_     = cms2.mus_gfit_chi2()[index1] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index1]/cms2.mus_gfit_ndof()[index1];
                     mu1_cosmic_       = isCosmics(index1);
@@ -789,7 +789,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 
                     cuts_t electron_selection = electronSelection(index1);
-                    e1_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
+                    e1_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_el_OSV3);
                     e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
                     e1_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
                     e1_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
@@ -814,7 +814,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_drmu_        = cms2.els_closestMuon()[index1] < 0 ? -999999. : cms2.els_musdr()[index1];
                     if (cms2.els_closestMuon()[index1] < 0)
                         e1_drmuSS_ = -999999.;
-                    else if (!muonId(cms2.els_closestMuon()[index1]))
+                    else if (!muonId(cms2.els_closestMuon()[index1], NominalSSv4))
                         e1_drmuSS_ = -999999.;
                     else
                         e1_drmuSS_ = cms2.els_musdr()[index1];
@@ -847,10 +847,10 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_foSSv4_       = muonId(index2, muonSelectionFO_ssV4);
                     mu2_numSSv3_      = muonId(index2, NominalSSv3);
                     mu2_foSSv3_       = muonId(index2, muonSelectionFO_ssV3);
-                    mu2_muonidfull_   = muonId(index2, NominalTTbarV2);
-                    mu2_muonid_       = muonIdNotIsolated(index2, NominalTTbarV2);
-                    mu2_muonidfullV1_ = muonId(index2, NominalTTbar);
-                    mu2_muonidV1_     = muonIdNotIsolated(index2, NominalTTbar);
+                    mu2_muonidfull_   = muonId(index2, OSGeneric_v3);
+                    mu2_muonid_       = muonIdNotIsolated(index2, OSGeneric_v3);
+                    mu2_muonidfullV1_ = muonId(index2, OSGeneric_v3);
+                    mu2_muonidV1_     = muonIdNotIsolated(index2, OSGeneric_v3);
                     mu2_goodmask_     = cms2.mus_goodmask()[index2];
                     mu2_gfitchi2_     = cms2.mus_gfit_chi2()[index2] < -9000. ? -999999. : cms2.mus_gfit_chi2()[index2]/cms2.mus_gfit_ndof()[index2];
                     mu2_cosmic_       = isCosmics(index2);
@@ -885,7 +885,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 
                     cuts_t electron_selection = electronSelection(index2);
-                    e2_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ttbarV2);
+                    e2_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_el_OSV3);
                     e2_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
                     e2_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
                     e2_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
@@ -910,7 +910,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_drmu_        = cms2.els_closestMuon()[index2] < 0 ? -999999. : cms2.els_musdr()[index2];
                     if (cms2.els_closestMuon()[index2] < 0)
                         e2_drmuSS_ = -999999.;
-                    else if (!muonId(cms2.els_closestMuon()[index2]))
+                    else if (!muonId(cms2.els_closestMuon()[index2], NominalSSv4))
                         e2_drmuSS_ = -999999.;
                     else
                         e2_drmuSS_ = cms2.els_musdr()[index2];
@@ -1615,9 +1615,13 @@ void dilepbabymaker::SetEventLevelInfo ()
         unsigned int ngjets = 0;
         float ght = 0.;
         for (unsigned int gidx = 0; gidx < cms2.genps_p4().size(); gidx++) {
+            if (cms2.genps_status().at(gidx) != 3)
+                continue;
             if (fabs(cms2.genps_p4().at(gidx).eta()) > 2.5)
                 continue;
             if (cms2.genps_p4().at(gidx).pt() < 40.)
+                continue;
+            if ((abs(cms2.genps_id().at(gidx)) < 1 || abs(cms2.genps_id().at(gidx)) > 5) && abs(cms2.genps_id().at(gidx)) != 21)
                 continue;
 
             ++ngjets;
