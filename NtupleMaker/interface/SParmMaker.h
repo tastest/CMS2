@@ -37,23 +37,17 @@
 
 class SParmMaker : public edm::EDProducer {
 public:
-  explicit SParmMaker (const edm::ParameterSet&);
-  ~SParmMaker();
+    explicit SParmMaker (const edm::ParameterSet&);
+    ~SParmMaker();
 
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+    virtual void beginJob() ;
+    virtual void produce(edm::Event&, const edm::EventSetup&);
+    virtual void endJob() ;
       
-  // ----------member data ---------------------------
-  edm::InputTag sparm_m0InputTag;
-  edm::InputTag sparm_m12InputTag;
-  edm::InputTag sparm_AInputTag;
-  edm::InputTag sparm_muInputTag;
-  edm::InputTag sparm_tanBetaInputTag;
-  edm::InputTag sparm_xsecInputTag;
-  edm::InputTag sparm_runInputTag;
-  std::string aliasprefix_;
+    // ----------member data ---------------------------
+    edm::InputTag sparm_inputTag;
+    std::string aliasprefix_;
 };
 
 
