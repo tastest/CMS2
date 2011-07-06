@@ -454,6 +454,13 @@ double muonIsoValue_HCAL(unsigned int index, bool truncated){
     if(truncated) pt = max( pt, 20.0 );
     return cms2.mus_iso03_hadEt().at(index) / pt;
 }
+
+#ifdef PFISOFROMNTUPLE
+double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
+  if (cms2.mus_iso03_pf().at(imu)<-99.) return 9999.;
+  return cms2.mus_iso03_pf().at(imu)/cms2.mus_p4().at(imu).pt();
+}
+#else
 double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
     float pfciso = 0;
     float pfniso = 0;
@@ -491,7 +498,7 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
     } 
     return (pfciso+pfniso)/cms2.mus_p4().at(imu).pt();
 }
-
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Remove cosmics by looking for back-to-back muon-track pairs ( http://indico.cern.ch/contributionDisplay.py?contribId=2&confId=86834 ) //

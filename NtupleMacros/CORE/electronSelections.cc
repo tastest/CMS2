@@ -1003,7 +1003,12 @@ float electronIsolation_rel_ww( const unsigned int index, bool use_calo_iso ) {
     return sum/max(pt, 20.);
 }
 
-
+#ifdef PFISOFROMNTUPLE
+float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
+  if (cms2.els_iso04_pf().at(iel)<-99.) return 9999.;
+  return cms2.els_iso04_pf().at(iel)/cms2.els_p4().at(iel).pt();
+}
+#else
 float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
 
   int elgsftkid = cms2.els_gsftrkidx().at(iel);
@@ -1068,6 +1073,7 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
   return (pfciso+pfniso-pffootprint-pfjurveto-pfjurvetoq)/cms2.els_p4().at(iel).pt();
 
 }
+#endif
 
 //////////////////////////
 // Conversion Rejection //
