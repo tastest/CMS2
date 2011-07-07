@@ -1,40 +1,19 @@
 //-------------------------------------------------------------------------------
-// Use this utility to reweight MC to match the nvtx distribution in data.
-// This requires a root file with a histogram named "hratio" whose bin contents 
-// specify the weight for each nvtx bin. This weight is determined by plotting
-// the nvtx distribution for a data sample and a MC sample and taking the ratio.
+// Tool to extract cross sections from:
+// http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/Mrenna/Summer11LHERuns/mSugraRuns/goodModelNames_10_0_1.txt?view=log
 //
-// A sample file can be found at:
-// /tas/benhoob/vtxreweight/vtxreweight_Spring11MC_153pb_Zselection.root
-//
-// This root file was made with this macro: 
-// /tas/benhoob/vtxreweight/make_vtxreweight_Spring11MC_153pb_Zselection.cc
-//
-// and was produced after applying a Z selection.
-//
-// You can make your own root file by modifying this macro
-//
-// 
 // usage:
-//   
-//    //include header
-//    #include "../Tools/vtxreweight.cc"
+// #include "../Tools/msugraCrossSection.cc"
 //
-//    //initialize
-//    bool verbose = true;
-//    char* vtxfile = "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_153pb_Zselection.root";
-//    set_vtxreweight_rootfile( vtxfile , verbose );
+// // do this once
+// set_msugra_file("/tas/benhoob/msugra/goodModelNames_tanbeta10.txt");
 //
-//    //in the event loop
-//    float myvtxweight = vtxweight();
+// //inside event loop (last argument is tan beta)
+// float xsecsusy = getMsugraCrossSection(m0,m12,10);
 //
-// 
-// PLEASE NOTE: ALWAYS CHECK THAT THE WEIGHTING HAS BEEN DONE PROPERLY
-// BY COMPARING THE DATA NVTX DIST WITH THE WEIGHTED MC NVTX DISTRIBUTION,
-// WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
 //------------------------------------------------------------------------------
 
-// $Id: msugraCrossSection.cc,v 1.1 2011/07/07 12:11:51 benhoob Exp $
+// $Id: msugraCrossSection.cc,v 1.2 2011/07/07 12:17:18 benhoob Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "msugraCrossSection.h"
@@ -51,9 +30,6 @@
 #include <sys/stat.h>
 #include <set>
 #include <string>
-
-//#include "../CORE/CMS2.h"
-//#include "../CORE/eventSelections.h"
 
 bool loaded_file = false;
 
