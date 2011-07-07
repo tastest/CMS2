@@ -13,7 +13,7 @@
 //
 //------------------------------------------------------------------------------
 
-// $Id: msugraCrossSection.cc,v 1.2 2011/07/07 12:17:18 benhoob Exp $
+// $Id: msugraCrossSection.cc,v 1.3 2011/07/07 16:29:06 benhoob Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "msugraCrossSection.h"
@@ -97,6 +97,8 @@ double getMsugraCrossSection( double my_m0 , double my_m12, double my_tanb , boo
     mu      = ((TObjString*)tokens->At(5))->GetString().Atof();
 
     xsec = TString(xsecstring).Atof();
+    
+    delete tokens;
    
     if( fabs(m0-my_m0) < 0.1 && fabs(m12-my_m12) < 0.1 && fabs(tanb-my_tanb) < 0.1 ){
 
@@ -114,6 +116,7 @@ double getMsugraCrossSection( double my_m0 , double my_m12, double my_tanb , boo
     cout << "Didn't find point:" << endl;
     cout << Form("m0 = %.0f m1/2 = %.0f tanb = %.0f",my_m0,my_m12,my_tanb) << endl;
   }
+
 
   return 1E9 * my_xsec;
 
