@@ -13,7 +13,7 @@
 //
 //------------------------------------------------------------------------------
 
-// $Id: msugraCrossSection.cc,v 1.3 2011/07/07 16:29:06 benhoob Exp $
+// $Id: msugraCrossSection.cc,v 1.4 2011/07/08 15:38:10 dbarge Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "msugraCrossSection.h"
@@ -72,7 +72,7 @@ double getMsugraCrossSection( double my_m0 , double my_m12, double my_tanb , boo
   ifile.seekg(0);
 
   double m0, m12, tanb, A0, mu=1.0;
-  double signMu, xsec;
+  double xsec;
 
   string line;
   string xsecstring;
