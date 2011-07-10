@@ -10,13 +10,19 @@
   // a.setGoodRunList("Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt");
 
   // SmurfAnalysis a(0.962,"/smurf/dmytro/tmp/tas-TightLooseFullMET-alljets/");
-  SmurfAnalysis a(0.715,"/smurf/dmytro/tmp/tas-TightLooseFullMET-alljets/");
+  // SmurfAnalysis a(1.092*1.06,"/smurf/data/EPS/tas");
+  SmurfAnalysis a(1.092*1.06,"smurf");
+  // SmurfAnalysis a(0.715,"/smurf/dmytro/tmp/tas-TightLooseFullMET-alljets/");
+  // SmurfAnalysis a(0.715,"/smurf/dmytro/tmp/mix/");
   // SmurfAnalysis a(0.715,"/smurf/dmytro/tmp/only_soft_muon_tagging/");
-  a.setGoodRunList("files/Cert_160404-166861_7TeV_PromptReco_Collisions11_JSON_715ipb.txt");
+  // a.setGoodRunList("files/Cert_160404-166861_7TeV_PromptReco_Collisions11_JSON_715ipb.txt");
   // a.setGoodRunList("files/certifiedUCSD.json");
 
   cout << "\n****************** WW 0-jet Selection *******************\n" << endl;
-  // a.useNewCuts_ = true;
+  a.useNewCuts_ = true;
+  // a.smearMET_ = true;
+  // a.pfMetResolution_ = 15;
+  // a.trkMetResolution_= 30;
   a.measurement_.sig_type = SmurfTree::qqww;
   a.measurement_.type = SmurfAnalysis::WW0Jet;
   a.processSamples();
@@ -28,13 +34,27 @@
   a.rOutInElRelativeErr_ = 0.5;
   a.rOutInMuRelativeErr_ = 0.5; //a.rOutInElRelativeErr_;
   a.kElMu_ = 0.77;
+  a.estimateFakeBackground();
+  a.estimateDYBackground();
+  a.estimateTopBackground();
+  // a.showYields(1.);
+  a.showYields();
+  // a.makeReport();
+
+  cout << "\n****************** HWW120 Selection *******************\n" << endl;
+  a.measurement_.sig_type = SmurfTree::hww120;
+  a.measurement_.type = SmurfAnalysis::HWWCutBased0Jet;
+  a.processSamples();
+  a.showYields();
   // a.showYields(1.);
   // a.estimateFakeBackground();
+  a.rOutInEl_ = 0.7;
+  a.rOutInMu_ = 0.7;
+  a.rOutInElRelativeErr_ = 0.2;
+  a.rOutInMuRelativeErr_ = 0.2;
+  a.kElMu_ = 0.77;
   a.estimateDYBackground();
-  // a.estimateTopBackground();
-  // a.showYields();
-  // a.makeReport();
-  // return;
+  return;
   cout << "\n****************** HWW120 Selection *******************\n" << endl;
   a.measurement_.sig_type = SmurfTree::hww120;
   a.measurement_.type = SmurfAnalysis::HWWCutBased0Jet;

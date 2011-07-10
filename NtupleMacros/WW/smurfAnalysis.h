@@ -1,2 +1,2 @@
-#include "SmurfTree.h"
-#include "goodrun.cc"
+#include "../../../Smurf/Core/SmurfTree.h"
+#include "../Tools/goodrun.cc"

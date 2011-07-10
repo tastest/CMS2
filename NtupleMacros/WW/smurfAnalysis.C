@@ -17,7 +17,8 @@
 #include <string>
 #include "smurfAnalysis.h"
 #include <fstream>
-
+#include "TRandom3.h"
+ 
 struct Result{
   Result(){ 
     yield[0]=0; yield[1]=0; yield[2]=0; yield[3]=0;
@@ -132,6 +133,7 @@ struct SmurfAnalysis{
     Result nZpeakForTop;
     Result nZpeakTopTaggedEvents;
     Result nZMCMatched;
+    Result nZpeakMCMatched;
   };
   SmurfAnalysis(double lumi,
 		const char* dir = "/smurf/dmytro/samples/smurf",
@@ -139,7 +141,7 @@ struct SmurfAnalysis{
 		const char* el_fakerate_name = "el_fr_v4",
 		const char* mu_fakerate_file = "files/ww_mu_fr.root",
 		const char* mu_fakerate_name = "mu_fr_m2");
-  bool passedExtraCuts(SmurfTree& tree, bool noMassCut = false);
+  bool passedExtraCuts(SmurfTree& tree, SmurfTree::DataType sample, bool noMassCut = false);
   void showYields(double lumi = -1, bool report=true); // -1 for lumi means internal lumi
   void printEvents(const char* output_file_name);
   void makeReport();
@@ -204,7 +206,30 @@ struct SmurfAnalysis{
       kTop_ = 1;
       kDrellYan_ = 1;
   }
-  
+  double projectedMet(SmurfTree& tree, double metx, double mety)
+  {
+    double phi = atan2( mety , metx );
+    double dPhi1 = fabs(tree.lep1_.phi() - phi);
+    dPhi1 = std::min(2*M_PI - dPhi1, dPhi1);
+    double dPhi2 = fabs(tree.lep2_.phi() - phi);
+    dPhi2 = std::min(2*M_PI - dPhi2, dPhi2);
+    double dPhi = std::min(dPhi1,dPhi2);
+    if (dPhi < M_PI/2) return sqrt(metx*metx+mety*mety)*sin(dPhi);
+    return sqrt(metx*metx+mety*mety);
+  }
+  double minMet(SmurfTree& tree, SmurfTree::DataType sample){
+    if ( !(sample==SmurfTree::dyee || sample==SmurfTree::dymm || sample==SmurfTree::dytt) ||
+	 !smearMET_ ) return std::min(tree.pmet_,tree.pTrackMet_);
+    double metx1 = tree.met_*cos(tree.metPhi_);
+    double mety1 = tree.met_*sin(tree.metPhi_);
+    double metx2 = tree.trackMet_*cos(tree.trackMetPhi_);
+    double mety2 = tree.trackMet_*sin(tree.trackMetPhi_);
+    metx1 += generator_.Gaus(0,pfMetResolution_/sqrt(2));
+    mety1 += generator_.Gaus(0,pfMetResolution_/sqrt(2));
+    metx2 += generator_.Gaus(0,trkMetResolution_/sqrt(2));
+    mety2 += generator_.Gaus(0,trkMetResolution_/sqrt(2));
+    return std::min(projectedMet(tree,metx1,mety1),projectedMet(tree,metx2,mety2));
+  }
   std::map<SelectionType,YieldReport> wwSMYields_;
   std::map<SelectionType,YieldReport> wwGGHYields_;
   std::map<SelectionType,FakeReport> wwFakes_;
@@ -226,16 +251,25 @@ struct SmurfAnalysis{
   double rOutInMu_; // R out/in for Zmm
   double rOutInElRelativeErr_; // R out/in for Zee (error)
   double rOutInMuRelativeErr_; // R out/in for Zmm (error)
+  double ttbarFractionInTop_;
+
+
   double kElMu_; // yield difference between els and mus k=sqrt(Nee/Nmm) in Z peak
+  TRandom3 generator_;
   
   // kFactors
   double kWjets_;
   double kTop_;
   double kDrellYan_;
+  
   bool useNewCuts_;
+  bool smearMET_;
+  double pfMetResolution_;
+  double trkMetResolution_;
 
   // cuts
-  static const unsigned int cut_base  = SmurfTree::BaseLine|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
+  // static const unsigned int cut_base  = SmurfTree::BaseLine|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
+  static const unsigned int cut_base  = SmurfTree::BaseLine|SmurfTree::ZVeto|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
   static const unsigned int cut_el_1  = SmurfTree::Lep2FullSelection|SmurfTree::Lep1LooseEleV4|cut_base;
   static const unsigned int cut_el_2  = SmurfTree::Lep1FullSelection|SmurfTree::Lep2LooseEleV4|cut_base;
   static const unsigned int cut_mu_1  = SmurfTree::Lep2FullSelection|SmurfTree::Lep1LooseMuV2|cut_base;
@@ -246,7 +280,8 @@ struct SmurfAnalysis{
 
   static const unsigned int cut_top1B = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::OneBJet;
   static const unsigned int cut_topTagged = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::ZVeto|SmurfTree::TopTag|SmurfTree::ExtraLeptonVeto;
-  static const unsigned int cut_final_nomass    = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
+  // static const unsigned int cut_final_nomass    = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::FullMET|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
+  static const unsigned int cut_final_nomass    = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch|SmurfTree::TopVeto|SmurfTree::ExtraLeptonVeto;
   static const unsigned int cut_dy    = SmurfTree::Lep1FullSelection|SmurfTree::Lep2FullSelection|SmurfTree::BaseLine|SmurfTree::ChargeMatch;
   
   // same binning for electrons and muons
@@ -289,13 +324,10 @@ bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type, bool noMassC
   case SmurfTree::hww140:
     return tree.lep1_.pt()>25 && tree.lep2_.pt()>15 &&
       fabs(tree.dPhi_)<M_PI*90/180 && (noMassCut || 
-				       // ( tree.dilep_.mass()<45 && tree.mt_>80 && tree.mt_<130 ) );
 				       ( tree.dilep_.mass()<45 )) && ((tree.mt_>80 && tree.mt_<130 ) );
   case SmurfTree::hww150:
     return tree.lep1_.pt()>27 && tree.lep2_.pt()>25 &&
       fabs(tree.dPhi_)<M_PI*90/180 && (noMassCut ||
-				       // ( tree.dilep_.mass()<50 && tree.mt_>80 && tree.mt_<150 ) );
-				       // ( tree.dilep_.mass()<50 ) );
 				       ( tree.dilep_.mass()<50 )) && (( tree.mt_>80 && tree.mt_<150 ) );
   case SmurfTree::hww160:
     return tree.lep1_.pt()>30 && tree.lep2_.pt()>25 &&
@@ -337,13 +369,17 @@ bool HWWCuts_SmurfV5(SmurfTree& tree, SmurfTree::DataType sig_type, bool noMassC
   }
 }
 
-bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree, bool noMassCut){
+bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree, SmurfTree::DataType sample, bool noMassCut){
+  if ( (tree.type_==1 || tree.type_ ==2 ) && minMet(tree,sample)<20 ) return false;
+  if ( (tree.type_==0 || tree.type_ ==3 ) && minMet(tree,sample)<35 ) return false;
+  // if ( std::min(tree.pmet_,tree.pTrackMet_)>tree.lep1_.pt() ) return false;
+  // if ( tree.dilep_.mass()>76 ) return false;
   // if (tree.type_==1 || tree.type_==2) return false;
   // bool vetoRecoilingJet = tree.type_==1||tree.type_==2||tree.jet1_.pt()<15||cos(tree.dPhiDiLepJet1_)>-0.95;
   bool vetoRecoilingJet = tree.type_==1||tree.type_==2||tree.jet1_.pt()<15||tree.dPhiDiLepJet1_<M_PI/180*165;
   // bool vetoRecoilingJet = cos(tree.dPhiDiLepJet1_)>-0.95;
-  bool zeroJetVeto25 = tree.jet1_.pt()<25;
-  bool tightMET = true; //tree.type_==1||tree.type_==2||std::min(tree.pmet_,tree.pTrackMet_)>40;
+  bool zeroJetVeto25 = true; //tree.jet1_.pt()<25;
+  bool tightMET = tree.type_==1||tree.type_==2||std::min(tree.pmet_,tree.pTrackMet_)>40;
   switch (measurement_.type){
   case WW0Jet:
     return (tree.njets_==0 ) && //|| (tree.njets_==1 && fabs(tree.jet1_.eta())>3.0))  && 
@@ -351,7 +387,7 @@ bool SmurfAnalysis::passedExtraCuts(SmurfTree& tree, bool noMassCut){
     // return tree.njets_==0;
   case WW1Jet:
     return tree.njets_==1 && 
-      (tree.type_==1 || tree.type_==2 || fabs(tree.dPhiDiLepJet1_)<M_PI*165/180);
+      (tree.type_==1 || tree.type_==2 || fabs(tree.dPhiDiLepJet1_)<M_PI*165/180) && (!useNewCuts_ || (tightMET));
   case WW2Jets:
     return tree.njets_==2;
   case HWWCutBased0Jet:
@@ -378,7 +414,8 @@ SmurfAnalysis::SmurfAnalysis(double lumi, const char* dir,
 			     const char* mu_fakerate_file,
 			     const char* mu_fakerate_name):
   lumi_(lumi),processOnlyImportantSamples(true),dir_(dir),json_(0),
-  rOutInEl_(0.22), rOutInMu_(0.25), rOutInElRelativeErr_(0.6), rOutInMuRelativeErr_(0.6), kElMu_(0.823352), useNewCuts_(false)
+  rOutInEl_(0.22), rOutInMu_(0.25), rOutInElRelativeErr_(0.6), rOutInMuRelativeErr_(0.6), ttbarFractionInTop_(-1),
+  kElMu_(0.823352), useNewCuts_(false), smearMET_(false), pfMetResolution_(7.9), trkMetResolution_(19)
 {
   resetKFactors();
   measurement_.type = WW0Jet;
@@ -415,7 +452,10 @@ void SmurfAnalysis::estimateDYBackground()
     printf("No samples are processed.\n");
     return;
   }
-  double total_dy(0);
+  double total_dy_out(0);
+  double total_dy_in(0);
+  double total_dy_err_out(0);
+  double total_dy_err_in(0);
   printf("\nDrell-Yan background estimation inputs :\n\b");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
   for (unsigned int i=0; i<entries_.size(); ++i){
@@ -444,17 +484,24 @@ void SmurfAnalysis::estimateDYBackground()
 	   nee, nee_err_stat, nee_err_syst, nmm, nmm_err_stat, nmm_err_syst,
 	   nee+nmm, nee_err_stat+nmm_err_stat, nee_err_syst+nmm_err_syst); //they are all correlated 
     //	   nee, nee_err, nmm, nmm_err );
-    if (entries_.at(i).sample==SmurfTree::data) total_dy = nee+nmm;
+    if (entries_.at(i).sample==SmurfTree::data){
+      total_dy_out = nee+nmm;
+      total_dy_err_out = sqrt(pow(nee_err_stat+nmm_err_stat,2) + pow(nee_err_syst+nmm_err_syst,2));
+      total_dy_in = see+smm;
+      total_dy_err_in = sqrt(see_err2) + sqrt(smm_err2); // till proper error propagation is done, assume 100% correlation.
+    }
   }
   //
   // MC prediction
   //
-  printf("\nDrell-Yan yield MC estimation:\n\b");;    
+  printf("\nDrell-Yan yield MC estimation outside Z peak:\n\b");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
   double total_from_Z(0);
   double total_from_Zerr2(0);
   for (unsigned int i=0; i<entries_.size(); ++i){
-    if ( !isRelevantToDY(entries_.at(i).sample) ) continue;
+    SmurfTree::DataType sample = entries_.at(i).sample;
+    if ( !(sample==SmurfTree::dyee || sample==SmurfTree::dymm || sample==SmurfTree::dytt || 
+	   sample==SmurfTree::wz || sample==SmurfTree::zz) ) continue;
     printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
     for (unsigned int j=0; j<4; ++j)
       printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j], pm, sqrt(entries_.at(i).finalSelection.err2[j]));
@@ -464,8 +511,33 @@ void SmurfAnalysis::estimateDYBackground()
     total_from_Z += entries_.at(i).nZMCMatched.total_yield();
     total_from_Zerr2 += pow(entries_.at(i).nZMCMatched.total_error(),2);
   }
-  printf("\nTotal from Z MC prediction: %0.1f+/-%0.1f\n", total_from_Z, sqrt(total_from_Zerr2));
-  printf("k-Factor: %0.1f\n", total_from_Z>0?total_dy/total_from_Z:1);
+  printf("\nTotal from Z MC prediction (outside peak): %0.1f+/-%0.1f\n", total_from_Z, sqrt(total_from_Zerr2));
+  double kFactorOut = total_from_Z>0?total_dy_out/total_from_Z:1;
+  double kFactorOutErr = 0;
+  if ( total_from_Z>0 && total_dy_out>0 ){
+    kFactorOutErr = kFactorOut*sqrt(pow(total_dy_err_out/total_dy_out,2)+total_from_Zerr2/pow(total_from_Z,2));
+  }
+  printf("k-Factor: %0.1f+/-%0.1f\n", kFactorOut, kFactorOutErr);
+
+  printf("\nDrell-Yan yield MC estimation in Z peak:\n\b");;    
+  printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
+  double total_from_Zpeak(0);
+  double total_from_ZpeakErr2(0);
+  for (unsigned int i=0; i<entries_.size(); ++i){
+    SmurfTree::DataType sample = entries_.at(i).sample;
+    if ( !(sample==SmurfTree::dyee || sample==SmurfTree::dymm || sample==SmurfTree::dytt || 
+	   sample==SmurfTree::wz || sample==SmurfTree::zz) ) continue;
+    printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
+    for (unsigned int j=0; j<4; ++j)
+      printf(" \t%4.1f+/-%3.1f", entries_.at(i).nZpeak.yield[j], sqrt(entries_.at(i).nZpeak.err2[j]));
+    printf(" \t%5.2f%s%4.2f \tfrom Z: %5.2f%s%4.2f\n", 
+	   entries_.at(i).nZpeak.total_yield(), pm, entries_.at(i).nZpeak.total_error(),
+	   entries_.at(i).nZpeakMCMatched.total_yield(), pm, entries_.at(i).nZpeakMCMatched.total_error());
+    total_from_Zpeak += entries_.at(i).nZpeakMCMatched.total_yield();
+    total_from_ZpeakErr2 += pow(entries_.at(i).nZpeakMCMatched.total_error(),2);
+  }
+  printf("\nTotal from Z MC prediction (in peak): %0.1f+/-%0.1f\n", total_from_Zpeak, sqrt(total_from_ZpeakErr2));
+  printf("k-Factor: %0.1f\n", total_from_Zpeak>0?total_dy_in/total_from_Zpeak:1);
 }
 
 void SmurfAnalysis::estimateTopBackground()
@@ -477,6 +549,8 @@ void SmurfAnalysis::estimateTopBackground()
     printf("No samples are processed.\n");
     return;
   }
+  double tt_eff_1b(0);
+  double tt_eff_1b_err(0);
   double top_tag_eff(0);
   double top_tag_eff_err(0);
   double top_estimate(0);
@@ -484,10 +558,13 @@ void SmurfAnalysis::estimateTopBackground()
   double top_mistag(0);
   double top_mistag_err(0);
   unsigned int total_yield(0);
+  Result tt_before_tags;
+  Result tw_before_tags;
 
   for (unsigned int i=0; i<entries_.size(); ++i){
-    if ( !isRelevantToTopBkg(entries_.at(i).sample) ) continue;
-    printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
+    SmurfTree::DataType sample = entries_.at(i).sample;
+    if ( !isRelevantToTopBkg( sample ) ) continue;
+    printf("%s", SmurfTree::name(sample).c_str());
     for (unsigned int j=0; j<4; ++j){
       printf(" \t%4.1f/%4.1f/%4.1f", 
 	     entries_.at(i).nTopTaggedEvents.yield[j], 
@@ -498,6 +575,14 @@ void SmurfAnalysis::estimateTopBackground()
 	   entries_.at(i).nTopTaggedEvents.total_yield(), 
 	   entries_.at(i).nTop1BJetEvents.total_yield(), 
 	   entries_.at(i).nTop1BJetTopTaggedEvents.total_yield());
+    if (sample == SmurfTree::tw){
+      tw_before_tags.add(entries_.at(i).nTopTaggedEvents);
+      tw_before_tags.add(entries_.at(i).finalSelection);
+    }
+    if (sample == SmurfTree::ttbar){
+      tt_before_tags.add(entries_.at(i).nTopTaggedEvents);
+      tt_before_tags.add(entries_.at(i).finalSelection);
+    }
     double A    = entries_.at(i).nTop1BJetTopTaggedEvents.total_yield();
     double errA = entries_.at(i).nTop1BJetTopTaggedEvents.total_error();
     double B    = entries_.at(i).nTop1BJetEvents.total_yield();
@@ -520,12 +605,23 @@ void SmurfAnalysis::estimateTopBackground()
     printf("\ttag eff: %0.3f+/-%0.3f \ttop bkg: %0.2f+/-%0.2f\n", 
 	   eff, eff_err, C*scale, sqrt(C)*scale);
     if ( entries_.at(i).sample==SmurfTree::data ){
-      top_tag_eff = eff;
-      top_tag_eff_err = eff_err;
-      top_estimate = C*scale;
-      top_estimate_err = sqrt(C)*scale;
+      tt_eff_1b = eff_1b;
+      tt_eff_1b_err = eff_err;
+      top_estimate = C;
+      top_estimate_err = sqrt(C);
     }
   }  
+  
+  if (ttbarFractionInTop_<0){
+    ttbarFractionInTop_ = 1;
+    if ( tt_before_tags.total_yield()>0 && tw_before_tags.total_yield()>0 ){
+      ttbarFractionInTop_ = tt_before_tags.total_yield()/(tt_before_tags.total_yield()+tw_before_tags.total_yield());
+    }
+  }
+  printf("TTbar fraction in top events before top tagging: %0.2f\n", ttbarFractionInTop_);
+
+  top_tag_eff = ttbarFractionInTop_*(1-pow(1-tt_eff_1b,2))+(1-ttbarFractionInTop_)*tt_eff_1b;
+  top_tag_eff_err = ttbarFractionInTop_*(2*(1-tt_eff_1b)*tt_eff_1b_err)+(1-ttbarFractionInTop_)*tt_eff_1b_err; // Is it really correct?
 
   printf("\nTop mistag rate on Z (nZpeakForTop/nZpeakTopTaggedEvents):\n");;    
   printf(" \t     %s      \t      %s      \t      %s      \t      %s      \t    Total     \n", types[0], types[1], types[2], types[3]);
@@ -557,6 +653,11 @@ void SmurfAnalysis::estimateTopBackground()
       top_mistag_err = mistag_err;
     }
   }  
+
+  top_mistag = 0.025;
+  top_mistag_err = 0;
+  
+  printf("Final mis-tag rate to be used: %0.3f+/-%0.3f\n",top_mistag,top_mistag_err);
   
   //
   // MC prediction
@@ -574,7 +675,7 @@ void SmurfAnalysis::estimateTopBackground()
     if (entries_.at(i).sample==SmurfTree::ttbar || entries_.at(i).sample==SmurfTree::tw) top_mc+=entries_.at(i).finalSelection.total_yield();
   }
 
-  printf("\nFinal top background estimation taking into account mis-tag derived from data:\n");
+  printf("\nFinal top background estimation taking into account mis-tag and top composition:\n");
   // printf("\ttotal_yield: %d\n",total_yield);
   // FIXME - do proper error propagation
   double c = top_tag_eff>0 ? top_mistag*(1-top_tag_eff)/top_tag_eff : 0;
@@ -594,20 +695,28 @@ void SmurfAnalysis::showYields(double lumi, bool report)
   if (lumi>0) weight = lumi/lumi_;
   Result total;
   for (unsigned int i=0; i<entries_.size(); ++i){
-    if (!isStandardModel(entries_.at(i).sample)&&entries_.at(i).sample!=SmurfTree::data) continue;
+    SmurfTree::DataType sample = entries_.at(i).sample;
+    if (!isStandardModel(sample) && sample!=SmurfTree::data) continue;
     double scale = 1;
-    if (entries_.at(i).sample==SmurfTree::wjets) scale = kWjets_;
-    if (entries_.at(i).sample==SmurfTree::ttbar||entries_.at(i).sample==SmurfTree::tw) scale = kTop_;
-    printf("%s", SmurfTree::name(entries_.at(i).sample).c_str());
-    for (unsigned int j=0; j<4; ++j)
-      printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j]*weight*scale, pm, sqrt(entries_.at(i).finalSelection.err2[j])*weight*scale);
-    printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield()*weight*scale, pm, entries_.at(i).finalSelection.total_error()*weight*scale);
+    if ( sample==SmurfTree::wjets ) scale = kWjets_;
+    if ( sample==SmurfTree::ttbar || sample==SmurfTree::tw ) scale = kTop_;
+    printf("%s", SmurfTree::name(sample).c_str());
+    if ( sample == SmurfTree::data ){
+      for (unsigned int j=0; j<4; ++j)
+	printf(" \t   %5.0f    ", entries_.at(i).finalSelection.yield[j]*weight*scale);
+      printf(" \t    %5.0f\n", entries_.at(i).finalSelection.total_yield()*weight*scale);
+    } else {
+      for (unsigned int j=0; j<4; ++j)
+	printf(" \t%5.2f%s%4.2f", entries_.at(i).finalSelection.yield[j]*weight*scale, pm, sqrt(entries_.at(i).finalSelection.err2[j])*weight*scale);
+      printf(" \t%5.2f%s%4.2f\n", entries_.at(i).finalSelection.total_yield()*weight*scale, pm, entries_.at(i).finalSelection.total_error()*weight*scale);
+    }      
     if ( isStandardModel(entries_.at(i).sample) ){
       total.add(entries_.at(i).finalSelection, weight*scale);
     }
   }
+  printf("Total:");
   for (unsigned int j=0; j<4; ++j)
-    printf("Total:\t%5.2f%s%4.2f", total.yield[j], pm, sqrt(total.err2[j]));
+    printf(" \t%5.2f%s%4.2f", total.yield[j], pm, sqrt(total.err2[j]));
   printf(" \t%5.2f%s%4.2f\n", total.total_yield(), pm, total.total_error());
 
   printf("\nHiggs expected event yields:\n");;    
@@ -670,7 +779,7 @@ void SmurfAnalysis::printEvents(const char* output_file_name)
     tree.tree_->GetEntry(i);
     if ( json_ )
       if( !goodrun(tree.run_, tree.lumi_) ) continue;
-    if ( !passedExtraCuts(tree) ) continue;
+    if ( !passedExtraCuts(tree,SmurfTree::data) ) continue;
     if ( (tree.cuts_ & cut_final)==cut_final ) {
       if ( tree.lq1_*tree.lq2_<0 ){
 	fout << tree.run_ << " \t" << tree.lumi_ << " \t" << tree.event_ << "\n";
@@ -1051,24 +1160,26 @@ void SmurfAnalysis::addSample(SmurfTree::DataType sample)
     }
 
     // Proper event selection (non mass cut for Z control sample)
-    if ( !passedExtraCuts(tree,true) ) continue;
+    if ( !passedExtraCuts(tree,sample,true) ) continue;
     if ( (tree.cuts_ & cut_final_nomass) == cut_final_nomass ){
       // cuts need to be symmetrized 
       bool vetoRecoilingJet = tree.jet1_.pt()<15||tree.dPhiDiLepJet1_<M_PI/180*165;
-      bool zeroJetVeto25 = tree.jet1_.pt()<25;
-      bool tightMET = true; //std::min(tree.pmet_,tree.pTrackMet_)>40;
-      if (std::min(tree.pmet_,tree.pTrackMet_)>35 && 
+      bool zeroJetVeto25 = true; //tree.jet1_.pt()<25;
+      bool tightMET = std::min(tree.pmet_,tree.pTrackMet_)>40;
+      if (minMet(tree, sample)>35 && 
 	  (!useNewCuts_ || (vetoRecoilingJet && zeroJetVeto25 && tightMET)) ){ // use the same MET cut in all final states
 	if ( fabs(tree.dilep_.mass() - 91.1876) < 15 ){
 	  // if ( fabs(tree.dilep_.mass() - 91.1876) < 5 ){
 	  entry.nZpeak.add(tree.type_,weight);
+	  if (tree.lep1MotherMcId_==23 && tree.lep2MotherMcId_==23) 
+	    entry.nZpeakMCMatched.add(tree.type_,weight);
 	  // std::cout << "Found event in Z window (run/lumi/event): " 
 	  // << tree.run_ << " / " << tree.lumi_ << " / " << tree.event_ << std::endl; 
 	}
       }
     }
     // Proper event selection (with mass cuts)
-    if ( !passedExtraCuts(tree,false) ) continue;
+    if ( !passedExtraCuts(tree,sample,false) ) continue;
 
     // overflow goes into last bin
     double eta1 = fabs(tree.lep1_.eta());
