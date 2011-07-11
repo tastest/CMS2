@@ -59,7 +59,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
 
   // Load various tools  
   gROOT->ProcessLine(Form(".x setup.C(%d)", skipFWLite));
-  gROOT->ProcessLine(".L ./CORE/topmass/ttdilepsolve.cpp+");
+  //gROOT->ProcessLine(".L ./CORE/topmass/ttdilepsolve.cpp+");
 
   // Load FWLite
   gSystem->Load("Tools/MiniFWLite/libMiniFWLite.so");
@@ -123,7 +123,9 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   float kLM11     = 1.;
   float kLM12     = 1.;
   float kLM13     = 1.;
-  float kLMscan   = 1.;
+  float kLMscan3  = 1.;
+  float kLMscan10 = 1.;
+  float kLMscan50 = 1.;
   float kML1      = 1.;
   float kML2      = 1.;
   float kML3      = 1.;
@@ -178,7 +180,9 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   int preML6      = 1;
   int preML7      = 1;
   int preML8      = 1;
-  int preLMscan   = 1;
+  int preLMscan3  = 1;
+  int preLMscan10 = 1;
+  int preLMscan50 = 1;
 
   /*
   //Flags for files to run over
@@ -257,8 +261,8 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runEM       = 0;
   bool runtW       = 0;
   bool runVQQ      = 0;
-  bool runLM0      = 1;
-  bool runLM1      = 1;
+  bool runLM0      = 0;
+  bool runLM1      = 0;
   bool runLM2      = 0;
   bool runLM3      = 0;
   bool runLM4      = 0;
@@ -279,7 +283,9 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   bool runML6      = 0;
   bool runML7      = 0;
   bool runML8      = 0;
-  bool runLMscan   = 0; 
+  bool runLMscan3  = 0; 
+  bool runLMscan10 = 1; 
+  bool runLMscan50 = 0; 
 
 
   char* dir = "";
@@ -297,11 +303,13 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
   if(rundataskim){
     
     pickSkimIfExists(chdataskim,
-                     "/tas/cms2/dilepSkim35pb/els.root",
+                     //"/tas/cms2/dilepSkim35pb/els.root",
+		     "/nfs-3/userdata/cms2/dilepSkim35pb/Nov4/els.root",
                      "dataskim");
 
     pickSkimIfExists(chdataskim,
-                     "/tas/cms2/dilepSkim35pb/mus.root",
+                     //"/tas/cms2/dilepSkim35pb/mus.root",
+		     "/nfs-3/userdata/cms2/dilepSkim35pb/Nov4/mus.root",
                      "dataskim");
   }
 
@@ -787,12 +795,41 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
                      "SUSY_ML8");
   }
 
-  // LMscan
-  TChain *chLMscan = new TChain("Events");
-  if (runLMscan) {
-    pickSkimIfExists(chLMscan, 
-                     "data3x/TANB3_CMSW336FASTv3/V03-00-37/merged*.root",
-                     "LMscan");
+  // LMscan (tan beta 3)
+  TChain *chLMscan3 = new TChain("Events");
+  if (runLMscan3) {
+    pickSkimIfExists(chLMscan3,
+		     "/nfs-4/userdata/spadhi/TAS/tanbeta3/merged*root",
+		     "LMscan3");
+  }
+
+  // LMscan (tan beta 10)
+  TChain *chLMscan10 = new TChain("Events");
+  if (runLMscan10) {
+//     pickSkimIfExists(chLMscan10,
+//     		     "/nfs-4/userdata/spadhi/TAS/tanbeta10/merged*root",
+// 		     "LMscan10");
+
+//     //contains LM0
+//     pickSkimIfExists(chLMscan10,
+// 		     "/nfs-4/userdata/spadhi/TAS/tanbeta10/merged_ntuple_889.root",
+//                      "LMscan10");
+
+//     //contains LM1
+    pickSkimIfExists(chLMscan10,
+		     "/nfs-4/userdata/spadhi/TAS/tanbeta10/dilepSim/skimmed_ntuple_1.root",
+		     //"/nfs-4/userdata/spadhi/TAS/tanbeta10/merged_ntuple_874.root",
+                     "LMscan10");
+
+  }
+
+
+  // LMscan (tan beta 50)
+  TChain *chLMscan50 = new TChain("Events");
+  if (runLMscan50) {
+    pickSkimIfExists(chLMscan50,
+		     "/nfs-4/userdata/spadhi/TAS/tanbeta50/merged*root",
+                     "LMscan50");
   }
 
 
@@ -1092,11 +1129,20 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
                     looper->ScanChain(chML8, "ML8", kML8, preML8, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
                     cout << "Done processing ML8" << endl;
                   }
-                  if (runLMscan) {
-                    cout << "Processing LMscan" << endl;
-                    looper->ScanChain(chLMscan, "LMscan", kLMscan, preLMscan, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
-                    cout << "Done processing LMscan" << endl;
-                    hist::color("LMscan", kOrange-7);
+                  if (runLMscan3) {
+                    cout << "Processing LMscan (tan beta 3)" << endl;
+                    looper->ScanChain(chLMscan3, "LMscan3", kLMscan3, preLMscan3, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LMscan (tan beta 3)" << endl;
+                  }
+                  if (runLMscan10) {
+                    cout << "Processing LMscan (tan beta 10)" << endl;
+                    looper->ScanChain(chLMscan10, "LMscan10", kLMscan10, preLMscan10, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LMscan (tan beta 10)" << endl;
+                  }
+                  if (runLMscan50) {
+                    cout << "Processing LMscan (tan beta 50)" << endl;
+                    looper->ScanChain(chLMscan50, "LMscan50", kLMscan50, preLMscan50, lumi, jetType, metType, zveto, frmode, doFakeApp, calculateTCMET);
+                    cout << "Done processing LMscan (tan beta 50)" << endl;
                   }
                   
                   
@@ -1106,7 +1152,7 @@ void doAll_ossusy_looper_38X(bool skipFWLite = true)
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx],frmodeStrings[frmode]);
                   }
                   else {
-                    const char* outFile = Form("output_38X/temp/ossusy_%s_%s%s_bitmask.root", 
+                    const char* outFile = Form("output_38X/temp/LMscan_ossusy_%s_%s%s_bitmask_LMscan_tanbeta10.root", 
                                                jetTypeStrings[jetTypeIdx], metTypeStrings[metTypeIdx],zvetoStrings[zvetoIdx]);
                   }
                   

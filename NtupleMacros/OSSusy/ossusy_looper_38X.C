@@ -37,7 +37,9 @@
 //#include "CORE/triggerUtils.cc"
 
 //#include "../CORE/topmass/getTopMassEstimate.icc"
-#include "CORE/topmass/getTopMassEstimate.icc"
+//#include "CORE/topmass/getTopMassEstimate.icc"
+#include "../CORE/mcSUSYkfactor.cc"
+
 
 using namespace std;
 using namespace tas;
@@ -47,16 +49,19 @@ typedef vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > VofP4;
 //mSUGRA scan parameters-----------------------------
 
 const bool  generalLeptonVeto = true;
-const int   nm0points    = 81;
-const float m0min        = 0.;
-const float m0max        = 4050.;
-const int   nm12points   = 26;
+const int   nm0points    = 100;
+const float m0min        = 10.;
+const float m0max        = 1010.;
+const int   nm12points   = 36;
 const float m12min       = 100.;
-const float m12max       = 620.;
+const float m12max       = 460.;
 
-TH1F* hsusydilPt[nm0points][nm12points]; 
-TH1F* hsusytcmet[nm0points][nm12points]; 
-TH2F* hsusy_met_sumjetpt[nm0points][nm12points]; 
+//TH1F* hsusydilPt[nm0points][nm12points]; 
+//TH1F* hsusytcmet[nm0points][nm12points]; 
+//TH2F* hsusy_met_sumjetpt[nm0points][nm12points]; 
+//TH2F* habcd_lmscan[nm0points][nm12points]; 
+
+
 
 //---------------------------------------------------
 
@@ -126,6 +131,15 @@ int getIndexFromM0(float m0){
 
 //--------------------------------------------------------------------
 
+float getM0FromIndex(int index){
+  
+  float binsize = (m0max - m0min) / (float) nm0points;
+  float m0 = index * binsize + m0min;
+  return m0;
+}
+
+//--------------------------------------------------------------------
+
 int getIndexFromM12(float m12){
   
   float binsize = (m12max - m12min) / (float) nm12points;
@@ -136,13 +150,24 @@ int getIndexFromM12(float m12){
 
 //--------------------------------------------------------------------
 
+float getM12FromIndex(int index){
+
+  float binsize = (m12max - m12min) / (float) nm12points;
+  float m12 = index * binsize + m12min;
+  return m12;
+     
+}
+
+//--------------------------------------------------------------------
+
 void ossusy_looper_38X::makeTree(char *prefix)
 {
   TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   rootdir->cd();
 
   //Super compressed ntuple here
-  outFile   = new TFile(Form("output_38X/temp/%s_smallTree.root",prefix), "RECREATE");
+  //outFile   = new TFile(Form("output_38X/nov5th_lmscan/%s_tanbeta10_smallTree.root",prefix), "RECREATE");
+  outFile   = new TFile(Form("output_38X/temp/%s_tanbeta10_smallTree.root",prefix), "RECREATE");
   //outFile   = new TFile("temp.root","RECREATE");
   outFile->cd();
   outTree = new TTree("t","Tree");
@@ -579,8 +604,9 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
 //     cout << "Currently not set up to do fake rate calculation, quitting" << endl;
 //     exit(0);
   }
-
-  set_goodrun_file("Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt");
+  
+  set_goodrun_file("Cert_136033-149442_7TeV_Nov4ReReco_Collisions10_JSON_goodrun.txt");
+  //set_goodrun_file("Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v3_goodrun.txt");
   //set_goodrun_file( "Cert_TopNov5_Merged_135821-149442_allPVT_goodruns.txt");
   //set_goodrun_file( "Cert_132440-149442_7TeV_StreamExpress_Collisions10_JSON_v2_goodruns.txt" );
   
@@ -590,7 +616,7 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
     isData = true;
   }
   // instanciate topmass solver
-  ttdilepsolve * d_llsol = new ttdilepsolve;
+  //ttdilepsolve * d_llsol = new ttdilepsolve;
 
 
   //instantiate SimpleFakeRate class for electrons and muons
@@ -694,8 +720,36 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
         }
       }
 
-      //if( nEventsTotal % 100 != 0 ) continue;
+      //cout << sparm_m0() << " " << sparm_m12() << endl;
+
+      //if( nEventsTotal > 30000 ) continue;
+
       cms2.GetEntry(z);
+
+      // if( TString(prefix).Contains("LMscan") ){
+      // 	if( sparm_m0()  > 500 ) continue;
+      // 	if( sparm_m12() > 350 ) continue;
+      // }
+
+      /*
+      bool isLM0 = false;
+      bool isLM1 = false;
+
+      if( sparm_m0() == 200 && sparm_m12() == 160 ){
+	isLM0 = true;
+	// 	cout << "Found LM0 " << currentFile->GetTitle() << endl;
+	// 	//nfs-4/userdata/spadhi/TAS/tanbeta10/merged_ntuple_889.root
+	// 	exit(0);
+      }
+
+       if( sparm_m0() == 60 && sparm_m12() == 250 ){
+	 isLM1 = true;
+	 // 	cout << "Found LM1 " << currentFile->GetTitle() << endl;
+	 // 	exit(0);
+       }
+
+       if( !isLM0 && !isLM1 ) continue;
+      */
 
       //if( evt_run() != 147929 || evt_event() != 537145133 ) continue;
 
@@ -1420,10 +1474,10 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
         
         // The event weight including the kFactor (scaled to 100 pb-1)
         float weight = -1.;
-        if(strcmp(prefix,"LMscan") == 0){
+        if( TString(prefix).Contains("LMscan") ){
           //weight = kFactor * sparm_xsec() * 100. / 10000.; //xsec * lumi (100/pb) / nevents (10000)
-          weight = 1;
-          cout << "CURRENTLY NOT SET UP TO READ IN SUSY SCAN XSEC, SETTING WEIGHT = 1" << endl;
+	  //weight = k * xsec * lumi * trig eff * 1000 pb/fb / nevents(10,000)
+          weight = kFactor * sparm_xsec() * lumi * triggerSuperModelEffic( hypIdx ) * 1000. / 10000.;
         }else if( isData ){
           weight = 1;
         }else{
@@ -1488,12 +1542,13 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
         }
              
         
-        if(strcmp(prefix,"LMscan") == 0){
-          //m0  = sparm_m0();
-          //m12 = sparm_m12();
-          m0  = -1;
-          m12 = -1;
-          cout << "CURRENTLY NOT SET UP TO READ IN SUSY PARMS, SETTING M0 = M1/2 = -1" << endl;
+       
+	if( TString(prefix).Contains("LMscan") ){
+          m0  = sparm_m0();
+          m12 = sparm_m12();
+          //m0  = -1;
+          //m12 = -1;
+          //cout << "CURRENTLY NOT SET UP TO READ IN SUSY PARMS, SETTING M0 = M1/2 = -1" << endl;
         }
 
         //hyp lepton pt
@@ -1544,8 +1599,9 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
         if (dphilep > TMath::Pi()) dphilep = TMath::TwoPi() - dphilep;
 
         // calculate the top mass
-        float topMass = getTopMassEstimate(d_llsol, hypIdx, vjpts_p4, tcmet, tcmetphi);
-        if(topMass != -999 && 42 != 42) std::cout<<"And top mass from exteral: "<<topMass<<std::endl;
+        //float topMass = getTopMassEstimate(d_llsol, hypIdx, vjpts_p4, tcmet, tcmetphi);
+	float topMass = -99;
+	if(topMass != -999 && 42 != 42) std::cout<<"And top mass from exteral: "<<topMass<<std::endl;
 
         vector<float> topMassAllComb;
         VofP4 vjpts_p4_Comb;
@@ -1555,7 +1611,8 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
             vjpts_p4_Comb.clear();
             vjpts_p4_Comb.push_back(vjpts_p4.at(jet1));
             vjpts_p4_Comb.push_back(vjpts_p4.at(jet2));
-            topMassAllComb.push_back( getTopMassEstimate(d_llsol, hypIdx, vjpts_p4_Comb, tcmet, tcmetphi) );
+            //topMassAllComb.push_back( getTopMassEstimate(d_llsol, hypIdx, vjpts_p4_Comb, tcmet, tcmetphi) );
+	    topMassAllComb.push_back( -99 );
             //             std::cout<<
             //               "We have "<<vjpts_p4.size()<<
             //               " jets. This is combination: "<<jet1<<
@@ -1677,7 +1734,19 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
           outTree->Fill();
         }
 
+	if( TString(prefix).Contains("LMscan") ){
+  
+	  int m0index  = getIndexFromM0(m0);
+	  int m12index = getIndexFromM12(m12);
 
+	  lmgrid->Fill( m0 , m12 );
+	  lmgridpoints->Fill( m0index , m12index );
+
+
+	  //fillUnderOverFlow( habcd_lmscan[ m0index ][ m12index ], theSumJetPt , tcmet/sqrt(theSumJetPt),  weight);
+
+
+	}
 
         //selection (continue statements)-------------------------------
         if(!g_useBitMask){
@@ -1738,15 +1807,15 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
 
           
           //Fill susyscan histos
-          if(strcmp(prefix,"LMscan") == 0){
-                    
+	  if( TString(prefix).Contains("LMscan") ){
+	  
             //cout << " m0 "     << sparm_m0()  << " index " << getIndexFromM0(m0) 
             //     << " m1/2 "   << sparm_m12() << " index " << getIndexFromM12(m12)
             //     << " weight " << weight << endl;
-                    
-            fillUnderOverFlow( hsusydilPt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , hyp_p4()[hypIdx].pt(), weight);
-            fillUnderOverFlow( hsusytcmet[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , tcmet, weight);
-            hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(sumjetpt_jets_p4 , tcmet/sqrt(tcsumet), weight);
+
+            //fillUnderOverFlow( hsusydilPt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , hyp_p4()[hypIdx].pt(), weight);
+            //fillUnderOverFlow( hsusytcmet[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , tcmet, weight);
+            //hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(sumjetpt_jets_p4 , tcmet/sqrt(tcsumet), weight);
                     
           }
         }
@@ -1856,19 +1925,18 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
           }
                   
           //Fill susyscan histos
-          if(strcmp(prefix,"LMscan") == 0){
-          
+	  if( TString(prefix).Contains("LMscan") ){
             //cout << " m0 "     << sparm_m0()  << " index " << getIndexFromM0(m0) 
             //     << " m1/2 "   << sparm_m12() << " index " << getIndexFromM12(m12)
             //     << " weight " << weight << endl;
           
             if(nkcut(cutbit,ncut)){
-              fillUnderOverFlow( hsusydilPt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , hyp_p4()[hypIdx].pt(), weight);
-              fillUnderOverFlow( hsusytcmet[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , tcmet, weight);
+              //fillUnderOverFlow( hsusydilPt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , hyp_p4()[hypIdx].pt(), weight);
+              //fillUnderOverFlow( hsusytcmet[ getIndexFromM0(m0) ][ getIndexFromM12(m12)] , tcmet, weight);
             }
 
             if(nkcut(cutbit,ncut,2,3)){
-              hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(theSumJetPt , tcmet/sqrt(tcsumet), weight);
+              //hsusy_met_sumjetpt[ getIndexFromM0(m0) ][ getIndexFromM12(m12)]->Fill(theSumJetPt , tcmet/sqrt(tcsumet), weight);
             }
           }
 
@@ -1929,6 +1997,50 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
         fillHistos( habcd,         theSumJetPt , tcmet/sqrt(theSumJetPt),               weight, myType, nJetsIdx);
         if( theSumJetPt > 150 && tcmet/sqrt(theSumJetPt) > 4.5 )
           fillHistos( habcd_tprof,   theSumJetPt , tcmet/sqrt(theSumJetPt),               myType, nJetsIdx);
+
+	if( TString(prefix).Contains("LMscan") ){
+
+	  int m0index  = getIndexFromM0(m0);
+	  int m12index = getIndexFromM12(m12);
+
+	  hyield_lmscan[m0index][m12index]->Fill(0.5,        weight);
+	  hyield_lmscan[m0index][m12index]->Fill(1.5+myType, weight);
+
+	  float ksusy     = kfactorSUSY(m0, m12, "tanbeta3");
+	  float ksusyup   = kfactorSUSY(m0, m12, "tanbeta3Scale20");
+	  float ksusydown = kfactorSUSY(m0, m12, "tanbeta3Scale05");
+
+	  float x = theSumJetPt;
+	  float y = theMet / sqrt( theSumJetPt );
+
+	  if( x > 125. && x < 300. && y > 8.5            )   lmgridyield_A->Fill( m0 , m12 , ksusy * weight     );
+	  if( x > 125. && x < 300. && y > 4.5 && y < 8.5 )   lmgridyield_B->Fill( m0 , m12 , ksusy * weight     );
+	  if( x > 300. && y > 4.5  && y < 8.5            )   lmgridyield_C->Fill( m0 , m12 , ksusy * weight     );
+	  if( x > 300. && y > 8.5                        )   lmgridyield_D->Fill( m0 , m12 , ksusy * weight     );
+
+	  if( theSumJetPt > 300. && theMet / sqrt( theSumJetPt ) > 8.5 ){
+	    hyieldsig_lmscan[m0index][m12index]->Fill(0.5,        weight);
+	    hyieldsig_lmscan[m0index][m12index]->Fill(1.5+myType, weight);
+
+	    lmgridyield     -> Fill( m0 , m12 , weight             );
+	    lmgridyield_k   -> Fill( m0 , m12 , ksusy * weight     );
+	    lmgridyield_kup -> Fill( m0 , m12 , ksusyup * weight   );
+	    lmgridyield_kdn -> Fill( m0 , m12 , ksusydown * weight );
+	  }
+
+	  float sjp_up = 1.05 * theSumJetPt;
+	  float sjp_dn = 0.95 * theSumJetPt;
+	  
+	  if( sjp_up > 300. && tcmetUp_ / sqrt( sjp_up ) > 8.5 ){
+	    lmgridyield_jup -> Fill( m0 , m12 , ksusy * weight   );
+	  }
+
+	  if( sjp_dn > 300. && tcmetDown_ / sqrt( sjp_dn ) > 8.5 ){
+	    lmgridyield_jdn -> Fill( m0 , m12 , ksusy * weight   );
+	  }
+
+	}
+
 
         fillHistos(hetaz, fabs(etaZ) , weight, myType, nJetsIdx);
         fillHistos(hmt2jcore, mt2jcore, weight, myType, nJetsIdx);
@@ -2174,7 +2286,7 @@ int ossusy_looper_38X::ScanChain(TChain* chain, char *prefix, float kFactor, int
   if (nEventsChain != nEventsTotal)
     std::cout << "ERROR: number of events from files is not equal to total number of events" << std::endl;
  
-  delete d_llsol;
+  //delete d_llsol;
  
   return 0;
 }
@@ -2236,6 +2348,103 @@ void ossusy_looper_38X::BookHistos(char *prefix)
   hyieldsig->GetXaxis()->SetBinLabel(4,"em");
   hyieldsig->Sumw2();
 
+  if( TString(prefix).Contains("LMscan") ){
+    
+    lmgrid       = new TH2F(Form("%s_lmgrid",prefix),"mSUGRA grid",2000,0,2000,2000,0,2000);
+    lmgridpoints = new TH2F(Form("%s_lmgridpoints",prefix),"mSUGRA grid",2000,0,200,2000,0,200);
+
+    lmgrid->GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridpoints->GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgrid->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridpoints->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+
+    lmgrid->Sumw2();
+    lmgridpoints->Sumw2();
+
+    //no k-factor
+    lmgridyield = new TH2F(Form("%s_lmgridyield",prefix),"LO Sig Yield",100,5,1005,36,95,455);
+    lmgridyield->GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield->GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield->Sumw2();
+    
+    //nominal k-factor
+    lmgridyield_k =  new TH2F(Form("%s_lmgridyield_k",prefix),"NLO Sig Yield",100,5,1005,36,95,455);
+    lmgridyield_k -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_k -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_k -> Sumw2();
+
+    //nominal k-factor (region A)
+    lmgridyield_A =  new TH2F(Form("%s_lmgridyield_A",prefix),"Yield Region A",100,5,1005,36,95,455);
+    lmgridyield_A -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_A -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_A -> Sumw2();
+
+    //nominal k-factor (region B)
+    lmgridyield_B =  new TH2F(Form("%s_lmgridyield_B",prefix),"Yield Region B",100,5,1005,36,95,455);
+    lmgridyield_B -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_B -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_B -> Sumw2();
+
+    //nominal k-factor (region C)
+    lmgridyield_C =  new TH2F(Form("%s_lmgridyield_C",prefix),"Yield Region C",100,5,1005,36,95,455);
+    lmgridyield_C -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_C -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_C -> Sumw2();
+
+    //nominal k-factor (region D)
+    lmgridyield_D =  new TH2F(Form("%s_lmgridyield_D",prefix),"Yield Region D",100,5,1005,36,95,455);
+    lmgridyield_D -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_D -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_D -> Sumw2();
+
+    //k-factor scale up
+    lmgridyield_kup =  new TH2F(Form("%s_lmgridyield_kup",prefix),"Sig Yield K UP",100,5,1005,36,95,455);
+    lmgridyield_kup -> GetXaxis()->SetTitle("m_{0} (GeV)");
+				lmgridyield_kup -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_kup -> Sumw2();
+
+    //k-factor scale down
+    lmgridyield_kdn =  new TH2F(Form("%s_lmgridyield_kdn",prefix),"Sig Yield K DOWN",100,5,1005,36,95,455);
+    lmgridyield_kdn -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_kdn -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_kdn -> Sumw2();
+
+    //JES up
+    lmgridyield_jup =  new TH2F(Form("%s_lmgridyield_jup",prefix),"Sig Yield JES UP",100,5,1005,36,95,455);
+    lmgridyield_jup -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_jup -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_jup -> Sumw2();
+
+    //JES down
+    lmgridyield_jdn =  new TH2F(Form("%s_lmgridyield_jdn",prefix),"Sig Yield JES DOWN",100,5,1005,36,95,455);
+    lmgridyield_jdn -> GetXaxis()->SetTitle("m_{0} (GeV)");
+    lmgridyield_jdn -> GetYaxis()->SetTitle("m_{1/2} (GeV)");
+    lmgridyield_jdn -> Sumw2();
+
+    for(int im0 = 0 ; im0 < nm0points ; im0++){
+      for(int im12 = 0 ; im12 < nm12points ; im12++){
+
+	hyield_lmscan[im0][im12] = new TH1F(Form("%s_yield_lmscan_%i_%i",prefix,im0,im12),
+					    Form("Event Yields m0 %.0f m12 %.0f" ,getM0FromIndex(im0),getM12FromIndex(im12)),4,0,4);
+	hyield_lmscan[im0][im12]->GetXaxis()->SetTitle("dil type");
+	hyield_lmscan[im0][im12]->GetXaxis()->SetBinLabel(1,"all");
+	hyield_lmscan[im0][im12]->GetXaxis()->SetBinLabel(2,"ee");
+	hyield_lmscan[im0][im12]->GetXaxis()->SetBinLabel(3,"mm");
+	hyield_lmscan[im0][im12]->GetXaxis()->SetBinLabel(4,"em");
+	hyield_lmscan[im0][im12]->Sumw2();
+	
+	hyieldsig_lmscan[im0][im12] = new TH1F(Form("%s_yieldsig_lmscan_%i_%i",prefix,im0,im12),
+					       Form("Event Yields m0 %.0f m12 %.0f" ,getM0FromIndex(im0),getM12FromIndex(im12)),4,0,4);
+	hyieldsig_lmscan[im0][im12]->GetXaxis()->SetTitle("dil type");
+	hyieldsig_lmscan[im0][im12]->GetXaxis()->SetBinLabel(1,"all");
+	hyieldsig_lmscan[im0][im12]->GetXaxis()->SetBinLabel(2,"ee");
+	hyieldsig_lmscan[im0][im12]->GetXaxis()->SetBinLabel(3,"mm");
+	hyieldsig_lmscan[im0][im12]->GetXaxis()->SetBinLabel(4,"em");
+	hyieldsig_lmscan[im0][im12]->Sumw2();
+      }
+    }
+  }
+   
   hyield_unweighted = new TH1F(Form("%s_yield_unweighted",prefix),Form("%s Event Yields, Un-weighted",prefix),4,0,4);
   hyield_unweighted->GetXaxis()->SetTitle("dil type");
   hyield_unweighted->GetXaxis()->SetBinLabel(1,"all");
@@ -2270,10 +2479,18 @@ void ossusy_looper_38X::BookHistos(char *prefix)
   double binedges1500[6] = {0., 100., 200., 400., 800., 1500.};
   //double binedges2000[11] = {0., 100., 200., 300., 400., 500., 600., 800., 1000., 1500., 2000.};
 
-  if(strcmp("LMscan",prefix)==0){
+  if( TString(prefix).Contains("LMscan") ){
     for(int im0 = 0 ; im0 < nm0points ; im0++){
       for(int im12 = 0 ; im12 < nm12points ; im12++){
-          
+        
+	/*  
+	habcd_lmscan[im0][im12]   = new TH2F(Form("susy_habcd_%i_%i",im0,im12),
+					     Form("susy abcd m0 %.0f m12 %.0f" ,getM0FromIndex(im0),getM12FromIndex(im12)),
+					     1500,0,1500,300,0,30);
+	
+	habcd_lmscan[im0][im12]->Sumw2();
+
+	
         hsusydilPt[im0][im12] = new TH1F(Form("susy_hdilPt_m0_%i_m12_%i",im0,im12),
                                          Form("susy_hdilPt_m0_%i_m12_%i",im0,im12),60,0.,300.);
         hsusydilPt[im0][im12] -> GetXaxis()->SetTitle("Pt (GeV)");
@@ -2287,6 +2504,7 @@ void ossusy_looper_38X::BookHistos(char *prefix)
 
         hsusy_met_sumjetpt[im0][im12] -> GetXaxis()->SetTitle("sumJetPt (GeV)");
         hsusy_met_sumjetpt[im0][im12] -> GetYaxis()->SetTitle("tcmet / #sqrt{tcsumet} (GeV^{1/2})");
+	*/      
       }
     }
   }
