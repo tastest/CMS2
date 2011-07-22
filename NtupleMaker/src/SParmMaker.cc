@@ -58,11 +58,9 @@ SParmMaker::SParmMaker(const edm::ParameterSet& iConfig) {
 
     // product of this EDProducer
     produces<TString> (branchprefix+"comment"      ).setBranchAlias(aliasprefix_+"_comment"      );
-    produces<float>   (branchprefix+"m0"           ).setBranchAlias(aliasprefix_+"_m0"           );
-    produces<float>   (branchprefix+"m12"          ).setBranchAlias(aliasprefix_+"_m12"          );
-    produces<float>   (branchprefix+"A"            ).setBranchAlias(aliasprefix_+"_A"            );
-    produces<float>   (branchprefix+"mu"           ).setBranchAlias(aliasprefix_+"_mu"           );
-    produces<float>   (branchprefix+"tanBeta"      ).setBranchAlias(aliasprefix_+"_tanBeta"      );
+    produces<float>   (branchprefix+"mG"           ).setBranchAlias(aliasprefix_+"_mG"           );
+    produces<float>   (branchprefix+"mL"           ).setBranchAlias(aliasprefix_+"_mL"           );
+    produces<float>   (branchprefix+"mf"           ).setBranchAlias(aliasprefix_+"_mf"           );
     produces<int>     (branchprefix+"subProcessId" ).setBranchAlias(aliasprefix_+"_subProcessId" );
     produces<float>   (branchprefix+"weight"       ).setBranchAlias(aliasprefix_+"_weight"       );
     produces<float>   (branchprefix+"pdfWeight1"   ).setBranchAlias(aliasprefix_+"_pdfWeight1"   );
@@ -85,11 +83,9 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
    
     std::auto_ptr<TString> sparm_comment      (new TString);
     std::auto_ptr<int>     sparm_subProcessId (new int);
-    std::auto_ptr<float>   sparm_m0           (new float);
-    std::auto_ptr<float>   sparm_m12          (new float);
-    std::auto_ptr<float>   sparm_A            (new float);
-    std::auto_ptr<float>   sparm_mu           (new float);
-    std::auto_ptr<float>   sparm_tanBeta      (new float);
+    std::auto_ptr<float>   sparm_mG           (new float);
+    std::auto_ptr<float>   sparm_mL           (new float);
+    std::auto_ptr<float>   sparm_mf           (new float);
     std::auto_ptr<float>   sparm_weight       (new float);
     std::auto_ptr<float>   sparm_pdfWeight1   (new float);
     std::auto_ptr<float>   sparm_pdfWeight2   (new float);  
@@ -100,25 +96,24 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     iEvent.getByLabel(sparm_inputTag, sparm_handle); 
 
     if( !sparm_handle.isValid() ){
-        *sparm_m0       = -9999.;
-        *sparm_m12      = -9999.;
-        *sparm_A        = -9999.;
-        *sparm_mu       = -9999.;
-        *sparm_tanBeta  = -9999.;
+        *sparm_mG       = -9999.;
+        *sparm_mL       = -9999.;
+        *sparm_mf       = -9999.;
     }
 
     for (std::vector<std::string>::const_iterator it = sparm_handle->comments_begin(); it != sparm_handle->comments_end(); it++) {      
         TString model_params(*it);
+		//std::cout << "params = " << model_params;// << std::endl;
         if (!model_params.Contains("model"))
             continue;
         *sparm_comment = TString(*it);
         TObjArray* tokens = model_params.Tokenize("_");
-        *sparm_m0      = ((TObjString*)tokens->At(1))->GetString().Atof();
-        *sparm_m12     = ((TObjString*)tokens->At(2))->GetString().Atof();
-        *sparm_tanBeta = ((TObjString*)tokens->At(3))->GetString().Atof();
-        *sparm_A       = ((TObjString*)tokens->At(4))->GetString().Atof();
-        *sparm_mu      = ((TObjString*)tokens->At(5))->GetString().Atof();
+        *sparm_mf      = ((TObjString*)tokens->At(1))->GetString().Atof();
+        *sparm_mG      = ((TObjString*)tokens->At(2))->GetString().Atof();
+        *sparm_mL      = ((TObjString*)tokens->At(3))->GetString().Atof();
     }
+
+	//std::cout << *sparm_mf << "  " << *sparm_mG << "  " << *sparm_mL << "  " << std::endl << std::endl;
 
     // now, get info about this event
     const lhef::HEPEUP lhe_info = sparm_handle->hepeup();
@@ -139,11 +134,9 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     std::string branchprefix = aliasprefix_;
     if(branchprefix.find("_") != std::string::npos) branchprefix.replace(branchprefix.find("_"),1,"");
 
-    iEvent.put(sparm_m0           ,branchprefix+"m0"           );
-    iEvent.put(sparm_m12          ,branchprefix+"m12"          );
-    iEvent.put(sparm_A            ,branchprefix+"A"            );
-    iEvent.put(sparm_mu           ,branchprefix+"mu"           );
-    iEvent.put(sparm_tanBeta      ,branchprefix+"tanBeta"      );
+    iEvent.put(sparm_mf           ,branchprefix+"mf"           );
+    iEvent.put(sparm_mG           ,branchprefix+"mG"           );
+    iEvent.put(sparm_mL           ,branchprefix+"mL"           );
     iEvent.put(sparm_weight       ,branchprefix+"weight"       );
     iEvent.put(sparm_pdfWeight1   ,branchprefix+"pdfWeight1"   );
     iEvent.put(sparm_pdfWeight2   ,branchprefix+"pdfWeight2"   );
