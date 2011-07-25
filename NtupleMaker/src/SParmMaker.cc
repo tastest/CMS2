@@ -111,6 +111,7 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
         *sparm_mf      = ((TObjString*)tokens->At(1))->GetString().Atof();
         *sparm_mG      = ((TObjString*)tokens->At(2))->GetString().Atof();
         *sparm_mL      = ((TObjString*)tokens->At(3))->GetString().Atof();
+		delete tokens;
     }
 
 	//std::cout << *sparm_mf << "  " << *sparm_mG << "  " << *sparm_mL << "  " << std::endl << std::endl;
