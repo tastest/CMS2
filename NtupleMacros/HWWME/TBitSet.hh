@@ -1,5 +1,6 @@
 #ifndef _TBITSET_HH_
 #define _TBITSET_HH_
+#include <limits.h>
 
 #include <vector>
 #include <ostream>

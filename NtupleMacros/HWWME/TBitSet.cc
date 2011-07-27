@@ -205,7 +205,7 @@ bool TBitSet::AllBitsAreTrue(void) {
 ***************************************************************************/
 bool TBitSet::AllOtherBitsAreTrue(unsigned int bit, unsigned int bit2, unsigned int bit3) {
 
-  for (int i = m_NumBits-1; i >= 0; i--) {
+  for (unsigned int i = m_NumBits-1; i >= 0; i--) {
     if (i == bit) continue;
     if (i == bit2) continue; 
     if (i == bit3) continue; // if there are 4 billion bits the 0xffffffff defaule will screw up (oh well).
