@@ -51,9 +51,6 @@
 
 using namespace tas;
 
-// Smurf
-const char* config_info = "Smurf HWW V6 selection; Spring11 samples; 1/fb";
-
 TBitSet* _cutWord;
 TBitSet* _cutMask;
 
@@ -130,11 +127,6 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
   unsigned int nEventsTotal = 0;
   
   if(!realData) InitMCUtilHist(process, utilFile_);
-
-  // make smurf ntuples
-  SmurfTree smurfTree;
-  smurfTree.CreateTree();
-  smurfTree.tree_->SetDirectory(0);
   
   // File Loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
@@ -201,8 +193,6 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
 	// fill the system boost and smurf trees after the event selections
         if (accept){
 	  if(!realData) fillKtHist(process, weight);
-	  FillSmurfNtuple(smurfTree,i_hyp,weight,process);
-	  smurfTree.tree_->Fill();
 	  eventCount[type]++;
 	  eventYield[type]+=weight;
 	  eventCount[all]++;
@@ -236,15 +226,6 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
        << "; EM "<< eventYield[emu]
        << "; EE "<< eventYield[ee] <<endl;
     
-  if ( nEventsTotal > 0 ) {
-    TFile* fSmurf = TFile::Open(Form("%s.root",process),"RECREATE");
-    assert(fSmurf);
-    smurfTree.tree_->Write();
-    smurfTree.info_.SetTitle(config_info);
-    smurfTree.info_.Write();
-    fSmurf->Close();
-  }
-  
   if(!realData) saveMCUtilOutput(process, utilFile_);
   
   cout<<"Total Events Before Selection "<<chain->GetEntries()<<"\n";
@@ -347,92 +328,6 @@ int ApplyEventSelection( unsigned int i_hyp, bool realData){
   return 0;
 }
 
-void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, const char* process) {
-  tree.InitVariables();
-  tree.run_   = cms2.evt_run();
-  tree.event_ = cms2.evt_event();
-  tree.lumi_  = cms2.evt_lumiBlock();
-  tree.nvtx_  = nGoodVertex();
-  tree.scale1fb_ = weight;
-  tree.met_    = metValue();
-  tree.metPhi_ = metPhiValue();
-  bool ltIsFirst = true;
-  if ( cms2.hyp_lt_p4().at(i_hyp).pt()<cms2.hyp_ll_p4().at(i_hyp).pt() ) ltIsFirst = false;
-  tree.type_ = SmurfTree::Type(cms2.hyp_type().at(i_hyp));
-  if ( tree.type_ == SmurfTree::em || tree.type_ == SmurfTree::me ){
-    if ( ltIsFirst )
-      tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::em : SmurfTree::me;
-    else
-      tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::me : SmurfTree::em;
-  }
-  tree.lep1_ = ltIsFirst ? cms2.hyp_lt_p4().at(i_hyp) : cms2.hyp_ll_p4().at(i_hyp);
-  tree.lep2_ = ltIsFirst ? cms2.hyp_ll_p4().at(i_hyp) : cms2.hyp_lt_p4().at(i_hyp);
-  tree.lq1_   = ltIsFirst ? cms2.hyp_lt_charge().at(i_hyp) : cms2.hyp_ll_charge().at(i_hyp);
-  tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
-  tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
-  tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
-  const std::vector<LorentzVector>& jets = getJets(pfJet, i_hyp, 25, 5.0, true, false);
-  if (jets.size()>0) tree.jet1_ = jets.at(0);
-  if (jets.size()>1) tree.jet2_ = jets.at(1);
-  // jet1_btag_;
-  // jet2_btag_;
-  tree.njets_ = jets.size();
-  tree.dilep_ = cms2.hyp_p4().at(i_hyp);  
-  tree.pmet_ = projectedMet(i_hyp, metValue(), metPhiValue());
-  tree.dPhi_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp)));
-  tree.dR_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),cms2.hyp_ll_p4().at(i_hyp));
-  if (jets.size()>0) {
-    tree.dPhiLep1Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_lt_p4().at(i_hyp),jets.at(0)));
-    tree.dRLep1Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4().at(i_hyp),jets.at(0));
-    tree.dPhiLep2Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),jets.at(0)));
-    tree.dRLep2Jet1_   = ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4().at(i_hyp),jets.at(0));
-    tree.dPhiDiLepJet1_= fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0)));
-    if (!ltIsFirst){
-      std::swap(tree.dPhiLep1Jet1_,tree.dPhiLep2Jet1_);
-      std::swap(tree.dRLep1Jet1_,tree.dRLep2Jet1_);
-    }
-  }
-  tree.dPhiDiLepMET_ = acos(cos(cms2.hyp_p4().at(i_hyp).phi()-metPhiValue()));
-  tree.dPhiLep1MET_ = acos(cos(tree.lep1_.phi()-metPhiValue()));
-  tree.dPhiLep2MET_ = acos(cos(tree.lep2_.phi()-metPhiValue()));
-
-  tree.mt_ = mt(tree.dilep_.pt(),tree.met_,tree.dPhiDiLepMET_);
-  tree.mt1_ = mt(tree.lep1_.pt(),tree.met_,tree.dPhiLep1MET_);
-  tree.mt2_ = mt(tree.lep2_.pt(),tree.met_,tree.dPhiLep2MET_);
-
-  if (TString(process) != "data"){
-    tree.genmet_ = cms2.gen_met();
-    tree.genmetPhi_ = cms2.gen_metPhi();
-    tree.lep1McId_ = ltIsFirst ? cms2.hyp_lt_mc_id().at(i_hyp) : cms2.hyp_ll_mc_id().at(i_hyp);
-    tree.lep2McId_ = ltIsFirst ? cms2.hyp_ll_mc_id().at(i_hyp) : cms2.hyp_lt_mc_id().at(i_hyp);
-  }
-
-  tree.dstype_    = SmurfTree::other;
-  if(TString(process) == "ww")  tree.dstype_ = SmurfTree::qqww;
-  if(TString(process) == "wz")  tree.dstype_ = SmurfTree::wz;
-  if(TString(process) == "zz")  tree.dstype_ = SmurfTree::zz;
-  if(TString(process) == "wjets")  tree.dstype_ = SmurfTree::wjets;
-  if(TString(process) == "dyee")  tree.dstype_ = SmurfTree::dyee;
-  if(TString(process) == "dymm")  tree.dstype_ = SmurfTree::dymm;
-  if(TString(process) == "dytt")  tree.dstype_ = SmurfTree::dytt;
-  if(TString(process) == "ttbar")  tree.dstype_ = SmurfTree::ttbar;
-  if(TString(process) == "tw")  tree.dstype_ = SmurfTree::tw;
-  if(TString(process) == "qcd")  tree.dstype_ = SmurfTree::qcd;
-  if(TString(process) == "data")  tree.dstype_ = SmurfTree::data;
-  if(TString(process) == "hww120")  tree.dstype_ = SmurfTree::hww120;
-  if(TString(process) == "hww130")  tree.dstype_ = SmurfTree::hww130;
-  if(TString(process) == "hww140")  tree.dstype_ = SmurfTree::hww140;
-  if(TString(process) == "hww150")  tree.dstype_ = SmurfTree::hww150;
-  if(TString(process) == "hww160")  tree.dstype_ = SmurfTree::hww160;
-  if(TString(process) == "hww170")  tree.dstype_ = SmurfTree::hww170;
-  if(TString(process) == "hww180")  tree.dstype_ = SmurfTree::hww180;
-  if(TString(process) == "hww190")  tree.dstype_ = SmurfTree::hww190;
-  if(TString(process) == "hww200")  tree.dstype_ = SmurfTree::hww200;
-  if(TString(process) == "hww210")  tree.dstype_ = SmurfTree::hww210;
-  if(TString(process) == "hww220")  tree.dstype_ = SmurfTree::hww220;
-  if(TString(process) == "hww230")  tree.dstype_ = SmurfTree::hww230;
-  if(TString(process) == "hww250")  tree.dstype_ = SmurfTree::hww250;
-}
 
 // == Utility fucntions
 

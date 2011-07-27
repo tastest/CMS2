@@ -15,7 +15,6 @@
 #include "TLorentzVector.h"
 #include "Math/VectorUtil.h"
 
-#include "../../../Smurf/Core/SmurfTree.h"
 
 using namespace std;
 
@@ -116,9 +115,7 @@ void ProcessSample(const char* process,
 //Utils
 
 bool is_duplicate (const EventIdentifier &id);
-bool ApplyPreSelection(unsigned int);
 int ApplyEventSelection(unsigned int, bool realData);
-void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, double weight, const char *process);
 void CalculateFakeRateProb();
 void progress( int nEventsTotal, int nEventsChain );
 int getHypothesisType( int NTtype );
