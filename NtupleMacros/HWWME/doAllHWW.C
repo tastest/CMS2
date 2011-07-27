@@ -66,11 +66,12 @@ void doAllHWW() {
   bool runHWW600 = 0;
   
   if (runWW) 
-    //ProcessSample("ww", "data/WWTo2L2Nu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/*.root", utilFile,  -1, Lumi, 4.5, -1);
-    ProcessSample("ww", "data/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-12/wwfilter/merged_ntuple.root", utilFile,  -1, Lumi, 4.5, -1, "",false,true);
+    ProcessSample("ww", "data/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-12/wwfilter/merged_ntuple.root", utilFile,  -1, Lumi, 4.5, -1, "HWW","",false,true);
   
+  // single lepton 10 filtered
   if  (runWjets) 
-    ProcessSample("wjets","data/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_SingleLepton/V04-01-01/PartonSkim/merged_ntuple.root", utilFile,  -1, Lumi, 31314.0, -1); // single lepton 10 filtered
+    ProcessSample("wjets","data/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_SingleLepton/V04-01-01/PartonSkim/merged_ntuple.root", utilFile,  -1, Lumi, 31314.0, -1); 
+  
   
   if (runWZ) 
     ProcessSample("wz", "data//WZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*.root", utilFile,   -1 ,Lumi, 18.2, -1); 
@@ -130,7 +131,6 @@ void doAllHWW() {
 
   if (runHWW600)
     ProcessSample("hww600","data/GluGluToHToWWTo2L2Nu_M-600_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/*.root", utilFile,  -1 ,Lumi,0.019184*4.0/9.0, -1); 
-
   
   utilFile->Close();	      
   

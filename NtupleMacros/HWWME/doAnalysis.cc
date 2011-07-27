@@ -103,7 +103,7 @@ void progress( int nEventsTotal, int nEventsChain ){
 
 
 
-void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvents, double IntLumi, double Xsect, int nProcessedEvents, std::string skimFilePrefix, bool realData, bool identifyEvents){
+void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvents, double IntLumi, double Xsect, int nProcessedEvents, std::string analysis, std::string skimFilePrefix, bool realData, bool identifyEvents){
 
   int eventCount[kNdilepFlav];
   double eventYield[kNdilepFlav];
@@ -183,7 +183,7 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
       for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	_cutWord->SetAllBitsFalse();
-	ApplyEventSelection(i_hyp, realData);
+	ApplyHWWEventSelection(i_hyp, realData);
 	
 	int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
 	bool accept = true;
@@ -232,9 +232,9 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
 }
 
 
-int ApplyEventSelection( unsigned int i_hyp, bool realData){
+int ApplyHWWEventSelection( unsigned int i_hyp, bool realData){
   
-  //std::cout << "doAnalysis::ApplyEventSelection...\n";
+  //std::cout << "doAnalysis::ApplyHWWEventSelection...\n";
   if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
   if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
 
@@ -823,20 +823,20 @@ bool isIdentified(const char* process) {
 }
 
 
-void ProcessSample(const char* process, std::vector<std::string> file_patterns, TFile *utilFile_,  int nEvents, double IntLumi, double Xsect, int nProcessedEvents, std::string skimFilePrefix, bool realData, bool identifyEvents){
+void ProcessSample(const char* process, std::vector<std::string> file_patterns, TFile *utilFile_,  int nEvents, double IntLumi, double Xsect, int nProcessedEvents, std::string analysis, std::string skimFilePrefix, bool realData, bool identifyEvents){
 
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
 	pattern != file_patterns.end(); ++pattern )
     tchain->Add(pattern->c_str());
-  ScanChain(process, tchain, utilFile_, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
+  ScanChain(process, tchain, utilFile_, nEvents, IntLumi, Xsect, nProcessedEvents, analysis, skimFilePrefix, realData, identifyEvents);
 
 }
 
-void ProcessSample(const char* process, std::string file_pattern, TFile *utilFile_, int nEvents, double IntLumi, double Xsect, int nProcessedEvents, std::string skimFilePrefix, bool realData, bool identifyEvents){
+void ProcessSample(const char* process, std::string file_pattern, TFile *utilFile_, int nEvents, double IntLumi, double Xsect, int nProcessedEvents, std::string analysis, std::string skimFilePrefix, bool realData, bool identifyEvents){
   std::vector<std::string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(process, vec, utilFile_, nEvents, IntLumi, Xsect, nProcessedEvents, skimFilePrefix, realData, identifyEvents);
+  ProcessSample(process, vec, utilFile_, nEvents, IntLumi, Xsect, nProcessedEvents, analysis, skimFilePrefix, realData, identifyEvents);
 }
 
 void findClosestGenPs(LorentzVector v_parton, double& minDR, int& idx_minDR) {

@@ -86,6 +86,7 @@ void ScanChain(const char* process,
 	       double IntLumi=100, 
 	       double Xsect=1.0, 
 	       int nProcessedEvents=-1, 
+	       std::string analysis="HWW",
 	       std::string skimFilePrefix="", 
 	       bool realData=false, 
 	       bool identifyEvents=false);
@@ -96,7 +97,8 @@ void ProcessSample(const char* process,
 		   int nEvents = -1, 
 		   double IntLumi=100, 
 		   double Xsect=1.0, 
-		   int nProcessedEvents=-1, 
+		   int nProcessedEvents=-1,
+		   std::string analysis="HWW", 
 		   std::string skimFilePrefix="",
 		   bool realData=false, 
 		   bool identifyEvents=false);
@@ -108,6 +110,7 @@ void ProcessSample(const char* process,
 		   double IntLumi=100, 
 		   double Xsect=1.0, 
 		   int nProcessedEvents=-1, 
+		   std::string analysis="HWW",
 		   std::string skimFilePrefix="", 
 		   bool realData=false, 
 		   bool identifyEvents=false);
@@ -115,7 +118,7 @@ void ProcessSample(const char* process,
 //Utils
 
 bool is_duplicate (const EventIdentifier &id);
-int ApplyEventSelection(unsigned int, bool realData);
+int ApplyHWWEventSelection(unsigned int, bool realData);
 void CalculateFakeRateProb();
 void progress( int nEventsTotal, int nEventsChain );
 int getHypothesisType( int NTtype );
