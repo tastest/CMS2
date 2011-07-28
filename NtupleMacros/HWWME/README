@@ -1,0 +1,5 @@
+1. Get the boost/lepton efficiency/fakerates for the 0-jet bin of HWW analysis
+ make ww
+
+2. Get the boost/lepton efficiency for the 0-jet bin of HZZ analysis
+make zz
