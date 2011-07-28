@@ -118,7 +118,8 @@ void ProcessSample(const char* process,
 //Utils
 
 bool is_duplicate (const EventIdentifier &id);
-int ApplyHWWEventSelection(unsigned int, bool realData);
+void ApplyHWWEventSelection(unsigned int, bool realData);
+void ApplyHZZEventSelection(unsigned int, bool realData);
 void CalculateFakeRateProb();
 void progress( int nEventsTotal, int nEventsChain );
 int getHypothesisType( int NTtype );
@@ -136,6 +137,7 @@ double metValue();
 double metPhiValue();
 double projectedMet(unsigned int, double, double);
 bool passedMetRequirements(unsigned int i_hyp);
+bool passedHZZMetRequirements(unsigned int i_hyp);
 
 //trigger
 bool  passedTrigger(TString trigName);

@@ -82,6 +82,9 @@ LinkDef_out.cxx: LinkDef.h
 Util_HWW.root: doAllHWW.C $(CORELIB) $(LIB) $(FWLIB)
 	$(QUIET) root -b -q doAllHWW.C
 
+Util_HZZ.root: doAllHZZ.C $(CORELIB) $(LIB) $(FWLIB)
+	$(QUIET) root -b -q doAllHZZ.C
+
 #################################################################
 #                       User Targets 
 #################################################################

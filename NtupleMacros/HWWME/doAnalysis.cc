@@ -183,8 +183,18 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
       for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
 	if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
 	_cutWord->SetAllBitsFalse();
-	ApplyHWWEventSelection(i_hyp, realData);
+	if (TString(analysis) == "HWW")
+	  ApplyHWWEventSelection(i_hyp, realData);
 	
+	else if (TString(analysis) == "HZZ")
+	  ApplyHZZEventSelection(i_hyp, realData);
+	
+	else
+	  {
+	    std::cout << "ERROR..analysis not being recognized...\n";
+	    assert(0);
+	  }
+
 	int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
 	bool accept = true;
 	for (int j = 0; j < kNCuts; j++) {
@@ -232,11 +242,11 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
 }
 
 
-int ApplyHWWEventSelection( unsigned int i_hyp, bool realData){
+void ApplyHWWEventSelection( unsigned int i_hyp, bool realData){
   
   //std::cout << "doAnalysis::ApplyHWWEventSelection...\n";
-  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
-  if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return;
+  if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return;
 
   int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
   
@@ -325,7 +335,104 @@ int ApplyHWWEventSelection( unsigned int i_hyp, bool realData){
   // Top tagging
   if ( !toptag(CaloJet,i_hyp,0) ) _cutWord->SetTrue(kcut_toptag);
   
-  return 0;
+}
+
+// HZZ selections
+
+void ApplyHZZEventSelection( unsigned int i_hyp, bool realData){
+
+  //std::cout << "doAnalysis::ApplyHZZEventSelection...\n";
+  int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
+  if ( type == emu ) return;
+  
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return;
+  if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return;
+  if ( cms2.hyp_p4().at(i_hyp).pt() < 40 ) return;
+
+  // no trigger requirements
+  _cutWord->SetTrue(kcut_Trigger);
+  
+  // OS
+  if ( fast_sign (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] ) < 0)  _cutWord->SetTrue(kcut_OS);
+ 
+  // Require at least one good reconstructed primary vertex
+  if (nGoodVertex() >= 1) _cutWord->SetTrue(kcut_GoodVertex);
+  
+  // di-lepton mass cut
+  if ( cms2.hyp_p4()[i_hyp].mass() > 12 ) _cutWord->SetTrue(kcut_Mll); 
+  
+  // Z window veto
+  if ( type == ee || type == mumu ) {
+    if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))   _cutWord->SetTrue(kcut_zsel);
+  }
+  
+  // == letpon ID and Isolation
+  bool passedLTFinalRequirements = true;
+  bool passedLLFinalRequirements = true;
+  bool passedLTElFakableRequirements = true;
+  bool passedLLElFakableRequirements = true;
+  bool passedLTMuFakableRequirements = true;
+  bool passedLLMuFakableRequirements = true;
+  
+  // muon selections
+
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
+    unsigned int index = cms2.hyp_lt_index()[i_hyp];
+    if ( !goodMuonIsolated(index))  passedLTFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLTMuFakableRequirements = false;
+    passedLTElFakableRequirements = false;
+  }
+  
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
+    unsigned int index = cms2.hyp_ll_index()[i_hyp];
+    if ( !goodMuonIsolated(index) ) passedLLFinalRequirements = false;
+    if ( !fakableMuon(index) ) passedLLMuFakableRequirements = false;
+    passedLLElFakableRequirements = false;
+  } 
+
+  
+  // electron selections
+  
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
+    unsigned int index = cms2.hyp_lt_index()[i_hyp];
+    if ( ! goodElectronIsolated(index) ) passedLTFinalRequirements = false;
+    if ( !fakableElectron(index)) passedLTElFakableRequirements = false;
+    passedLTMuFakableRequirements = false;
+  }
+
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
+    unsigned int index = cms2.hyp_ll_index()[i_hyp];
+    if ( ! goodElectronIsolated(index) ) passedLLFinalRequirements = false;
+    if ( !fakableElectron(index)) passedLLElFakableRequirements = false;
+    passedLLMuFakableRequirements = false;
+  }
+
+  if ( passedLTFinalRequirements )     _cutWord->SetTrue(kcut_LT);
+  if ( passedLLFinalRequirements )     _cutWord->SetTrue(kcut_LL);
+
+  // MET cut
+  if (passedMetRequirements(i_hyp)) _cutWord->SetTrue(kcut_met);
+  
+  // Jet Veto  
+  const std::vector<LorentzVector>& jets =  getJets(pfJet, i_hyp, 30, 5.0, true, false);
+  
+  double dPhiDiLepJet1 = 0.0;
+  if (jets.size() > 0)  
+    dPhiDiLepJet1 = TMath::Abs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0)));
+  
+  if ( jets.size() == 0 ) {
+    if (type == emu || dPhiDiLepJet1 < 165.*TMath::Pi() / 180.)
+      _cutWord->SetTrue(kcut_jetveto);
+  }
+  // ==Soft Muon Veto
+  if ( numberOfSoftMuons(i_hyp,true) == 0) _cutWord->SetTrue(kcut_softmuonveto);
+  
+  // == Extra Lepton Veto  
+  if ( numberOfExtraLeptons(i_hyp,10) == 0) _cutWord->SetTrue(kcut_extraleptonveto);
+  
+  // Top tagging
+  if ( !toptag(CaloJet,i_hyp,0) ) _cutWord->SetTrue(kcut_toptag);
+  
 }
 
 
@@ -358,6 +465,15 @@ bool passedMetRequirements(unsigned int i_hyp){
 
   return true;
 }
+
+bool passedHZZMetRequirements(unsigned int i_hyp){
+  metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
+  double met = std::min( metValue(), double(trkMET.met));
+  if ( met < 50 ) return false;
+  return true;
+}
+
+
 
 
 double nearestDeltaPhi(double Phi, int i_hyp)
@@ -1277,7 +1393,7 @@ void saveMCUtilOutput(const char* process, TFile *utilFile_)
   cout << "saveMCUtilHist()" << endl;
   utilFile_->cd();
   
-  if(TString(process) == "ww") {
+  if(TString(process) == "ww" || TString(process) == "zz" ) {
     fill2DEffHist(els_numer_mc_, els_denom_mc_, els_eff_mc_);
     fill1DEffHist(els_numer_mc_eta_, els_denom_mc_eta_, els_eff_mc_eta_);
     fill1DEffHist(els_numer_mc_pt_, els_denom_mc_pt_, els_eff_mc_pt_);
