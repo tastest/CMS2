@@ -51,6 +51,8 @@
 
 using namespace tas;
 
+bool useLHeleId = false;
+
 TBitSet* _cutWord;
 TBitSet* _cutMask;
 
@@ -159,12 +161,9 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
 	weight = IntLumi * mcweight * (Xsect>0?Xsect:cms2.evt_xsec_excl()*cms2.evt_kfactor()) /
 	  (nProcessedEvents>0 ? nProcessedEvents : cms2.evt_nEvts());
       } else weight = 1;
-
-      // std::cout << "weight = " << weight << "\n";
       
       // Get fake-rate related histograms
       if(!realData && TString(process) == "wjets") fillFOHist();
-     
       
       // skip events without hypothesis
       unsigned int nHyps = cms2.hyp_type().size();
@@ -544,15 +543,18 @@ int primaryVertex(){
 //
 // Muon selections
 //
+
 bool goodMuonIsolated(unsigned int i){  
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
-  bool core = ptcut && muonId(i, NominalSmurfV5);
-  //bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
-  return ptcut && core;
+  //bool core = ptcut && muonId(i, NominalSmurfV5);
+  bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i) && ww_muIso(i); 
+  //return ptcut && core;
+  return ptcut && internal;
 }
 
 bool fakableMuon(unsigned int i){
   bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
+  // return ptcut && muonId(i, muonSelectionFO_mu_wwV1_iso10);
   return ptcut && ww_mudZPV(i) && muonId(i, muonSelectionFO_mu_smurf_04);
 }
 
@@ -563,15 +565,18 @@ bool ww_muBase(unsigned int index){
   return true;
 }
 
-bool ww_mud0PV(unsigned int index){
+double ww_mud0ValuePV(unsigned int index){
   int vtxIndex = primaryVertex();
-  if (vtxIndex<0) return false;
+  if (vtxIndex<0) return 9999;
   double dxyPV = cms2.mus_d0()[index]-
     cms2.davtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
     cms2.davtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
-  if ( cms2.mus_p4().at(index).pt() < 20. )
-    return fabs(dxyPV) < 0.01;
-  return fabs(dxyPV) < 0.02;
+  return fabs(dxyPV);
+}
+
+bool ww_mud0PV(unsigned int index){
+  if ( cms2.mus_p4().at(index).pt() < 20. ) return ww_mud0ValuePV(index) < 0.01;
+  return ww_mud0ValuePV(index) < 0.02;
 }
 
 bool ww_mudZPV(unsigned int index){
@@ -582,16 +587,21 @@ bool ww_mudZPV(unsigned int index){
   return fabs(dzpv)<0.1;
 }
 
-bool ww_muId(unsigned int index){
-  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; //glb fit chisq  
-  if (((cms2.mus_type().at(index)) & (1<<1)) == 0)    return false; // global muon
+bool ww_muId(unsigned int index){ 
   if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
   if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-  if (cms2.mus_gfit_validSTAHits().at(index)==0 ) return false;
   if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
   if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
-  if (cms2.mus_nmatches().at(index)<2) return false;
-  return true;
+  // global muon
+  bool goodMuonGlobalMuon = false;
+  if (((cms2.mus_type().at(index)) & (1<<1)) == (1<<1)){
+    goodMuonGlobalMuon = true;
+    if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) goodMuonGlobalMuon = false; //glb fit chisq
+    if (cms2.mus_gfit_validSTAHits().at(index)==0 ) goodMuonGlobalMuon = false;
+    if (cms2.mus_nmatches().at(index)<2) goodMuonGlobalMuon = false;
+  }
+  return goodMuonGlobalMuon || 
+    cms2.mus_pid_TMLastStationTight().at(index) == 1; // TM id
 }
 
 double ww_muIsoVal(unsigned int index){
@@ -614,20 +624,17 @@ bool ww_muIso(unsigned int index){
     else 
       return muonIsoValuePF(index,0,0.3) < 0.05;
   }
-  //   if ( cms2.mus_p4().at(index).pt() < 20. )
-  //     return ww_muIsoVal(index)<0.1;
-  //   return ww_muIsoVal(index)<0.15;
 }
 
 
 //
 // Electron selections
 //
-
 bool goodElectronIsolated(unsigned int i){
   bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
-  //bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
-  return ptcut && pass_electronSelection( i, electronSelection_smurfV5);
+  bool internal = ww_elBase(i) && ww_elId(i) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
+  //return ptcut && pass_electronSelection( i, electronSelection_smurfV5);
+  return ptcut && internal;
 }
 
 bool fakableElectron(unsigned int i){
@@ -636,19 +643,38 @@ bool fakableElectron(unsigned int i){
   //return ptcut && pass_electronSelection( i, electronSelectionFO_el_wwV1_v2);
   return ptcut && ww_eldZPV(i) && pass_electronSelection( i, electronSelectionFO_el_smurf_v4);
 }
-
 bool ww_elBase(unsigned int index){
   if (cms2.els_p4().at(index).pt() < 10.0) return false;
   if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
   return true;
 }
-
 bool ww_elId(unsigned int index){
-  if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+  // if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
+  //     fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
+  // if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
+  // if (! (electronId_VBTF(index, VBTF_35X_70) & (1<<ELEID_ID)) ) return false;
+  // if (! (electronId_CIC(index, 4, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
+
+  if (useLHeleId) {
+    if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId(index,cms2.els_lh().at(index),90) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+    if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId(index,cms2.els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+  } else {
+    if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+  }
+
   // MIT conversion
   if ( isFromConversionMIT(index) ) return false;
+
   // conversion rejection - hit based
   if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
+  // MIT conversion
+  // if (! pass_electronSelection(index, (1ll<<ELENOTCONV_MIT), false, false) ) return false;
+  // if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
+  //  int ctfIndex = cms2.els_trkidx().at(index);
+  // if ( ctfIndex >=0 && 
+  //     cms2.els_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
+  // if ( !electronId_smurf_v2(index) ) return false;
+  
   return true;
 }
 
@@ -664,7 +690,7 @@ bool ww_eld0PV(unsigned int index){
 bool ww_eldZPV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return false;
-  //double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
+  // double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
   double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
   return fabs(dzpv)<0.1;
 }
