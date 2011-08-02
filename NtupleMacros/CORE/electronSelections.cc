@@ -1005,8 +1005,16 @@ float electronIsolation_rel_ww( const unsigned int index, bool use_calo_iso ) {
 
 #ifdef PFISOFROMNTUPLE
 float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
-  if (cms2.els_iso04_pf().at(iel)<-99.) return 9999.;
-  return cms2.els_iso04_pf().at(iel)/cms2.els_p4().at(iel).pt();
+  if (fabs(coner-0.3)<0.0001) {
+    if (cms2.els_iso03_pf().at(iel)<-99.) return 9999.;
+    return cms2.els_iso03_pf().at(iel)/cms2.els_p4().at(iel).pt();
+  } else if (fabs(coner-0.4)<0.0001) {
+    if (cms2.els_iso04_pf().at(iel)<-99.) return 9999.;
+    return cms2.els_iso04_pf().at(iel)/cms2.els_p4().at(iel).pt();
+  } else {
+    cout << "electronIsoValuePF: CONE SIZE NOT SUPPORTED" << endl;
+    return 9999.;
+  }
 }
 #else
 float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
