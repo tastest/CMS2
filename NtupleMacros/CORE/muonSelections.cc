@@ -77,7 +77,7 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         break;
     case muonSelectionFO_mu_smurf_04:
         if (!muonIdNotIsolated( index, type )) return false;
-        return muonIsoValuePF(index,0) < 0.40;
+        return muonIsoValuePF(index,0,0.3) < 0.40;
         break;
     case muonSelectionFO_mu_wwV1_iso10_d0:
     case muonSelectionFO_mu_wwV1_iso10:
@@ -88,7 +88,7 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
     // SMURF
     case muonSelectionFO_mu_smurf_10:
         if (!muonIdNotIsolated( index, type )) return false;
-        return muonIsoValuePF(index,0) < 1.0;
+        return muonIsoValuePF(index,0,0.3) < 1.0;
         break;
     case NominalSmurfV3:
         if (!muonIdNotIsolated( index, type )) return false;
@@ -457,8 +457,16 @@ double muonIsoValue_HCAL(unsigned int index, bool truncated){
 
 #ifdef PFISOFROMNTUPLE
 double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
-  if (cms2.mus_iso03_pf().at(imu)<-99.) return 9999.;
-  return cms2.mus_iso03_pf().at(imu)/cms2.mus_p4().at(imu).pt();
+  if (fabs(coner-0.3)<0.0001) {
+    if (cms2.mus_iso03_pf().at(imu)<-99.) return 9999.;
+    return cms2.mus_iso03_pf().at(imu)/cms2.mus_p4().at(imu).pt();
+  } else if (fabs(coner-0.4)<0.0001) {
+    if (cms2.mus_iso04_pf().at(imu)<-99.) return 9999.;
+    return cms2.mus_iso04_pf().at(imu)/cms2.mus_p4().at(imu).pt();
+  } else {
+    cout << "muonIsoValuePF: CONE SIZE NOT SUPPORTED" << endl;
+    return 9999.;
+  }
 }
 #else
 double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
