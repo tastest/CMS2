@@ -1,4 +1,4 @@
-const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;FullMET); 42X"; //Skim1
+const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;MET20); 42X"; //Skim1
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -74,9 +74,10 @@ enum hyp_selection {
 };
 
 // DEFAULT
-// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
- wwcuts_t pass_all = PASSED_Skim1;
+// wwcuts_t pass_all = PASSED_Skim1;
+// wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
@@ -334,6 +335,7 @@ bool ww_muId(unsigned int index){
   if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
   if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
   if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
+  // if (!isPFMuon(index))return false;
   // global muon
   bool goodMuonGlobalMuon = false;
   if (((cms2.mus_type().at(index)) & (1<<1)) == (1<<1)){
@@ -425,7 +427,6 @@ unsigned int numberOfExtraLeptons(int i_hyp, double minPt){
 // Triger
 //
 bool passedTrigger(TString trigName) {
-  return true;
   if ( find(cms2.hlt_trigNames().begin(), cms2.hlt_trigNames().end(), trigName)
        == cms2.hlt_trigNames().end() ) return false;
   return cms2.passHLTTrigger(trigName);
@@ -434,9 +435,64 @@ bool passedTrigger(TString trigName) {
 bool passedTriggerRequirements(HypTypeInNtuples type) {
   return true; // no trigger requirements
   // return cms2.filter_ele10mu10IsoId_passed();
-  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ) return true;
-  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ) return true;
-  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ) return true;
+  if ( passedTrigger("HLT_Mu17_Ele8_CaloIdL_v1") || 
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v2") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v3") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v4") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v5") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v6") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v1") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v2") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v3") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v4") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v5") || 
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v6") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1") 
+       ) return true;
+  if ( passedTrigger("HLT_DoubleMu7_v1") ||
+       passedTrigger("HLT_DoubleMu7_v2") ||
+       passedTrigger("HLT_Mu13_Mu8_v2") ||
+       passedTrigger("HLT_Mu13_Mu8_v3") ||
+       passedTrigger("HLT_Mu13_Mu8_v4") ) return true;
+  if ( passedTrigger("HLT_Mu15_v2") ||
+       passedTrigger("HLT_Mu24_v1") ||
+       passedTrigger("HLT_Mu24_v2") ||
+       passedTrigger("HLT_Mu30_v1") ||
+       passedTrigger("HLT_Mu30_v2") ||
+       passedTrigger("HLT_Mu30_v3") ||
+       passedTrigger("HLT_IsoMu17_v5") ||
+       passedTrigger("HLT_IsoMu17_v6") ||
+       passedTrigger("HLT_IsoMu17_v8") ||
+       passedTrigger("HLT_IsoMu17_v9") ||
+       passedTrigger("HLT_IsoMu17_v11") ||
+       passedTrigger("HLT_IsoMu17_v11") ||
+       passedTrigger("HLT_IsoMu17_eta2p1_v1") ||
+       passedTrigger("HLT_IsoMu20_eta2p1_v1") ||
+       passedTrigger("HLT_IsoMu24_v1") ||
+       passedTrigger("HLT_IsoMu24_v2") ||
+       passedTrigger("HLT_IsoMu24_v4") ||
+       passedTrigger("HLT_IsoMu24_v5") ||
+       passedTrigger("HLT_IsoMu24_v6") ||
+       passedTrigger("HLT_IsoMu24_v7") ) return true;
+  if ( passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1") ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2") ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3") ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4") ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5") ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6") ) return true;
+  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
+       passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ||
+       passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4") ||
+       passedTrigger("HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
+       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v1") ||
+       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v2") ||
+       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v3") ) return true;
+
   return false;
 }
 
@@ -1618,6 +1674,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if (!isGoodVertex(primaryVertex())) return false;
 
   if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
+  // if ( realData && passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "trigger requirements",weight);
   if (nGoodVertex()<1) return false;
 
@@ -1847,6 +1904,16 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   
   // make the final selections
   if(! CheckCuts(pass_all, cuts_passed)) return false;
+  // dump trigger info
+  //   cout << "Run: " << cms2.evt_run() << " \tLumi: " << cms2.evt_lumiBlock() << "\tEvent: " << cms2.evt_event() << endl;
+  //   for( unsigned int i = 0; i < cms2.hlt_trigNames().size(); i++ ){
+  //     if (cms2.passHLTTrigger(cms2.hlt_trigNames().at(i).Data()))
+  //       cout << cms2.passHLTTrigger(cms2.hlt_trigNames().at(i).Data()) << "\t"
+  // 	   << cms2.hlt_prescales().at(i) << "\t" 
+  // 	   << cms2.hlt_trigNames().at(i).Data() << endl;
+  //   } 
+  //   cout << endl;
+
   monitor.count(cms2,type,"all cuts (including soft and extra lepton veto)",weight);
   
   // if ( toptag(jetType(),i_hyp,0) ) return false;
@@ -2569,14 +2636,21 @@ void ScanChain( TChain* chain,
   
   try { 
     jetcorr_filenames_pfL1FastJetL2L3.clear();
-    jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L1FastJet.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L2Relative.txt");
-    jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
-    if (realData) 
-      jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2L3Residual.txt");
+    if (realData) {
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L1FastJet.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L2Relative.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L3Absolute.txt");
+      // jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2L3Residual.txt");
+    } else {
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L1FastJet.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L2Relative.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
+    }
     jet_corrector_pfL1FastJetL2L3= makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
 
     // need to get rid of it
+    // it doesn't have L1 corrections,
+    // but it's way too many changes :(
     jetcorr_filenames_pf.clear();
     jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2Relative.txt");
     jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
