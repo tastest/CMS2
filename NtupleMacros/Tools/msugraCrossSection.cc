@@ -13,7 +13,7 @@
 //
 //------------------------------------------------------------------------------
 
-// $Id: msugraCrossSection.cc,v 1.4 2011/07/08 15:38:10 dbarge Exp $
+// $Id: msugraCrossSection.cc,v 1.5 2011/08/16 01:52:28 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "msugraCrossSection.h"
@@ -122,6 +122,76 @@ double getMsugraCrossSection( double my_m0 , double my_m12, double my_tanb , boo
 
 }
 
+
+//SMS xsections
+
+bool loaded_sms_gluino_xsec_hist = false;
+bool loaded_sms_squark_xsec_hist = false; //we don't use this yet
+
+float getSMSCrossSection( const float mgluino, const sms_process type ) {
+
+  //if( isData ) return 1; //lets just assume the user knows this doesn't make sense
+
+  if( type != gg && type != ss ) {
+	cout << "msugraCrossSection.cc: process type not supported: " << type << endl;
+	exit(1);
+  }
+
+  if( (type == gg && !loaded_sms_gluino_xsec_hist) ||
+	  (type == ss && !loaded_sms_squark_xsec_hist) ) {
+	cout << "msugraCrossSection.cc: histogram not loaded for process type: " << type << endl;
+    cout << "You need to do"                              << endl;
+    cout << "set_sms_xsec_hist( filename, sms_process )"                        << endl;
+    cout << "the file can be found at"                   << endl;
+	cout << "http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/WAndrews/CMS2/NtupleMacros/Z_MetTail/reference_xSec.root" << endl;
+    exit(2);
+  }
+
+  float xsec = 0;
+
+  if( type == gg ) {
+	const int bin = sms_gluino_xsec_hist->FindBin( mgluino );
+	xsec = sms_gluino_xsec_hist->GetBinContent( bin );
+	cout << "mgluino = " << mgluino << " bin = " << bin << " xsec = " << xsec << endl;
+	//xsec = sms_gluino_xsec_hist->GetBinContent( sms_gluino_xsec_hist->FindBin( mgluino ) );
+  }
+  else if( type == ss ) 
+	xsec = sms_squark_xsec_hist->GetBinContent( sms_gluino_xsec_hist->FindBin( mgluino ) );
+
+  return xsec;
+}
+
+
+void set_sms_xsec_hist ( const char* filename , const sms_process type ){
+  TFile* file = TFile::Open(filename);
+
+  if( file == 0 ){
+    cout << "msugraCrossSection.cc: error, couldn't open file : " << filename << endl;
+    exit(1);
+  }
+
+  if( type == gg ) {
+	sms_gluino_xsec_hist = (TH1F*) file->Get("gluino");
+	if( sms_gluino_xsec_hist == 0 ){
+	  cout << "msugraCrossSection.cc: error, couldn't open histogram \"gluino\" in file : " << filename << endl;
+	  exit(1);
+	}
+	loaded_sms_gluino_xsec_hist = true;
+  }
+  else if( type == ss ) {
+	sms_squark_xsec_hist = (TH1F*) file->Get("squark");
+	if( sms_squark_xsec_hist == 0 ){
+	  cout << "msugraCrossSection.cc: error, couldn't open histogram \"squark\" in file : " << filename << endl;
+	  exit(1);
+	}
+	loaded_sms_squark_xsec_hist = true;
+  }
+  else {
+	cout << "msugraCrossSection.cc: process type not supported: " << type << endl;
+	exit(1);
+  }
+
+}
 
 #endif // __CUNT__
 
