@@ -13,7 +13,7 @@
 //
 //------------------------------------------------------------------------------
 
-// $Id: msugraCrossSection.cc,v 1.5 2011/08/16 01:52:28 warren Exp $
+// $Id: msugraCrossSection.cc,v 1.6 2011/08/16 23:04:25 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "msugraCrossSection.h"
@@ -150,10 +150,10 @@ float getSMSCrossSection( const float mgluino, const sms_process type ) {
   float xsec = 0;
 
   if( type == gg ) {
-	const int bin = sms_gluino_xsec_hist->FindBin( mgluino );
-	xsec = sms_gluino_xsec_hist->GetBinContent( bin );
-	cout << "mgluino = " << mgluino << " bin = " << bin << " xsec = " << xsec << endl;
-	//xsec = sms_gluino_xsec_hist->GetBinContent( sms_gluino_xsec_hist->FindBin( mgluino ) );
+	//const int bin = sms_gluino_xsec_hist->FindBin( mgluino );
+	//xsec = sms_gluino_xsec_hist->GetBinContent( bin );
+	//cout << "mgluino = " << mgluino << " bin = " << bin << " xsec = " << xsec << endl;
+	xsec = sms_gluino_xsec_hist->GetBinContent( sms_gluino_xsec_hist->FindBin( mgluino ) );
   }
   else if( type == ss ) 
 	xsec = sms_squark_xsec_hist->GetBinContent( sms_gluino_xsec_hist->FindBin( mgluino ) );
