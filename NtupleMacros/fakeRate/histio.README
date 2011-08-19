@@ -1,0 +1,55 @@
+Hi Claudio,
+
+I attached a macro that I wrote (and is/was also very popular
+with Owen and Steve) that makes loading and saving of
+histograms a lot easier
+
+To use it, save the attached file as histio.cc in your
+workdir and add the following line at the end of
+workdir/RooLogon.C
+
+  gROOT->Macro("histio.cc")
+
+Then, in ROOT you can use it as follows
+
+  root> saveHist("blah.root") ; // Saves all histograms in memory dir in given file
+  root> saveHist("blah.root","h_test") ; // Saves histogram named "h_test" in given file
+  root> saveHist("blah.root","h_*") ; // Saves all histograms with names matching wildcard pattern "h_*" in given file
+
+In all instances files are opened and closed immediately, so saving your
+file this way doesn't disturb your current directory. In effect your
+entire ROOT session is performed in the memory directory and you never
+have to cd. (NB: Files are always overwritten)
+
+
+
+To load files back into root, use as follows
+
+  root> loadHist("blah.root") ;      //  Load all histograms in memory dir from given file
+
+This commands load a _copy_ of the histogram in memory so that file can
+be closed again immediately.
+
+  root> loadHist("blah.root","foo") ; // Load all histograms in memory adding prefix "foo_" to each name"
+
+This adds a "foo_" prefix to all histograms loaded into memory. The
+original histogram in the files are undisturbed. This option is very
+practical if you have multiple files with histograms that have the
+same name that you want to work with simultaneously.
+
+  root> loadHist("blah.root","foo","h_*") ;
+
+As above, but load only subset of histograms with names matching "h_*" in memory
+
+By default, histograms that already exist in memory are replaced. If you
+want to add to them instead, set the 4th argument to true:
+
+  root> loadHist("blah.root","foo","h_*",kTRUE) ;
+
+This macro is _very_ intuitive in its use, much more so than opening and
+closing root files by hand, so don't be intimidated by the number of
+options :-)
+
+					Wouter
+
+
