@@ -108,9 +108,17 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
             continue;
         *sparm_comment = TString(*it);
         TObjArray* tokens = model_params.Tokenize("_");
-        *sparm_mf      = ((TObjString*)tokens->At(1))->GetString().Atof();
-        *sparm_mG      = ((TObjString*)tokens->At(2))->GetString().Atof();
-        *sparm_mL      = ((TObjString*)tokens->At(3))->GetString().Atof();
+		const int npar = tokens->GetEntries() - 1; //the crap before the first _ is not a param
+		if( npar == 3 ) { //the order is different....
+		  *sparm_mf      = ((TObjString*)tokens->At(1))->GetString().Atof();
+		  *sparm_mG      = ((TObjString*)tokens->At(2))->GetString().Atof();
+		  *sparm_mL      = ((TObjString*)tokens->At(3))->GetString().Atof();
+		}
+		else if( npar == 2 ) {
+		  *sparm_mG      = ((TObjString*)tokens->At(1))->GetString().Atof();
+		  *sparm_mL      = ((TObjString*)tokens->At(2))->GetString().Atof();
+		  *sparm_mf      = -1.;
+		}
 		delete tokens;
     }
 
