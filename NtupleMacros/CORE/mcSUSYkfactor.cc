@@ -171,6 +171,24 @@ Float_t GetValueTH2FS(Float_t x, Float_t y, TH2F* h)
 } 
 */
 
+float cmssm_loxsec(float m0, float m12){
+
+  string filename = "../data/loxsec_m02TeV.root";
+
+  TFile infile(filename.c_str());
+  if (infile.IsZombie()) {
+    cout << "Error opening file " << filename << endl;
+    gSystem->Exit(1);
+  }
+
+  TH2F* hist = (TH2F*) infile.Get("xsec");
+  float xsec = GetValueTH2FS(m0,m12,hist);
+
+  infile.Close();
+
+  return xsec;
+}
+
 float kfactorSUSY(string sample)
 {
   float kfactor = 1.0;
