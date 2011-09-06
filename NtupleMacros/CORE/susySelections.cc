@@ -357,6 +357,36 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
 
 }
 
+
+bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
+
+  // no triggers required for MC
+  if( !isData ) return true;
+
+  // electron channel
+  if( lepType == 0 ){
+    if( passUnprescaledHLTTriggerPattern("Ele10_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_HT200_v") )         return true; // 160329-164236
+    if( passUnprescaledHLTTriggerPattern("Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_HT200_v") )          return true; // 165088-166967
+    if( passUnprescaledHLTTriggerPattern("Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_HT250_v") )          return true; // 167039-173198
+    if( passUnprescaledHLTTriggerPattern("Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_HT250_PFMHT25_v") )  return true; // 173199-175648  --> remains at 5E33
+  }
+
+  // muon channel
+  else if( lepType == 1 ){
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu8_HT200_v") )            return true;   // 160329-164236
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu15_HT200_v") )           return true;   // 165088-166967
+    if( passUnprescaledHLTTriggerPattern("HLT_HT250_Mu15_PFMHT20_v") )   return true;   // 167039-173198
+    if( passUnprescaledHLTTriggerPattern("HLT_HT250_Mu15_PFMHT40_v") )   return true;   // 173199-175648  --> remains at 5E33
+  }
+
+  else{
+    cout << "susySelections.cc:: ERROR unrecognized lepType " << lepType << ", quitting" << endl;
+    exit(0);
+  }
+
+  return false;
+}
+
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection 2011
 /*****************************************************************************************/

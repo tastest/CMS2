@@ -26,6 +26,11 @@ bool vetoZmumuGamma( unsigned int hypIdx , float emax = 6. ,
 bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt );
 
 /*****************************************************************************************/
+//passes the single-lepton SUSY 2011 trigger selections
+/*****************************************************************************************/
+bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType );
+
+/*****************************************************************************************/
 //passes the SUSY trigger selections
 /*****************************************************************************************/
 bool passSUSYTrigger_v1( bool isData , int hypType );
