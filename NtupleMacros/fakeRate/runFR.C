@@ -12,62 +12,34 @@ gROOT->LoadMacro("myBabyMaker.C++");
 
   // Data
 
-/*
     // Double Electron
     TChain *chain1 = new TChain("Events");
-    chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleElectron_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root");
-    chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-02/DoubleElectron_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-01-02_merged/V04-01-02/*.root");
+    chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/DoubleElectron_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/*.root");
+    //chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_4_V04-02-20/DoubleElectron_Run2011A-PromptReco-v4_AOD/CMSSW_4_2_4_V04-02-20_merged/V04-02-20/*.root");
+    //chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleElectron_Run2011A-05Aug2011-v1_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/*.root"); 
+    //chain1->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_2_7_patch1_V04-02-30/DoubleElectron_Run2011A-PromptReco-v6_AOD/CMSSW_4_2_7_patch1_V04-02-30_merged/V04-02-30/*.root"); 
     myBabyMaker* baby1 = new myBabyMaker();
-    baby1->ScanChain(chain1, "DoubleElectron_18May2011.root", true, -1);
-*/
+    baby1->ScanChain(chain1, "DoubleElectron_10Sep2011.root", true, -1);
+    return;
 
+/*
     // Single Muon
     TChain *chain3 = new TChain("Events");
-    chain3->Add("/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-01-03/SingleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root");
-    chain3->Add("/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-00-13/SingleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/*.root");
+    //chain3->Add("/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-01-03/SingleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root");
+    //chain3->Add("/hadoop/cms/store/user/jaehyeok/CMSSW_4_1_2_patch1_V04-00-13/SingleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/*.root");
     myBabyMaker* baby3 = new myBabyMaker();
-    baby3->ScanChain(chain3, "SingleMu_18May2011.root", true, -1);
+    baby3->ScanChain(chain3, "SingleMu_10Sep2011.root", true, -1);
 
     // Double Muon
     TChain *chain2 = new TChain("Events");
-    chain2->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root")
-    chain2->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/*.root");
+    //chain2->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-01-03/DoubleMu_Run2011A-PromptReco-v2_AOD/CMSSW_4_1_2_patch1_V04-01-03_merged/V04-01-03/*.root")
+    //chain2->Add("/hadoop/cms/store/user/yanjuntu/CMSSW_4_1_2_patch1_V04-00-13/DoubleMu_Run2011A-PromptReco-v1_AOD/CMSSW_4_1_2_patch1_V04-00-13_merged/V04-00-13/*.root");
     myBabyMaker* baby2 = new myBabyMaker();
-    baby2->ScanChain(chain2, "DoubleMu_18May2011.root", true, -1);
-
+    baby2->ScanChain(chain2, "DoubleMu_10Sep2011.root", true, -1);
     return;
+*/
 
   // MC
-
-//////////
-// 2010 //
-//////////
-
-// Data
-
-  // EG
-  TChain *chain1 = ChainFromText( "input_data/eg_uaf.txt" );
-  //TChain *chain1 = new TChain("Events");
-  //chain1->Add("/nfs-3/userdata/cms2/Electron_Run2010B-PromptReco-v2_RECO/V03-06-14/merged_ntuple_149294_1.root");
-  myBabyMaker * baby1 = new myBabyMaker();
-  baby1->ScanChain(chain1, "EG_2010.root", true, -1);
-
-  // 2011 testing
-  //TChain *chain1 = new TChain("Events");
-  //chain1->Add("/nfs-3/userdata/cms2/TTJets_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/*.root");
-  //myBabyMaker * baby1 = new myBabyMaker();
-  //baby1->ScanChain(chain1, "ttbar.root", false, -1);
-  //return;
-
-  // Mu
-  TChain *chain2 = ChainFromText( "input_data/mu_uaf.txt" );
-  myBabyMaker * baby2 = new myBabyMaker();
-  baby2->ScanChain(chain2, "Mu.root", true, -1);
-
-  // EGMon
-  TChain *chain3 = ChainFromText( "input_data/egmon_uaf.txt" );
-  myBabyMaker * baby3 = new myBabyMaker();
-  baby3->ScanChain(chain3, "EGMon.root", true, -1);
 
 // Monte Carlo
 

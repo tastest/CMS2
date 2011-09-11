@@ -305,10 +305,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     // Set the JSON file
     if(isData) {
-        //set_goodrun_file("json/Cert_160404-163369_7TeV_PromptReco_Collisions11_JSONlist.txt");
-        //set_goodrun_file_json("json/Cert_160404-163757_7TeV_PromptReco_Collisions11_JSON.txt");
-        //set_goodrun_file_json("json/Cert_160404-163869_7TeV_PromptReco_Collisions11_JSON.txt");
-        set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
+        set_goodrun_file("json/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON_goodruns.txt");  // 2 fb
+        //set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
     }
 
     // Jet Corrections
@@ -370,8 +368,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
       
             if(isData){
                 // Good  Runs
-                //if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-                if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+                if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
+                //if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
 
                 // check for duplicated
                 DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
@@ -385,12 +383,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             // looper progress
             ++nEventsTotal;
             ++nGoodEvents;
-//             int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
-//             if (i_permille != i_permilleOld) {
-//                 printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-//                 fflush(stdout);
-//                 i_permilleOld = i_permille;
-//             }
+             int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+             if (i_permille != i_permilleOld) {
+                 printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+                 fflush(stdout);
+                 i_permilleOld = i_permille;
+             }
       
             // Event cleaning (careful, it requires technical bits)
             //if (!cleaning_BPTX(isData))   continue;
@@ -487,22 +485,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     //////////
 
                     // ttbar
-                    numOct6_ = pass_electronSelection( iLep, electronSelection_ttbarV1_pass5         );
-                    v1Oct6_  = pass_electronSelection( iLep, electronSelectionFO_el_ttbarV1_v1_pass5 );
-                    v2Oct6_  = pass_electronSelection( iLep, electronSelectionFO_el_ttbarV1_v2_pass5 );
-                    v3Oct6_  = pass_electronSelection( iLep, electronSelectionFO_el_ttbarV1_v3_pass5 );
+                    //numOct6_ = pass_electronSelection( iLep, electronSelection_ttbarV1_pass5         );
+                    //v1Oct6_  = pass_electronSelection( iLep, electronSelectionFO_el_ttbarV1_v1_pass5 );
+                    //v2Oct6_  = pass_electronSelection( iLep, electronSelectionFO_el_ttbarV1_v2_pass5 );
+                    //v3Oct6_  = pass_electronSelection( iLep, electronSelectionFO_el_ttbarV1_v3_pass5 );
 
                     // Same Sign Susy
-                    numSSV2_ = pass_electronSelection( iLep, electronSelection_ssV2           , false, false ) && (!isSpikeElectron(iLep));
-                    v1SSV2_  = pass_electronSelection( iLep, electronSelectionFOV2_ssVBTF80_v1, false, false );
-                    v2SSV2_  = pass_electronSelection( iLep, electronSelectionFOV2_ssVBTF80_v2, false, false );
-                    v3SSV2_  = pass_electronSelection( iLep, electronSelectionFOV2_ssVBTF80_v3, false, false );
+                    //numSSV2_ = pass_electronSelection( iLep, electronSelection_ssV2           , false, false ) && (!isSpikeElectron(iLep));
+                    //v1SSV2_  = pass_electronSelection( iLep, electronSelectionFOV2_ssVBTF80_v1, false, false );
+                    //v2SSV2_  = pass_electronSelection( iLep, electronSelectionFOV2_ssVBTF80_v2, false, false );
+                    //v3SSV2_  = pass_electronSelection( iLep, electronSelectionFOV2_ssVBTF80_v3, false, false );
 
                     // Opposite Sign Susy
-                    numOSOct18_ = pass_electronSelection( iLep, electronSelection_el_OSV1);
-                    v1OSOct18_  = pass_electronSelection( iLep, electronSelectionFO_el_OSV1_v1);
-                    v2OSOct18_  = pass_electronSelection( iLep, electronSelectionFO_el_OSV1_v2);
-                    v3OSOct18_  = pass_electronSelection( iLep, electronSelectionFO_el_OSV1_v3);
+                    //numOSOct18_ = pass_electronSelection( iLep, electronSelection_el_OSV1);
+                    //v1OSOct18_  = pass_electronSelection( iLep, electronSelectionFO_el_OSV1_v1);
+                    //v2OSOct18_  = pass_electronSelection( iLep, electronSelectionFO_el_OSV1_v2);
+                    //v3OSOct18_  = pass_electronSelection( iLep, electronSelectionFO_el_OSV1_v3);
 
                     // WW
                     num_wwV1_ = pass_electronSelection( iLep, electronSelection_wwV1);
@@ -579,7 +577,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         for (unsigned int jEl = 0 ; jEl < els_p4().size(); jEl++) {
                             if (iLep == jEl)                             continue;
                             if (els_p4().at(jEl).pt() < 20.)            continue;
-                            if ( ! pass_electronSelection( jEl, electronSelectionFO_el_ttbarV1_v1 ) ) continue;
+                            if ( ! pass_electronSelection( jEl, electronSelection_el_OSV3_FO ) ) continue;
                             if ( ! v1Oct6_ ) continue;
                             LorentzVector w = els_p4().at(iLep) + els_p4().at(jEl);
                             if (abs(w.mass()-91.) > 20.) continue;
@@ -1143,8 +1141,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         for (unsigned int jMu = 0 ; jMu < mus_p4().size(); jMu++) {
                             if (iLep == jMu)                             continue;
                             if (mus_p4().at(jMu).pt() < 20.)            continue;
-                            if ( ! muonId( jMu, muonSelectionFO_mu_ttbar) ) continue;
-                            if ( ! muonId( iLep, muonSelectionFO_mu_ttbar) ) continue;
+                            if ( ! muonId( jMu,  OSGeneric_v3_FO) ) continue;
+                            if ( ! muonId( iLep, OSGeneric_v3_FO) ) continue;
                             LorentzVector w = mus_p4().at(iLep) + mus_p4().at(jMu);
                             if (abs(w.mass()-91.) > 20.) continue;
                             isaZ = true;
@@ -1224,10 +1222,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     hcal_nt_iso_  = muonIsoValue_HCAL(iLep, false);
 
                     // Safety
-                    Float_t x = muonIsoValueOriginal(iLep);
-                    if( x != iso_ ){
+                    //Float_t x = muonIsoValueOriginal(iLep);
+                    //if( x != iso_ ){
                         //cout << "Muons " << x << " != " << iso_ << endl;
-                    }
+                    //}
 
                     if (! isData) {
                         mcid_       = mus_mc_id().at(iLep);
@@ -1277,9 +1275,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     fo_mussV4_04_ = muonId(iLep, muonSelectionFO_ssV4 );
 
                     //OS
-                    num_mu_OSGV2_     = muonId(iLep, OSGeneric_v2);
+                    //num_mu_OSGV2_     = muonId(iLep, OSGeneric_v2);
                     num_mu_OSZV2_     = muonId(iLep, OSZ_v2);
-                    fo_mu_OSGV2_      = muonId(iLep, OSGeneric_v2_FO);
+                    //fo_mu_OSGV2_      = muonId(iLep, OSGeneric_v2_FO);
 
                     //OS
                     num_mu_OSGV3_     = muonId(iLep, OSGeneric_v3);
@@ -1290,18 +1288,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     //////////
 
                     // ttbar
-                    num_            = muonId(iLep, NominalTTbarV2                    );
-                    fo_04_          = muonId(iLep, muonSelectionFO_mu_ttbar          );
-                    fo_10_          = muonId(iLep, muonSelectionFO_mu_ttbar_iso10    );
+                    //num_            = muonId(iLep, NominalTTbarV2                    );
+                    //fo_04_          = muonId(iLep, muonSelectionFO_mu_ttbar          );
+                    //fo_10_          = muonId(iLep, muonSelectionFO_mu_ttbar_iso10    );
   
                     // Same Sign Susy
-                    numNomSSv2_     = muonId(iLep, NominalSSv2                       );
-                    fo_mussV2_04_   = muonId(iLep, muonSelectionFO_mu_ssV2           );
-                    fo_mussV2_10_   = muonId(iLep, muonSelectionFO_mu_ssV2_iso10     );
+                    //numNomSSv2_     = muonId(iLep, NominalSSv2                       );
+                    //fo_mussV2_04_   = muonId(iLep, muonSelectionFO_mu_ssV2           );
+                    //fo_mussV2_10_   = muonId(iLep, muonSelectionFO_mu_ssV2_iso10     );
   
                     // Opposite Sign Susy
-                    num_OSGv1_      = muonId(iLep, OSGeneric_v1                      );
-                    num_OSZv1_      = muonId(iLep, OSZ_v1                            );
+                    //num_OSGv1_      = muonId(iLep, OSGeneric_v1                      );
+                    //num_OSZv1_      = muonId(iLep, OSZ_v1                            );
   
                     // WW
                     num_wwV1_       = muonId(iLep, NominalWWV1                       );
@@ -1657,7 +1655,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             } // closes if statements about whether we want to fill muons
 
         }// closes loop over events
-        printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
+        //printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
 
     }  // closes loop over files
 
