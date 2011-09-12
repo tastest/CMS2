@@ -877,6 +877,8 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
 
 //electron ID WP as of June 8th 2011
 electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint);
+//electron ID WP as of September 8th 2011
+bool passLikelihoodId_v2(unsigned int index, float lhValue, int workingPoint);
 
 // relative isolation 
 // - standard track isolation from CMSSW

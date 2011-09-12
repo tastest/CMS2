@@ -775,6 +775,7 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
     return answer;
 
 }
+
 electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint) {
   unsigned int answer = 0;
   float etaSC = cms2.els_etaSC().at(index);
@@ -833,6 +834,35 @@ electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int wo
     cout << "Error! Likelihood WP not supported: " << workingPoint << ". Please choose 70, 80, 85, 90, 95" << endl;
   }
   return answer;
+}
+
+bool passLikelihoodId_v2(unsigned int index, float lhValue, int workingPoint)
+{
+
+    float etaSC = cms2.els_etaSC().at(index);
+    float pt = cms2.els_p4().at(index).Pt();
+    unsigned int nbrem = cms2.els_nSeed().at(index);
+
+    if ( workingPoint == 0 ) {
+
+        if (pt > 20.0) {
+            if ( ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > 3.5 ) ||
+                 ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > 4.0 ) ||
+                 ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > 4.0 ) ||
+                 ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > 4.0 )) return true;
+        } else if (pt > 10.0 && pt <= 20.0) {
+            if ( ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > 4.0 ) ||
+                 ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > 4.5 ) ||
+                 ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > 4.0 ) ||
+                 ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > 4.0 )) return true;
+            }
+
+        } else {
+        cout << "Error! Likelihood WP not supported: " 
+             << workingPoint << ". Please choose 0 for Emanuele 8th September" << endl;
+    }
+
+    return false;
 }
  
 /*
