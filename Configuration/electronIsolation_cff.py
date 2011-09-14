@@ -5,15 +5,12 @@ from RecoEgamma.EgammaIsolationAlgos.egammaSuperClusterMerger_cfi import *
 from RecoEgamma.EgammaIsolationAlgos.egammaBasicClusterMerger_cfi import *
 
 egammaSuperClusterMerger.src = cms.VInputTag(
-    cms.InputTag('hybridSuperClusters'), 
-   #cms.InputTag('correctedHybridSuperClusters'), 
-    cms.InputTag('multi5x5SuperClusters', 'multi5x5EndcapSuperClusters'),
-   #cms.InputTag('multi5x5SuperClustersWithPreshower'),
-   #cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
-)
+   cms.InputTag('hybridSuperClusters', 'hybridBarrelBasicClusters'), 
+   cms.InputTag('multi5x5SuperClusters', 'multi5x5EndcapSuperClusters'),
+#)
 egammaBasicClusterMerger.src = cms.VInputTag(
     cms.InputTag('hybridSuperClusters',  'hybridBarrelBasicClusters'), 
-    cms.InputTag('multi5x5BasicClusters','multi5x5EndcapBasicClusters')
+    cms.InputTag('multi5x5SuperClusters','multi5x5EndcapBasicClusters')
 )
 
 from RecoEgamma.EgammaIsolationAlgos.eleEcalExtractorBlocks_cff import *
