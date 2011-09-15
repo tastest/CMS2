@@ -1,3 +1,10 @@
+15-09-2011 - Frank Golf
+	* tagged with FakeRates15September2011
+	* added status 3 MC matching information for FOs
+	* added non-truncated PF isolation for cone sizes 0.3 and 0.4
+	* changed interface to set good run list; it's no longer hard coded; now, there is a method SetGoodRunList that you need to call; if you run on data and don't set a good run list, it will crash;  if this is problematic, I can make it configurable so that ou don't have to set a goodrun list
+	* also, remember that to run with on-the-fly JEC, you need to copy NtupleMacros/WW/files to the fakeRate/ directory
+	
 05-11-2010 - Frank Golf
 	* Tagged with FakeRates05November2010B
 	* Add event weight branch
