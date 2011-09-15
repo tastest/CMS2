@@ -14,6 +14,8 @@
 #include "Math/VectorUtil.h"
 #include "TObjArray.h"
 #include "TString.h"
+#include "TVector2.h"
+#include "TDatabasePDG.h"
 
 #include "myBabyMaker.h"
 
@@ -30,6 +32,7 @@
 #include "../CORE/trackSelections.cc"
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
+#include "../CORE/mcSelections.cc"
 // namespaces
 using namespace std;
 using namespace tas;
@@ -290,6 +293,17 @@ float Mt( LorentzVector p4, float met, float met_phi ){
 }
 #endif
 
+// set good run list
+void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson) {
+
+    if (goodRunIsJson)
+        set_goodrun_file_json(fileName);
+    else
+        set_goodrun_file(fileName);
+
+    goodrun_is_json = goodRunIsJson;
+}
+
 //-----------------------------------
 // Looper code starts here
 // eormu=-1 do both e and mu
@@ -304,10 +318,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     MakeBabyNtuple(babyFilename);
 
     // Set the JSON file
-    if(isData) {
-        set_goodrun_file("json/Cert_160404-173692_7TeV_PromptReco_Collisions11_JSON_goodruns.txt");  // 2 fb
-        //set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
-    }
+    // if(isData) {
+    //     //set_goodrun_file("json/test.txt");  // 2 fb
+    //     //set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
+    // }
 
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
@@ -352,6 +366,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
     map<int,int> m_events;
+//    std::cout << "looping...\n";
     while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
         TString filename = currentFile->GetTitle();
     
@@ -368,12 +383,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
       
             if(isData){
                 // Good  Runs
-                if(!goodrun( evt_run(), evt_lumiBlock() )) continue;
-                //if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;
+                if (goodrun_is_json) {
+                    if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;   
+                }
+                else {
+                    if(!goodrun( evt_run(), evt_lumiBlock() )) continue;   
+                }
 
                 // check for duplicated
                 DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
-                if (is_duplicate(id) ){ 
+                if (is_duplicate(id) ) { 
                     cout << "\t! ERROR: found duplicate." << endl;
                     continue;
                 }
@@ -677,6 +696,19 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     hcal_iso_         = electronIsolation_HCAL_rel    ( iLep );
                     hcal_nt_iso_      = electronIsolation_HCAL_rel_v1 ( iLep );
           
+                    nt_pfiso03_       = electronIsoValuePF(iLep, 0, 0.3);
+                    nt_pfiso04_       = electronIsoValuePF(iLep, 0, 0.4);
+
+                    // mc1id_ = ;
+                    // mc1pt_ = ;
+                    // mc1dr_ = ;
+                    if (!isData) {
+                        int status3_index = mc3idx_eormu(11, iLep);
+                        mc3id_ = cms2.genps_id().at(status3_index);
+                        mc3pt_ = cms2.genps_p4().at(status3_index).pt();
+                        mc3dr_ = mc3dr_eormu(11, iLep);            
+                        leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
+                    }
 
                     // safety
                     /*
@@ -1220,6 +1252,19 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ecal_nt_iso_  = muonIsoValue_ECAL(iLep, false);
                     hcal_iso_     = muonIsoValue_HCAL(iLep);
                     hcal_nt_iso_  = muonIsoValue_HCAL(iLep, false);
+                    nt_pfiso03_   = muonIsoValuePF(iLep, 0, 0.3);
+                    nt_pfiso04_   = muonIsoValuePF(iLep, 0, 0.4);
+
+                    // mc1id_ = ;
+                    // mc1pt_ = ;
+                    // mc1dr_ = ;
+                    if (!isData) {
+                        int status3_index = mc3idx_eormu(13, iLep);
+                        mc3id_ = cms2.genps_id().at(status3_index);
+                        mc3pt_ = cms2.genps_p4().at(status3_index).pt();
+                        mc3dr_ = mc3dr_eormu(13, iLep);
+                        leptonIsFromW_ = leptonIsFromW(iLep, -11*cms2.mus_charge().at(iLep), true);
+                    }
 
                     // Safety
                     //Float_t x = muonIsoValueOriginal(iLep);

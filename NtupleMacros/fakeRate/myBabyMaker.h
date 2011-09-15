@@ -25,12 +25,16 @@ public:
     void FillBabyNtuple ();
     void CloseBabyNtuple ();
     void ScanChain (TChain *, const char *, bool, int);
-  
+    void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
+
 private:
       
     // BABY NTUPLE VARIABLES
     TFile *babyFile_;
     TTree *babyTree_;
+
+    // good run list
+    Bool_t goodrun_is_json;
      
     /////////////////////////// 
     // Event Information     //
@@ -91,6 +95,8 @@ private:
     Float_t ecal_nt_iso_nps_; // ECAL Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
     Float_t hcal_iso_;        // HCAL Isolation ( not truncated )
     Float_t hcal_nt_iso_;     // HCAL Isolation ( truncated )
+    Float_t nt_pfiso03_;      // PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nt_pfiso04_;      // PF Isolation (not truncated) with a cone size of 0.4
 
     // PV
     Float_t d0PV_wwV1_;       // electron_d0PV_wwV1(iEl)
@@ -116,6 +122,15 @@ private:
     float ht_pf_;            
     float ht_pf_L2L3_;       
     float ht_pf_L1FastL2L3_;  
+
+    // MC truth information
+    // Int_t mc1id_;
+    // Float_t mc1pt_;
+    // Float_t mc1dr_;
+    Int_t mc3id_;
+    Float_t mc3pt_;
+    Float_t mc3dr_;
+    Bool_t leptonIsFromW_;
 
     //////////////////////////
     // End Lepton Variables //
@@ -468,6 +483,7 @@ private:
     Float_t dphijptcj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
     Int_t   njptcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagjptc_; 
+    
 
     //////////////
     // End Jets //
@@ -568,6 +584,8 @@ void myBabyMaker::InitBabyNtuple () {
     ecal_nt_iso_nps_  = -999.;
     hcal_iso_         = -999.;
     hcal_nt_iso_      = -999.;
+    nt_pfiso03_       = -999.;
+    nt_pfiso04_       = -999.;
 
     closestMuon_      = false;
     el_id_smurfV5_    = false;
@@ -593,7 +611,16 @@ void myBabyMaker::InitBabyNtuple () {
     ht_jpt_L2L3_      = -999;       
     ht_pf_            = -999;            
     ht_pf_L2L3_       = -999;        
-    ht_pf_L1FastL2L3_ = -999;  
+    ht_pf_L1FastL2L3_ = -999;
+
+    // MC truth information
+    // mc1id_ = -999;
+    // mc1pt_ = -999.;
+    // mc1dr_ = -999.;
+    mc3id_ = -999;
+    mc3pt_ = -999.;
+    mc3dr_ = -999.;
+    leptonIsFromW_ = false;
 
     //////////////////////////// 
     // End Lepton Information //
@@ -978,6 +1005,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ecal_nt_iso_nps"     , &ecal_nt_iso_nps_     );
     babyTree_->Branch("hcal_iso"            , &hcal_iso_            );
     babyTree_->Branch("hcal_nt_iso"         , &hcal_nt_iso_         );
+    babyTree_->Branch("nt_pfiso03"          , &nt_pfiso03_          );
+    babyTree_->Branch("nt_pfiso04"          , &nt_pfiso04_          );
     babyTree_->Branch("id"                  , &id_                  );
     babyTree_->Branch("closestMuon"         , &closestMuon_         );
     babyTree_->Branch("el_id_smurfV5"       , &el_id_smurfV5_       );
@@ -1001,6 +1030,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ht_pf"               , &ht_pf_               );
     babyTree_->Branch("ht_pf_L2L3"          , &ht_pf_L2L3_          );
     babyTree_->Branch("ht_pf_L1FastL2L3"    , &ht_pf_L1FastL2L3_    );
+    // babyTree_->Branch("mc1id", &mc1id_);
+    // babyTree_->Branch("mc1pt", &mc1pt_);
+    // babyTree_->Branch("mc1dr", &mc1dr_);
+    babyTree_->Branch("mc3id", &mc3id_);
+    babyTree_->Branch("mc3pt", &mc3pt_);
+    babyTree_->Branch("mc3dr", &mc3dr_);
+    babyTree_->Branch("leptonIsFromW", &leptonIsFromW_);
 
     //////////////////////////// 
     // End Lepton Information //
@@ -1210,7 +1246,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
   
     babyTree_->Branch("drph10"          , &drph10_         );
     babyTree_->Branch("drph15"          , &drph15_         );
-    babyTree_->Branch("drph20"          , drph20_          );
+    babyTree_->Branch("drph20"          , &drph20_         );
     babyTree_->Branch("drel10_lw"       , &drel10_lw_      );
     babyTree_->Branch("drel10_sw"       , &drel10_sw_      );
     babyTree_->Branch("drel10_sw_v2"    , &drel10_sw_v2_   );
