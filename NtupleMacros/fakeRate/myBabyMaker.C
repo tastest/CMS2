@@ -704,8 +704,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // mc1dr_ = ;
                     if (!isData) {
                         int status3_index = mc3idx_eormu(11, iLep);
-                        mc3id_ = cms2.genps_id().at(status3_index);
-                        mc3pt_ = cms2.genps_p4().at(status3_index).pt();
+                        if (status3_index >= 0) {
+                            mc3id_ = cms2.genps_id().at(status3_index);
+                            mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
+                        }
                         mc3dr_ = mc3dr_eormu(11, iLep);            
                         leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
                     }
@@ -1260,10 +1262,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // mc1dr_ = ;
                     if (!isData) {
                         int status3_index = mc3idx_eormu(13, iLep);
-                        mc3id_ = cms2.genps_id().at(status3_index);
-                        mc3pt_ = cms2.genps_p4().at(status3_index).pt();
+                        if (status3_index >= 0) {
+                            mc3id_ = cms2.genps_id().at(status3_index);
+                            mc3pt_ = cms2.genps_p4().at(status3_index).pt();
+                        }
                         mc3dr_ = mc3dr_eormu(13, iLep);
-                        leptonIsFromW_ = leptonIsFromW(iLep, -11*cms2.mus_charge().at(iLep), true);
+                        leptonIsFromW_ = leptonIsFromW(iLep, -13*cms2.mus_charge().at(iLep), true);
                     }
 
                     // Safety
