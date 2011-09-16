@@ -69,15 +69,15 @@ enum hyp_selection {
   PASSED_TOPVETO_NotInJets       = 1UL<<27,  // exclude jets over threshold from top tagging
   PASSED_TOPVETO                 = 1UL<<28,
   PASSED_Skim1                   = 1UL<<29,  // one fakable object + one final; full met
-  PASSED_Skim2                   = 1UL<<30,  // two final state leptons
+  PASSED_Trigger                 = 1UL<<30,
   PASSED_Skim3                   = 1UL<<31   // one fakable object + one final
 };
 
 // DEFAULT
-wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+// wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
 // wwcuts_t pass_all = PASSED_Skim1;
-// wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
+wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
@@ -227,16 +227,16 @@ bool ww_eld0(unsigned int index){
 }
 
 bool isGoodVertex(size_t ivtx) {
-    if (cms2.davtxs_isFake()[ivtx]) return false;
-    if (cms2.davtxs_ndof()[ivtx] < 4.) return false;
-    if (cms2.davtxs_position()[ivtx].Rho() > 2.0) return false;
-    if (fabs(cms2.davtxs_position()[ivtx].Z()) > 24.0) return false;
+    if (cms2.vtxs_isFake()[ivtx]) return false;
+    if (cms2.vtxs_ndof()[ivtx] < 4.) return false;
+    if (cms2.vtxs_position()[ivtx].Rho() > 2.0) return false;
+    if (fabs(cms2.vtxs_position()[ivtx].Z()) > 24.0) return false;
     return true;
 }
 
 unsigned int nGoodVertex() {
   unsigned int nVtx = 0;
-  for ( unsigned int i = 0; i < cms2.davtxs_sumpt().size(); ++i ){
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
     // if (cms2.vtxs_isFake()[i]) continue;
     if (!isGoodVertex(i)) continue;
     nVtx++;
@@ -267,8 +267,8 @@ bool ww_eld0PV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return false;
   double dxyPV = cms2.els_d0()[index]-
-    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
-    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
+    cms2.vtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.vtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
   return fabs(dxyPV) < 0.02;
 }
 
@@ -276,7 +276,7 @@ bool ww_eldZPV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return false;
   // double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
-  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[vtxIndex]);
   return fabs(dzpv)<0.1;
 }
 
@@ -314,8 +314,8 @@ double ww_mud0ValuePV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return 9999;
   double dxyPV = cms2.mus_d0()[index]-
-    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
-    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
+    cms2.vtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
+    cms2.vtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
   return fabs(dxyPV);
 }
 
@@ -327,7 +327,7 @@ bool ww_mudZPV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return false;
   // double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
-  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[vtxIndex]);
   return fabs(dzpv)<0.1;
 }
 bool ww_muId(unsigned int index){ 
@@ -433,7 +433,7 @@ bool passedTrigger(TString trigName) {
 }
 
 bool passedTriggerRequirements(HypTypeInNtuples type) {
-  return true; // no trigger requirements
+  // return true; // no trigger requirements
   // return cms2.filter_ele10mu10IsoId_passed();
   if ( passedTrigger("HLT_Mu17_Ele8_CaloIdL_v1") || 
        passedTrigger("HLT_Mu17_Ele8_CaloIdL_v2") ||
@@ -441,31 +441,38 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_Mu17_Ele8_CaloIdL_v4") ||
        passedTrigger("HLT_Mu17_Ele8_CaloIdL_v5") ||
        passedTrigger("HLT_Mu17_Ele8_CaloIdL_v6") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v8") ||
        passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v1") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v2") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v3") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v4") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v5") || 
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v6") ||
-       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1") 
-       ) return true;
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3") 
+      ) return true;
   if ( passedTrigger("HLT_DoubleMu7_v1") ||
        passedTrigger("HLT_DoubleMu7_v2") ||
        passedTrigger("HLT_Mu13_Mu8_v2") ||
        passedTrigger("HLT_Mu13_Mu8_v3") ||
-       passedTrigger("HLT_Mu13_Mu8_v4") ) return true;
+       passedTrigger("HLT_Mu13_Mu8_v4") ||
+       passedTrigger("HLT_Mu13_Mu8_v6") ) return true;
   if ( passedTrigger("HLT_Mu15_v2") ||
        passedTrigger("HLT_Mu24_v1") ||
        passedTrigger("HLT_Mu24_v2") ||
        passedTrigger("HLT_Mu30_v1") ||
        passedTrigger("HLT_Mu30_v2") ||
        passedTrigger("HLT_Mu30_v3") ||
+       passedTrigger("HLT_Mu30_v4") ||
+       passedTrigger("HLT_Mu30_v5") ||
+       passedTrigger("HLT_Mu30_v7") ||
        passedTrigger("HLT_IsoMu17_v5") ||
        passedTrigger("HLT_IsoMu17_v6") ||
        passedTrigger("HLT_IsoMu17_v8") ||
        passedTrigger("HLT_IsoMu17_v9") ||
-       passedTrigger("HLT_IsoMu17_v11") ||
+       passedTrigger("HLT_IsoMu17_v10") ||
        passedTrigger("HLT_IsoMu17_v11") ||
        passedTrigger("HLT_IsoMu17_eta2p1_v1") ||
        passedTrigger("HLT_IsoMu20_eta2p1_v1") ||
@@ -474,13 +481,17 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_IsoMu24_v4") ||
        passedTrigger("HLT_IsoMu24_v5") ||
        passedTrigger("HLT_IsoMu24_v6") ||
-       passedTrigger("HLT_IsoMu24_v7") ) return true;
+       passedTrigger("HLT_IsoMu24_v7") ||
+       passedTrigger("HLT_IsoMu24_v8") ) return true;
   if ( passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1") ||
        passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2") ||
        passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3") ||
        passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4") ||
        passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5") ||
-       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6") ) return true;
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6") ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") ) return true;
   if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
        passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ||
        passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ||
@@ -491,7 +502,8 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
        passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v1") ||
        passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v2") ||
-       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v3") ) return true;
+       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v3") ||
+       passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v3") ) return true;
 
   return false;
 }
@@ -571,7 +583,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool sortJ
       double jec = 1.0;
       // cout << cms2.evt_event() << " \traw pt: " << cms2.pfjets_p4().at(i).pt() << endl;
       if(applyJEC){
-	jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho());
+	jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho_vor());
 	jet_corrector_pfL1FastJetL2L3->setJetA(cms2.pfjets_area().at(i));
 	jet_corrector_pfL1FastJetL2L3->setJetPt(cms2.pfjets_p4()[i].pt());
 	jet_corrector_pfL1FastJetL2L3->setJetEta(cms2.pfjets_p4()[i].eta());
@@ -1672,13 +1684,14 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   
   if (cms2.hyp_p4().at(i_hyp).mass2()<0) return false;
   if (!isGoodVertex(primaryVertex())) return false;
-
-  if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
+  
+  // if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
   // if ( realData && passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "trigger requirements",weight);
   if (nGoodVertex()<1) return false;
 
   cuts_passed = PASSED_BaseLine;
+  if ( realData && passedTriggerRequirements( hypType(i_hyp) ) )  cuts_passed |= PASSED_Trigger;
   
   // Baseline cuts
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_lt_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
@@ -1799,8 +1812,6 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
 	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV4, cuts_passed ) )
       cuts_passed |= PASSED_Skim1;
   }
-  if( CheckCuts(  PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_BaseLine, cuts_passed))
-    cuts_passed |= PASSED_Skim2;
   if( CheckCuts(  PASSED_BaseLine, cuts_passed)) {
     if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU2,   cuts_passed ) ||
@@ -2441,14 +2452,14 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     }
     tree.processId_ = cms2.genps_signalProcessID();
     tree.higgsPt_ = -9999.;
-    tree.hPtWeight_ = 1.;
+    tree.sfWeightHPt_ = 1.;
     if (tree.processId_==10010 || tree.processId_==10001) {
       float pt = getHiggsPt();
       tree.higgsPt_ = pt;
       if (tree.processId_==10010) {
 	TString ss = tree.name(sample);//get higgs mass from sample name
 	ss.Remove(0,3);//get rid of hww
-	tree.hPtWeight_ = getHiggsPtWeight(pt,ss.Atoi());
+	tree.sfWeightHPt_ = getHiggsPtWeight(pt,ss.Atoi());
       }
     }
   }
@@ -2492,6 +2503,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   if ( cuts_passed & PASSED_Charge )                  tree.cuts_ |= SmurfTree::ChargeMatch;
   if ( cuts_passed & PASSED_MET )                     tree.cuts_ |= SmurfTree::FullMET;
   if ( cuts_passed & PASSED_ZVETO )                   tree.cuts_ |= SmurfTree::ZVeto;
+  if ( cuts_passed & PASSED_Trigger )                 tree.cuts_ |= SmurfTree::Trigger;
   if ( !(cuts_passed & PASSED_TOPVETO) || !(cuts_passed & PASSED_SOFTMUVETO) )           
     tree.cuts_ |= SmurfTree::TopTag;
   else
@@ -2640,7 +2652,7 @@ void ScanChain( TChain* chain,
       jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L1FastJet.txt");
       jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L2Relative.txt");
       jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L3Absolute.txt");
-      // jetcorr_filenames_pf.push_back("files/START41_V0_AK5PF_L2L3Residual.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V19_AK5PF_L2L3Residual.txt");
     } else {
       jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L1FastJet.txt");
       jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START41_V0_AK5PF_L2Relative.txt");
