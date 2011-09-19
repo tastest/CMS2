@@ -93,6 +93,7 @@ metStruct trackerMET( int hyp_index, double deltaZCut = 0.2,
 // (simplified implementation from Nate Odell)
 //---------------------------------------------
 LorentzVector cmsReducedMET(LorentzVector sumJet, LorentzVector lep1, LorentzVector lep2, LorentzVector metP4, int version);
+std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2, const std::vector<LorentzVector> &jets);
 
 #endif
 
