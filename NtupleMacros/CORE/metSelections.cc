@@ -377,3 +377,86 @@ LorentzVector cmsReducedMET(LorentzVector sumJet, LorentzVector lep1, LorentzVec
     return LorentzVector(reducedMET.Px(), reducedMET.Py(), 0, reducedMET.Mod());
 }
 
+std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2, const std::vector<LorentzVector> &jets)
+{
+
+    //define the leading and sub-leading lepton
+    TVector2 lead, trail;
+    if (lep1.Pt() > lep2.Pt()) {
+        lead = TVector2(lep1.px(), lep1.py());
+        trail = TVector2(lep2.px(), lep2.py());
+    } else {
+        lead = TVector2(lep2.px(), lep2.py());
+        trail = TVector2(lep1.px(), lep1.py());
+    }
+
+    //define the thrust and dilepton
+    TVector2 dil = lead+trail;
+    TVector2 thr = lead-trail;
+    float dphill = fabs(ROOT::Math::VectorUtil::DeltaPhi(lep1, lep2));
+
+    //define the longitudinal and perpendicular axis
+    TVector2 a_l, a_t;
+    if (dphill >= TMath::Pi()/2) {
+      a_l = thr.Unit();
+      a_t = a_l.Rotate(TMath::Pi()/2);
+      if(a_t * lead < 0) a_t *= -1;
+    } else {
+      a_t = dil.Unit();
+      a_l = a_t.Rotate(TMath::Pi()/2);
+      if(a_l * lead < 0) a_l *= -1;
+    }
+
+    //project the dilepton
+    float dileptonProj_long = dil * a_l;
+    float dileptonProj_perp = dil * a_t;
+
+    //project the jet sum
+    float sumJetProj_long = 0.;
+    float sumJetProj_perp = 0.;
+    for (unsigned int j = 0; j < jets.size(); ++j) {
+        TVector2 jet(jets[j].Px(), jets[j].Py());
+        sumJetProj_long += jet*a_l;
+        sumJetProj_perp += jet*a_t;
+    }
+
+    //project the met
+    TVector2 pfMET(cms2.evt_pfmet() * cos(cms2.evt_pfmetPhi()), cms2.evt_pfmet() * sin(cms2.evt_pfmetPhi()));
+    float metProj_long = pfMET * a_l;
+    float metProj_perp = pfMET * a_t;
+
+    TVector2 uncl = pfMET + dil;
+    float unclProj_long = uncl * a_l;
+    float unclProj_perp = uncl * a_t;
+
+    //take the minimum recoil possible depending on the event category type
+    float recoilProj_long = min(sumJetProj_long, float(-1. * (unclProj_long)));
+    recoilProj_long = min(recoilProj_long, float(0.));
+    float recoilProj_perp = min(sumJetProj_perp, float(-1. * (unclProj_perp)));
+    recoilProj_perp = min(recoilProj_perp, float(0.));  
+
+    //
+    // CMS MINIMIZED VERSION
+    //
+
+    // unclustered
+    float unclRedMet_long = dileptonProj_long - 1.0 * unclProj_long;
+    float unclRedMet_perp = dileptonProj_perp - 1.0 * unclProj_perp;
+    // clustered
+    float cluRedMet_long  = dileptonProj_long + 1.0 * sumJetProj_long;
+    float cluRedMet_perp  = dileptonProj_perp + 1.0 * sumJetProj_perp;
+    float cluRedMet       = sqrt(pow(cluRedMet_long, 2) + pow(cluRedMet_perp, 2));   
+
+    //
+    // CMS INDEPEDENT MINIMIZATION VERSION
+    //
+
+    float reducedMETIndminRmet_long = (fabs(unclRedMet_long) < fabs(cluRedMet_long) ? unclRedMet_long : cluRedMet_long); 
+    float reducedMETIndminRmet_perp = (fabs(unclRedMet_perp) < fabs(cluRedMet_perp) ? unclRedMet_perp : cluRedMet_perp); 
+    float redMETIndminRmet          = sqrt(pow(reducedMETIndminRmet_long, 2) + pow(reducedMETIndminRmet_perp, 2));
+    TVector2 redMETIndminRmetxy        = reducedMETIndminRmet_long * a_l + reducedMETIndminRmet_perp * a_t;
+
+    return std::make_pair<float, float> (reducedMETIndminRmet_long, reducedMETIndminRmet_perp);
+
+}
+
