@@ -624,23 +624,21 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                             pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
                         }
 
-                    } else {
-  
-                        // Pileup - VertexMaker
-                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-                            if (!isGoodVertex(vidx))
-                                continue;
+                    }
+                    // Pileup - VertexMaker
+                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                        if (!isGoodVertex(vidx))
+                            continue;
 
-                            ++evt_nvtxs_;
-                        }
+                        ++evt_nvtxs_;
+                    }
     
-                        // Pileup - VertexMaker
-                        for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
-                            if (!isGoodDAVertex(vidx))
-                                continue;
+                    // Pileup - VertexMaker
+                    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
+                        if (!isGoodDAVertex(vidx))
+                            continue;
                             
-                            ++evt_ndavtxs_;
-                        }
+                        ++evt_ndavtxs_;
                     }
 
                     /////////////////////////// 
@@ -1207,22 +1205,20 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                             pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
                         }
                     } 
-                    else {
-                        // Pileup - VertexMaker
-                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-                            if (!isGoodVertex(vidx))
-                                continue;
+                    // Pileup - VertexMaker
+                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                        if (!isGoodVertex(vidx))
+                            continue;
 
-                            ++evt_nvtxs_;
-                        }
+                        ++evt_nvtxs_;
+                    }
     
-                        // Pileup - VertexMaker
-                        for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
-                            if (!isGoodDAVertex(vidx))
-                                continue;
+                    // Pileup - VertexMaker
+                    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
+                        if (!isGoodDAVertex(vidx))
+                            continue;
 
-                            ++evt_ndavtxs_;
-                        }
+                        ++evt_ndavtxs_;
                     }
 
                     /////////////////////////// 
