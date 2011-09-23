@@ -130,7 +130,7 @@ private:
     Int_t mc3id_;
     Float_t mc3pt_;
     Float_t mc3dr_;
-    Bool_t leptonIsFromW_;
+    Int_t leptonIsFromW_;
 
     //////////////////////////
     // End Lepton Variables //
@@ -620,7 +620,7 @@ void myBabyMaker::InitBabyNtuple () {
     mc3id_ = -999;
     mc3pt_ = -999.;
     mc3dr_ = -999.;
-    leptonIsFromW_ = false;
+    leptonIsFromW_ = -999;
 
     //////////////////////////// 
     // End Lepton Information //
