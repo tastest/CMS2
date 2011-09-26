@@ -317,33 +317,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     // Make a baby ntuple
     MakeBabyNtuple(babyFilename);
 
-    // Set the JSON file
-    // if(isData) {
-    //     //set_goodrun_file("json/test.txt");  // 2 fb
-    //     //set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
-    // }
-
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
-    // jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
-    // jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
-    jetcorr_pf_L2L3_filenames.push_back("files/START41_V0_AK5PF_L2Relative.txt");
-    jetcorr_pf_L2L3_filenames.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
+    if (isData) {
+        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/GR_R_42_V14_AK5PF_L2Relative.txt");
+        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/GR_R_42_V14_AK5PF_L3Absolute.txt");        
+    }
+    else {
+        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START41_V0_AK5PF_L2Relative.txt");
+        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START41_V0_AK5PF_L3Absolute.txt");        
+    }
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
-/*
-  std::vector<std::string> jetcorr_pf_L1FastL2L3_filenames;
-  //jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Jec10V1_L1FastJet_AK5PF.txt");
-  jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
-  jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
-  FactorizedJetCorrector *jet_pf_L1FastL2L3corrector = makeJetCorrector(jetcorr_pf_L1FastL2L3_filenames);
-*/
-    std::vector<std::string> jetcorr_jpt_L2L3_filenames;
-    // jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5JPT.txt");
-    // jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5JPT.txt");
-    jetcorr_jpt_L2L3_filenames.push_back("files/START38_V13_AK5JPT_L2Relative.txt");
-    jetcorr_jpt_L2L3_filenames.push_back("files/START38_V13_AK5JPT_L3Absolute.txt");
-    FactorizedJetCorrector *jet_jpt_L2L3corrector = makeJetCorrector(jetcorr_jpt_L2L3_filenames);
 
+    std::vector<std::string> jetcorr_jpt_L2L3_filenames;
+    jetcorr_jpt_L2L3_filenames.push_back("../CORE/jetcorr/START38_V13_AK5JPT_L2Relative.txt");
+    jetcorr_jpt_L2L3_filenames.push_back("../CORE/jetcorr/START38_V13_AK5JPT_L3Absolute.txt");
+    FactorizedJetCorrector *jet_jpt_L2L3corrector = makeJetCorrector(jetcorr_jpt_L2L3_filenames);
 
 
     // The deltaR requirement between objects and jets to remove the jet trigger dependence
@@ -366,7 +355,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
     map<int,int> m_events;
-//    std::cout << "looping...\n";
+
     while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
         TString filename = currentFile->GetTitle();
     
