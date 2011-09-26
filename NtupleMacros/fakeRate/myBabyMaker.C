@@ -1034,7 +1034,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ptpfcL1Fj1_b2b_   = -999.0;
                     dphipfcL1Fj1_b2b_ = -999.0;
                     npfcL1Fj1_        = 0;
+                    npfc30L1Fj1_      = 0;
+                    npfc30L1Fj1_      = 0;
                     btagpfcL1F_       = false;
+                    rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
@@ -1044,6 +1047,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             ptpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
@@ -1580,7 +1585,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ptpfcL1Fj1_b2b_   = -999.0;
                     dphipfcL1Fj1_b2b_ = -999.0;
                     npfcL1Fj1_        = 0;
+                    npfc30L1Fj1_      = 0;
+                    npfc40L1Fj1_      = 0;
                     btagpfcL1F_       = false;
+                    rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         // JetID
                         if ( !passesPFJetID(iJet)) continue;
@@ -1591,6 +1599,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             ptpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );

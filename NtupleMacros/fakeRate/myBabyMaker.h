@@ -472,6 +472,8 @@ private:
     Float_t dphipfcL1Fj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
     Int_t   npfcL1Fj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagpfcL1F_;
+    Int_t   npfc30L1Fj1_;      // number of jets above 30 GeV and away from lepton by dR >= 1.0
+    Int_t   npfc40L1Fj1_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
 
     // Same for btagged PF Corrected jets L1FastL2L3
     Float_t ptbtagpfcL1Fj1_;       // highest pt btagged jet well separated from the lepton
@@ -484,6 +486,7 @@ private:
     Int_t   njptcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagjptc_; 
     
+    Float_t rho_;
 
     //////////////
     // End Jets //
@@ -922,6 +925,8 @@ void myBabyMaker::InitBabyNtuple () {
     ptpfcL1Fj1_b2b_    = -999.;
     dphipfcL1Fj1_b2b_  = -999.;
     npfcL1Fj1_         = 0;
+    npfc30L1Fj1_       = 0;
+    npfc40L1Fj1_       = 0;
     btagpfcL1F_        = false;
 
     // btag PF L1FastL2L3 Corrected jets
@@ -943,6 +948,7 @@ void myBabyMaker::InitBabyNtuple () {
     dRbpfcNear_ = 99.;
     dRbpfcFar_ = -99.;
 
+    rho_ = -999.;
 
     //////////////
     // End Jets //
@@ -1315,8 +1321,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       
     // PF L1FastL2L3 Corrected jets         
     babyTree_->Branch("ptpfcL1Fj1"      , &ptpfcL1Fj1_       );       
-    babyTree_->Branch("dphipfcL1Fj1"    , &dphipfcL1Fj1_       );       
-    babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );         
+    babyTree_->Branch("dphipfcL1Fj1"    , &dphipfcL1Fj1_     );       
+    babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );
+    babyTree_->Branch("npfc30L1Fj1"     , &npfc30L1Fj1_      );
+    babyTree_->Branch("npfc40L1Fj1"     , &npfc40L1Fj1_      );
     babyTree_->Branch("ptpfcL1Fj1_b2b"  , &ptpfcL1Fj1_b2b_   );       
     babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
     babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
@@ -1342,6 +1350,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("nbpfcjet"     , &nbpfcjet_     );
     babyTree_->Branch("dRpfcNear"    , &dRbpfcNear_   );
     babyTree_->Branch("dRpfcFar"     , &dRbpfcFar_    );
+
+    babyTree_->Branch("rho", &rho_);
     
     //////////////
     // End Jets //
