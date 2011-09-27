@@ -13,5 +13,5 @@ cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet0LowPtWithLH
 cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet1HighPtWithLHV3_BDTG.weights.xml > EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml
 cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet1LowPtWithLHV3_BDTG.weights.xml > EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml
 cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet2HighPtWithLHV3_BDTG.weights.xml > EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml
-cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet3LowPtWithLHV3_BDTG.weights.xml > EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml
+cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet2LowPtWithLHV3_BDTG.weights.xml > EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml
 
