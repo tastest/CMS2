@@ -310,7 +310,7 @@ void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson) {
 //      =11 do electrons
 //      =13 do muons
 //-----------------------------------
-void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isData, int eormu) {
+void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isData, int eormu, string jetcorrPath) {
 
     already_seen.clear();
 
@@ -319,19 +319,31 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
-    if (isData) {
-        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/GR_R_42_V14_AK5PF_L2Relative.txt");
-        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/GR_R_42_V14_AK5PF_L3Absolute.txt");        
+    if (isData) {        
+        string data_pf_l2 = jetcorrPath;
+        data_pf_l2.append("GR_R_42_V14_AK5PF_L2Relative.txt");
+        string data_pf_l3 = jetcorrPath;
+        data_pf_l3.append("GR_R_42_V14_AK5PF_L3Absolute.txt");
+        jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
+        jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
     }
     else {
-        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START41_V0_AK5PF_L2Relative.txt");
-        jetcorr_pf_L2L3_filenames.push_back("../CORE/jetcorr/data/START41_V0_AK5PF_L3Absolute.txt");        
+        string mc_pf_l2 = jetcorrPath;
+        mc_pf_l2.append("START41_V0_AK5PF_L2Relative.txt");
+        string mc_pf_l3 = jetcorrPath;
+        mc_pf_l3.append("START41_V0_AK5PF_L3Absolute.txt");
+        jetcorr_pf_L2L3_filenames.push_back(mc_pf_l2.c_str());
+        jetcorr_pf_L2L3_filenames.push_back(mc_pf_l3.c_str());
     }
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 
     std::vector<std::string> jetcorr_jpt_L2L3_filenames;
-    jetcorr_jpt_L2L3_filenames.push_back("../CORE/jetcorr/START38_V13_AK5JPT_L2Relative.txt");
-    jetcorr_jpt_L2L3_filenames.push_back("../CORE/jetcorr/START38_V13_AK5JPT_L3Absolute.txt");
+    string jpt_l2 = jetcorrPath;
+    jpt_l2.append("START38_V13_AK5JPT_L2Relative.txt");    
+    string jpt_l3 = jetcorrPath;
+    jpt_l3.append("START38_V13_AK5JPT_L3Absolute.txt");
+    jetcorr_jpt_L2L3_filenames.push_back(jpt_l2.c_str());
+    jetcorr_jpt_L2L3_filenames.push_back(jpt_l3.c_str());
     FactorizedJetCorrector *jet_jpt_L2L3corrector = makeJetCorrector(jetcorr_jpt_L2L3_filenames);
 
 

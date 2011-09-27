@@ -24,7 +24,7 @@ public:
     void InitBabyNtuple ();
     void FillBabyNtuple ();
     void CloseBabyNtuple ();
-    void ScanChain (TChain *, const char *, bool, int);
+    void ScanChain (TChain *, const char *, bool, int, string jetcorrPath="../CORE/jetcorr/data/");
     void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
 
 private:
