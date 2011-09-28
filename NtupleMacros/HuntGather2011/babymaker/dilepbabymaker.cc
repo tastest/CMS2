@@ -731,7 +731,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 tcmth_ = sqrt(2.0*mass_*mass_ + 2.0*(enell*tcenenn - tcenex*tcenex - tceney*tceney));
 
                 // check if hypothesis makes an extra Z
-                extraZveto_ = makesExtraZ(hypi, false, false);
+//                extraZveto_ = makesExtraZ(hypi, false, false);
+                extraZveto_ = samesign::overlapsOtherNNHypInZ(hypi);
 
                 //
                 // Now fill the detailed electron/muon specific variables
@@ -773,6 +774,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     ecalIso1_ = cms2.mus_iso03_emEt()[index1];
                     hcalIso1_ = cms2.mus_iso03_hadEt()[index1];
                     ecalIso1ps_ = cms2.mus_iso03_emEt()[index1];
+                    lep1_pfiso0p3_ = muonIsoValuePF(index1, 0, 0.3);
+                    lep1_pfiso0p4_ = muonIsoValuePF(index1, 0, 0.4);
                 }
                 // if LT is an ele, fill ele info
                 if (abs(cms2.hyp_lt_id()[hypi]) == 11) {
@@ -832,6 +835,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     ecalIso1_ = cms2.els_ecalIso()[index1];
                     e1_mitConv_ = !isFromConversionMIT(index1);
                     ecalIso1ps_ = fabs(cms2.els_p4()[index1].eta()) < 1.479 ? max(cms2.els_ecalIso()[index1] - 1., 0.) : cms2.els_ecalIso()[index1];
+                    lep1_pfiso0p3_ = electronIsoValuePF(index1, 0, 0.3);
+                    lep1_pfiso0p4_ = electronIsoValuePF(index1, 0, 0.4);
+
                 }
 
                 //
@@ -869,6 +875,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     ecalIso2_ = cms2.mus_iso03_emEt()[index2];
                     hcalIso2_ = cms2.mus_iso03_hadEt()[index2];
                     ecalIso2ps_ = cms2.mus_iso03_emEt()[index2];
+                    lep2_pfiso0p3_ = muonIsoValuePF(index2, 0, 0.3);
+                    lep2_pfiso0p4_ = muonIsoValuePF(index2, 0, 0.4);
                 }
                 // if LL is an ele, fill ele info
                 if (abs(cms2.hyp_ll_id()[hypi]) == 11) {
@@ -928,6 +936,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     ecalIso2_ = cms2.els_ecalIso()[index2];
                     e2_mitConv_ = !isFromConversionMIT(index2);
                     ecalIso2ps_ = fabs(cms2.els_p4()[index2].eta()) < 1.479 ? max(cms2.els_ecalIso()[index2] - 1., 0.) : cms2.els_ecalIso()[index2];
+                    lep2_pfiso0p3_ = electronIsoValuePF(index2, 0, 0.3);
+                    lep2_pfiso0p4_ = electronIsoValuePF(index2, 0, 0.4);
                 }
 
                 //
@@ -1105,6 +1115,10 @@ void dilepbabymaker::InitBabyNtuple ()
     lepsFromSameVtx_  = 0;
     lep1isFromW_      = -999999;
     lep2isFromW_      = -999999;
+    lep1_pfiso0p3_    = -999999.;
+    lep1_pfiso0p4_    = -999999.;
+    lep2_pfiso0p3_    = -999999.;
+    lep2_pfiso0p4_    = -999999.;
 
     // muon stuff
     mu1_numSSv4_      = 0;
@@ -1408,6 +1422,10 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("lepsFromSameVtx", &lepsFromSameVtx_, "lepsFromSameVtx/O");
     babyTree_->Branch("lep1isFromW", &lep1isFromW_, "lep1isFromW/I");
     babyTree_->Branch("lep2isFromW", &lep2isFromW_, "lep2isFromW/I");
+    babyTree_->Branch("lep1_pfiso0p3", &lep1_pfiso0p3_, "lep1_pfiso0p3/F");
+    babyTree_->Branch("lep1_pfiso0p4", &lep1_pfiso0p4_, "lep1_pfiso0p4/F");
+    babyTree_->Branch("lep2_pfiso0p3", &lep2_pfiso0p3_, "lep2_pfiso0p3/F");
+    babyTree_->Branch("lep2_pfiso0p4", &lep2_pfiso0p4_, "lep2_pfiso0p4/F");
 
     // Muon stuff
     babyTree_->Branch("mu1_numSSv4",      &mu1_numSSv4_,      "mu1_numSSv4/O"     );

@@ -198,6 +198,10 @@ private:
     Bool_t  lepsFromSameVtx_;
     Int_t   lep1isFromW_;
     Int_t   lep2isFromW_;
+    Float_t lep1_pfiso0p3_;
+    Float_t lep1_pfiso0p4_;
+    Float_t lep2_pfiso0p3_;
+    Float_t lep2_pfiso0p4_;
 
     // muon stuff
     Bool_t  mu1_numSSv4_;
