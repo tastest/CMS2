@@ -33,7 +33,6 @@
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
 #include "../CORE/mcSelections.cc"
-#include "../Tools/ElectronIDMVA.cc"
 // namespaces
 using namespace std;
 using namespace tas;
@@ -311,41 +310,40 @@ void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson) {
 //      =11 do electrons
 //      =13 do muons
 //-----------------------------------
-void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isData, int eormu, string jetcorrPath) {
+void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isData, int eormu) {
 
     already_seen.clear();
 
     // Make a baby ntuple
     MakeBabyNtuple(babyFilename);
 
+    // Set the JSON file
+    // if(isData) {
+    //     //set_goodrun_file("json/test.txt");  // 2 fb
+    //     //set_goodrun_file_json("json/Cert_160404-163869_7TeV_May10ReReco_Collisions11_JSON.txt");
+    // }
+
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
-    if (isData) {        
-        string data_pf_l2 = jetcorrPath;
-        data_pf_l2.append("GR_R_42_V14_AK5PF_L2Relative.txt");
-        string data_pf_l3 = jetcorrPath;
-        data_pf_l3.append("GR_R_42_V14_AK5PF_L3Absolute.txt");
-        jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
-        jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
-    }
-    else {
-        string mc_pf_l2 = jetcorrPath;
-        mc_pf_l2.append("START41_V0_AK5PF_L2Relative.txt");
-        string mc_pf_l3 = jetcorrPath;
-        mc_pf_l3.append("START41_V0_AK5PF_L3Absolute.txt");
-        jetcorr_pf_L2L3_filenames.push_back(mc_pf_l2.c_str());
-        jetcorr_pf_L2L3_filenames.push_back(mc_pf_l3.c_str());
-    }
+    // jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
+    // jetcorr_pf_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
+    jetcorr_pf_L2L3_filenames.push_back("files/START41_V0_AK5PF_L2Relative.txt");
+    jetcorr_pf_L2L3_filenames.push_back("files/START41_V0_AK5PF_L3Absolute.txt");
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
-
+/*
+  std::vector<std::string> jetcorr_pf_L1FastL2L3_filenames;
+  //jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Jec10V1_L1FastJet_AK5PF.txt");
+  jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5PF.txt");
+  jetcorr_pf_L1FastL2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5PF.txt");
+  FactorizedJetCorrector *jet_pf_L1FastL2L3corrector = makeJetCorrector(jetcorr_pf_L1FastL2L3_filenames);
+*/
     std::vector<std::string> jetcorr_jpt_L2L3_filenames;
-    string jpt_l2 = jetcorrPath;
-    jpt_l2.append("START38_V13_AK5JPT_L2Relative.txt");    
-    string jpt_l3 = jetcorrPath;
-    jpt_l3.append("START38_V13_AK5JPT_L3Absolute.txt");
-    jetcorr_jpt_L2L3_filenames.push_back(jpt_l2.c_str());
-    jetcorr_jpt_L2L3_filenames.push_back(jpt_l3.c_str());
+    // jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L2Relative_AK5JPT.txt");
+    // jetcorr_jpt_L2L3_filenames.push_back("../CondFormats/JetMETObjects/data/Fall10_L3Absolute_AK5JPT.txt");
+    jetcorr_jpt_L2L3_filenames.push_back("files/START38_V13_AK5JPT_L2Relative.txt");
+    jetcorr_jpt_L2L3_filenames.push_back("files/START38_V13_AK5JPT_L3Absolute.txt");
     FactorizedJetCorrector *jet_jpt_L2L3corrector = makeJetCorrector(jetcorr_jpt_L2L3_filenames);
+
 
 
     // The deltaR requirement between objects and jets to remove the jet trigger dependence
@@ -368,7 +366,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
     map<int,int> m_events;
-
+//    std::cout << "looping...\n";
     while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
         TString filename = currentFile->GetTitle();
     
@@ -626,21 +624,23 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                             pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
                         }
 
-                    }
-                    // Pileup - VertexMaker
-                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-                        if (!isGoodVertex(vidx))
-                            continue;
+                    } else {
+  
+                        // Pileup - VertexMaker
+                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                            if (!isGoodVertex(vidx))
+                                continue;
 
-                        ++evt_nvtxs_;
-                    }
+                            ++evt_nvtxs_;
+                        }
     
-                    // Pileup - VertexMaker
-                    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
-                        if (!isGoodDAVertex(vidx))
-                            continue;
+                        // Pileup - VertexMaker
+                        for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
+                            if (!isGoodDAVertex(vidx))
+                                continue;
                             
-                        ++evt_ndavtxs_;
+                            ++evt_ndavtxs_;
+                        }
                     }
 
                     /////////////////////////// 
@@ -735,11 +735,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         mcid_       = els_mc_id().at(iLep);
                         mcmotherid_ = els_mc_motherid().at(iLep);
                     }
-                    
-                    // likelihood and MVA discriminators
-                    el_lh_ = cms2.els_lh().at(iLep);                    
-                    el_mva_ = electronIdMVA->MVAValue(iLep, 0);
-
+      
                     // PV
                     d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
                     dzPV_wwV1_ = electron_dzPV_wwV1(iLep);
@@ -1040,10 +1036,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ptpfcL1Fj1_b2b_   = -999.0;
                     dphipfcL1Fj1_b2b_ = -999.0;
                     npfcL1Fj1_        = 0;
-                    npfc30L1Fj1_      = 0;
-                    npfc30L1Fj1_      = 0;
                     btagpfcL1F_       = false;
-                    rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
@@ -1053,8 +1046,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
-                        if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
-                        if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             ptpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
@@ -1216,20 +1207,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                             pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
                         }
                     } 
-                    // Pileup - VertexMaker
-                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-                        if (!isGoodVertex(vidx))
-                            continue;
+                    else {
+                        // Pileup - VertexMaker
+                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                            if (!isGoodVertex(vidx))
+                                continue;
 
-                        ++evt_nvtxs_;
-                    }
+                            ++evt_nvtxs_;
+                        }
     
-                    // Pileup - VertexMaker
-                    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
-                        if (!isGoodDAVertex(vidx))
-                            continue;
+                        // Pileup - VertexMaker
+                        for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
+                            if (!isGoodDAVertex(vidx))
+                                continue;
 
-                        ++evt_ndavtxs_;
+                            ++evt_ndavtxs_;
+                        }
                     }
 
                     /////////////////////////// 
@@ -1591,10 +1584,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ptpfcL1Fj1_b2b_   = -999.0;
                     dphipfcL1Fj1_b2b_ = -999.0;
                     npfcL1Fj1_        = 0;
-                    npfc30L1Fj1_      = 0;
-                    npfc40L1Fj1_      = 0;
                     btagpfcL1F_       = false;
-                    rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         // JetID
                         if ( !passesPFJetID(iJet)) continue;
@@ -1605,8 +1595,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
-                        if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
-                        if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             ptpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );

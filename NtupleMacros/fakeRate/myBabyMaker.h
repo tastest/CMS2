@@ -7,7 +7,6 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TPRegexp.h"
-#include "../Tools/ElectronIDMVA.h"
 
 // TAS includes
 #include "CMS2.cc"
@@ -25,7 +24,7 @@ public:
     void InitBabyNtuple ();
     void FillBabyNtuple ();
     void CloseBabyNtuple ();
-    void ScanChain (TChain *, const char *, bool, int, string jetcorrPath="../CORE/jetcorr/data/");
+    void ScanChain (TChain *, const char *, bool, int);
     void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
 
 private:
@@ -109,8 +108,6 @@ private:
     Bool_t el_id_smurfV5_;
     Bool_t el_id_vbtf80_;
     Bool_t el_id_vbtf90_;
-    Float_t el_lh_;
-    Float_t el_mva_;
 
     // Conversion Rejection
     Bool_t convHitPattern_;   // isFromConversionHitPattern(iEl)
@@ -133,7 +130,7 @@ private:
     Int_t mc3id_;
     Float_t mc3pt_;
     Float_t mc3dr_;
-    Int_t leptonIsFromW_;
+    Bool_t leptonIsFromW_;
 
     //////////////////////////
     // End Lepton Variables //
@@ -475,8 +472,6 @@ private:
     Float_t dphipfcL1Fj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
     Int_t   npfcL1Fj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagpfcL1F_;
-    Int_t   npfc30L1Fj1_;      // number of jets above 30 GeV and away from lepton by dR >= 1.0
-    Int_t   npfc40L1Fj1_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
 
     // Same for btagged PF Corrected jets L1FastL2L3
     Float_t ptbtagpfcL1Fj1_;       // highest pt btagged jet well separated from the lepton
@@ -489,7 +484,6 @@ private:
     Int_t   njptcj1_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
     Bool_t  btagjptc_; 
     
-    Float_t rho_;
 
     //////////////
     // End Jets //
@@ -529,9 +523,6 @@ private:
     TPMERegexp* mu24_regexp;     
     TPMERegexp* mu30_regexp;     
     TPMERegexp* mu8_Jet40_regexp;
-
-    // electron ID MVA
-    class ElectronIDMVA* electronIdMVA;
 };
 #endif
 
@@ -603,8 +594,6 @@ void myBabyMaker::InitBabyNtuple () {
     convHitPattern_   = false;
     convPartnerTrack_ = false;
     convMIT_          = false;
-    el_lh_            = -999.;
-    el_mva_           = -999.;
 
     d0PV_wwV1_        = -999.;
     dzPV_wwV1_        = -999.;
@@ -631,7 +620,7 @@ void myBabyMaker::InitBabyNtuple () {
     mc3id_ = -999;
     mc3pt_ = -999.;
     mc3dr_ = -999.;
-    leptonIsFromW_ = -999;
+    leptonIsFromW_ = false;
 
     //////////////////////////// 
     // End Lepton Information //
@@ -933,8 +922,6 @@ void myBabyMaker::InitBabyNtuple () {
     ptpfcL1Fj1_b2b_    = -999.;
     dphipfcL1Fj1_b2b_  = -999.;
     npfcL1Fj1_         = 0;
-    npfc30L1Fj1_       = 0;
-    npfc40L1Fj1_       = 0;
     btagpfcL1F_        = false;
 
     // btag PF L1FastL2L3 Corrected jets
@@ -956,7 +943,6 @@ void myBabyMaker::InitBabyNtuple () {
     dRbpfcNear_ = 99.;
     dRbpfcFar_ = -99.;
 
-    rho_ = -999.;
 
     //////////////
     // End Jets //
@@ -1051,8 +1037,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mc3pt", &mc3pt_);
     babyTree_->Branch("mc3dr", &mc3dr_);
     babyTree_->Branch("leptonIsFromW", &leptonIsFromW_);
-    babyTree_->Branch("el_lh", &el_lh_);
-    babyTree_->Branch("el_mva", &el_mva_);
 
     //////////////////////////// 
     // End Lepton Information //
@@ -1331,10 +1315,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
       
     // PF L1FastL2L3 Corrected jets         
     babyTree_->Branch("ptpfcL1Fj1"      , &ptpfcL1Fj1_       );       
-    babyTree_->Branch("dphipfcL1Fj1"    , &dphipfcL1Fj1_     );       
-    babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );
-    babyTree_->Branch("npfc30L1Fj1"     , &npfc30L1Fj1_      );
-    babyTree_->Branch("npfc40L1Fj1"     , &npfc40L1Fj1_      );
+    babyTree_->Branch("dphipfcL1Fj1"    , &dphipfcL1Fj1_       );       
+    babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );         
     babyTree_->Branch("ptpfcL1Fj1_b2b"  , &ptpfcL1Fj1_b2b_   );       
     babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
     babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
@@ -1360,8 +1342,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("nbpfcjet"     , &nbpfcjet_     );
     babyTree_->Branch("dRpfcNear"    , &dRbpfcNear_   );
     babyTree_->Branch("dRpfcFar"     , &dRbpfcFar_    );
-
-    babyTree_->Branch("rho", &rho_);
     
     //////////////
     // End Jets //
@@ -1399,13 +1379,4 @@ myBabyMaker::myBabyMaker () {
     mu24_regexp = new TPMERegexp("HLT_Mu24_v(\\d+)", "o");     
     mu30_regexp = new TPMERegexp("HLT_Mu30_v(\\d+)", "o");     
     mu8_Jet40_regexp = new TPMERegexp("HLT_Mu8_Jet40_v(\\d+)", "o");
-    
-    electronIdMVA = new ElectronIDMVA();
-    electronIdMVA->Initialize("BDTG method",
-                             "../Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
 }
