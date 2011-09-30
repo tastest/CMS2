@@ -14,8 +14,6 @@ PLOTTERSRC=./plotter/
 BABYMAKERSRC=./babymaker/
 LIBDIR=libs
 
-PFISOFROMNTUPLE=
-
 CORESOURCES = \
     $(CMSROOT)/CORE/CMS2.cc \
     $(CMSROOT)/CORE/electronSelections.cc \
@@ -35,8 +33,7 @@ COREOBJECTS = $(CORESOURCES:.cc=.o)
 CORELIB = $(LIBDIR)/libCMS2NtupleMacrosCORE.so
 
 TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc \
-			   $(CMSROOT)/Tools/goodrun.cc \
-               $(CMSROOT)/Tools/ElectronIDMVA.cc
+			   $(CMSROOT)/Tools/goodrun.cc 
 TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
 TOOLSLIB = $(LIBDIR)/libCMS2NtupleMacrosTools.so
 

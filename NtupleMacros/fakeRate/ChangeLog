@@ -1,8 +1,3 @@
-26-09-2011 - Frank Golf
-	* tagged with FakeRates26September2011v2
-	* added branches for number of L1FastL2L3 PF jets with pt > 30 (40) GeV
-	* added branch for evt_rho
-	* update on-th-fly JEC files; now read files from CORE; read different files for data and MC for PF jets
 15-09-2011 - Frank Golf
 	* tagged with FakeRates15September2011
 	* added status 3 MC matching information for FOs
