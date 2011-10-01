@@ -30,7 +30,6 @@
 // tools include is for
 // the duplicate cleaning
 #include "Tools/tools.cc"
-#include "Tools/ElectronIDMVA.cc"
 
 void dilepbabymaker::NewRun()
 {
@@ -839,19 +838,6 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     lep1_pfiso0p3_ = electronIsoValuePF(index1, 0, 0.3);
                     lep1_pfiso0p4_ = electronIsoValuePF(index1, 0, 0.4);
 
-                    e1_eSeedOverPout_         = cms2.els_eSeedOverPOut().at(index1);
-                    e1_eSeedOverPin_          = cms2.els_eSeedOverPIn().at(index1);
-                    e1_sigipip_               = cms2.els_sigmaIPhiIPhi().at(index1);
-                    e1_nbrem_                 = cms2.els_nSeed().at(index1);
-                    e1_ip3d_                  = cms2.els_ubIp3d().at(index1);
-                    if (cms2.els_ubIp3derr().at(index1) == 0.)                        
-                        e1_ip3dSig_ = 0.;
-                    else
-                        e1_ip3dSig_ = e1_ip3d_ / cms2.els_ubIp3derr().at(index1);
-                    e1_lh_                    = cms2.els_lh().at(index1);
-                    TVector3 pIn(cms2.els_trk_p4().at(index1).px(), cms2.els_trk_p4().at(index1).py(), cms2.els_trk_p4().at(index1).pz());
-                    e1_oneOverEminusOneOverP_ = (1. / pIn.Mag()) * ( (1/e1_eopin_) - 1.);
-                    e1_mva_                   = electronIdMVA->MVAValue(index1, 0);
                 }
 
                 //
@@ -952,20 +938,6 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     ecalIso2ps_ = fabs(cms2.els_p4()[index2].eta()) < 1.479 ? max(cms2.els_ecalIso()[index2] - 1., 0.) : cms2.els_ecalIso()[index2];
                     lep2_pfiso0p3_ = electronIsoValuePF(index2, 0, 0.3);
                     lep2_pfiso0p4_ = electronIsoValuePF(index2, 0, 0.4);
-
-                    e2_eSeedOverPout_         = cms2.els_eSeedOverPOut().at(index2);
-                    e2_eSeedOverPin_          = cms2.els_eSeedOverPIn().at(index2);
-                    e2_sigipip_               = cms2.els_sigmaIPhiIPhi().at(index2);
-                    e2_nbrem_                 = cms2.els_nSeed().at(index2);
-                    e2_ip3d_                  = cms2.els_ubIp3d().at(index2);
-                    if (cms2.els_ubIp3derr().at(index2) == 0.)                        
-                        e2_ip3dSig_ = 0.;
-                    else
-                        e2_ip3dSig_ = e2_ip3d_ / cms2.els_ubIp3derr().at(index2);
-                    e2_lh_                    = cms2.els_lh().at(index2);
-                    TVector3 pIn(cms2.els_trk_p4().at(index2).px(), cms2.els_trk_p4().at(index2).py(), cms2.els_trk_p4().at(index2).pz());
-                    e2_oneOverEminusOneOverP_ = (1. / pIn.Mag()) * ( (1/e2_eopin_) - 1.);
-                    e2_mva_                   = electronIdMVA->MVAValue(index2, 0);
                 }
 
                 //
@@ -1221,15 +1193,6 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_scCharge_      = -999999;
     e1_fbrem_         = -999999.;
     e1_mitConv_       = 0;
-    e1_eSeedOverPout_         = -999999.;
-    e1_eSeedOverPin_          = -999999.;
-    e1_sigipip_               = -999999.;
-    e1_nbrem_                 = -999999.;
-    e1_ip3d_                  = -999999.;
-    e1_ip3dSig_               = -999999.;
-    e1_lh_                    = -999999.;
-    e1_oneOverEminusOneOverP_ = -999999.;
-    e1_mva_                   = -999999.;
 
     e2_numSSv5_       = 0;
     e2_foSSv5_        = 0;
@@ -1262,17 +1225,8 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_ctfCharge_     = -999999;
     e2_gsfCharge_     = -999999;
     e2_scCharge_      = -999999;
-    e2_fbrem_                 = -999999.;
-    e2_mitConv_               = 0;
-    e2_eSeedOverPout_         = -999999.;
-    e2_eSeedOverPin_          = -999999.;
-    e2_sigipip_               = -999999.;
-    e2_nbrem_                 = -999999.;
-    e2_ip3d_                  = -999999.;
-    e2_ip3dSig_               = -999999.;
-    e2_lh_                    = -999999.;
-    e2_oneOverEminusOneOverP_ = -999999.;
-    e2_mva_                   = -999999.;
+    e2_fbrem_         = -999999.;
+    e2_mitConv_       = 0;
 
     pass_trg_single_e1_       = 0;
     pass_trg_single_e2_       = 0;
@@ -1547,15 +1501,6 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_scCharge",   &e1_scCharge_,   "e1_scCharge/I"  );
     babyTree_->Branch("e1_fbrem",      &e1_fbrem_,      "e1_fbrem/F"     );
     babyTree_->Branch("e1_mitConv",    &e1_mitConv_,    "e1_mitConv/O"   );
-    babyTree_->Branch("e1_eSeedOverPout", &e1_eSeedOverPout_, "e1_eSeedOverPout/F");
-    babyTree_->Branch("e1_eSeedOverPin", &e1_eSeedOverPin_, "e1_eSeedOverPin/F");
-    babyTree_->Branch("e1_sigipip", &e1_sigipip_, "e1_sigipip/F");
-    babyTree_->Branch("e1_nbrem", &e1_nbrem_, "e1_nbrem/F");
-    babyTree_->Branch("e1_ip3d", &e1_ip3d_, "e1_ip3d/F");
-    babyTree_->Branch("e1_ip3dSig", &e1_ip3dSig_, "e1_ip3dSig/F");
-    babyTree_->Branch("e1_lh", &e1_lh_, "e1_lh/F");
-    babyTree_->Branch("e1_oneOverEminusOneOverP", &e1_oneOverEminusOneOverP_, "e1_oneOverEminusOneOverP/F");
-    babyTree_->Branch("e1_mva", &e1_mva_, "e1_mva/F");
     babyTree_->Branch("e2_numSSv5",    &e2_numSSv5_,    "e2_numSSv5/O"   );
     babyTree_->Branch("e2_foSSv5",     &e2_foSSv5_,     "e2_foSSv5/O"    );
     babyTree_->Branch("e2_numSSv4",    &e2_numSSv4_,    "e2_numSSv4/O"   );
@@ -1589,15 +1534,6 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_scCharge",   &e2_scCharge_,   "e2_scCharge/I"  );
     babyTree_->Branch("e2_fbrem",      &e2_fbrem_,      "e2_fbrem/F"     );
     babyTree_->Branch("e2_mitConv",    &e2_mitConv_,    "e2_mitConv/O"   );
-    babyTree_->Branch("e2_eSeedOverPout", &e2_eSeedOverPout_, "e2_eSeedOverPout/F");
-    babyTree_->Branch("e2_eSeedOverPin", &e2_eSeedOverPin_, "e2_eSeedOverPin/F");
-    babyTree_->Branch("e2_sigipip", &e2_sigipip_, "e2_sigipip/F");
-    babyTree_->Branch("e2_nbrem", &e2_nbrem_, "e2_nbrem/F");
-    babyTree_->Branch("e2_ip3d", &e2_ip3d_, "e2_ip3d/F");
-    babyTree_->Branch("e2_ip3dSig", &e2_ip3dSig_, "e2_ip3dSig/F");
-    babyTree_->Branch("e2_lh", &e2_lh_, "e2_lh/F");
-    babyTree_->Branch("e2_oneOverEminusOneOverP", &e2_oneOverEminusOneOverP_, "e2_oneOverEminusOneOverP/F");
-    babyTree_->Branch("e2_mva", &e2_mva_, "e2_mva/F");
 
     // trigger stuff
     babyTree_->Branch("pass_trg_single_mu1",   &pass_trg_single_mu1_,   "pass_trg_single_mu1/I"  );
@@ -1728,16 +1664,4 @@ void dilepbabymaker::CloseBabyNtuple()
     babyFile_->cd();
     babyTree_->Write();
     babyFile_->Close();
-}
-
-dilepbabymaker::dilepbabymaker()
-{
-    electronIdMVA = new ElectronIDMVA();
-    electronIdMVA->Initialize("BDTG method",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
 }

@@ -13,7 +13,7 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 class dilepbabymaker
 {
 public:
-    dilepbabymaker();
+    dilepbabymaker() {};
     ~dilepbabymaker() {
         delete babyFile_;
         delete babyTree_;
@@ -276,15 +276,6 @@ private:
     Int_t   e1_gsfCharge_;
     Float_t e1_fbrem_;
     Bool_t  e1_mitConv_;
-    Float_t e1_eSeedOverPout_;
-    Float_t e1_eSeedOverPin_;
-    Float_t e1_sigipip_;
-    Float_t e1_nbrem_;
-    Float_t e1_ip3d_;
-    Float_t e1_ip3dSig_;
-    Float_t e1_lh_;
-    Float_t e1_oneOverEminusOneOverP_;
-    Float_t e1_mva_;
 
     Bool_t  e2_numSSv5_;
     Bool_t  e2_foSSv5_;
@@ -319,15 +310,6 @@ private:
     Int_t   e2_gsfCharge_;
     Float_t e2_fbrem_;
     Bool_t  e2_mitConv_;
-    Float_t e2_eSeedOverPout_;
-    Float_t e2_eSeedOverPin_;
-    Float_t e2_sigipip_;
-    Float_t e2_nbrem_;
-    Float_t e2_ip3d_;
-    Float_t e2_ip3dSig_;
-    Float_t e2_lh_;
-    Float_t e2_oneOverEminusOneOverP_;
-    Float_t e2_mva_;
 
     // triggers
     Int_t pass_trg_single_mu1_;
@@ -378,9 +360,6 @@ private:
     Int_t match_trg_had_double_mu1_;
     Int_t match_trg_had_double_mu2_;
     Int_t match_trg_had_cross_emu_;
-
-    // for electron MVA
-    class ElectronIDMVA* electronIdMVA;
 };
 
 #endif

@@ -7,7 +7,6 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TPRegexp.h"
-#include "../Tools/ElectronIDMVA.h"
 
 // TAS includes
 #include "CMS2.cc"
@@ -109,8 +108,6 @@ private:
     Bool_t el_id_smurfV5_;
     Bool_t el_id_vbtf80_;
     Bool_t el_id_vbtf90_;
-    Float_t el_lh_;
-    Float_t el_mva_;
 
     // Conversion Rejection
     Bool_t convHitPattern_;   // isFromConversionHitPattern(iEl)
@@ -529,9 +526,6 @@ private:
     TPMERegexp* mu24_regexp;     
     TPMERegexp* mu30_regexp;     
     TPMERegexp* mu8_Jet40_regexp;
-
-    // electron ID MVA
-    class ElectronIDMVA* electronIdMVA;
 };
 #endif
 
@@ -603,8 +597,6 @@ void myBabyMaker::InitBabyNtuple () {
     convHitPattern_   = false;
     convPartnerTrack_ = false;
     convMIT_          = false;
-    el_lh_            = -999.;
-    el_mva_           = -999.;
 
     d0PV_wwV1_        = -999.;
     dzPV_wwV1_        = -999.;
@@ -1051,8 +1043,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mc3pt", &mc3pt_);
     babyTree_->Branch("mc3dr", &mc3dr_);
     babyTree_->Branch("leptonIsFromW", &leptonIsFromW_);
-    babyTree_->Branch("el_lh", &el_lh_);
-    babyTree_->Branch("el_mva", &el_mva_);
 
     //////////////////////////// 
     // End Lepton Information //
@@ -1399,13 +1389,4 @@ myBabyMaker::myBabyMaker () {
     mu24_regexp = new TPMERegexp("HLT_Mu24_v(\\d+)", "o");     
     mu30_regexp = new TPMERegexp("HLT_Mu30_v(\\d+)", "o");     
     mu8_Jet40_regexp = new TPMERegexp("HLT_Mu8_Jet40_v(\\d+)", "o");
-    
-    electronIdMVA = new ElectronIDMVA();
-    electronIdMVA->Initialize("BDTG method",
-                             "../Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
 }
