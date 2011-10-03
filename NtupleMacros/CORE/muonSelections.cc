@@ -139,6 +139,17 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
     muonIsoValue(index,truncated) < isovalue;           // Isolation cut
 }
 
+
+bool isGoodStandardMuon( unsigned int index ){
+  if ( TMath::Abs( mus_p4()[index].eta() ) > 2.4 )              return false;
+  if ( mus_gfit_chi2()[index] / mus_gfit_ndof()[index] >= 50 )  return false;
+  if ( ( ( mus_type()[index] ) & (1<<1) ) == 0 )                return false;
+  if ( ( ( mus_type()[index] ) & (1<<2) ) == 0 )                return false;
+  if ( mus_validHits()[index] < 11 )                            return false;
+  if ( mus_gfit_validSTAHits()[index] == 0)                     return false;
+  return true;
+}
+
 ////////////////////
 // Identification //
 ////////////////////

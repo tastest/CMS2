@@ -65,6 +65,7 @@ enum SelectionType {
 
 bool muonId           ( unsigned int index, SelectionType type, int vertex_index = -1);
 bool muonIdNotIsolated( unsigned int index, SelectionType type, int vertex_index = -1);
+bool isGoodStandardMuon( unsigned int index );
 
 ///////////////
 // Isolation //
