@@ -42,7 +42,7 @@ LIB = libCMS2NtupleMacrosLooper.so
 
 FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
 
-LIBS = $(CORELIB) $(LIB)
+LIBS = $(CORELIB) $(LIB) $(FWLIB)
 
 .PHONY: all help compile clean cms2env
 
