@@ -176,6 +176,9 @@ static const cuts_t electronSelection_el_OSV2_FO =
   (1ll<<ELEISO_REL040)                     | // reliso < 0.4, truncated, 1 GeV EB PS
   (1ll<<ELEETA_250);                         // |eta| < 2.5
 
+static const cuts_t electronSelection_el_VBTF90 = 
+  (1ll<<ELEID_VBTF_90_HLT);                  // VBTF90, tightened to match CaloIdT+TrkIdVL
+
 static const cuts_t electronSelection_el_OSV3_noiso = 
   (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
   (1ll<<ELEIP_PV_OSV2)                     | // d0(PV) < 0.04 cm, dz(PV) < 1.0 cm
