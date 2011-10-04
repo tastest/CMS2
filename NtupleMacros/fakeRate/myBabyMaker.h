@@ -25,7 +25,7 @@ public:
     void InitBabyNtuple ();
     void FillBabyNtuple ();
     void CloseBabyNtuple ();
-    void ScanChain (TChain *, const char *, bool, int, string jetcorrPath="../CORE/jetcorr/data/");
+    void ScanChain (TChain *, const char *, bool, int, std::string jetcorrPath="../CORE/jetcorr/data/");
     void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
 
 private:
@@ -967,11 +967,10 @@ void myBabyMaker::InitBabyNtuple () {
 // Book the baby ntuple
 void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 {
-    TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-    rootdir->cd();
-    babyFile_ = new TFile(Form("%s", babyFilename), "RECREATE");
+    babyFile_ = TFile::Open(Form("%s", babyFilename), "RECREATE");
     babyFile_->cd();
     babyTree_ = new TTree("tree", "A Baby Ntuple");
+    babyTree_->SetDirectory(0);
 
     /////////////////////////// 
     // Event Information     //
@@ -1401,11 +1400,17 @@ myBabyMaker::myBabyMaker () {
     mu8_Jet40_regexp = new TPMERegexp("HLT_Mu8_Jet40_v(\\d+)", "o");
     
     electronIdMVA = new ElectronIDMVA();
+    std::string cms2_location = "..";
+    char* ppath = getenv("CMS2_LOCATION");
+    if (ppath != NULL) {
+        cms2_location = ppath;
+        cms2_location += "/NtupleMacros";
+    }
     electronIdMVA->Initialize("BDTG method",
-                             "../Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
-                             "../Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
 }
