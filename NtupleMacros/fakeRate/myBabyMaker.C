@@ -372,8 +372,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
     while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
         TString filename = currentFile->GetTitle();
     
-        TFile f(filename.Data());
-        TTree *tree = (TTree*)f.Get("Events");
+        TFile* f = TFile::Open(filename.Data());
+        TTree *tree = (TTree*)f->Get("Events");
         cms2.Init(tree);
         unsigned int nEntries = tree->GetEntries();
         unsigned int nGoodEvents(0);
@@ -1720,7 +1720,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     }  // closes loop over files
 
-    cout << "   " <<endl;
+    std::cout << "   " << std::endl;
     CloseBabyNtuple();
     return;
     
