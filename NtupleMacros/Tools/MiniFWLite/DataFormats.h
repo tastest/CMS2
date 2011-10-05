@@ -58,6 +58,11 @@ namespace edm
     };
     class RunID {};
     class Timestamp {};
+    class IndexIntoFile {
+        public:
+            struct Transients {};
+            struct RunOrLumiEntry {};
+    };
     template <typename T> class Transient {};
 }
 
