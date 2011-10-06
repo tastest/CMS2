@@ -1,7 +1,7 @@
 
 void makeGatherBaby(const char *inputFileName, const char *outputFileName)
 {
-
+    gSystem->Load("libNetx.so");
     gSystem->Load("libTree.so");
     gSystem->Load("libPhysics.so");
     gSystem->Load("libEG.so");
