@@ -25,7 +25,7 @@ class ElectronIDMVA {
         ElectronIDMVA();
         ~ElectronIDMVA(); 
 
-        void    Initialize(TString methodName,
+        void    Initialize(TString methodName, unsigned int version,
                 TString Subdet0Pt10To20Weights , 
                 TString Subdet1Pt10To20Weights , 
                 TString Subdet2Pt10To20Weights,
@@ -35,6 +35,22 @@ class ElectronIDMVA {
 
         Bool_t   IsInitialized() const { return fIsInitialized; }
         Double_t MVAValue(const unsigned int ele, const unsigned int vertex);
+        Double_t MVAValue(Double_t ElePt , Double_t EleSCEta,
+                Double_t EleSigmaIEtaIEta,
+                Double_t EleDEtaIn,
+                Double_t EleDPhiIn,
+                Double_t EleHoverE,
+                Double_t EleD0,
+                Double_t EleDZ,
+                Double_t EleFBrem,
+                Double_t EleEOverP,
+                Double_t EleESeedClusterOverPout,
+                Double_t EleSigmaIPhiIPhi,
+                Double_t EleNBrem,
+                Double_t EleOneOverEMinusOneOverP,
+                Double_t EleESeedClusterOverPIn,
+                Double_t EleIP3d,
+                Double_t EleIP3dSig);
 
 
     protected:      
@@ -57,8 +73,6 @@ class ElectronIDMVA {
         Float_t                   fMVAVar_EleESeedClusterOverPIn; 
         Float_t                   fMVAVar_EleIP3d; 
         Float_t                   fMVAVar_EleIP3dSig; 
-        Float_t                   fMVAVar_EleStandardLikelihood; 
-
 
 };
 
