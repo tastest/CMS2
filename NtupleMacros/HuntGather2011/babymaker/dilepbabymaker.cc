@@ -76,8 +76,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
     TFile *currentFile = 0;
     while ((currentFile = (TFile*)fileIter.Next()))
     {
-        TFile f(currentFile->GetTitle());
-        TTree *tree = (TTree*)f.Get("Events");
+        TFile* f = TFile::Open(currentFile->GetTitle());
+        TTree *tree = (TTree*)f->Get("Events");
         TTreeCache::SetLearnEntries(10);
         tree->SetCacheSize(128*1024*1024);
         cms2.Init(tree);
@@ -976,7 +976,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
             }
         }
 
-        f.Close();
+        f->Close();
 
     }
 
@@ -1309,12 +1309,13 @@ void dilepbabymaker::InitBabyNtuple ()
 
 void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
 {
-    TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-    rootdir->cd();
+    // TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
+    // rootdir->cd();
 
-    babyFile_ = new TFile(Form("%s", babyFilename), "RECREATE");
+    babyFile_ = TFile::Open(Form("%s", babyFilename), "RECREATE");
     babyFile_->cd();
     babyTree_ = new TTree("tree", "A Baby Ntuple");
+    babyTree_->SetDirectory(0);
 
     // event stuff
     babyTree_->Branch("rndm",          &rndm_,         "rndm/F"         );
@@ -1728,6 +1729,7 @@ void dilepbabymaker::CloseBabyNtuple()
     babyFile_->cd();
     babyTree_->Write();
     babyFile_->Close();
+    delete babyFile_;
 }
 
 dilepbabymaker::dilepbabymaker()
