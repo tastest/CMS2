@@ -1,5 +1,22 @@
-#files need to be changed: allSkim.sh (you need to specify datasets, the input and the output directories) and ntupleFilter.cc (you need to specify your analysis skim selections)
-#files don't need change: makeSkim.C and checkAndRunSkim.sh
-#how to run: source allSkim.sh & 
-# The skimming is run in a looper, which is awoke every 7200 seconds. This deals with the rolling-in data files. You can only stop the looper when 
-# you are sure that the dataset is complete and no more files are rolling in. 
+#
+files need to be changed: 
+1. allSkim.sh 
+you need to change the following variables in allSkim.sh
+
+miniFWlib=
+skim_C=
+input_dir=
+output_dir=
+input_pattern=
+
+2. ntupleFilter.cc (you need to specify your analysis skim selections)
+
+#
+files don't need change: makeSkim.C and checkAndRunSkim.sh
+
+#
+how to run: source allSkim.sh & 
+
+#
+The skimming is run in a looper, which is awoke every 7200 seconds. This deals with the rolling-in data files. You can only stop the looper when 
+you are sure that the dataset is complete and no more files are rolling in. 
