@@ -166,6 +166,7 @@ private:
     Bool_t v1_el_ssV5_;
     Bool_t v2_el_ssV5_;
     Bool_t v3_el_ssV5_;
+    Bool_t num_el_ssV5_noIso_;
     
     // Muons
     Bool_t numNomSSv3_;   // NominalSSv3
@@ -174,6 +175,7 @@ private:
     // Muons
     Bool_t numNomSSv4_;   // NominalSSv4
     Bool_t fo_mussV4_04_; // muonSelectionFO_mu_ssV4
+    Bool_t numNomSSv4noIso_; // NominalSSv4 with no isolation applied
 
     // WW, HWW
 
@@ -664,6 +666,7 @@ void myBabyMaker::InitBabyNtuple () {
     v1_el_ssV5_     = false;
     v2_el_ssV5_     = false;
     v3_el_ssV5_     = false;
+    num_el_ssV5_noIso_ = false;
 
     // Muons
     numNomSSv3_     = false;
@@ -671,6 +674,7 @@ void myBabyMaker::InitBabyNtuple () {
 
     numNomSSv4_     = false;
     fo_mussV4_04_   = false;
+    numNomSSv4noIso_ = false; 
 
     // WW, HWW
 
@@ -1084,6 +1088,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v1_el_ssV5"    , &v1_el_ssV5_     );
     babyTree_->Branch("v2_el_ssV5"    , &v2_el_ssV5_     );
     babyTree_->Branch("v3_el_ssV5"    , &v3_el_ssV5_     );
+    babyTree_->Branch("num_el_ssV5_noIso", &num_el_ssV5_noIso_);
 
     // Muons
     babyTree_->Branch("numNomSSv3",   &numNomSSv3_       );
@@ -1091,7 +1096,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 
     babyTree_->Branch("numNomSSv4",   &numNomSSv4_       );
     babyTree_->Branch("fo_mussV4_04", &fo_mussV4_04_     );
- 
+    babyTree_->Branch("numNomSSv4noIso", &numNomSSv4noIso_);
+
     // WW, HWW
 
     // Electrons
@@ -1406,11 +1412,11 @@ myBabyMaker::myBabyMaker () {
         cms2_location = ppath;
         cms2_location += "/NtupleMacros";
     }
-    electronIdMVA->Initialize("BDTG method",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
+    electronIdMVA->Initialize("BDTG method", 2,
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_V2_BDTG.weights.xml");
 }

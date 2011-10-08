@@ -480,6 +480,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v1_el_ssV5_     = pass_electronSelection( iLep, electronSelectionFOV5_ssVBTF80_v1  );
                     v2_el_ssV5_     = pass_electronSelection( iLep, electronSelectionFOV5_ssVBTF80_v2  );
                     v3_el_ssV5_     = pass_electronSelection( iLep, electronSelectionFOV5_ssVBTF80_v3  );
+                    num_el_ssV5_noIso_ = pass_electronSelection( iLep, electronSelection_ssV5_noIso );
 
                     // WW
                     num_el_smurfV6_ = pass_electronSelection( iLep, electronSelection_smurfV6          );
@@ -1329,6 +1330,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                     numNomSSv4_   = muonId(iLep, NominalSSv4          );
                     fo_mussV4_04_ = muonId(iLep, muonSelectionFO_ssV4 );
+                    numNomSSv4noIso_ = muonIdNotIsolated(iLep, NominalSSv4);
 
                     //OS
                     //num_mu_OSGV2_     = muonId(iLep, OSGeneric_v2);
