@@ -205,6 +205,7 @@ private:
 
     // muon stuff
     Bool_t  mu1_numSSv4_;
+    Bool_t  mu1_numSSv4noIso_;
     Bool_t  mu1_foSSv4_;
     Bool_t  mu1_numSSv3_;
     Bool_t  mu1_foSSv3_;
@@ -224,6 +225,7 @@ private:
     Float_t mu1_trkpt_;
 
     Bool_t  mu2_numSSv4_;
+    Bool_t  mu2_numSSv4noIso_;
     Bool_t  mu2_foSSv4_;
     Bool_t  mu2_numSSv3_;
     Bool_t  mu2_foSSv3_;
@@ -244,6 +246,7 @@ private:
 
     // electron stuff
     Bool_t  e1_numSSv5_;
+    Bool_t  e1_numSSv5noIso_;
     Bool_t  e1_foSSv5_;
     Bool_t  e1_numSSv4_;
     Bool_t  e1_foSSv4_;
@@ -287,6 +290,7 @@ private:
     Float_t e1_mva_;
 
     Bool_t  e2_numSSv5_;
+    Bool_t  e2_numSSv5noIso_;
     Bool_t  e2_foSSv5_;
     Bool_t  e2_numSSv4_;
     Bool_t  e2_foSSv4_;
