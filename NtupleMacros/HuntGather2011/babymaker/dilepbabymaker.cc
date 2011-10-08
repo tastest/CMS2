@@ -53,7 +53,13 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
 {
 
     // set trigger file
-    set_trigger_file("../runlists/trigger.txt");
+    std::string cms2_location = "..";
+    char* ppath = getenv("CMS2_LOCATION");
+    if (ppath != NULL) {
+        cms2_location = ppath;
+        cms2_location += "/NtupleMacros/HuntGather2011";
+    }
+    set_trigger_file((cms2_location + "/runlists/trigger.txt").c_str());
 
     TChain *chain = new TChain("Events");
     chain->Add(inputFilename);
@@ -1741,11 +1747,11 @@ dilepbabymaker::dilepbabymaker()
         cms2_location = ppath;
         cms2_location += "/NtupleMacros";
     }
-    electronIdMVA->Initialize("BDTG method",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
+    electronIdMVA->Initialize("BDTG method", 2,
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_V2_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_V2_BDTG.weights.xml");
 }
