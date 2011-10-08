@@ -1735,11 +1735,17 @@ void dilepbabymaker::CloseBabyNtuple()
 dilepbabymaker::dilepbabymaker()
 {
     electronIdMVA = new ElectronIDMVA();
+    std::string cms2_location = "../..";
+    char* ppath = getenv("CMS2_LOCATION");
+    if (ppath != NULL) {
+        cms2_location = ppath;
+        cms2_location += "/NtupleMacros";
+    }
     electronIdMVA->Initialize("BDTG method",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
-                             "../../Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPtWithLHV3_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPtWithLHV3_BDTG.weights.xml");
 }
