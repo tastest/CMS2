@@ -14,11 +14,13 @@ input_pattern=`echo skimmed\*.root`
 [ ! -d "CORE" ] && echo CORE is missing ! Please check out from CVS && exit 
 [ ! -f "CORE/CMS2.h" ] && echo CORE/CMS2.h is missing ! && exit 
 [ ! -f "CORE/CMS2.cc" ] && echo CORE/CMS2.C is missing ! && exit 
-[ ! -f "${miniFWlib}" ] && miniFWlib is missing! && exit
-[ ! -f "${skim_C}" ] && skim Macro is missing! && exit
+[ ! -f "${miniFWlib}" ] && echo miniFWlib is missing! && exit
+[ ! -f "${skim_C}" ] && echo skim Macro is missing! && exit
 
 # the following are the input datasets, you can add what you need to skim for
-dataset_names="`echo DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim`
+dataset_names=" `echo DoubleElectron_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleElectronTriggerSkim`
+   `echo DoubleMu_Run2011B-PromptReco-v1_AOD/V04-02-30/DoubleMuTriggerSkim`
+    `echo DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleElectronTriggerSkim`
    `echo DoubleMu_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleMuTriggerSkim`
     `echo DoubleElectron_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleElectronTriggerSkim`
     `echo DoubleMu_Run2011A-PromptReco-v6_AOD/V04-02-30/DoubleMuTriggerSkim`
