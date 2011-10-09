@@ -7,7 +7,7 @@
 miniFWlib=`echo ~/MiniFWlib/libMiniFWLite_5.27.06b-cms10.so`
 skim_C=`echo /home/users/yanjuntu/CMS2011/NtupleMacros/skimData/ntupleFilter.cc`
 input_dir=`echo /nfs-6/userdata/cms2`
-output_dir=`echo /nfs-7/userdata/yanjuntu/test` 
+output_dir=`echo /nfs-6/userdata/yanjuntu/TPrimeSkim` 
 input_pattern=`echo skimmed\*.root`
 
 # check the existance of CORE, miniFWlib, skim Macro
@@ -31,11 +31,9 @@ dataset_names="`echo DoubleElectron_Run2011A-05Aug2011-v1_AOD/V04-02-30/DoubleEl
 while [ 1 ]
   do
   for dataset_name in $dataset_names; do
-    input_dir_sub=`echo ${input_dir}/${dataset_name} `
-    output_dir_sub=`echo ${output_dir}/${dataset_name}`
-    [ ! -d "${output_dir_sub}" ] && echo Create ${output_dir_sub} && mkdir -p ${output_dir_sub}
-    echo skimming $dataset_name from $input_dir to $output_dir
-    source checkAndRunSkim.sh $dataset_name $input_dir_sub $output_dir_sub $input_pattern $miniFWlib $skim_C 
+    [ ! -d "${output_dir}" ] && echo Create ${output_dir} && mkdir -p ${output_dir}
+    echo skimming $dataset_name 
+    source checkAndRunSkim.sh $dataset_name $input_dir $output_dir $input_pattern $miniFWlib $skim_C 
   done
   sleep 7200 
 done
