@@ -154,6 +154,10 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     // VBTF90 with H/E and dPhiIn tuned to match HLT (CaloIdT+TrkIdVL)
     answer_vbtf = electronId_VBTF(index, VBTF_90_HLT_CALOIDT_TRKIDVL, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL);
+    // VBTF95 no H/E in endcap
+    answer_vbtf = electronId_VBTF(index, VBTF_95_NOHOEEND, applyAlignmentCorrection, removedEtaCutInEndcap);
+    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_95_NOHOEEND);
+
     // CIC ID  
     // MEDIUM (V03 optimisation)
     electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM, applyAlignmentCorrection, removedEtaCutInEndcap);

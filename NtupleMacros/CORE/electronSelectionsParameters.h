@@ -45,7 +45,8 @@ enum vbtf_tightness {
     VBTF_85,
     VBTF_70_NOHOEEND,
     VBTF_90_HLT,
-    VBTF_90_HLT_CALOIDT_TRKIDVL
+    VBTF_90_HLT_CALOIDT_TRKIDVL,
+    VBTF_95_NOHOEEND
 };
 //--------------------------------
 

@@ -86,6 +86,7 @@ enum EleSelectionType {
   ELEID_VBTF_90_HLT,                  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdL_TrkIdVL
   ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdT_TrkIdVL
   ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
+  ELEID_VBTF_95_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
 
 //////////////////////////
 // Conversion Rejection //
@@ -178,6 +179,9 @@ static const cuts_t electronSelection_el_OSV2_FO =
 
 static const cuts_t electronSelection_el_VBTF90 = 
   (1ll<<ELEID_VBTF_90_HLT);                  // VBTF90, tightened to match CaloIdT+TrkIdVL
+
+static const cuts_t electronSelection_el_VBTF95_NOHOEEND = 
+  (1ll<<ELEID_VBTF_95_NOHOEEND);             // VBTF95, no H/E endcap requirement
 
 static const cuts_t electronSelection_el_OSV3_noiso = 
   (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
