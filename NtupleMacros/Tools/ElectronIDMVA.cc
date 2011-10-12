@@ -58,7 +58,6 @@ void ElectronIDMVA::Initialize( TString methodName, unsigned int version,
             fTMVAReader[i]->AddVariable( "SigmaIEtaIEta",         &fMVAVar_EleSigmaIEtaIEta         );
             fTMVAReader[i]->AddVariable( "DEtaIn",                &fMVAVar_EleDEtaIn                );
             fTMVAReader[i]->AddVariable( "DPhiIn",                &fMVAVar_EleDPhiIn                );
-            fTMVAReader[i]->AddVariable( "HoverE",                &fMVAVar_EleHoverE                );
             fTMVAReader[i]->AddVariable( "FBrem",                 &fMVAVar_EleFBrem                 );
             fTMVAReader[i]->AddVariable( "EOverP",                &fMVAVar_EleEOverP                );
             fTMVAReader[i]->AddVariable( "ESeedClusterOverPout",  &fMVAVar_EleESeedClusterOverPout  );
@@ -72,7 +71,6 @@ void ElectronIDMVA::Initialize( TString methodName, unsigned int version,
             fTMVAReader[i]->AddVariable( "SigmaIEtaIEta",         &fMVAVar_EleSigmaIEtaIEta         );
             fTMVAReader[i]->AddVariable( "DEtaIn",                &fMVAVar_EleDEtaIn                );
             fTMVAReader[i]->AddVariable( "DPhiIn",                &fMVAVar_EleDPhiIn                );
-            fTMVAReader[i]->AddVariable( "HoverE",                &fMVAVar_EleHoverE                );
             fTMVAReader[i]->AddVariable( "D0",                    &fMVAVar_EleD0                    );
             fTMVAReader[i]->AddVariable( "FBrem",                 &fMVAVar_EleFBrem                 );
             fTMVAReader[i]->AddVariable( "EOverP",                &fMVAVar_EleEOverP                );
@@ -124,7 +122,6 @@ Double_t ElectronIDMVA::MVAValue(const unsigned int ele, const unsigned int vert
     fMVAVar_EleSigmaIEtaIEta =          cms2.els_sigmaIEtaIEta()[ele]; 
     fMVAVar_EleDEtaIn =                 cms2.els_dEtaIn()[ele]; 
     fMVAVar_EleDPhiIn =                 cms2.els_dPhiIn()[ele]; 
-    fMVAVar_EleHoverE =                 cms2.els_hOverE()[ele];
     fMVAVar_EleD0 =                     electron_d0PV_wwV1(ele);
     fMVAVar_EleDZ =                     electron_dzPV_wwV1(ele);
     fMVAVar_EleFBrem =                  cms2.els_fbrem()[ele]; 
@@ -161,7 +158,6 @@ Double_t ElectronIDMVA::MVAValue(Double_t ElePt , Double_t EleSCEta,
         Double_t EleSigmaIEtaIEta,
         Double_t EleDEtaIn,
         Double_t EleDPhiIn,
-        Double_t EleHoverE,
         Double_t EleD0,
         Double_t EleDZ,
         Double_t EleFBrem,
@@ -191,7 +187,6 @@ Double_t ElectronIDMVA::MVAValue(Double_t ElePt , Double_t EleSCEta,
     fMVAVar_EleSigmaIEtaIEta = EleSigmaIEtaIEta;
     fMVAVar_EleDEtaIn = EleDEtaIn;
     fMVAVar_EleDPhiIn = EleDPhiIn;
-    fMVAVar_EleHoverE = EleHoverE;
     fMVAVar_EleD0 = EleD0;
     fMVAVar_EleDZ = EleDZ;
     fMVAVar_EleFBrem = EleFBrem;

@@ -39,7 +39,6 @@ class ElectronIDMVA {
                 Double_t EleSigmaIEtaIEta,
                 Double_t EleDEtaIn,
                 Double_t EleDPhiIn,
-                Double_t EleHoverE,
                 Double_t EleD0,
                 Double_t EleDZ,
                 Double_t EleFBrem,
@@ -61,7 +60,6 @@ class ElectronIDMVA {
         Float_t                   fMVAVar_EleSigmaIEtaIEta; 
         Float_t                   fMVAVar_EleDEtaIn; 
         Float_t                   fMVAVar_EleDPhiIn; 
-        Float_t                   fMVAVar_EleHoverE; 
         Float_t                   fMVAVar_EleD0; 
         Float_t                   fMVAVar_EleDZ; 
         Float_t                   fMVAVar_EleFBrem; 
