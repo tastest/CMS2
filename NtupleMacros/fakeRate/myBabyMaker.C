@@ -1331,6 +1331,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     numNomSSv4_   = muonId(iLep, NominalSSv4          );
                     fo_mussV4_04_ = muonId(iLep, muonSelectionFO_ssV4 );
                     numNomSSv4noIso_ = muonIdNotIsolated(iLep, NominalSSv4);
+                    fo_mussV4_noIso_ = muonIdNotIsolated(iLep, muonSelectionFO_ssV4 );
 
                     //OS
                     //num_mu_OSGV2_     = muonId(iLep, OSGeneric_v2);

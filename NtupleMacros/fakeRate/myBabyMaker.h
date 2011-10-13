@@ -176,6 +176,7 @@ private:
     Bool_t numNomSSv4_;   // NominalSSv4
     Bool_t fo_mussV4_04_; // muonSelectionFO_mu_ssV4
     Bool_t numNomSSv4noIso_; // NominalSSv4 with no isolation applied
+    Bool_t fo_mussV4_noIso_; // muonSleectionFO_mu_ssV4 with no isolation applied
 
     // WW, HWW
 
@@ -670,11 +671,12 @@ void myBabyMaker::InitBabyNtuple () {
 
     // Muons
     numNomSSv3_     = false;
-    fo_mussV3_04_   = false;
+    fo_mussV3_04_   = false;    
 
     numNomSSv4_     = false;
     fo_mussV4_04_   = false;
     numNomSSv4noIso_ = false; 
+    fo_mussV4_noIso_ = false;
 
     // WW, HWW
 
@@ -1097,6 +1099,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("numNomSSv4",   &numNomSSv4_       );
     babyTree_->Branch("fo_mussV4_04", &fo_mussV4_04_     );
     babyTree_->Branch("numNomSSv4noIso", &numNomSSv4noIso_);
+    babyTree_->Branch("fo_mussV4_noIso", &fo_mussV4_noIso_);
 
     // WW, HWW
 
@@ -1413,10 +1416,10 @@ myBabyMaker::myBabyMaker () {
         cms2_location += "/NtupleMacros";
     }
     electronIdMVA->Initialize("BDTG method", 2,
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_V2_BDTG.weights.xml");
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_WithIPInfo_BDTG.weights.xml");
 }
