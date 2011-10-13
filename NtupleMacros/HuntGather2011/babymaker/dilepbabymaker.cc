@@ -1760,10 +1760,10 @@ dilepbabymaker::dilepbabymaker()
         cms2_location += "/NtupleMacros";
     }
     electronIdMVA->Initialize("BDTG method", 2,
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_V2_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_V2_BDTG.weights.xml");
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_WithIPInfo_BDTG.weights.xml",
+                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_WithIPInfo_BDTG.weights.xml");
 }
