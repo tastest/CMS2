@@ -186,6 +186,7 @@ bool isGoodVertex(size_t ivtx) {
   return true;
 
 }
+
 // function to select a good vertex
 // 
 bool isGoodDAVertex(size_t ivtx) {
@@ -197,8 +198,6 @@ bool isGoodDAVertex(size_t ivtx) {
   return true;
 
 }
-
-
 
 //
 // function to check whether or not both the hypotheses 
@@ -367,6 +366,20 @@ int firstGoodDAvertex () {
     return -1;
 }
 
+//---------------------------------------------------------
+//
+// Find first good vertex
+//
+//---------------------------------------------------------
+int firstGoodVertex () {
+    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+        if (isGoodVertex(vidx))
+            return vidx;
+    }
+
+    return -1;
+}
+
 //----------------------------------------------------------------
 // checks whether the leptons of a given
 // hypothesis come from the same good vertex
@@ -397,7 +410,42 @@ bool hypsFromFirstGoodDAvertx(size_t hypIdx, float dz_cut) {
         ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, true).first;
 
     if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)
-        return true;
+        return true;    
+    
+    return false;
+}
+
+//----------------------------------------------------------------
+// checks whether the leptons of a given
+// hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 1cm of the same PV
+//----------------------------------------------------------------
+bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut) {
+
+    int vtxidx = firstGoodVertex ();
+
+    if (vtxidx < 0)
+        return false;
+
+    float lt_dz = -999.;
+    float ll_dz = -999.;
+    
+    int lt_idx = cms2.hyp_lt_index()[hypIdx];
+    int ll_idx = cms2.hyp_ll_index()[hypIdx];
+
+    if (abs(cms2.hyp_lt_id().at(hypIdx)) == 11)
+        lt_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(lt_idx), vtxidx, false).first;
+    else if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13)
+        lt_dz = trks_dz_pv (cms2.mus_trkidx().at(lt_idx), vtxidx, false).first;
+
+    if (abs(cms2.hyp_ll_id().at(hypIdx)) == 11)
+        ll_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(ll_idx), vtxidx, false).first;
+    else if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13)
+        ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, false).first;
+
+    if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)
+        return false;    
     
     return false;
 }

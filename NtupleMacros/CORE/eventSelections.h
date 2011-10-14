@@ -96,8 +96,9 @@ bool hypsFromSameVtx(size_t hypIdx);
 //----------------------------------------------------------------
 int hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool useDAvtxs = false, bool requireClosest = false);
 
-// find first good DA veratex
+// find first good DA vertex or vertex
 int firstGoodDAvertex ();
+int firstGoodVertex ();
 
 //----------------------------------------------------------------
 // checks whether the leptons of a given
@@ -106,6 +107,14 @@ int firstGoodDAvertex ();
 // of 1cm of the same PV
 //----------------------------------------------------------------
 bool hypsFromFirstGoodDAvertx(size_t hypIdx, float dz_cut = 1.0);
+
+//----------------------------------------------------------------
+// checks whether the leptons of a given
+// hypothesis come from the same good vertex
+// by checking if both leptons are within dz
+// of 1cm of the same PV
+//----------------------------------------------------------------
+bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut = 1.0);
 
 #endif
 
