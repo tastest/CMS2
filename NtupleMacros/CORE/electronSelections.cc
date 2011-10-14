@@ -82,14 +82,14 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (fabs(electron_d0PV_smurfV3(index)) < 0.04 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.20 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2_FO);
     if (vertex_index < 0) {
-        int vtxidx = firstGoodDAvertex();
+        int vtxidx = firstGoodVertex();
         if (vtxidx >= 0) {
             if (useGsfTrack) {
-                if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, true).first) < 0.02)
+                if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, false).first) < 0.02)
                     cuts_passed |= (1ll<<ELEIP_SS200);
             }
             else if (cms2.els_trkidx()[index] >= 0) {            
-                if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, true).first) < 0.02)
+                if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, false).first) < 0.02)
                     cuts_passed |= (1ll<<ELEIP_SS200);  
             }
         }
@@ -98,7 +98,7 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     }
     else {
         if (useGsfTrack) {
-            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vertex_index, true).first) < 0.02)
+            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vertex_index, false).first) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
         else if (cms2.els_trkidx()[index] < 0) {
@@ -106,7 +106,7 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
         else {
-            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.02)
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, false).first) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
     }
