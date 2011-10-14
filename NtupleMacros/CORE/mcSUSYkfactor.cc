@@ -14,7 +14,7 @@
 #include "TAxis.h"
 #include <iostream>
 
-#include "mcSelections.cc"
+#include "mcSelections.h"
 //#include "CMS2.cc"
 
 

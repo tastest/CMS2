@@ -9,7 +9,7 @@
 #include "CMS2.h"
 
 #include "susySelections.h"
-#include "triggerUtils.cc"
+#include "triggerUtils.h"
 #include "electronSelections.h"
 #include "muonSelections.h"
 #include "eventSelections.h"
