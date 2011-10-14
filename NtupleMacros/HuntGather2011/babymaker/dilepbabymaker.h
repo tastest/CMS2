@@ -52,7 +52,7 @@ private:
     char    dataset_[200];
     Int_t   run_;
     Int_t   ls_;
-    Int_t   evt_;
+    UInt_t  evt_;
     Float_t rndm_;
     Int_t   evt_clean082010_;
     Int_t   evt_clean102010_;

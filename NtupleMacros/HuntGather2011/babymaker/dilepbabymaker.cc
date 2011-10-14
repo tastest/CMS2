@@ -422,8 +422,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                 //
                 // check if leptons are from the same vertex
                 //
-                int vertex_index = firstGoodDAvertex();
-                lepsFromSameVtx_ = hypsFromFirstGoodDAvertx(hypi);
+                int vertex_index = firstGoodVertex();
+                lepsFromSameVtx_ = hypsFromFirstGoodVertex(hypi);
 
                 //
                 // clean jets for ALL leptons
@@ -1005,7 +1005,7 @@ void dilepbabymaker::InitBabyNtuple ()
     rndm_             = -999999.;
     run_              = -999999;
     ls_               = -999999;
-    evt_              = -999999;
+    evt_              = 0;
     isdata_           = 1;
     evt_clean082010_  = -999999;
     evt_clean102010_  = -999999;    
@@ -1336,7 +1336,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dataset",      &dataset_,     "dataset[200]/C");
     babyTree_->Branch("run",          &run_,         "run/I"         );
     babyTree_->Branch("ls",           &ls_,          "ls/I"          );
-    babyTree_->Branch("evt",          &evt_,         "evt/I"         );
+    babyTree_->Branch("evt",          &evt_,         "evt/i"         );
     babyTree_->Branch("nvtx",         &nvtx_,        "nvtx/I"        );
     babyTree_->Branch("isdata",       &isdata_,      "isdata/I"      );
     babyTree_->Branch("evt_clean082010",       &evt_clean082010_,      "evt_clean082010/I"      );
