@@ -44,7 +44,7 @@ private:
     // Basic Event Information
     Int_t   run_;
     Int_t   ls_;
-    Int_t   evt_;
+    UInt_t   evt_;
     Float_t weight_;
 
     // Pileup - PUSummaryInfoMaker
@@ -550,7 +550,7 @@ void myBabyMaker::InitBabyNtuple () {
     // 
     run_ = -1;
     ls_  = -1;
-    evt_ = -1;
+    evt_ = 0;
     weight_ = 1.;
   
     // Pileup - PUSummaryInfoMaker
