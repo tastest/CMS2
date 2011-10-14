@@ -207,6 +207,7 @@ private:
     Bool_t  mu1_numSSv4_;
     Bool_t  mu1_numSSv4noIso_;
     Bool_t  mu1_foSSv4_;
+    Bool_t  mu1_foSSv4noIso_;
     Bool_t  mu1_numSSv3_;
     Bool_t  mu1_foSSv3_;
     Bool_t  mu1_muonidfull_;
@@ -227,6 +228,7 @@ private:
     Bool_t  mu2_numSSv4_;
     Bool_t  mu2_numSSv4noIso_;
     Bool_t  mu2_foSSv4_;
+    Bool_t  mu2_foSSv4noIso_;
     Bool_t  mu2_numSSv3_;
     Bool_t  mu2_foSSv3_;
     Bool_t  mu2_muonidfull_;

@@ -758,6 +758,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_numSSv4_      = muonId(index1, NominalSSv4);
                     mu1_numSSv4noIso_ = muonIdNotIsolated(index1, NominalSSv4);
                     mu1_foSSv4_       = muonId(index1, muonSelectionFO_ssV4);
+                    mu1_foSSv4noIso_  = muonIdNotIsolated(index1, muonSelectionFO_ssV4);
                     mu1_numSSv3_      = muonId(index1, NominalSSv3);
                     mu1_foSSv3_       = muonId(index1, muonSelectionFO_ssV3);
                     mu1_muonidfull_   = muonId(index1, OSGeneric_v3);
@@ -874,6 +875,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_numSSv4_      = muonId(index2, NominalSSv4);
                     mu2_numSSv4noIso_ = muonIdNotIsolated(index2, NominalSSv4);
                     mu2_foSSv4_       = muonId(index2, muonSelectionFO_ssV4);
+                    mu2_foSSv4noIso_  = muonIdNotIsolated(index2, muonSelectionFO_ssV4);
                     mu2_numSSv3_      = muonId(index2, NominalSSv3);
                     mu2_foSSv3_       = muonId(index2, muonSelectionFO_ssV3);
                     mu2_muonidfull_   = muonId(index2, OSGeneric_v3);
@@ -1162,6 +1164,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu1_numSSv4_      = 0;
     mu1_numSSv4noIso_      = 0;
     mu1_foSSv4_       = 0;
+    mu1_foSSv4noIso_       = 0;
     mu1_numSSv3_      = 0;
     mu1_foSSv3_       = 0;
     mu1_muonidfull_   = 0;
@@ -1182,6 +1185,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mu2_numSSv4_      = 0;
     mu2_numSSv4noIso_      = 0;
     mu2_foSSv4_       = 0;
+    mu2_foSSv4noIso_       = 0;
     mu2_numSSv3_      = 0;
     mu2_foSSv3_       = 0;
     mu2_muonidfull_   = 0;
@@ -1492,6 +1496,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu1_numSSv4",      &mu1_numSSv4_,      "mu1_numSSv4/O"     );
     babyTree_->Branch("mu1_numSSv4noIso",      &mu1_numSSv4noIso_,      "mu1_numSSv4noIso/O"     );
     babyTree_->Branch("mu1_foSSv4",       &mu1_foSSv4_,       "mu1_foSSv4/O"      );
+    babyTree_->Branch("mu1_foSSv4noIso",       &mu1_foSSv4noIso_,       "mu1_foSSv4noIso/O"      );
     babyTree_->Branch("mu1_numSSv3",      &mu1_numSSv3_,      "mu1_numSSv3/O"     );
     babyTree_->Branch("mu1_foSSv3",       &mu1_foSSv3_,       "mu1_foSSv3/O"      );
     babyTree_->Branch("mu1_muonidfull",   &mu1_muonidfull_,   "mu1_muonidfull/O"  );
@@ -1512,6 +1517,7 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu2_numSSv4",      &mu2_numSSv4_,      "mu2_numSSv4/O"     );
     babyTree_->Branch("mu2_numSSv4noIso",      &mu2_numSSv4noIso_,      "mu2_numSSv4noIso/O"     );
     babyTree_->Branch("mu2_foSSv4",       &mu2_foSSv4_,       "mu2_foSSv4/O"      );
+    babyTree_->Branch("mu2_foSSv4noIso",       &mu2_foSSv4noIso_,       "mu2_foSSv4noIso/O"      );
     babyTree_->Branch("mu2_numSSv3",      &mu2_numSSv3_,      "mu2_numSSv3/O"     );
     babyTree_->Branch("mu2_foSSv3",       &mu2_foSSv3_,       "mu2_foSSv3/O"      );
     babyTree_->Branch("mu2_muonidfull",   &mu2_muonidfull_,   "mu2_muonidfull/O"  );
