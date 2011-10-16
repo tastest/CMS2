@@ -445,7 +445,7 @@ bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut) {
         ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, false).first;
 
     if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)
-        return false;    
+        return true;    
     
     return false;
 }
