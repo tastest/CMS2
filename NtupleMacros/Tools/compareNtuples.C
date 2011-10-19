@@ -114,7 +114,7 @@ vector<TString> getUncommonBranches(vector<TString> aliasnames,
 //-----------------------------------------------------------------------
 
 void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true", bool drawWithErrors="true",
-		    double ksMinThreshold = 0.9999) {
+		    double ksMinThreshold = 0.001) {
   
   //TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   
@@ -541,6 +541,6 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     
   }//for loop
    
-  c1->SaveAs("diff.ps)");  
+  //c1->SaveAs("diff.ps)");  
 }
   
