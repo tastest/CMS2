@@ -799,6 +799,48 @@ static const cuts_t electronSelectionFOV5_ssVBTF80_v3 =       // V3 - relaxed is
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
                  (1ll<<ELESEED_ECAL);
 
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+// Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_ssV5_noIso_noConvCuts = 
+           electronSelectionFO_SS_baselineV2   |
+           electronSelection_smurfV1ss_id      |
+           (1ll<<ELEIP_SS200)                  |
+           (1ll<<ELESEED_ECAL)                 |
+           (1ll<<ELE_NOT_TRANSITION)           |
+           (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+static const cuts_t electronSelection_ssV5_iso_noConvCuts =
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelection_ssV5_noConvCuts = 
+                       electronSelection_ssV5_noIso_noConvCuts |
+                       electronSelection_ssV5_iso_noConvCuts;
+
+// Loose "Fakeable Object" Selection (fake rate denominators)
+
+static const cuts_t electronSelectionFOV5_ssVBTF80_noConvCuts_v1 =       // V1 - relaxed Id & Isolation
+                 electronSelectionFO_SS_baselineV2   |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
+
+static const cuts_t electronSelectionFOV5_ssVBTF80_noConvCuts_v2 =       // V2 - relaxed Id
+                 electronSelectionFO_SS_baselineV2   |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL)                 |
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelectionFOV5_ssVBTF80_noConvCuts_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+                 electronSelectionFO_SS_baselineV2   |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 electronSelection_smurfV1ss_id      |              
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
+
 /////////////////////////////////////
 // End 2011 SS Selections          //
 /////////////////////////////////////
