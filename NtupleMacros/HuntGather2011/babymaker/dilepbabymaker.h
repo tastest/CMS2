@@ -250,6 +250,9 @@ private:
     Bool_t  e1_numSSv5_;
     Bool_t  e1_numSSv5noIso_;
     Bool_t  e1_foSSv5_;
+    Bool_t  e1_numSSv5_noConvCuts_;
+    Bool_t  e1_numSSv5noIso_noConvCuts_;
+    Bool_t  e1_foSSv5_noConvCuts_;
     Bool_t  e1_numSSv4_;
     Bool_t  e1_foSSv4_;
     Bool_t  e1_numSSv3_;
@@ -273,6 +276,8 @@ private:
     Int_t   e1_nmHits_;
     Float_t e1_dcot_;
     Float_t e1_dist_;
+    Float_t e1_dcot_old_;
+    Float_t e1_dist_old_;
     Float_t e1_drmu_;
     Float_t e1_drmuSS_;
     Bool_t  e1_isspike_;
@@ -294,6 +299,9 @@ private:
     Bool_t  e2_numSSv5_;
     Bool_t  e2_numSSv5noIso_;
     Bool_t  e2_foSSv5_;
+    Bool_t  e2_numSSv5_noConvCuts_;
+    Bool_t  e2_numSSv5noIso_noConvCuts_;
+    Bool_t  e2_foSSv5_noConvCuts_;
     Bool_t  e2_numSSv4_;
     Bool_t  e2_foSSv4_;
     Bool_t  e2_numSSv3_;
@@ -317,6 +325,8 @@ private:
     Int_t   e2_nmHits_;
     Float_t e2_dcot_;
     Float_t e2_dist_;
+    Float_t e2_dcot_old_;
+    Float_t e2_dist_old_;
     Float_t e2_drmu_;
     Float_t e2_drmuSS_;
     Bool_t  e2_isspike_;

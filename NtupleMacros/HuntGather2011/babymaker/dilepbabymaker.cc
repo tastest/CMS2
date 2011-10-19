@@ -801,15 +801,18 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_vbtf70_      = (answer_vbtf70 & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID);
 
                     cuts_t electron_selection = electronSelection(index1);
-                    e1_vbtf90full_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_el_OSV3);
-                    e1_smurfV3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
-                    e1_numSSv3_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
-                    e1_foSSv3_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
-                    e1_numSSv4_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV4);
-                    e1_foSSv4_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV4_ssVBTF80_v3);
-                    e1_numSSv5_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5);
-                    e1_foSSv5_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV5_ssVBTF80_v3);
+                    e1_vbtf90full_   = pass_electronSelectionCompareMask(electron_selection, electronSelection_el_OSV3);
+                    e1_smurfV3_      = pass_electronSelectionCompareMask(electron_selection, electronSelection_smurfV3_id);
+                    e1_numSSv3_      = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV3);
+                    e1_foSSv3_       = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV3_ssVBTF80_v3);
+                    e1_numSSv4_      = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV4);
+                    e1_foSSv4_       = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV4_ssVBTF80_v3);
+                    e1_numSSv5_      = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5);
+                    e1_foSSv5_       = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV5_ssVBTF80_v3);
                     e1_numSSv5noIso_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5_noIso);
+                    e1_numSSv5_noConvCuts_      = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5_noConvCuts);
+                    e1_foSSv5_noConvCuts_       = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV5_ssVBTF80_noConvCuts_v3);
+                    e1_numSSv5noIso_noConvCuts_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5_noIso_noConvCuts);
 
                     e1_scet_        = cms2.els_eSC()[index1] / cosh(cms2.els_etaSC()[index1]);
                     e1_sceta_       = cms2.els_etaSC()[index1];
@@ -824,6 +827,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_nmHits_      = cms2.els_exp_innerlayers()[index1];
                     e1_dcot_        = cms2.els_conv_dcot()[index1];
                     e1_dist_        = cms2.els_conv_dist()[index1];
+                    e1_dcot_old_    = cms2.els_conv_old_dcot()[index1];
+                    e1_dist_old_    = cms2.els_conv_old_dist()[index1];
                     e1_drmu_        = cms2.els_closestMuon()[index1] < 0 ? -999999. : cms2.els_musdr()[index1];
                     if (cms2.els_closestMuon()[index1] < 0)
                         e1_drmuSS_ = -999999.;
@@ -927,6 +932,9 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_numSSv5_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5);
                     e2_foSSv5_  = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV5_ssVBTF80_v3);
                     e2_numSSv5noIso_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5_noIso);
+                    e2_numSSv5_noConvCuts_      = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5_noConvCuts);
+                    e2_foSSv5_noConvCuts_       = pass_electronSelectionCompareMask(electron_selection, electronSelectionFOV5_ssVBTF80_noConvCuts_v3);
+                    e2_numSSv5noIso_noConvCuts_ = pass_electronSelectionCompareMask(electron_selection, electronSelection_ssV5_noIso_noConvCuts);
 
                     e2_scet_        = cms2.els_eSC()[index2] / cosh(cms2.els_etaSC()[index2]);
                     e2_sceta_       = cms2.els_etaSC()[index2];
@@ -941,6 +949,8 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_nmHits_      = cms2.els_exp_innerlayers()[index2];
                     e2_dcot_        = cms2.els_conv_dcot()[index2];
                     e2_dist_        = cms2.els_conv_dist()[index2];
+                    e2_dcot_old_    = cms2.els_conv_old_dcot()[index2];
+                    e2_dist_old_    = cms2.els_conv_old_dist()[index2];
                     e2_drmu_        = cms2.els_closestMuon()[index2] < 0 ? -999999. : cms2.els_musdr()[index2];
                     if (cms2.els_closestMuon()[index2] < 0)
                         e2_drmuSS_ = -999999.;
@@ -1120,7 +1130,7 @@ void dilepbabymaker::InitBabyNtuple ()
     mc3motherid1_     = -999999;
     mc3pt1_           = -999999;
     mc3motherpt1_     = -999999.;
-    eormu2_           = -999999.;
+    eormu2_           = -999999;
     type2_            = -999999;
     pt2_              = -999999.;
     eta2_             = -999999.;
@@ -1205,8 +1215,11 @@ void dilepbabymaker::InitBabyNtuple ()
 
     // electron stuff
     e1_numSSv5_       = 0;
-    e1_numSSv5noIso_       = 0;
+    e1_numSSv5noIso_  = 0;
     e1_foSSv5_        = 0;
+    e1_numSSv5_noConvCuts_       = 0;
+    e1_numSSv5noIso_noConvCuts_  = 0;
+    e1_foSSv5_noConvCuts_        = 0;
     e1_numSSv4_       = 0;
     e1_foSSv4_        = 0;
     e1_numSSv3_       = 0;
@@ -1230,6 +1243,8 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_nmHits_        = -999999;
     e1_dcot_          = -999999.;
     e1_dist_          = -999999.;
+    e1_dcot_old_      = -999999.;
+    e1_dist_old_      = -999999.;
     e1_drmu_          = -999999.;
     e1_drmuSS_        = -999999.;
     e1_isspike_       = 0;
@@ -1249,8 +1264,11 @@ void dilepbabymaker::InitBabyNtuple ()
     e1_mva_                   = -999999.;
 
     e2_numSSv5_       = 0;
-    e2_numSSv5noIso_       = 0;
+    e2_numSSv5noIso_  = 0;
     e2_foSSv5_        = 0;
+    e2_numSSv5_noConvCuts_       = 0;
+    e2_numSSv5noIso_noConvCuts_  = 0;
+    e2_foSSv5_noConvCuts_        = 0;
     e2_numSSv4_       = 0;
     e2_foSSv4_        = 0;
     e2_numSSv3_       = 0;
@@ -1274,6 +1292,8 @@ void dilepbabymaker::InitBabyNtuple ()
     e2_nmHits_        = -999999;
     e2_dcot_          = -999999.;
     e2_dist_          = -999999.;
+    e2_dcot_old_      = -999999.;
+    e2_dist_old_      = -999999.;
     e2_drmu_          = -999999.;
     e2_drmuSS_        = -999999.;
     e2_isspike_       = 0;
@@ -1540,6 +1560,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_numSSv5",    &e1_numSSv5_,    "e1_numSSv5/O"   );
     babyTree_->Branch("e1_numSSv5noIso",    &e1_numSSv5noIso_,    "e1_numSSv5noIso/O"   );
     babyTree_->Branch("e1_foSSv5",     &e1_foSSv5_,     "e1_foSSv5/O"    );
+    babyTree_->Branch("e1_numSSv5_noConvCuts",    &e1_numSSv5_noConvCuts_,    "e1_numSSv5_noConvCuts/O"   );
+    babyTree_->Branch("e1_numSSv5noIso_noConvCuts",    &e1_numSSv5noIso_noConvCuts_,    "e1_numSSv5noIso_noConvCuts/O"   );
+    babyTree_->Branch("e1_foSSv5_noConvCuts",     &e1_foSSv5_noConvCuts_,     "e1_foSSv5_noConvCuts/O"    );
     babyTree_->Branch("e1_numSSv4",    &e1_numSSv4_,    "e1_numSSv4/O"   );
     babyTree_->Branch("e1_foSSv4",     &e1_foSSv4_,     "e1_foSSv4/O"    );
     babyTree_->Branch("e1_numSSv3",    &e1_numSSv3_,    "e1_numSSv3/O"   );
@@ -1563,6 +1586,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e1_nmHits",     &e1_nmHits_,     "e1_nmHits/I"    );
     babyTree_->Branch("e1_dcot",       &e1_dcot_,       "e1_dcot/F"      );
     babyTree_->Branch("e1_dist",       &e1_dist_,       "e1_dist/F"      );
+    babyTree_->Branch("e1_dcot_old",   &e1_dcot_old_,   "e1_dcot_old/F"      );
+    babyTree_->Branch("e1_dist_old",   &e1_dist_old_,   "e1_dist_old/F"      );
     babyTree_->Branch("e1_drmu",       &e1_drmu_,       "e1_drmu/F"      );
     babyTree_->Branch("e1_drmuSS",     &e1_drmuSS_,     "e1_drmuSS/F"    );
     babyTree_->Branch("e1_isspike",    &e1_isspike_,    "e1_isspike/O"   );
@@ -1583,6 +1608,9 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_numSSv5",    &e2_numSSv5_,    "e2_numSSv5/O"   );
     babyTree_->Branch("e2_numSSv5noIso",    &e2_numSSv5noIso_,    "e2_numSSv5noIso/O"   );
     babyTree_->Branch("e2_foSSv5",     &e2_foSSv5_,     "e2_foSSv5/O"    );
+    babyTree_->Branch("e2_numSSv5_noConvCuts",    &e2_numSSv5_noConvCuts_,    "e2_numSSv5_noConvCuts/O"   );
+    babyTree_->Branch("e2_numSSv5noIso_noConvCuts",    &e2_numSSv5noIso_noConvCuts_,    "e2_numSSv5noIso_noConvCuts/O"   );
+    babyTree_->Branch("e2_foSSv5_noConvCuts",     &e2_foSSv5_noConvCuts_,     "e2_foSSv5_noConvCuts/O"    );
     babyTree_->Branch("e2_numSSv4",    &e2_numSSv4_,    "e2_numSSv4/O"   );
     babyTree_->Branch("e2_foSSv4",     &e2_foSSv4_,     "e2_foSSv4/O"    );
     babyTree_->Branch("e2_numSSv3",    &e2_numSSv3_,    "e2_numSSv3/O"   );
@@ -1606,6 +1634,8 @@ void dilepbabymaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("e2_nmHits",     &e2_nmHits_,     "e2_nmHits/I"    );
     babyTree_->Branch("e2_dcot",       &e2_dcot_,       "e2_dcot/F"      );
     babyTree_->Branch("e2_dist",       &e2_dist_,       "e2_dist/F"      );
+    babyTree_->Branch("e2_dcot_old",   &e2_dcot_old_,   "e2_dcot_old/F"  );
+    babyTree_->Branch("e2_dist_old",   &e2_dist_old_,   "e2_dist_old/F"  );
     babyTree_->Branch("e2_drmu",       &e2_drmu_,       "e2_drmu/F"      );
     babyTree_->Branch("e2_drmuSS",     &e2_drmuSS_,     "e2_drmuSS/F"    );
     babyTree_->Branch("e2_isspike",    &e2_isspike_,    "e2_isspike/O"   );
