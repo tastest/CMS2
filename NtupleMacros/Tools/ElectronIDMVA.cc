@@ -1,8 +1,8 @@
-
 #include "ElectronIDMVA.h"
 
 #include "../CORE/CMS2.h"
 #include "../CORE/electronSelections.h"
+#include "../CORE/trackSelections.h"
 
 #include "TFile.h"
 #include "TRandom3.h"
@@ -130,11 +130,16 @@ Double_t ElectronIDMVA::MVAValue(const unsigned int ele, const unsigned int vert
     fMVAVar_EleSigmaIPhiIPhi =          cms2.els_sigmaIPhiIPhi()[ele];
     fMVAVar_EleNBrem =                  cms2.els_nSeed()[ele];
     TVector3 pIn(cms2.els_trk_p4()[ele].px(), cms2.els_trk_p4()[ele].py(), cms2.els_trk_p4()[ele].pz());
-    fMVAVar_EleOneOverEMinusOneOverP =  1./(cms2.els_eOverPIn()[ele]*pIn.Mag()) - 1./pIn.Mag();
+    fMVAVar_EleOneOverEMinusOneOverP =  1./cms2.els_eSC()[ele] - 1./pIn.Mag();
     fMVAVar_EleESeedClusterOverPIn =    cms2.els_eSeedOverPIn()[ele];
-    fMVAVar_EleIP3d =                   cms2.els_ubIp3d()[ele]; 
-    if (cms2.els_ubIp3derr()[ele] == 0.0) fMVAVar_EleIP3dSig = 0.0;
-    else fMVAVar_EleIP3dSig =           cms2.els_ubIp3d()[ele] / cms2.els_ubIp3derr()[ele]; 
+    const double gsfsign   = ( (gsftrks_d0_pv(cms2.els_gsftrkidx().at(ele),0).first)   >=0 ) ? 1. : -1.;
+    fMVAVar_EleIP3d =                   cms2.els_ip3d()[ele]*gsfsign; 
+    if (cms2.els_ip3derr()[ele] == 0.0) fMVAVar_EleIP3dSig = 0.0;
+    else fMVAVar_EleIP3dSig =           cms2.els_ip3d()[ele]*gsfsign / cms2.els_ip3derr()[ele]; 
+    //to be used with tags not including els_ip3d branch:
+    //fMVAVar_EleIP3d =                   cms2.els_ubIp3d()[ele]*gsfsign; 
+    //if (cms2.els_ubIp3derr()[ele] == 0.0) fMVAVar_EleIP3dSig = 0.0;
+    //else fMVAVar_EleIP3dSig =           cms2.els_ubIp3d()[ele]*gsfsign / cms2.els_ubIp3derr()[ele]; 
 
     Double_t mva = -9999;  
     TMVA::Reader *reader = 0;
@@ -149,6 +154,35 @@ Double_t ElectronIDMVA::MVAValue(const unsigned int ele, const unsigned int vert
     reader = fTMVAReader[MVABin];
 
     mva = reader->EvaluateMVA( fMethodname );
+
+    /*
+    //DEBUG
+    cout << endl;
+    cout << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
+    cout << "Electron pt eta phi : etaSC " << cms2.els_p4()[ele].Pt() << " " << cms2.els_p4()[ele].Eta() << " " <<
+      cms2.els_p4()[ele].Phi() << " : " << fabs(cms2.els_etaSC()[ele]) << endl;
+    cout << fMVAVar_EleSigmaIEtaIEta << " "
+	 << fMVAVar_EleDEtaIn << " "
+	 << fMVAVar_EleDPhiIn << " "
+      //<< fMVAVar_EleHoverE << " "
+	 << fMVAVar_EleD0 << " "
+	 << fMVAVar_EleDZ << " "
+	 << fMVAVar_EleFBrem << " "
+	 << fMVAVar_EleEOverP << " "
+	 << fMVAVar_EleESeedClusterOverPout << " "
+	 << fMVAVar_EleSigmaIPhiIPhi << " "
+	 << fMVAVar_EleNBrem << " "
+	 << fMVAVar_EleOneOverEMinusOneOverP << " "
+	 << fMVAVar_EleESeedClusterOverPIn << " "
+	 << fMVAVar_EleIP3d << " "
+	 << fMVAVar_EleIP3dSig << " "
+      //<< fMVAVar_EleStandardLikelihood << "(" << lh << ") "
+	 << gsftrks_d0_pv(ele,0).first << " "
+	 << electron_d0PV_wwV1(ele)
+	 << endl;
+    cout << "MVA: " << mva << endl;
+    cout << endl;
+    */
     return mva;
 
 }
