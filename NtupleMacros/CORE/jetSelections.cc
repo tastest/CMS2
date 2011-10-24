@@ -1,9 +1,10 @@
-// $Id: jetSelections.cc,v 1.19 2011/06/01 22:29:46 slava77 Exp $
+// $Id: jetSelections.cc,v 1.20 2011/10/24 09:57:51 cerati Exp $
 
 #include <algorithm>
 #include <utility>
 #include "Math/VectorUtil.h"
 #include "jetSelections.h"
+#include "trackSelections.h"
 #include "jetcorr/JetCorrectorParameters.icc"
 #include "jetcorr/FactorizedJetCorrector.icc"
 #include "jetcorr/SimpleJetCorrector.icc"
@@ -382,4 +383,24 @@ float randomConeEventDensity(){
   if (sumPFNallSMDQ.size()%2) evt_smdq = sumPFNallSMDQ[(sumPFNallSMDQ.size()-1)/2];
   else evt_smdq = (sumPFNallSMDQ[sumPFNallSMDQ.size()/2]+sumPFNallSMDQ[(sumPFNallSMDQ.size()-2)/2])/2.;
   return evt_smdq/(etadist*phidist);
+}
+
+
+float jetDz(int ijet, int ivtx) {
+  //add protection against non-pf jets
+  vector<int> cands = cms2.pfjets_pfcandIndicies().at(ijet);
+  float jptsq   = 0;
+  float jptsqdz = 0;
+  for (unsigned int ivc=0;ivc<cands.size();ivc++) {
+    int ican = cands[ivc];
+    if (cms2.pfcands_charge().at(ican)==0) continue;
+    int itrk = cms2.pfcands_trkidx().at(ican);
+    if (itrk<0) continue;
+    float ptsq = cms2.trks_trk_p4().at(itrk).pt()*cms2.trks_trk_p4().at(itrk).pt();
+    float dzc = trks_dz_pv(itrk,ivtx).first;
+    jptsq+=ptsq;
+    jptsqdz+=ptsq*dzc;
+  }
+  if (jptsq>1E-6) return jptsqdz/jptsq;
+  else return 99999.;
 }

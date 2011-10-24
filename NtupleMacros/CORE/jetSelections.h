@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.12 2011/05/13 15:21:17 cerati Exp $
+// $Id: jetSelections.h,v 1.13 2011/10/24 09:57:51 cerati Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -89,5 +89,7 @@ bool passesCaloJetID (const LorentzVector &jetp4);
 bool passesPFJetID(unsigned int pfJetIdx);
 
 float randomConeEventDensity();
+
+float jetDz(int ijet, int ivtx);
 
 #endif // SEL_JETS_H
