@@ -16,5 +16,6 @@ bool passUnprescaledHLTTrigger(const char* arg);
 bool passUnprescaledHLTTrigger(const char* arg, const LorentzVector &obj);
 
 int HLT_prescale( const char* arg );
+int L1_prescale ( const char* arg );
 
 #endif
