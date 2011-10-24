@@ -1,6 +1,7 @@
 #include "CMS2.h"
 CMS2 cms2;
 namespace tas {
+	TBits &hlt_bits() { return cms2.hlt_bits(); }
 	TString &evt_CMS2tag() { return cms2.evt_CMS2tag(); }
 	TString &evt_dataset() { return cms2.evt_dataset(); }
 	vector<TString> &hlt_trigNames() { return cms2.hlt_trigNames(); }
@@ -10,11 +11,16 @@ namespace tas {
 	vector<TString> &evt_errModule() { return cms2.evt_errModule(); }
 	vector<TString> &evt_errSeverity() { return cms2.evt_errSeverity(); }
 	bool &evt_eventHasHalo() { return cms2.evt_eventHasHalo(); }
+	bool &ecalnoise_dRFilter() { return cms2.ecalnoise_dRFilter(); }
+	bool &ecalnoise_TPFilter() { return cms2.ecalnoise_TPFilter(); }
+	bool &ecalnoise_eeBadRecov() { return cms2.ecalnoise_eeBadRecov(); }
+	bool &ecalnoise_eeRedRecHits() { return cms2.ecalnoise_eeRedRecHits(); }
 	bool &hcalnoise_HasBadRBXTS4TS5() { return cms2.hcalnoise_HasBadRBXTS4TS5(); }
 	bool &ls_isValid() { return cms2.ls_isValid(); }
 	bool &evt_hbheFilter() { return cms2.evt_hbheFilter(); }
 	vector<bool> &mus_tightMatch() { return cms2.mus_tightMatch(); }
 	vector<bool> &mus_updatedSta() { return cms2.mus_updatedSta(); }
+	vector<bool> &pfcands_isMuIso() { return cms2.pfcands_isMuIso(); }
 	vector<bool> &photons_haspixelSeed() { return cms2.photons_haspixelSeed(); }
 	vector<double> &jets_closestElectron_DR() { return cms2.jets_closestElectron_DR(); }
 	vector<double> &jets_closestMuon_DR() { return cms2.jets_closestMuon_DR(); }
@@ -396,6 +402,8 @@ namespace tas {
 	vector<float> &els_hcalDepth2TowerSumEt04() { return cms2.els_hcalDepth2TowerSumEt04(); }
 	vector<float> &els_hcalIso() { return cms2.els_hcalIso(); }
 	vector<float> &els_hcalIso04() { return cms2.els_hcalIso04(); }
+	vector<float> &els_ip3d() { return cms2.els_ip3d(); }
+	vector<float> &els_ip3derr() { return cms2.els_ip3derr(); }
 	vector<float> &els_iso03_pf() { return cms2.els_iso03_pf(); }
 	vector<float> &els_iso04_pf() { return cms2.els_iso04_pf(); }
 	vector<float> &els_layer1_charge() { return cms2.els_layer1_charge(); }
@@ -510,8 +518,10 @@ namespace tas {
 	vector<float> &mus_met_deltay() { return cms2.mus_met_deltay(); }
 	vector<float> &mus_eledr() { return cms2.mus_eledr(); }
 	vector<float> &mus_jetdr() { return cms2.mus_jetdr(); }
+	vector<float> &mus_backToBackCompat() { return cms2.mus_backToBackCompat(); }
 	vector<float> &mus_caloCompatibility() { return cms2.mus_caloCompatibility(); }
 	vector<float> &mus_chi2() { return cms2.mus_chi2(); }
+	vector<float> &mus_cosmicCompat() { return cms2.mus_cosmicCompat(); }
 	vector<float> &mus_d0() { return cms2.mus_d0(); }
 	vector<float> &mus_d0Err() { return cms2.mus_d0Err(); }
 	vector<float> &mus_d0corr() { return cms2.mus_d0corr(); }
@@ -547,6 +557,7 @@ namespace tas {
 	vector<float> &mus_iso_hovetoDep() { return cms2.mus_iso_hovetoDep(); }
 	vector<float> &mus_iso_trckvetoDep() { return cms2.mus_iso_trckvetoDep(); }
 	vector<float> &mus_ndof() { return cms2.mus_ndof(); }
+	vector<float> &mus_overlapCompat() { return cms2.mus_overlapCompat(); }
 	vector<float> &mus_phiErr() { return cms2.mus_phiErr(); }
 	vector<float> &mus_ptErr() { return cms2.mus_ptErr(); }
 	vector<float> &mus_qoverp() { return cms2.mus_qoverp(); }
@@ -565,11 +576,13 @@ namespace tas {
 	vector<float> &mus_timeAtIpInOutErr() { return cms2.mus_timeAtIpInOutErr(); }
 	vector<float> &mus_timeAtIpOutIn() { return cms2.mus_timeAtIpOutIn(); }
 	vector<float> &mus_timeAtIpOutInErr() { return cms2.mus_timeAtIpOutInErr(); }
+	vector<float> &mus_timeCompat() { return cms2.mus_timeCompat(); }
 	vector<float> &mus_ubIp3d() { return cms2.mus_ubIp3d(); }
 	vector<float> &mus_ubIp3derr() { return cms2.mus_ubIp3derr(); }
 	vector<float> &mus_ubd0() { return cms2.mus_ubd0(); }
 	vector<float> &mus_ubd0err() { return cms2.mus_ubd0err(); }
 	vector<float> &mus_ubz0() { return cms2.mus_ubz0(); }
+	vector<float> &mus_vertexCompat() { return cms2.mus_vertexCompat(); }
 	vector<float> &mus_vertexphi() { return cms2.mus_vertexphi(); }
 	vector<float> &mus_z0() { return cms2.mus_z0(); }
 	vector<float> &mus_z0Err() { return cms2.mus_z0Err(); }
@@ -750,6 +763,8 @@ namespace tas {
 	int &evt_nHaloTriggerCandidates() { return cms2.evt_nHaloTriggerCandidates(); }
 	int &evt_tightHaloId() { return cms2.evt_tightHaloId(); }
 	int &evt_bsType() { return cms2.evt_bsType(); }
+	int &boundaryStatus() { return cms2.boundaryStatus(); }
+	int &deadCellStatus() { return cms2.deadCellStatus(); }
 	int &evt_bunchCrossing() { return cms2.evt_bunchCrossing(); }
 	int &evt_experimentType() { return cms2.evt_experimentType(); }
 	int &evt_isRealData() { return cms2.evt_isRealData(); }
@@ -1042,17 +1057,6 @@ namespace tas {
 	unsigned int &genps_flavorHistoryFilterResult() { return cms2.genps_flavorHistoryFilterResult(); }
 	unsigned int &evt_ngenjets() { return cms2.evt_ngenjets(); }
 	unsigned int &genps_signalProcessID() { return cms2.genps_signalProcessID(); }
-	unsigned int &hlt_bits1() { return cms2.hlt_bits1(); }
-	unsigned int &hlt_bits10() { return cms2.hlt_bits10(); }
-	unsigned int &hlt_bits11() { return cms2.hlt_bits11(); }
-	unsigned int &hlt_bits2() { return cms2.hlt_bits2(); }
-	unsigned int &hlt_bits3() { return cms2.hlt_bits3(); }
-	unsigned int &hlt_bits4() { return cms2.hlt_bits4(); }
-	unsigned int &hlt_bits5() { return cms2.hlt_bits5(); }
-	unsigned int &hlt_bits6() { return cms2.hlt_bits6(); }
-	unsigned int &hlt_bits7() { return cms2.hlt_bits7(); }
-	unsigned int &hlt_bits8() { return cms2.hlt_bits8(); }
-	unsigned int &hlt_bits9() { return cms2.hlt_bits9(); }
 	unsigned int &evt_njets() { return cms2.evt_njets(); }
 	unsigned int &evt_njpts() { return cms2.evt_njpts(); }
 	unsigned int &l1_bits1() { return cms2.l1_bits1(); }
