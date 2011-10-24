@@ -27,6 +27,7 @@ bool   ww_elIso(unsigned int i);
 double ww_elIsoVal(unsigned int i);
 
 // combined analysis selectors
+bool goodElectronTMVA(unsigned int i);
 bool goodElectronWithoutIsolation(unsigned int i);
 bool goodElectronIsolated(unsigned int i);
 enum EleFOTypes { EleFOV1, EleFOV2, EleFOV3, EleFOV4};
@@ -42,7 +43,7 @@ bool   ww_muIso(unsigned int i);
 double ww_muIsoVal(unsigned int i);
 bool   ww_mud0(unsigned int i);
 bool   ww_mud0PV(unsigned int i);
-bool   ww_mudZPV(unsigned int i);
+bool   ww_mudZPV(unsigned int i, float cut=0.1);
 
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
 			       const std::vector<JetPair>& = std::vector<JetPair>());
@@ -163,6 +164,8 @@ float getHiggsPtWeight(float pt, int mH);
 				
 unsigned int bestZHyp();
 bool hypo (int i_hyp, double weight, bool zStudy = false, bool realData = false ); 
+
+double mt(double pt1, double pt2, double dphi);
 
 class TChain;
 void ScanChain( TChain* chain, 
