@@ -35,8 +35,9 @@ COREOBJECTS = $(CORESOURCES:.cc=.o)
 CORELIB = $(LIBDIR)/libCMS2NtupleMacrosCORE.so
 
 TOOLSSOURCES = $(CMSROOT)/Tools/tools.cc \
-			   $(CMSROOT)/Tools/goodrun.cc \
-               $(CMSROOT)/Tools/ElectronIDMVA.cc
+			   $(CMSROOT)/Tools/goodrun.cc
+#			   $(CMSROOT)/Tools/goodrun.cc \
+#               $(CMSROOT)/Tools/ElectronIDMVA.cc
 TOOLSOBJECTS = $(TOOLSSOURCES:.cc=.o)
 TOOLSLIB = $(LIBDIR)/libCMS2NtupleMacrosTools.so
 
@@ -85,7 +86,6 @@ $(LIBDIR)/LinkDef_out.cxx: $(LIBDIR)/LinkDef.h  $(CMSROOT)/Tools/goodrun.h $(PLO
 %.d:	%.cxx
 	$(CC) -MM -MT $@ -MT ${@:.d=.o} $(CFLAGS) $< > $@; \
                      [ -s $@ ] || rm -f $@
-
 %.o: 	%.cc 
 	$(CC) $(CFLAGS) $< -c -o $@
 
@@ -114,4 +114,3 @@ clean:
 -include $(MT2SOURCES:.cc=.d)
 -include $(PLOTTERSOURCES:.cc=.d)
 -include $(LIBDIR)/LinkDef_out.d
-
