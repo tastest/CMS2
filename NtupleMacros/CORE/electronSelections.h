@@ -96,6 +96,7 @@ enum EleSelectionType {
   ELENOTCONV_DISTDCOT002,        // dist < 0.02 && dcot(theta) < 0.02
   ELENOTCONV_HITPATTERN,         // < 2 missing hits
   ELENOTCONV_HITPATTERN_0MHITS,  // < 1 missing hits
+  ELENOTCONV_DISTDCOT002_OLD,    // dist < 0.02 && dcot(theta) < 0.02 using dist/dcot taken from the GsfElectron object
 
 //////////////////////
 // Basic Selections //
@@ -841,6 +842,52 @@ static const cuts_t electronSelectionFOV5_ssVBTF80_noConvCuts_v3 =       // V3 -
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
                  (1ll<<ELESEED_ECAL);
 
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+// Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_ssV6_noIso = 
+           electronSelectionFO_SS_baselineV2   |
+           electronSelection_smurfV1ss_id      |
+           (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+           (1ll<<ELEIP_SS200)                  |
+           (1ll<<ELESEED_ECAL)                 |
+           (1ll<<ELE_NOT_TRANSITION)           |
+           (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+static const cuts_t electronSelection_ssV6_iso =
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelection_ssV6 = 
+                       electronSelection_ssV6_noIso |
+                       electronSelection_ssV6_iso;
+
+// Loose "Fakeable Object" Selection (fake rate denominators)
+
+static const cuts_t electronSelectionFOV6_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
+                 electronSelectionFO_SS_baselineV2   |
+                 (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
+
+static const cuts_t electronSelectionFOV6_ssVBTF80_v2 =       // V2 - relaxed Id
+                 electronSelectionFO_SS_baselineV2   |
+                 (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL)                 |
+                 (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelectionFOV6_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+                 electronSelectionFO_SS_baselineV2   |
+                 electronSelection_smurfV1ss_id      |
+                 (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
+                 (1ll<<ELESEED_ECAL);
+
 /////////////////////////////////////
 // End 2011 SS Selections          //
 /////////////////////////////////////
@@ -957,6 +1004,7 @@ bool electronId_noMuon_SS(const unsigned int index);
 // conversion rejection
 bool isFromConversionHitPattern(const unsigned int index);
 bool isFromConversionPartnerTrack(const unsigned int index);
+bool isFromConversionPartnerTrack_v2(const unsigned int index);
 bool isFromConversionMIT(const unsigned int index);
 
 //electron charge using the majority logic of the egamma group

@@ -167,6 +167,7 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     // Conversion Rejection //
     //////////////////////////
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
+    if (!isFromConversionPartnerTrack_v2(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002_OLD);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
     if(!isFromConversionMIT(index)) cuts_passed |= (1ll<<ELENOTCONV_MIT);
@@ -1130,6 +1131,12 @@ bool isFromConversionPartnerTrack(const unsigned int index) {
     if( fabs(cms2.els_conv_dist().at(index)) < 0.02 && fabs(cms2.els_conv_dcot().at(index)) < 0.02 ) return true;
     return false;
 }
+
+bool isFromConversionPartnerTrack_v2(const unsigned int index) {
+    if (fabs(cms2.els_conv_old_dist().at(index)) < 0.02 && fabs(cms2.els_conv_old_dcot().at(index)) < 0.02 ) return true;
+    return false;
+}
+
 bool isFromConversionMIT(const unsigned int index){
   return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
 }
