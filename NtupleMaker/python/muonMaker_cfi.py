@@ -8,7 +8,8 @@ muonMaker = cms.EDProducer("MuonMaker",
   pfCandsInputTag  = cms.InputTag("particleFlow"),
   vtxInputTag      = cms.InputTag("offlinePrimaryVertices"),
   tevMuonsName     = cms.string("tevMuons"),
-  src              = cms.InputTag("cosmicsVeto"),
+#  src              = cms.InputTag("cosmicsVeto"),
+  src              = cms.InputTag(""),
 
 )
 

@@ -87,7 +87,7 @@ TrackAssociatorParameters = cms.PSet(
 	usePreshower = cms.bool(False),
 	dRPreshowerPreselection = cms.double(0.2),
         truthMatch = cms.bool(False),
-        HBHERecHitCollectionLabel = cms.InputTag("hbhereco"),
+        #HBHERecHitCollectionLabel = cms.InputTag("hbhereco"),
         useHcal = cms.bool(True)
 )
                                  
