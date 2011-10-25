@@ -34,7 +34,7 @@ bool samesign::isGoodLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV4_noIso, false, false, vidx));
+        return (pass_electronSelection(idx, electronSelection_ssV6_noIso, false, false, vidx));
 
     // muons
     if (abs(id) == 13)
@@ -51,7 +51,7 @@ bool samesign::isIsolatedLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV4_iso));
+        return (pass_electronSelection(idx, electronSelection_ssV6_iso));
 
     // muons
     if (abs(id) == 13)
@@ -90,7 +90,7 @@ bool samesign::isDenominatorLepton(int id, int idx, int vidx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelectionFOV4_ssVBTF80_v3, false, false, vidx));
+        return (pass_electronSelection(idx, electronSelectionFOV6_ssVBTF80_v3, false, false, vidx) && electronIsolation_rel_v1(idx, true) < 0.60);
 
     // muons
     if (abs(id) == 13)
