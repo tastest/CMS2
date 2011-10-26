@@ -15,6 +15,15 @@
 #include "eventSelections.h"
 #include "utilities.h"
 
+#ifndef __CINT__
+struct jets_pt_gt {
+     bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
+	  {
+	       return v1.pt() > v2.pt();
+	  }
+};
+#endif
+
 using namespace samesign;
 
 /****************************************************************
@@ -135,14 +144,6 @@ bool samesign::passThreeChargeRequirement(int elIdx)
 	 return false;
 }
 
-struct jets_pt_gt {
-     bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
-	  {
-	       return v1.pt() > v2.pt();
-	  }
-};
-
-
 /*****************************************************************************************/
 // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
 /*****************************************************************************************/
@@ -244,7 +245,7 @@ float samesign::sumJetPt(int idx, enum JetType type, double deltaR, double min_p
 /*****************************************************************************************/
 // same as above, but allowing use of on-the-fly JEC corrections
 /*****************************************************************************************/
-float sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
+float samesign::sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
 
     std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
     unsigned int nJets = good_jets.size();
@@ -271,8 +272,23 @@ int samesign::nJets(int idx, enum JetType type, double deltaR, double min_pt, do
 /*****************************************************************************************/
 // same as above, but allowing use of on-the-fly JEC corrections
 /*****************************************************************************************/
-int nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
+int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
 
     std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
     return good_jets.size();
+}
+
+
+/*****************************************************************************************/
+// number of good vertices in the event
+/*****************************************************************************************/
+int samesign::numberOfGoodVertices() {
+    
+    int ngv = 0;
+    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+        if (isGoodVertex(vidx))
+            ++ngv;
+    }
+
+    return ngv;
 }
