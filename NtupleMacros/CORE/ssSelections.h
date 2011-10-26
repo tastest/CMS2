@@ -93,6 +93,11 @@ namespace samesign {
 /*****************************************************************************************/
     bool overlapsOtherNNHypInZ(int idx); //similar to makesExtraZ, uses hyps only
 
+/*****************************************************************************************/
+// number of good vertices in the event
+/*****************************************************************************************/
+    int numberOfGoodVertices();
+
 };
 #endif
 
