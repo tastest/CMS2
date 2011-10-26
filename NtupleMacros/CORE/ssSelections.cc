@@ -165,7 +165,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double 
         for (unsigned int eidx = 0; eidx < cms2.els_p4().size(); eidx++) {
             if (cms2.els_p4().at(eidx).pt() < ele_minpt)
                 continue;
-            if (!isGoodLepton(11, eidx))
+            if (!isNumeratorLepton(11, eidx))
                 continue;
 
             if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.els_p4().at(eidx)) > deltaR)
@@ -180,7 +180,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double 
         for (unsigned int midx = 0; midx < cms2.mus_p4().size(); midx++) {
             if (cms2.mus_p4().at(midx).pt() < mu_minpt)
                 continue;
-            if (!isGoodLepton(13, midx))
+            if (!isNumeratorLepton(13, midx))
                 continue;
 
             if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.mus_p4().at(midx)) > deltaR)
