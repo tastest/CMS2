@@ -15,14 +15,12 @@
 #include "eventSelections.h"
 #include "utilities.h"
 
-#ifndef __CINT__
-struct jets_pt_gt {
+struct jet_pt_gt {
      bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
 	  {
 	       return v1.pt() > v2.pt();
 	  }
 };
-#endif
 
 using namespace samesign;
 
@@ -196,7 +194,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double 
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jets_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
     return final_jets;    
 }
 
@@ -220,7 +218,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jets_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
     return final_jets;
 }
 
