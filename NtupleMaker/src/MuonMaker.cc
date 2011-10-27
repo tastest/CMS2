@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: MuonMaker.cc,v 1.46 2011/08/05 00:24:17 dbarge Exp $
+// $Id: MuonMaker.cc,v 1.46.6.1 2011/10/27 00:14:08 jaehyeok Exp $
 //
 //
 
@@ -405,7 +405,8 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   Handle<reco::MuonCollection> muons;
   iEvent.getByLabel("muons",muons);
   Handle<edm::ValueMap<reco::MuonCosmicCompatibility> > CosmicMap;
-  iEvent.getByLabel( src_, CosmicMap );
+  if (src_.label() != "")
+    iEvent.getByLabel( src_, CosmicMap );
   unsigned int muonIndex = 0;
 
   ///////////
@@ -423,12 +424,19 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     //////////////////////////
 
     RefToBase<Muon> muonRef = muon_h->refAt(muonIndex); 
-    MuonCosmicCompatibility muonCosmicCompatibility = (*CosmicMap)[muonRef];
-    cosmicCompat    ->push_back( muonCosmicCompatibility.cosmicCompatibility     );
-    timeCompat      ->push_back( muonCosmicCompatibility.timeCompatibility       );
-    backToBackCompat->push_back( muonCosmicCompatibility.backToBackCompatibility );
-    overlapCompat   ->push_back( muonCosmicCompatibility.overlapCompatibility    );
-    vertexCompat    ->push_back( muonCosmicCompatibility.vertexCompatibility     );
+    
+    // MuonCosmicCompatibility muonCosmicCompatibility = (*CosmicMap)[muonRef];
+//     cosmicCompat    ->push_back( muonCosmicCompatibility.cosmicCompatibility     );
+//     timeCompat      ->push_back( muonCosmicCompatibility.timeCompatibility       );
+//     backToBackCompat->push_back( muonCosmicCompatibility.backToBackCompatibility );
+//     overlapCompat   ->push_back( muonCosmicCompatibility.overlapCompatibility    );
+//     vertexCompat    ->push_back( muonCosmicCompatibility.vertexCompatibility     );
+
+    cosmicCompat    ->push_back(-1);
+    timeCompat      ->push_back(-1);
+    backToBackCompat->push_back(-1);
+    overlapCompat   ->push_back(-1);
+    vertexCompat    ->push_back(-1);
     muonIndex++;
 
     // Muon Quality
