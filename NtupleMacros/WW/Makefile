@@ -92,7 +92,7 @@ LinkDef_out.cxx: LinkDef.h
                      [ -s $@ ] || rm -f $@
 %.o: 	%.cc 
 	$(QUIET) echo "Compiling $<"; \
-	$(CC) $(CFLAGS) $< -c -o $@
+	$(CC) $(CFLAGS) $< -c -o $@ -DPFISOFROMNTUPLE
 
 %.o: 	%.cxx 
 	$(QUIET) echo "Compiling $<"; \
@@ -125,7 +125,6 @@ clean: # clean up
 	$(CMSROOT)/Tools/*.so \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	processed_data.* *.list \
-	smurf/* \
 	*.o *.d *.so LinkDef_out*; echo "Done"
 
 table: processed_data.root # show results
