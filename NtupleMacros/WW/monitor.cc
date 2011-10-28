@@ -16,7 +16,7 @@ MonitorEventId::MonitorEventId(){
 
 Entry::Entry()
 {
-  for (unsigned int i=0; i<4; ++i){
+  for (unsigned int i=0; i<5; ++i){
     nhyp[i] = 0;
     nevt[i] = 0;
     seen[i] = false;
@@ -40,7 +40,7 @@ void hypo_monitor::count(CMS2& cms2, HypothesisType type, const char* name, doub
   entry->nhyp[ALL]++;
   if (id != entry->lastEvent){
     if (keepEventList) entry->events.push_back(id);
-    for (unsigned int i=0; i<4; ++i) entry->seen[i] = false;
+    for (unsigned int i=0; i<5; ++i) entry->seen[i] = false;
     entry->nevt[type]++;
     entry->nevt[ALL]++;
     entry->nevt_weighted[type]+=weight;
@@ -60,18 +60,24 @@ void hypo_monitor::print() const
 {
   std::cout << "Total number of processed events: \t" << nEvtProcessed << std::endl;
   for ( unsigned int i=0; i<counters.size(); ++i ){
-    std::cout << Form("%-40s \thyps: %u/%u/%u/%u \tnevts: %u/%u/%u/%u", counters[i].name.c_str(),
-		      counters[i].nhyp[MM],counters[i].nhyp[EE],counters[i].nhyp[EM],counters[i].nhyp[ALL],
-		      counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ALL]) 
+    std::cout << Form("%-40s \thyps: %u/%u/%u/%u/%u \tnevts: %u/%u/%u/%u/%u", counters[i].name.c_str(),
+		      counters[i].nhyp[MM],counters[i].nhyp[EE],counters[i].nhyp[EM],counters[i].nhyp[ME],counters[i].nhyp[ALL],
+		      counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ME],counters[i].nevt[ALL]) 	      
 	      << std::endl;
     std::ofstream cut_file(Form("cut-%d.txt",i));
     cut_file << Form("%-40s \tnevts: %u/%u/%u/%u", counters[i].name.c_str(),
-		     counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ALL]) << "\n";
+		     counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ME],counters[i].nevt[ALL]) << "\n";
     for ( std::vector<MonitorEventId>::const_iterator id=counters[i].events.begin();
 	  id!=counters[i].events.end(); ++id ){
       cut_file << id->run << "\t" << id->lumi << "\t" << id->event <<"\n";
     }
     cut_file.close();
+  }
+  for ( unsigned int i=0; i<counters.size(); ++i ){
+    std::cout << Form("%-40s \thyps: %f/%f/%f/%f/%f \tnevts: %f/%f/%f/%f/%f", counters[i].name.c_str(),
+		      counters[i].nhyp[MM]/((float)nEvtProcessed),counters[i].nhyp[EE]/((float)nEvtProcessed),counters[i].nhyp[EM]/((float)nEvtProcessed),counters[i].nhyp[ME]/((float)nEvtProcessed),counters[i].nhyp[ALL]/((float)nEvtProcessed),
+		      counters[i].nevt[MM]/((float)nEvtProcessed),counters[i].nevt[EE]/((float)nEvtProcessed),counters[i].nevt[EM]/((float)nEvtProcessed),counters[i].nevt[ME]/((float)nEvtProcessed),counters[i].nevt[ALL]/((float)nEvtProcessed)) 
+	      << std::endl;
   }
 }
 

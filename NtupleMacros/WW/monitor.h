@@ -24,11 +24,11 @@ struct MonitorEventId {
 };
 
 struct Entry {
-  unsigned int nhyp[4];
-  unsigned int nevt[4];
-  double nhyp_weighted[4];
-  double nevt_weighted[4];
-  bool seen[4];
+  unsigned int nhyp[5];
+  unsigned int nevt[5];
+  double nhyp_weighted[5];
+  double nevt_weighted[5];
+  bool seen[5];
   MonitorEventId lastEvent;
   std::vector<MonitorEventId> events;
   std::string name;

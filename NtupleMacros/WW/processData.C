@@ -38,13 +38,13 @@ void processData()
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
-  bool runTest   = 1;
+  bool runTest   = 0;
   bool runWW     = 0;
   bool runHWW    = 0;
   bool runGGWW   = 0;
   bool runWZ     = 0;
   bool runZZ     = 0;
-  bool runWjets  = 0;
+  bool runWjets  = 1;
   bool runWgamma = 0;
   bool runDYee   = 0;
   bool runDYmm   = 0;
@@ -91,7 +91,8 @@ void processData()
     std::vector<string> samples;
     //    samples.push_back("/nfs-4/userdata/cms2/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-12/DiLeptonFilter/*.root");
     // samples.push_back("/nfs-4/userdata/cms2/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S3_START42_V11-v1/V04-02-18/DiLeptonFilter/*.root");
-    samples.push_back("/nfs-4/userdata/hww/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S3_START42_V11-v1/V04-02-26/DiLeptonFilter/*.root");
+    //samples.push_back("/nfs-4/userdata/hww/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S3_START42_V11-v1/V04-02-26/DiLeptonFilter/*.root");
+    samples.push_back("/nfs-4/userdata/cerati/GluGluToWWTo4L_TuneZ2_7TeV-gg2ww-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
     ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1, kBlue);
   }
 
@@ -110,7 +111,8 @@ void processData()
   if (runHWW){
     std::vector<string> samples;
     //    samples.push_back("/nfs-4/userdata/cms2/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-12/DiLeptonFilter/*.root");
-    samples.push_back("/nfs-4/userdata/cms2/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S3_START42_V11-v1/V04-02-18/DiLeptonFilter/*.root");
+    samples.push_back("/nfs-6/userdata/hww/./GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-26a/DiLeptonFilter/*.root");
+    //samples.push_back("/nfs-4/userdata/cms2/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S3_START42_V11-v1/V04-02-18/DiLeptonFilter/*.root");
     ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1, kBlue);
 
 //     samples.push_back(dataset+   "/GluGluToHToWWTo2L2Nu_M-115_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v2/V04-01-12/"+version+"/*.root");
@@ -183,7 +185,8 @@ void processData()
     // wSamples.push_back(dataset+"/WToENu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
     // wSamples.push_back(dataset+"/WToMuNu_TuneZ2_7TeV-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
     // wSamples.push_back(dataset+"/WToTauNu_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/"+version+"/*.root");
-    wSamples.push_back("/nfs-4/userdata/cms2/WToLNu_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1_multilepton-v1/V04-01-12/wwfilter/*.root"); 
+    //wSamples.push_back("/nfs-4/userdata/cms2/WToLNu_TuneZ2_7TeV_pythia6_Spring11-PU_S1_START311_V1G1_multilepton-v1/V04-01-12/wwfilter/*.root"); 
+    wSamples.push_back("/hadoop/cms/store/user/imacneill/Summer11MC/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Summer11-PU_S4_START42_V11-v1/V04-02-29/DileptonHyp/*5*.root");
     // wSamples.push_back(dataset+"/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-12/"+version+"/*.root"); 
     ProcessSample(wSamples, SmurfTree::wjets,  integratedLumi , -1, -1, 40);
   }

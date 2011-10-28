@@ -7,6 +7,7 @@
 #include "wwtypes.cc"
 #include <assert.h>
 #include <math.h>
+
 void showResults(const char* file = "processed_data.root")
 {
   using namespace std;

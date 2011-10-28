@@ -77,10 +77,10 @@ enum hyp_selection {
 // DEFAULT
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
-//wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
 // wwcuts_t pass_all = PASSED_Skim1;
-wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
+//wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
@@ -91,7 +91,7 @@ bool applyJEC = true;
 bool applyFastJetCorrection = false;
 bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
-bool useLHeleId = false;
+bool useLHeleId = true;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_pf;
@@ -205,7 +205,7 @@ double sumetValue(){    return cms2.evt_pfsumet(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
-  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  HypothesisType type = getHypothesisTypeNew(cms2.hyp_type()[i_hyp]);
   // std::vector<LorentzVector> jets = getDefaultJets(i_hyp);
   metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
   double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
@@ -239,11 +239,11 @@ bool ww_elId(unsigned int index){
   // if (! (electronId_CIC(index, 4, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
 
   if (useLHeleId) {
-    if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId(index,cms2.els_lh().at(index),90) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
-    if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId(index,cms2.els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+    if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+    if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
   } else {
-    if (!goodElectronTMVA(index)) return false;//newcuts, was:
-    //if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+    //if (!goodElectronTMVA(index)) return false;//newcuts, was:
+    if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
   }
 
   // MIT conversion
@@ -1595,7 +1595,7 @@ toptag(WWJetType type, int i_hyp, double minPt,
 bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData) 
 {
 
-  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  HypothesisType type = getHypothesisTypeNew(cms2.hyp_type()[i_hyp]);
 
   if (nGoodVertex()<1) return false;
   
@@ -1606,21 +1606,21 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
   if (useLHeleId) {
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
       int index = cms2.hyp_lt_index()[i_hyp];
-      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId(index,cms2.els_lh().at(index),90) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
-      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId(index,cms2.els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
       int index = cms2.hyp_ll_index()[i_hyp];
-      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId(index,cms2.els_lh().at(index),90) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
-      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId(index,cms2.els_lh().at(index),80) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
   } else {
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-	//! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-	!goodElectronTMVA(cms2.hyp_lt_index()[i_hyp])  ) return false;//newcuts
+	! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+    //!goodElectronTMVA(cms2.hyp_lt_index()[i_hyp])  ) return false;//newcuts
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-	//! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-	!goodElectronTMVA(cms2.hyp_ll_index()[i_hyp])  ) return false;//newcuts
+	! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+    //!goodElectronTMVA(cms2.hyp_ll_index()[i_hyp])  ) return false;//newcuts
   }
 
   monitor.count(cms2,type,"lepton id",weight);
@@ -1742,7 +1742,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if ( nGenLeptons < 2 ) return;
   */
   // if (cms2.evt_event()!=101838) return;
-  HypothesisType type = getHypothesisType(cms2.hyp_type()[i_hyp]);
+  HypothesisType type = getHypothesisTypeNew(cms2.hyp_type()[i_hyp]);
 
   // The event weight including the kFactor (scaled to 1 fb-1)
   // float weight = cms2.evt_scale1fb() * kFactor;
@@ -1795,7 +1795,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
     if ( !zStudy && !inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))    cuts_passed |= PASSED_ZVETO;
     if ( zStudy  && inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))     cuts_passed |= PASSED_ZVETO;
   }
-  if (type == EM)     cuts_passed |= PASSED_ZVETO;
+  if (type == EM || type == ME)     cuts_passed |= PASSED_ZVETO;
   if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),5))  cuts_passed |= PASSED_ZControlSampleVeryTight;
   if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),10))  cuts_passed |= PASSED_ZControlSampleTight;
   if ( inZmassWindow(cms2.hyp_p4()[i_hyp].mass(),20))  cuts_passed |= PASSED_ZControlSampleLoose;
@@ -3076,6 +3076,8 @@ void ProcessSample( std::vector<std::string> file_patterns,
       ((TH1*)obj)->SetMarkerColor(color);
     }
   }
+  delete electronIdMVA;
+  delete tchain;
 }
 
 struct FileEntry{
