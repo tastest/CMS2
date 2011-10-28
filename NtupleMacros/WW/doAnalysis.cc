@@ -205,7 +205,7 @@ double sumetValue(){    return cms2.evt_pfsumet(); }
 
 bool passedMetRequirements(unsigned int i_hyp){
   // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
-  HypothesisType type = getHypothesisTypeNew(cms2.hyp_type()[i_hyp]);
+  HypothesisType type = getHypothesisTypeNew(i_hyp);
   // std::vector<LorentzVector> jets = getDefaultJets(i_hyp);
   metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
   double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
@@ -242,8 +242,8 @@ bool ww_elId(unsigned int index){
     if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
     if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
   } else {
-    //if (!goodElectronTMVA(index)) return false;//newcuts, was:
-    if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+    if (!goodElectronTMVA(index)) return false;//newcuts, was:
+    //if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
   }
 
   // MIT conversion
@@ -1595,7 +1595,7 @@ toptag(WWJetType type, int i_hyp, double minPt,
 bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData) 
 {
 
-  HypothesisType type = getHypothesisTypeNew(cms2.hyp_type()[i_hyp]);
+  HypothesisType type = getHypothesisTypeNew(i_hyp);
 
   if (nGoodVertex()<1) return false;
   
@@ -1616,11 +1616,11 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
     }
   } else {
     if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-	! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-    //!goodElectronTMVA(cms2.hyp_lt_index()[i_hyp])  ) return false;//newcuts
+	//! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+	!goodElectronTMVA(cms2.hyp_lt_index()[i_hyp])  ) return false;//newcuts
     if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-	! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-    //!goodElectronTMVA(cms2.hyp_ll_index()[i_hyp])  ) return false;//newcuts
+	//! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
+	!goodElectronTMVA(cms2.hyp_ll_index()[i_hyp])  ) return false;//newcuts
   }
 
   monitor.count(cms2,type,"lepton id",weight);
@@ -1742,7 +1742,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if ( nGenLeptons < 2 ) return;
   */
   // if (cms2.evt_event()!=101838) return;
-  HypothesisType type = getHypothesisTypeNew(cms2.hyp_type()[i_hyp]);
+  HypothesisType type = getHypothesisTypeNew(i_hyp);
 
   // The event weight including the kFactor (scaled to 1 fb-1)
   // float weight = cms2.evt_scale1fb() * kFactor;
@@ -2717,7 +2717,7 @@ void ScanChain( TChain* chain,
   int nFilteredOut = 0;
 
   int i_permille_old = 0;
-  
+
   try { 
     jetcorr_filenames_pfL1FastJetL2L3.clear();
     if (realData) {
@@ -2772,7 +2772,7 @@ void ScanChain( TChain* chain,
     TStopwatch t;
     //Event Loop
     unsigned int nEvents = tree->GetEntries();
-  
+
     for( unsigned int event = 0; event < nEvents; ++event) {
       tree->LoadTree(event);
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
