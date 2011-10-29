@@ -65,7 +65,7 @@ void hypo_monitor::print() const
 		      counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ME],counters[i].nevt[ALL]) 	      
 	      << std::endl;
     std::ofstream cut_file(Form("cut-%d.txt",i));
-    cut_file << Form("%-40s \tnevts: %u/%u/%u/%u", counters[i].name.c_str(),
+    cut_file << Form("%-40s \tnevts: %u/%u/%u/%u/%u", counters[i].name.c_str(),
 		     counters[i].nevt[MM],counters[i].nevt[EE],counters[i].nevt[EM],counters[i].nevt[ME],counters[i].nevt[ALL]) << "\n";
     for ( std::vector<MonitorEventId>::const_iterator id=counters[i].events.begin();
 	  id!=counters[i].events.end(); ++id ){

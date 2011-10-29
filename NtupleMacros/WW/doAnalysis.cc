@@ -75,12 +75,10 @@ enum hyp_selection {
 };
 
 // DEFAULT
-//wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
-
-wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
 // wwcuts_t pass_all = PASSED_Skim1;
-//wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
+// wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
@@ -91,7 +89,8 @@ bool applyJEC = true;
 bool applyFastJetCorrection = false;
 bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
-bool useLHeleId = true;
+bool useLHeleId = false;
+bool useMVAeleId = false;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_pf;
@@ -203,69 +202,6 @@ double metValue(){    return cms2.evt_pfmet(); }
 double metPhiValue(){ return cms2.evt_pfmetPhi(); }
 double sumetValue(){    return cms2.evt_pfsumet(); }
 
-bool passedMetRequirements(unsigned int i_hyp){
-  // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
-  HypothesisType type = getHypothesisTypeNew(i_hyp);
-  // std::vector<LorentzVector> jets = getDefaultJets(i_hyp);
-  metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
-  double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
-			 projectedMet(i_hyp, trkMET.met, trkMET.metphi));
-  // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
-  if ( pMet < 20 ) return false;
-  if (type == EE || type == MM) {
-    // double dmass = fabs(cms2.hyp_p4()[i_hyp].mass()-91);
-    // if ( metValue() < 45 ) return false;
-    if ( pMet < 35 ) return false;
-    // if ( !metBalance(i_hyp) ) return false;
-  }
-  return true;
-}
-
-
-//
-// Electron Id
-//
-
-bool ww_elBase(unsigned int index){
-  if (cms2.els_p4().at(index).pt() < 10.0) return false;
-  if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
-  return true;
-}
-bool ww_elId(unsigned int index){
-  // if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
-  //     fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
-  // if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
-  // if (! (electronId_VBTF(index, VBTF_35X_70) & (1<<ELEID_ID)) ) return false;
-  // if (! (electronId_CIC(index, 4, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
-
-  if (useLHeleId) {
-    if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
-    if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
-  } else {
-    if (!goodElectronTMVA(index)) return false;//newcuts, was:
-    //if (! pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
-  }
-
-  // MIT conversion
-  if ( isFromConversionMIT(index) ) return false;
-
-  // conversion rejection - hit based
-  if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
-  // MIT conversion
-  // if (! pass_electronSelection(index, (1ll<<ELENOTCONV_MIT), false, false) ) return false;
-  // if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
-  //  int ctfIndex = cms2.els_trkidx().at(index);
-  // if ( ctfIndex >=0 && 
-  //     cms2.els_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
-  // if ( !electronId_smurf_v2(index) ) return false;
-  
-  return true;
-}
- 
-bool ww_eld0(unsigned int index){
-  return fabs(cms2.els_d0corr()[index]) < 0.02;
-}
-
 bool isGoodVertex(size_t ivtx) {
     if (cms2.vtxs_isFake()[ivtx]) return false;
     if (cms2.vtxs_ndof()[ivtx] < 4.) return false;
@@ -298,6 +234,73 @@ int primaryVertex(){
   //   if (iMax<0) return false;
   return 0;
 }
+
+bool passedMetRequirements(unsigned int i_hyp){
+  // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
+  HypothesisType type = getHypothesisTypeNew(i_hyp);
+  // std::vector<LorentzVector> jets = getDefaultJets(i_hyp);
+  metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
+  double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
+			 projectedMet(i_hyp, trkMET.met, trkMET.metphi));
+  // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
+  if ( pMet < 20 ) return false;
+  if (type == EE || type == MM) {
+    double threshold = 37+nGoodVertex()/2.0;
+    // double dmass = fabs(cms2.hyp_p4()[i_hyp].mass()-91);
+    // if ( metValue() < 45 ) return false;
+    if ( pMet < threshold ) return false;
+    // if ( !metBalance(i_hyp) ) return false;
+  }
+  return true;
+}
+
+
+//
+// Electron Id
+//
+
+bool ww_elBase(unsigned int index){
+  if (cms2.els_p4().at(index).pt() < 10.0) return false;
+  if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
+  return true;
+}
+bool ww_elId(unsigned int index){
+  // if( fabs(cms2.els_conv_dist().at(index)) < 0.02 &&
+  //     fabs(cms2.els_conv_dcot().at(index)) < 0.02) return false;
+  // if (! (electronId_VBTF(index, VBTF_35X_80) & (1<<ELEID_ID)) ) return false;
+  // if (! (electronId_VBTF(index, VBTF_35X_70) & (1<<ELEID_ID)) ) return false;
+  // if (! (electronId_CIC(index, 4, CIC_SUPERTIGHT) & (1<<ELEID_ID)) ) return false;
+
+  if (useLHeleId) {
+    if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+    if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+  }
+  if (useMVAeleId){
+    if (!goodElectronTMVA(index)) return false;
+  } else {
+    if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+  }
+  
+  // MIT conversion
+  if ( isFromConversionMIT(index) ) return false;
+
+  // conversion rejection - hit based
+  if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
+  // MIT conversion
+  // if (! pass_electronSelection(index, (1ll<<ELENOTCONV_MIT), false, false) ) return false;
+  // if ( cms2.els_exp_innerlayers39X().at(index) > 0 ) return false;
+  //  int ctfIndex = cms2.els_trkidx().at(index);
+  // if ( ctfIndex >=0 && 
+  //     cms2.els_charge().at(index)!=cms2.trks_charge().at(ctfIndex) ) return false;
+  // if ( !electronId_smurf_v2(index) ) return false;
+  
+  return true;
+}
+ 
+bool ww_eld0(unsigned int index){
+  return fabs(cms2.els_d0corr()[index]) < 0.02;
+}
+
 
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv){
   return (vtx.z()-pv.z()) - ((vtx.x()-pv.x())*p4.x()+(vtx.y()-pv.y())*p4.y())/p4.pt() * p4.z()/p4.pt();
@@ -373,6 +376,7 @@ bool ww_mudZPV(unsigned int index, float cut){
 bool ww_muId(unsigned int index){ 
   if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
   if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
+  // if (cms2.trks_nlayers().at(cms2.mus_trkidx().at(index))<=8) return false;
   if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
   if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
   if (cms2.mus_trkKink().at(index) > 20.) return false; //kink finder//newcuts
@@ -1566,7 +1570,22 @@ toptag(WWJetType type, int i_hyp, double minPt,
       if ( ignoreJet ) continue;
       if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
 	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-      if ( defaultBTag(type,i) ) return true;
+      if ( !defaultBTag(type,i) ) continue;
+      // dZ cut
+      double dZ(0);
+      double sumpt2(0);
+      // this part is slow as hell (must be)
+      for ( unsigned int j=0; j < cms2.pfjets_pfcandIndicies().at(i).size(); ++j ){
+	int pfIndex = cms2.pfjets_pfcandIndicies()[i][j];
+	if (cms2.pfcands_charge().at(pfIndex)==0) continue;
+	int trkIndex = cms2.pfcands_trkidx().at(pfIndex);
+        if (trkIndex<0) continue;
+        double dzpv = dzPV(cms2.trks_vertex_p4()[trkIndex], cms2.trks_trk_p4()[trkIndex], cms2.vtxs_position().at(primaryVertex()));
+	dZ += dzpv*pow(cms2.pfcands_p4().at(pfIndex).pt(),2);
+	sumpt2 += pow(cms2.pfcands_p4().at(pfIndex).pt(),2);
+      }
+      if ( sumpt2 <= 0 || fabs(dZ/sumpt2)>2 ) continue;
+      return true;
     }
     break;
   case CaloJet:
@@ -1603,25 +1622,30 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
   
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  if (useLHeleId) {
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-      int index = cms2.hyp_lt_index()[i_hyp];
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+    int index = cms2.hyp_lt_index()[i_hyp];
+    if (useLHeleId) {
       if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
       if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-      int index = cms2.hyp_ll_index()[i_hyp];
+    if (useMVAeleId){
+      if (!goodElectronTMVA(index)) return false;
+    } else {
+      if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+    }
+  } 
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+    int index = cms2.hyp_ll_index()[i_hyp];
+    if (useLHeleId) {
       if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
       if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
-  } else {
-    if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-	//! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-	!goodElectronTMVA(cms2.hyp_lt_index()[i_hyp])  ) return false;//newcuts
-    if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-	//! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], electronSelection_smurfV3_id, false, false) ) return false;
-	!goodElectronTMVA(cms2.hyp_ll_index()[i_hyp])  ) return false;//newcuts
-  }
+    if (useMVAeleId){
+      if (!goodElectronTMVA(index)) return false;
+    } else {
+      if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+    }
+  } 
 
   monitor.count(cms2,type,"lepton id",weight);
 
@@ -1724,7 +1748,11 @@ bool hypoSync(int i_hyp, double weight, bool zStudy, bool realData)
 
   if ( fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),cms2.hyp_lt_p4().at(i_hyp)))>=60.*TMath::Pi()/180. )  return false;
   monitor.count(cms2,type,"dphill",weight);
-
+  
+  if ( cms2.hyp_p4().at(i_hyp).pt() < 45 ) return false;
+  if ( (type==EE || type==MM) && cms2.hyp_lt_p4().at(i_hyp).pt() < 15 ) return false;
+  if ( (type==EE || type==MM) && cms2.hyp_ll_p4().at(i_hyp).pt() < 15 ) return false;
+  monitor.count(cms2,type,"dilep.pt()>45 && lep2.pt()>15",weight);
   return true;
 } // end of Synchronization info
 
@@ -1755,7 +1783,6 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   
   if (cms2.hyp_p4().at(i_hyp).mass2()<0) return false;
   if (!isGoodVertex(primaryVertex())) return false;
-  
   // if ( realData && ! passedTriggerRequirements( hypType(i_hyp) ) )return false;
   // if ( realData && passedTriggerRequirements( hypType(i_hyp) ) )return false;
   monitor.count(cms2, type, "trigger requirements",weight);
@@ -2659,7 +2686,6 @@ void ScanChain( TChain* chain,
     printf("\nERROR: chain is empty for sample: %s\n\n",prefix.c_str());
     assert(0);
   }
-
   if ( gSystem->Getenv("ZSelection") )
     pass_all = PASSED_ZControlSampleTight | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | 
       PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
@@ -2753,6 +2779,7 @@ void ScanChain( TChain* chain,
       set_goodrun_file_json(cms2_json_file);
     }
   }
+
   // file loop
   TObjArray *listOfFiles = chain->GetListOfFiles();
   TIter fileIter(listOfFiles);
