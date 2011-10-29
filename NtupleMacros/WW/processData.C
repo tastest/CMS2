@@ -89,8 +89,8 @@ void processData()
 
   if (runTest){
     std::vector<string> samples;
-    // samples.push_back("/nfs-6/userdata/hww/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
-    samples.push_back("/nfs-6/userdata/hww/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-26a/DiLeptonFilter/merged_ntuple.root");
+    samples.push_back("/nfs-6/userdata/hww/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
+    // samples.push_back("/nfs-6/userdata/hww/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-26a/DiLeptonFilter/merged_ntuple.root");
     // samples.push_back("/nfs-4/userdata/cerati/GluGluToWWTo4L_TuneZ2_7TeV-gg2ww-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-29/merged_ntuple.root");
     ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1, kBlue);
   }

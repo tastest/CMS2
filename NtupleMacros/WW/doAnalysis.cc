@@ -90,7 +90,7 @@ bool applyFastJetCorrection = false;
 bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
 bool useLHeleId = false;
-bool useMVAeleId = false;
+bool useMVAeleId = true;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_pf;
