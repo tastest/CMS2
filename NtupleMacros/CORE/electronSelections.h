@@ -851,6 +851,7 @@ static const cuts_t electronSelection_ssV6_noIso =
            electronSelectionFO_SS_baselineV2   |
            electronSelection_smurfV1ss_id      |
            (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+           (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
            (1ll<<ELEIP_SS200)                  |
            (1ll<<ELESEED_ECAL)                 |
            (1ll<<ELE_NOT_TRANSITION)           |
@@ -868,6 +869,7 @@ static const cuts_t electronSelection_ssV6 =
 static const cuts_t electronSelectionFOV6_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
                  electronSelectionFO_SS_baselineV2   |
                  (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
                  (1ll<<ELE_NOT_TRANSITION)           |
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
                  (1ll<<ELESEED_ECAL);
@@ -875,6 +877,7 @@ static const cuts_t electronSelectionFOV6_ssVBTF80_v1 =       // V1 - relaxed Id
 static const cuts_t electronSelectionFOV6_ssVBTF80_v2 =       // V2 - relaxed Id
                  electronSelectionFO_SS_baselineV2   |
                  (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
                  (1ll<<ELE_NOT_TRANSITION)           |
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
                  (1ll<<ELESEED_ECAL)                 |
@@ -884,6 +887,7 @@ static const cuts_t electronSelectionFOV6_ssVBTF80_v3 =       // V3 - relaxed is
                  electronSelectionFO_SS_baselineV2   |
                  electronSelection_smurfV1ss_id      |
                  (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
                  (1ll<<ELE_NOT_TRANSITION)           |
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
                  (1ll<<ELESEED_ECAL);
