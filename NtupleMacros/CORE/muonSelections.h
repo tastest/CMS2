@@ -19,6 +19,7 @@ enum SelectionType {
       OSGeneric_v3_FO,
 
       // OSZ
+      OSZ_v4,
       OSZ_v3,
       OSZ_v2,
 
