@@ -357,6 +357,26 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
 
 }
 
+//---------------------------------------------
+// single muon triggers for lljj bump search
+//---------------------------------------------
+
+bool passMuMuJJTrigger_v1( bool isData ) {
+
+  if( isData ){
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v") )          return true;
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true;
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true;
+  }
+
+  else{
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )  return true;
+  }
+
+  return false;
+}
+
+
 
 bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
 
