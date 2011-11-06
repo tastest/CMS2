@@ -364,9 +364,48 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
 bool passMuMuJJTrigger_v1( bool isData ) {
 
   if( isData ){
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v") )          return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true;
+    
+    //-----------------------------------------------------------------------------
+    if (evt_run() >= 160329 && evt_run() <= 163261){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v5") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 163269 && evt_run() <= 164236){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v2") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 165088 && evt_run() <= 165887){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v4") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() == 166346 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v6") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 165922 && evt_run() <= 167043){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v5") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 167078 && evt_run() <= 170053){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v7") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 170071 && evt_run() <= 173198){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v8") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 173212 && evt_run() <= 178380){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v3") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 178420 && evt_run() <= 179889){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v6") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 179959 && evt_run() <= 180093){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v7") )   return true;
+    }
+    //-----------------------------------------------------------------------------
   }
 
   else{
