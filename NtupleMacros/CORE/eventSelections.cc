@@ -66,6 +66,14 @@ bool cleaning_standardApril2011()
     return true;
 }
 
+//----------------------------------------------------------------
+// 04 November 2011
+// standard event cleaning used for SS analysis
+//----------------------------------------------------------------
+bool cleaning_standardNovember2011() {
+    return cleaning_standardOctober2010();
+}
+
 
 //
 // 5 August 2010

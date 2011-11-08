@@ -27,6 +27,12 @@ bool cleaning_standardOctober2010();
 bool cleaning_standardApril2011();
 
 //----------------------------------------------------------------
+// 04 November 2011
+// standard event cleaning used for SS analysis
+//----------------------------------------------------------------
+bool cleaning_standardNovember2011();
+
+//----------------------------------------------------------------
 // 5 August 2010
 // standard event cleaning
 // for low pt dilepton / fake rate data studies
