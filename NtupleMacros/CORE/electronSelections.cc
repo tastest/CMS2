@@ -11,6 +11,7 @@
 #include "MITConversionUtilities.h"
 #include "muonSelections.h"
 #include "trackSelections.h"
+#include "ssSelections.h"
 
 using namespace tas;
 
@@ -21,7 +22,7 @@ bool pass_electronSelectionCompareMask( const cuts_t cuts_passed, const cuts_t s
 
 bool pass_electronSelection( const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index ) {
   checkElectronSelections();
-  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
+  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, useGsfTrack, vertex_index);
   if ( (cuts_passed & selectionType) == selectionType ) return true;
   return false;
 }
@@ -45,6 +46,7 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (electronIsolation_ECAL_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020_NPS); // ECAL Relative Isolation, no ped sub in EB
     if( electronIsolation_ECAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_REL020);    // ECAL    Relative Isolation (truncated)
     if( electronIsolation_HCAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_REL020);    // HCAL    Relative Isolation (truncated)
+    if (electronIsolation_cor_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_COR_RELNT010);
 
     //relative isolation truncated
     if (electronIsolation_rel_FastJet(index, true) < 0.05) cuts_passed |= (1ll<<ELEISO_FASTJET_REL005); // ADDED
@@ -966,6 +968,16 @@ float electronIsolation_rel_v1( const unsigned int index, bool use_calo_iso ) {
       sum_over_pt += HCAL_sum_over_pt;
     }
     return sum_over_pt;
+}
+
+// corrected, relative isolation, non-truncated
+float electronIsolation_cor_rel_v1(const unsigned int index, bool use_calo_iso) {
+
+    float ntiso = electronIsolation_rel_v1(index, use_calo_iso);
+    float pt = cms2.els_p4().at(index).pt();
+    int nvtxs = samesign::numberOfGoodVertices();
+    float coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
+    return coriso;
 }
 
 // Relative Isolation, Non-Truncated, FastJet-corrected

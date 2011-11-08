@@ -50,6 +50,7 @@ enum EleSelectionType {
   ELEISO_FASTJET_REL005,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
   ELEISO_FASTJET_REL010,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
   ELEISO_FASTJET_REL015,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
+  ELEISO_COR_RELNT010,       // truncated correction reliso < 0.1, cor_iso = ntiso - (ln(pt) * nvtx)/(30+pt)
 
 //////////////////////
 // Impact Parameter //
@@ -1000,6 +1001,7 @@ float el_fastjet_rel_offset(const unsigned int);
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);  // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, 
 float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=-999.);
+float electronIsolation_cor_rel_v1(const unsigned int, bool);
 
 // remove electrons that are overlapping with a muon
 bool electronId_noMuon(const unsigned int index);
