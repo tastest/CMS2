@@ -139,7 +139,6 @@ typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian
 #pragma link C++ class edm::Transient<edm::ProcessHistory::Transients>+;
 #pragma link C++ class edm::Transient<edm::ProductProvenance::Transients>+;
 #pragma link C++ class edm::Transient<edm::ProductRegistry::Transients>+;
-
 #pragma link C++ class pair<edm::BranchKey,edm::BranchDescription>+;
 #pragma link C++ class pair<edm::Hash<1>,edm::ParameterSetBlob>+;
 #pragma link C++ class edm::Wrapper<bool>+;
@@ -149,8 +148,8 @@ typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian
 #pragma link C++ class edm::IndexIntoFile::RunOrLumiEntry+;
 #pragma link C++ class edm::Transient<edm::IndexIntoFile::Transients>+;
 #pragma link C++ class edm::Wrapper<TBits>+;
-
-// These didn't work
-//#include <set>
-//#pragma link C++ class std::set<edm::BranchID>//+;
-//#pragma link C++ class std::pair<edm::BranchID, std::set<edm::BranchID> >+;
+using std::pair;
+using std::set;
+#pragma link C++ class set<edm::BranchID>+;
+#pragma link C++ class pair<edm::BranchID, set<edm::BranchID> >+;
+#pragma link C++ class map<edm::BranchID, set<edm::BranchID> >+;
