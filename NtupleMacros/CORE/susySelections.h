@@ -56,10 +56,11 @@ unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps);
 /*****************************************************************************************/
 bool ZVetoGeneral( float ptcut = 20 , float minmass = 76 ,  float maxmass = 106 , SelectionType = OSGeneric_v3 );
 
-/*****************************************************************************************/
-//get k-factor for LM points
-/*****************************************************************************************/
-//float kfactorSUSY(string sample);
+//---------------------------------------------
+// Check if trigger is unprescaled and passes
+//---------------------------------------------
+bool passUnprescaledHLTTriggerPattern(const char* arg);
+
 
 #endif
 
