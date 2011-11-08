@@ -75,10 +75,10 @@ enum hyp_selection {
 };
 
 // DEFAULT
-wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
+//wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
 
 // wwcuts_t pass_all = PASSED_Skim1;
-// wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
+wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
 // wwcuts_t pass_all = PASSED_BaseLine;
@@ -1572,19 +1572,7 @@ toptag(WWJetType type, int i_hyp, double minPt,
 	   TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
       if ( !defaultBTag(type,i) ) continue;
       // dZ cut
-      double dZ(0);
-      double sumpt2(0);
-      // this part is slow as hell (must be)
-      for ( unsigned int j=0; j < cms2.pfjets_pfcandIndicies().at(i).size(); ++j ){
-	int pfIndex = cms2.pfjets_pfcandIndicies()[i][j];
-	if (cms2.pfcands_charge().at(pfIndex)==0) continue;
-	int trkIndex = cms2.pfcands_trkidx().at(pfIndex);
-        if (trkIndex<0) continue;
-        double dzpv = dzPV(cms2.trks_vertex_p4()[trkIndex], cms2.trks_trk_p4()[trkIndex], cms2.vtxs_position().at(primaryVertex()));
-	dZ += dzpv*pow(cms2.pfcands_p4().at(pfIndex).pt(),2);
-	sumpt2 += pow(cms2.pfcands_p4().at(pfIndex).pt(),2);
-      }
-      if ( sumpt2 <= 0 || fabs(dZ/sumpt2)>2 ) continue;
+      if (fabs(jetDz(i,0))>2) continue;
       return true;
     }
     break;
@@ -2804,7 +2792,7 @@ void ScanChain( TChain* chain,
       tree->LoadTree(event);
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
       if (cms2.evt_event()%prescale!=0) continue;
-      // if (cms2.evt_event()<106921||cms2.evt_event()>106931) continue;
+      //if (cms2.evt_event()!=67523347) continue;
       // if (cms2.evt_event()!=13595393 && cms2.evt_event()!=227560649) continue;
       // Select the good runs from the json file
       if(realData && cms2_json_file!="") {

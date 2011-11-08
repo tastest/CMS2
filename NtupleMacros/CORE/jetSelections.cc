@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.20 2011/10/24 09:57:51 cerati Exp $
+// $Id: jetSelections.cc,v 1.21 2011/11/08 09:52:28 cerati Exp $
 
 #include <algorithm>
 #include <utility>
@@ -394,12 +394,23 @@ float jetDz(int ijet, int ivtx) {
   for (unsigned int ivc=0;ivc<cands.size();ivc++) {
     int ican = cands[ivc];
     if (cms2.pfcands_charge().at(ican)==0) continue;
-    int itrk = cms2.pfcands_trkidx().at(ican);
-    if (itrk<0) continue;
-    float ptsq = cms2.trks_trk_p4().at(itrk).pt()*cms2.trks_trk_p4().at(itrk).pt();
-    float dzc = trks_dz_pv(itrk,ivtx).first;
-    jptsq+=ptsq;
-    jptsqdz+=ptsq*dzc;
+    int ipfel = cms2.pfcands_pfelsidx().at(ican);
+    int iel=-1, igsf=-1;
+    if (ipfel>=0) iel   = cms2.pfels_elsidx().at(ipfel);
+    if (iel>=0) igsf  = cms2.els_gsftrkidx().at(iel);
+    if (igsf>=0) {
+      float ptsq = pow(cms2.pfcands_p4().at(ican).pt(),2);
+      float dzc = gsftrks_dz_pv(igsf,ivtx).first;
+      jptsq+=ptsq;
+      jptsqdz+=ptsq*dzc;
+    } else {
+      int itrk = cms2.pfcands_trkidx().at(ican);
+      if (itrk<0) continue;
+      float ptsq = cms2.trks_trk_p4().at(itrk).pt()*cms2.trks_trk_p4().at(itrk).pt();
+      float dzc = trks_dz_pv(itrk,ivtx).first;
+      jptsq+=ptsq;
+      jptsqdz+=ptsq*dzc;
+    }
   }
   if (jptsq>1E-6) return jptsqdz/jptsq;
   else return 99999.;
