@@ -11,6 +11,7 @@
 #include "eventSelections.h"
 #include "trackSelections.h"
 #include "CMS2.h"
+#include "ssSelections.h"
 
 using namespace tas;
 
@@ -518,6 +519,14 @@ double muonIsoValue_HCAL(unsigned int index, bool truncated){
     double pt  = cms2.mus_p4().at(index).pt();
     if(truncated) pt = max( pt, 20.0 );
     return cms2.mus_iso03_hadEt().at(index) / pt;
+}
+double muonCorIsoValue (unsigned int index, bool truncated) {
+
+    double ntiso = muonIsoValue(index, truncated);
+    double pt = cms2.mus_p4().at(index).pt();
+    int nvtxs = samesign::numberOfGoodVertices();
+    double coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
+    return coriso;
 }
 
 #ifdef PFISOFROMNTUPLE
