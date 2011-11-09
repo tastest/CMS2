@@ -7,7 +7,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TPRegexp.h"
-#include "../Tools/ElectronIDMVA.h"
+//#include "../Tools/ElectronIDMVA.h"
 
 // TAS includes
 #include "CMS2.cc"
@@ -112,6 +112,8 @@ private:
     Float_t el_lh_;
     Float_t el_mva_;
 
+    Bool_t mu_isCosmic_;
+
     // Conversion Rejection
     Bool_t convHitPattern_;   // isFromConversionHitPattern(iEl)
     Bool_t convPartnerTrack_; // isFromConversionPartnerTrack(iEl)
@@ -167,6 +169,13 @@ private:
     Bool_t v2_el_ssV5_;
     Bool_t v3_el_ssV5_;
     Bool_t num_el_ssV5_noIso_;
+
+    // Electrons
+    Bool_t num_el_ssV6_;
+    Bool_t v1_el_ssV6_;
+    Bool_t v2_el_ssV6_;
+    Bool_t v3_el_ssV6_;
+    Bool_t num_el_ssV6_noIso_;
     
     // Muons
     Bool_t numNomSSv3_;   // NominalSSv3
@@ -612,6 +621,8 @@ void myBabyMaker::InitBabyNtuple () {
     d0PV_wwV1_        = -999.;
     dzPV_wwV1_        = -999.;
 
+    mu_isCosmic_ = false;;
+
     mt_                   = -999;
     pfmt_                 = -999;
     q3_                   = false;
@@ -668,6 +679,12 @@ void myBabyMaker::InitBabyNtuple () {
     v2_el_ssV5_     = false;
     v3_el_ssV5_     = false;
     num_el_ssV5_noIso_ = false;
+
+    num_el_ssV6_ = false;
+    v1_el_ssV6_ = false;
+    v2_el_ssV6_ = false;
+    v3_el_ssV6_ = false;
+    num_el_ssV6_noIso_ = false;
 
     // Muons
     numNomSSv3_     = false;
@@ -1058,6 +1075,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("leptonIsFromW", &leptonIsFromW_);
     babyTree_->Branch("el_lh", &el_lh_);
     babyTree_->Branch("el_mva", &el_mva_);
+    babyTree_->Branch("mu_isCosmic", &mu_isCosmic_);
 
     //////////////////////////// 
     // End Lepton Information //
@@ -1091,6 +1109,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("v2_el_ssV5"    , &v2_el_ssV5_     );
     babyTree_->Branch("v3_el_ssV5"    , &v3_el_ssV5_     );
     babyTree_->Branch("num_el_ssV5_noIso", &num_el_ssV5_noIso_);
+
+    babyTree_->Branch("num_el_ssV6"   , &num_el_ssV6_    );
+    babyTree_->Branch("v1_el_ssV6"    , &v1_el_ssV6_     );
+    babyTree_->Branch("v2_el_ssV6"    , &v2_el_ssV6_     );
+    babyTree_->Branch("v3_el_ssV6"    , &v3_el_ssV6_     );
+    babyTree_->Branch("num_el_ssV6_noIso", &num_el_ssV6_noIso_);
 
     // Muons
     babyTree_->Branch("numNomSSv3",   &numNomSSv3_       );
@@ -1408,18 +1432,18 @@ myBabyMaker::myBabyMaker () {
     mu30_regexp = new TPMERegexp("HLT_Mu30_v(\\d+)", "o");     
     mu8_Jet40_regexp = new TPMERegexp("HLT_Mu8_Jet40_v(\\d+)", "o");
     
-    electronIdMVA = new ElectronIDMVA();
-    std::string cms2_location = "..";
-    char* ppath = getenv("CMS2_LOCATION");
-    if (ppath != NULL) {
-        cms2_location = ppath;
-        cms2_location += "/NtupleMacros";
-    }
-    electronIdMVA->Initialize("BDTG method", 2,
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_WithIPInfo_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_WithIPInfo_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_WithIPInfo_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_WithIPInfo_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_WithIPInfo_BDTG.weights.xml",
-                             cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_WithIPInfo_BDTG.weights.xml");
+    // electronIdMVA = new ElectronIDMVA();
+    // std::string cms2_location = "..";
+    // char* ppath = getenv("CMS2_LOCATION");
+    // if (ppath != NULL) {
+    //     cms2_location = ppath;
+    //     cms2_location += "/NtupleMacros";
+    // }
+    // electronIdMVA->Initialize("BDTG method", 2,
+    //                          cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0LowPt_WithIPInfo_BDTG.weights.xml",
+    //                          cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1LowPt_WithIPInfo_BDTG.weights.xml",
+    //                          cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2LowPt_WithIPInfo_BDTG.weights.xml",
+    //                          cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet0HighPt_WithIPInfo_BDTG.weights.xml",
+    //                          cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet1HighPt_WithIPInfo_BDTG.weights.xml",
+    //                          cms2_location + "/Tools/EgammaAnalysisTools/data/Subdet2HighPt_WithIPInfo_BDTG.weights.xml");
 }

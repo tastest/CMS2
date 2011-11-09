@@ -33,7 +33,9 @@
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
 #include "../CORE/mcSelections.cc"
-#include "../Tools/ElectronIDMVA.cc"
+#include "../CORE/ssSelections.cc"
+#include "../CORE/susySelections.cc"
+//#include "../Tools/ElectronIDMVA.cc"
 // namespaces
 using namespace std;
 using namespace tas;
@@ -482,6 +484,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     v3_el_ssV5_     = pass_electronSelection( iLep, electronSelectionFOV5_ssVBTF80_v3  );
                     num_el_ssV5_noIso_ = pass_electronSelection( iLep, electronSelection_ssV5_noIso );
 
+                    num_el_ssV6_    = pass_electronSelection( iLep, electronSelection_ssV6             );
+                    v1_el_ssV6_     = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v1  );
+                    v2_el_ssV6_     = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v2  );
+                    v3_el_ssV6_     = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v3  );
+                    num_el_ssV6_noIso_ = pass_electronSelection( iLep, electronSelection_ssV6_noIso );
+
                     // WW
                     num_el_smurfV6_ = pass_electronSelection( iLep, electronSelection_smurfV6          );
 //                     num_el_smurfV6lh_ = false;
@@ -572,7 +580,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     if (  
                         (!v1Oct6_)        && (!v2Oct6_)        && (!v3Oct6_)        &&                      // ttbar
                         (!v1SSV2_)        && (!v2SSV2_)        && (!v3SSV2_)        &&                      // SS 2010
-                        (!v1_el_ssV3_)    && (!v2_el_ssV3_)    && (!v3_el_ssV3_)    &&                      // SS 2011
+                        (!v1_el_ssV6_)    && (!v2_el_ssV6_)    && (!v3_el_ssV6_)    &&                      // SS 2011
                         (!v1OSOct18_)     && (!v2OSOct18_)     && (!v3OSOct18_)     &&                      // OS
                         (!fo_el_OSV2_)    &&                                                                // OS 2011
                         (!fo_el_OSV3_)    &&                                                                // OS 2011
@@ -739,7 +747,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     
                     // likelihood and MVA discriminators
                     el_lh_ = cms2.els_lh().at(iLep);                    
-                    el_mva_ = electronIdMVA->MVAValue(iLep, 0);
+                    // el_mva_ = electronIdMVA->MVAValue(iLep, 0);
 
                     // PV
                     d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
@@ -1277,6 +1285,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         mc3dr_ = mc3dr_eormu(13, iLep);
                         leptonIsFromW_ = leptonIsFromW(iLep, -13*cms2.mus_charge().at(iLep), true);
                     }
+
+                    mu_isCosmic_ = isCosmics(iLep);
 
                     // Safety
                     //Float_t x = muonIsoValueOriginal(iLep);
