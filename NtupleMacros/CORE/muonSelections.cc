@@ -165,7 +165,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         return false;
     }
 
-    int vtxidx = firstGoodDAvertex();    
+    int vtxidx = firstGoodVertex();    
     
     // Muon Selections that are standard for Analysis & Fake Selections
     bool standardMuon = true;
@@ -413,11 +413,11 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
                 return false;
         }
         else if (vertex_index >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index, true).first) > 0.02)
+            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index).first) > 0.02)
                 return false;
         }
         else if (vtxidx >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx, true).first) > 0.02)
+            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx).first) > 0.02)
                 return false;            
         }
         return true;
@@ -438,11 +438,11 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
                 return false;
         }
         else if (vertex_index >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index, true).first) > 0.2)
+            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index).first) > 0.2)
                 return false;
         }
         else if (vtxidx >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx, true).first) > 0.2)
+            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx).first) > 0.2)
                 return false;            
         }
         return true;
