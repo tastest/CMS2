@@ -14,6 +14,7 @@
 #include "triggerUtils.h"
 #include "eventSelections.h"
 #include "utilities.h"
+#include "susySelections.h"
 
 struct jet_pt_gt {
      bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
@@ -37,15 +38,15 @@ using namespace samesign;
 /******************************************************************************************/     
 // 2011 good lepton
 /******************************************************************************************/     
-bool samesign::isGoodLepton(int id, int idx, int vidx)
+bool samesign::isGoodLepton(int id, int idx)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV6_noIso, false, false, vidx));
+        return (pass_electronSelection(idx, electronSelection_ssV6_noIso, false, false));
 
     // muons
     if (abs(id) == 13)
-        return (muonIdNotIsolated(idx, NominalSSv4, vidx));
+        return (muonIdNotIsolated(idx, NominalSSv4));
 
     return false;
 }
@@ -54,15 +55,23 @@ bool samesign::isGoodLepton(int id, int idx, int vidx)
 /******************************************************************************************/     
 // 2011 isolated lepton
 /******************************************************************************************/     
-bool samesign::isIsolatedLepton(int id, int idx, int vidx)
+bool samesign::isIsolatedLepton(int id, int idx, enum IsolationType iso_type)
 {
     // electrons
-    if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelection_ssV6_iso));
+    if (abs(id) == 11) {
+        if (iso_type == DET_ISO)
+            return (pass_electronSelection(idx, electronSelection_ssV6_iso));
+        else if (iso_type == COR_DET_ISO)
+            return (electronIsolation_cor_rel_v1(idx, true) < 0.10);
+    }
 
     // muons
-    if (abs(id) == 13)
-        return (muonIsoValue(idx, false) < 0.15);
+    if (abs(id) == 13) {
+        if (iso_type == DET_ISO)
+            return (muonIsoValue(idx, false) < 0.15);
+        else if (iso_type == COR_DET_ISO)
+            return (muonCorIsoValue(idx, false) < 0.10);   
+    }
 
     return false;
 }
@@ -70,20 +79,20 @@ bool samesign::isIsolatedLepton(int id, int idx, int vidx)
 /******************************************************************************************/     
 // 2011 numerator lepton
 /******************************************************************************************/     
-bool samesign::isNumeratorLepton(int id, int idx, int vidx)
+bool samesign::isNumeratorLepton(int id, int idx, enum IsolationType iso_type)
 {
-  return (isGoodLepton(id, idx, vidx) && isIsolatedLepton(id, idx, vidx));
+    return (isGoodLepton(id, idx) && isIsolatedLepton(id, idx, iso_type));
 }
 
 
 /******************************************************************************************/     
 // 2011 numerator hypothesis
 /******************************************************************************************/     
-bool samesign::isNumeratorHypothesis(int idx, int vidx)
+bool samesign::isNumeratorHypothesis(int idx, enum IsolationType iso_type)
 {
-  if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), vidx))
+    if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), iso_type))
         return false;
-  if (!isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), vidx))
+    if (!isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), iso_type))
         return false;
 
     return true;
@@ -93,15 +102,23 @@ bool samesign::isNumeratorHypothesis(int idx, int vidx)
 /******************************************************************************************/     
 // 2011 denominator lepton
 /******************************************************************************************/     
-bool samesign::isDenominatorLepton(int id, int idx, int vidx)
+bool samesign::isDenominatorLepton(int id, int idx, enum IsolationType iso_type)
 {
     // electrons
-    if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelectionFOV6_ssVBTF80_v3, false, false, vidx) && electronIsolation_rel_v1(idx, true) < 0.60);
+    if (abs(id) == 11) {
+        if (iso_type == DET_ISO)
+            return (pass_electronSelection(idx, electronSelectionFOV6_ssVBTF80_v3, false, false) && electronIsolation_rel_v1(idx, true) < 0.60);
+        else if (iso_type == COR_DET_ISO)
+            return (pass_electronSelection(idx, electronSelectionFOV6_ssVBTF80_v3, false, false) && electronIsolation_cor_rel_v1(idx, true) < 0.60);            
+    }
 
     // muons
-    if (abs(id) == 13)
-        return (muonId(idx, muonSelectionFO_ssV4, vidx));
+    if (abs(id) == 13) {
+        if (iso_type == DET_ISO)
+            return (muonId(idx, muonSelectionFO_ssV4));
+        else if (iso_type == COR_DET_ISO)
+            return (muonIdNotIsolated(idx, muonSelectionFO_ssV4) && muonCorIsoValue(idx, false) < 0.40);
+    }
 
     return false;
 }
@@ -110,15 +127,14 @@ bool samesign::isDenominatorLepton(int id, int idx, int vidx)
 /*****************************************************************************************/
 // extra Z veto
 /*****************************************************************************************/
-bool samesign::overlapsOtherNNHypInZ(int idx){
-  int vidx = -1; // use default now // hypsFromSameVtx2011(idx,1.0,true, false);
+bool samesign::overlapsOtherNNHypInZ(int idx, enum IsolationType iso_type){
   bool result = false;
   int nHyps = cms2.hyp_lt_p4().size();
   for (int iH = 0; iH< nHyps; ++iH){
     if (iH == idx || !hypsOverlap(idx,iH)
 	|| abs(cms2.hyp_lt_id()[iH])!= abs(cms2.hyp_ll_id()[iH]) || cms2.hyp_lt_id()[iH]*cms2.hyp_ll_id()[iH] > 0) 
       continue;
-    if (! isNumeratorHypothesis(iH,vidx)) continue;
+    if (! isNumeratorHypothesis(iH,iso_type)) continue;
     if (cms2.hyp_p4()[iH].mass2()>0 && fabs(cms2.hyp_p4()[iH].mass() - 91)< 15){ 
       result = true; break;
     }
@@ -145,7 +161,7 @@ bool samesign::passThreeChargeRequirement(int elIdx)
 /*****************************************************************************************/
 // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
 /*****************************************************************************************/
-std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
+std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type) {
 
     std::vector<LorentzVector> tmp_jets = getJets(idx, true, type, JETS_CLEAN_HYP_E_MU, deltaR, 0., max_eta);
 
@@ -164,7 +180,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double 
         for (unsigned int eidx = 0; eidx < cms2.els_p4().size(); eidx++) {
             if (cms2.els_p4().at(eidx).pt() < ele_minpt)
                 continue;
-            if (!isNumeratorLepton(11, eidx))
+            if (!isNumeratorLepton(11, eidx, iso_type))
                 continue;
 
             if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.els_p4().at(eidx)) > deltaR)
@@ -179,7 +195,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double 
         for (unsigned int midx = 0; midx < cms2.mus_p4().size(); midx++) {
             if (cms2.mus_p4().at(midx).pt() < mu_minpt)
                 continue;
-            if (!isNumeratorLepton(13, midx))
+            if (!isNumeratorLepton(13, midx, iso_type))
                 continue;
 
             if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.mus_p4().at(midx)) > deltaR)
@@ -201,9 +217,9 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double 
 /*****************************************************************************************/
 // get jets and apply an on-the-fly JEC
 /*****************************************************************************************/
-std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
+std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type) {
 
-    std::vector<LorentzVector> tmp_jets = samesign::getJets(idx, type, deltaR, 0., max_eta, mu_minpt, ele_minpt);
+    std::vector<LorentzVector> tmp_jets = samesign::getJets(idx, type, deltaR, 0., max_eta, mu_minpt, ele_minpt, iso_type);
 
     // now impose the pt requirement after applying the extra corrections
     std::vector<LorentzVector> final_jets;
@@ -226,8 +242,8 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
 /*****************************************************************************************/
 // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
 /*****************************************************************************************/
-float samesign::sumJetPt(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt){
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+float samesign::sumJetPt(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type){
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
     unsigned int nJets = good_jets.size();
     if (nJets == 0)
         return 0.;
@@ -243,9 +259,9 @@ float samesign::sumJetPt(int idx, enum JetType type, double deltaR, double min_p
 /*****************************************************************************************/
 // same as above, but allowing use of on-the-fly JEC corrections
 /*****************************************************************************************/
-float samesign::sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
+float samesign::sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type) {
 
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
     unsigned int nJets = good_jets.size();
     if (nJets == 0)
         return 0.;
@@ -261,18 +277,18 @@ float samesign::sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, enum Je
 /*****************************************************************************************/
 // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
 /*****************************************************************************************/
-int samesign::nJets(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
+int samesign::nJets(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type) {
     
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
     return good_jets.size();
 }
 
 /*****************************************************************************************/
 // same as above, but allowing use of on-the-fly JEC corrections
 /*****************************************************************************************/
-int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt) {
+int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type) {
 
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
     return good_jets.size();
 }
 
@@ -289,4 +305,96 @@ int samesign::numberOfGoodVertices() {
     }
 
     return ngv;
+}
+
+/*****************************************************************************************/
+// passes dilepton trigger
+/*****************************************************************************************/
+bool samesign::passesTrigger(bool is_data, int hyp_type, bool is_high_pt) {
+    
+    //----------------------------------------
+    // no trigger requirements applied to MC
+    //----------------------------------------
+  
+    if (!is_data)
+        return true; 
+  
+    //---------------------------------
+    // triggers for lepton-HT datasets
+    //---------------------------------
+  
+    if (!is_high_pt) {
+  
+        //mm
+        if (hyp_type == 0) {
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT200_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass4_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_HT200_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleTkIso10Mu5_Mass8_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleTkIso10Mu5_Mass8_HT200_v") )   return true;
+        }
+    
+        //em
+        else if (hyp_type == 1 || hyp_type == 2) {
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )     return true; 
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )     return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )     return true; 
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )     return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass4_HT150_v") )     return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v") )     return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v") )     return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_HT200_v") )     return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_TkIso10Mu5_Ele8_CaloIdT_CaloIsoVVL_TrkIdVL_Mass8_HT150_v") )     return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_TkIso10Mu5_Ele8_CaloIdT_CaloIsoVVL_TrkIdVL_Mass8_HT200_v") )     return true;
+        }
+    
+        //ee
+        else if (hyp_type == 3) {
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass4_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT200_v") )   return true;
+        }
+    }
+  
+    //---------------------------------
+    // triggers for dilepton datasets
+    //---------------------------------
+  
+    else{
+  
+        //mm
+        if (hyp_type == 0) {
+            if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
+        }
+    
+        //em
+        else if (hyp_type == 1 || hyp_type == 2) {
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v") )   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v") )   return true;
+
+        }
+    
+        //ee
+        else if (hyp_type == 3) {
+            if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
+            if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+        }                                     
+    }        
+  
+    return false;
 }
