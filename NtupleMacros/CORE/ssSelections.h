@@ -105,6 +105,30 @@ enum IsolationType { DET_ISO, COR_DET_ISO };
 /*****************************************************************************************/
     bool passesTrigger(bool is_data, int hyp_type, bool is_high_pt);
 
+
+
+/*****************************************************************************************/
+// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
+/*****************************************************************************************/
+    std::vector<LorentzVector> getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10, enum IsolationType iso_type = DET_ISO);
+
+/*****************************************************************************************/
+// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
+// e/mu with pt > x (defaults are 10/5 GeV)
+/*****************************************************************************************/
+    std::vector<LorentzVector> getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10, enum IsolationType iso_type = DET_ISO);
+
+
+/*****************************************************************************************/
+// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
+/*****************************************************************************************/
+    int nBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10, enum IsolationType iso_type = DET_ISO);
+
+/*****************************************************************************************/
+// same as above, but allowing use of on-the-fly JEC corrections
+/*****************************************************************************************/
+    int nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10, enum IsolationType iso_type = DET_ISO);
+
 };
 #endif
 
