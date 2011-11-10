@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.22 2011/11/08 11:23:30 cerati Exp $
+// $Id: jetSelections.cc,v 1.23 2011/11/10 18:45:07 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -413,4 +413,186 @@ float jetDz(int ijet, int ivtx) {
   }
   if (jptsq>1E-6) return jptsqdz/jptsq;
   else return 99999.;
+}
+
+vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetType type, enum CleaningType cleaning,
+                                      enum BtagType btag_type, double deltaR, double min_pt, double max_eta)
+{
+     jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta);
+     const vector<float> *btags = 0;
+     const float btag_wp = BtagWP[btag_type];
+
+     switch (btag_type) {
+     case JETS_BTAG_NONE:
+         btags = 0;
+     case JETS_BTAG_TCHEL: case JETS_BTAG_TCHEM:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_trackCountingHighEffBJetTag();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_trackCountingHighEffBJetTag();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_trackCountingHighEffBJetTag();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     case JETS_BTAG_TCHPM: case JETS_BTAG_TCHPT:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_trackCountingHighPurBJetTag();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_trackCountingHighPurBJetTag();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_trackCountingHighPurBJetTag();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     case JETS_BTAG_SSVHEM:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_simpleSecondaryVertexHighEffBJetTag();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_simpleSecondaryVertexHighEffBJetTag();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_simpleSecondaryVertexHighEffBJetTag();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     case JETS_BTAG_SSVHPT:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_simpleSecondaryVertexHighPurBJetTags();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_simpleSecondaryVertexHighPurBJetTags();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_simpleSecondaryVertexHighPurBJetTags();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     default:
+         assert(false);
+     }
+
+     vector<LorentzVector> ret;
+     ret.reserve(jets.size());
+     if (jets.size() == 0 || btags == 0 )
+         return ret;
+
+     for (unsigned int i = 0; i < jets.size(); ++i) {
+         if (jets[i].first != 0 && btags->at(i) > btag_wp )
+             ret.push_back(*jets[i].first * jets[i].second);         
+     }
+
+     if (sort_)
+         sort(ret.begin(), ret.end(), jets_pt_gt());
+     return ret;
+}
+
+std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
+                                      enum BtagType btag_type, double deltaR, double min_pt, double max_eta)
+{
+     jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta);
+     const vector<float> *btags = 0;
+     const float btag_wp = BtagWP[btag_type];
+
+     switch (btag_type) {
+     case JETS_BTAG_NONE:
+         btags = 0;
+     case JETS_BTAG_TCHEL: case JETS_BTAG_TCHEM:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_trackCountingHighEffBJetTag();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_trackCountingHighEffBJetTag();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_trackCountingHighEffBJetTag();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     case JETS_BTAG_TCHPM: case JETS_BTAG_TCHPT:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_trackCountingHighPurBJetTag();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_trackCountingHighPurBJetTag();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_trackCountingHighPurBJetTag();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     case JETS_BTAG_SSVHEM:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_simpleSecondaryVertexHighEffBJetTag();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_simpleSecondaryVertexHighEffBJetTag();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_simpleSecondaryVertexHighEffBJetTag();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     case JETS_BTAG_SSVHPT:
+         switch (type) {
+         case JETS_TYPE_JPT:
+             btags = &cms2.jpts_simpleSecondaryVertexHighPurBJetTags();
+             break;
+         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+             btags = &cms2.jets_simpleSecondaryVertexHighPurBJetTags();
+             break;
+         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+             btags = &cms2.pfjets_simpleSecondaryVertexHighPurBJetTags();
+             break;
+         default:
+             assert(false);
+         }
+         break;
+     default:
+         assert(false);
+     }
+
+     vector<bool> ret;
+     ret.reserve(jets.size());
+     if (jets.size() == 0 || btags == 0 )
+         return ret;
+
+     for (unsigned int i = 0; i < jets.size(); ++i) {
+         ret.push_back(jets[i].first != 0 && btags->at(i) > btag_wp );
+     }
+
+     return ret;
+}
+
+int nBtaggedJets (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
+                  enum BtagType btag_type, double deltaR, double min_pt, double max_eta)
+{
+    std::vector<LorentzVector> jets = getBtaggedJets(i_hyp, false, type, cleaning, btag_type, deltaR, min_pt, max_eta);
+    return jets.size();
 }

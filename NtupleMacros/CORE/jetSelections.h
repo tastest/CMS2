@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.14 2011/10/26 00:10:47 fgolf Exp $
+// $Id: jetSelections.h,v 1.15 2011/11/10 18:45:07 fgolf Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -32,11 +32,24 @@ enum CleaningType {
      JETS_CLEAN_SS_E_MU         // mu in single-lepton final state (QCD)
 };
 
+enum BtagType {
+    JETS_BTAG_NONE,
+    JETS_BTAG_TCHEL,
+    JETS_BTAG_TCHEM,
+    JETS_BTAG_TCHPM,
+    JETS_BTAG_TCHPT,
+    JETS_BTAG_SSVHEM,
+    JETS_BTAG_SSVHPT
+};
+
+static const float BtagWP[] = {-999999., 1.7, 3.3, 1.93, 3.41, 1.74, 2.00};
+
 #define JET_DEFAULT_TYPE 	JETS_TYPE_JPT
 #define JET_DEFAULT_CLEANING 	JETS_CLEAN_HYP_E_MU
 #define JET_DEFAULT_DR		0.4
 #define JET_DEFAULT_PT		30
 #define JET_DEFAULT_ETA		2.5
+#define JETS_DEFAULT_BTAG  JETS_BTAG_NONE
 
 // vector of p4's of the jets passing selections
 std::vector<LorentzVector> getJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
@@ -92,5 +105,34 @@ bool passesPFJetID(unsigned int pfJetIdx);
 float randomConeEventDensity();
 
 float jetDz(int ijet, int ivtx);
+
+// vector of p4's of the jets passing selections
+std::vector<LorentzVector> getBtaggedJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
+                                           bool sort = false,
+                                           enum JetType = JET_DEFAULT_TYPE,
+                                           enum CleaningType = JET_DEFAULT_CLEANING,
+                                           enum BtagType = JETS_DEFAULT_BTAG,
+                                           double deltaR = JET_DEFAULT_DR,
+                                           double min_pt = JET_DEFAULT_PT,
+                                           double max_eta = JET_DEFAULT_ETA);
+
+// vector of bools aligned with the jet collection telling you which
+// jets passed the selections
+std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp,  // hyp or single-e to use for cleaning
+                                      enum JetType = JET_DEFAULT_TYPE,
+                                      enum CleaningType = JET_DEFAULT_CLEANING,
+                                      enum BtagType = JETS_DEFAULT_BTAG,
+                                      double deltaR = JET_DEFAULT_DR,
+                                      double min_pt = JET_DEFAULT_PT,
+                                      double max_eta = JET_DEFAULT_ETA);
+
+// number of jets passing selections
+int nBtaggedJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
+                  enum JetType = JET_DEFAULT_TYPE,
+                  enum CleaningType = JET_DEFAULT_CLEANING,
+                  enum BtagType = JETS_DEFAULT_BTAG,
+                  double deltaR = JET_DEFAULT_DR,
+                  double min_pt = JET_DEFAULT_PT,
+                  double max_eta = JET_DEFAULT_ETA);
 
 #endif // SEL_JETS_H
