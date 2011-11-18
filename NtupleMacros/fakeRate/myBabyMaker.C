@@ -1,4 +1,4 @@
-// C++ includes
+ // C++ includes
 #include <iostream>
 #include <set>
 #include <exception>
@@ -445,7 +445,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                 this_nbpfjet++;
                 bpfindex.push_back(iJet);
             }
-      
+
 // Electrons
       
             if (eormu == -1 || eormu==11) {
@@ -460,6 +460,38 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     //////////////////////////////////////////////////////
                     // Fake Rate Numerator & Denominator Selections     //
                     //////////////////////////////////////////////////////
+
+                    // store number of electron FOs in event (use SS FO definition)
+                    nFOels_ = 0;
+                    for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
+                        if (cms2.els_p4().at(iel).pt() < 10.)
+                            continue;
+
+                        if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
+                            ++nFOels_;
+                            continue;
+                        }
+                        if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
+                            ++nFOels_;
+                            continue;
+                        }
+                    }
+            
+                    // store number of muon FOs in event (use SS FO definition)
+                    nFOmus_ = 0;
+                    for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                        if (cms2.mus_p4().at(imu).pt() < 10.)
+                            continue;
+
+                        if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
+                            ++nFOmus_;
+                            continue;
+                        }
+                        if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
+                            ++nFOmus_;
+                            continue;
+                        }
+                    }
 
                     //////////
                     // 2011 //
@@ -616,6 +648,50 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     }
                     if (isaZ) continue;
     
+////////////////////////////////////////////////////////////////////////
+// STORE SOME Z MASS VARIABLES //
+////////////////////////////////////////////////////////////////////////
+                    mz_fo_gsf_  = -999.;
+                    mz_gsf_iso_ = -999.;
+                    LorentzVector p4fo = cms2.els_p4().at(iLep);
+                    for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
+                        if (iel == iLep) continue;
+
+                        if (fabs(cms2.els_p4().at(iel).eta()) > 2.5)
+                            continue;
+
+                        if (cms2.els_p4().at(iel).pt() < 10.)
+                            continue;
+
+                        LorentzVector zp4 = p4fo + cms2.els_p4().at(iel);
+                        float zcandmass = sqrt(fabs(zp4.mass2()));
+                        if ( fabs(zcandmass - 91.) > fabs(mz_fo_gsf_ - 91.) )
+                            continue;
+
+                        mz_fo_gsf_  = zcandmass;
+                        mz_gsf_iso_ = electronIsolation_rel_v1(iel, true);
+                    }
+
+                    mz_fo_ctf_  = -999.;
+                    mz_ctf_iso_ = -999.;
+                    for (unsigned int ictf = 0; ictf < cms2.trks_trk_p4().size(); ictf++) {
+                        if (ictf == cms2.els_trkidx().at(iLep)) continue;
+
+                        if (fabs(cms2.trks_trk_p4().at(ictf).eta()) > 2.5)
+                            continue;
+
+                        if (cms2.trks_trk_p4().at(ictf).pt() < 10.)
+                            continue;
+
+                        LorentzVector zp4 = p4fo + cms2.trks_trk_p4().at(ictf);
+                        float zcandmass = sqrt(fabs(zp4.mass2()));
+                        if ( fabs(zcandmass - 91.) > fabs(mz_fo_ctf_ - 91.) )
+                            continue;
+                        
+                        mz_fo_ctf_  = zcandmass;
+                        mz_ctf_iso_ = ctfIsoValuePF(ictf, associateTrackToVertex(ictf));
+                    }
+
 
                     /////////////////////////// 
                     // Event Information     //
@@ -1044,6 +1120,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                     // L1FastL2L3 PF Jets
                     // Find the highest Pt PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    emfpfcL1Fj1_      = -999.0;
                     ptpfcL1Fj1_       = -999.0;
                     dphipfcL1Fj1_ 	  = -999.0;
                     ptpfcL1Fj1_b2b_   = -999.0;
@@ -1065,6 +1142,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
+                            emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
                             ptpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
                             dphipfcL1Fj1_ = dphi;
@@ -1205,6 +1283,61 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // Initialize baby ntuple
                     InitBabyNtuple();
  
+                    // store number of electron FOs in event (use SS FO definition)
+                    nFOels_ = 0;
+                    for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
+                        if (cms2.els_p4().at(iel).pt() < 10.)
+                            continue;
+
+                        if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
+                            ++nFOels_;
+                            continue;
+                        }
+                        if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
+                            ++nFOels_;
+                            continue;
+                        }
+                    }
+            
+                    // store number of muon FOs in event (use SS FO definition)
+                    nFOmus_ = 0;
+                    for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                        if (cms2.mus_p4().at(imu).pt() < 10.)
+                            continue;
+
+                        if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
+                            ++nFOmus_;
+                            continue;
+                        }
+                        if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
+                            ++nFOmus_;
+                            continue;
+                        }
+                    }
+
+////////////////////////////////////////////////////////////////////////
+// STORE SOME Z MASS VARIABLES //
+////////////////////////////////////////////////////////////////////////
+                    mz_fo_ctf_  = -999.;
+                    mz_ctf_iso_ = -999.;
+                    LorentzVector p4fo = cms2.mus_p4().at(iLep);
+                    for (unsigned int ictf = 0; ictf < cms2.trks_trk_p4().size(); ictf++) {
+                        if (ictf == cms2.mus_trkidx().at(iLep)) continue;
+
+                        if (fabs(cms2.trks_trk_p4().at(ictf).eta()) > 2.5)
+                            continue;
+
+                        if (cms2.trks_trk_p4().at(ictf).pt() < 10.)
+                            continue;
+
+                        LorentzVector zp4 = p4fo + cms2.trks_trk_p4().at(ictf);
+                        float zcandmass = sqrt(fabs(zp4.mass2()));
+                        if ( fabs(zcandmass - 91.) > fabs(mz_fo_ctf_ - 91.) )
+                            continue;
+                        
+                        mz_fo_ctf_  = zcandmass;
+                        mz_ctf_iso_ = ctfIsoValuePF(ictf, associateTrackToVertex(ictf));
+                    }
        
 
                     /////////////////////////// 
@@ -1599,6 +1732,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                     // L1FastL2L3 PF Jets
                     // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    emfpfcL1Fj1_      = -999.0;
                     ptpfcL1Fj1_       = -999.0;
                     dphipfcL1Fj1_ 	  = -999.0;
                     ptpfcL1Fj1_b2b_   = -999.0;
@@ -1621,6 +1755,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
+                            emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
                             ptpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
                             dphipfcL1Fj1_ = dphi;

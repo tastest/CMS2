@@ -56,6 +56,10 @@ private:
     // Pileup - VertexMaker
     Int_t evt_ndavtxs_;
 
+    // event level variables
+    Int_t nFOels_;
+    Int_t nFOmus_;
+
     /////////////////////////// 
     // End Event Information //
     ///////////////////////////
@@ -111,6 +115,12 @@ private:
     Bool_t el_id_vbtf90_;
     Float_t el_lh_;
     Float_t el_mva_;
+
+    // Z mass variables
+    Float_t mz_fo_gsf_;
+    Float_t mz_gsf_iso_;
+    Float_t mz_fo_ctf_;
+    Float_t mz_ctf_iso_;
 
     Bool_t mu_isCosmic_;
 
@@ -481,6 +491,7 @@ private:
     Bool_t  btagpfc_; 
 
     // Same for PF Corrected jets L1FastL2L3
+    Float_t emfpfcL1Fj1_;      // EMF of hight pt PF jet well separated from lepton
     Float_t ptpfcL1Fj1_;       // highest pt jet well separated from the lepton
     Float_t dphipfcL1Fj1_;     // dphi between highest pt jet well separated from the lepton and lepton
     Float_t ptpfcL1Fj1_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
@@ -494,7 +505,7 @@ private:
     Float_t ptbtagpfcL1Fj1_;       // highest pt btagged jet well separated from the lepton
     Float_t dphibtagpfcL1Fj1_;     // dphi between highest pt btagged jet well separated from the lepton and lepton
 
-    // Same for PF Corrected jets
+    // Same for corrected JPT jets
     Float_t ptjptcj1_;       // highest pt jet well separated from the lepton
     Float_t ptjptcj1_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
     Float_t dphijptcj1_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
@@ -571,6 +582,10 @@ void myBabyMaker::InitBabyNtuple () {
     // Pileup - VertexMaker
     evt_ndavtxs_ = -1;
 
+    // event level variables
+    nFOels_ = 0;
+    nFOmus_ = 0;
+
     /////////////////////////// 
     // End Event Information //
     ///////////////////////////
@@ -617,6 +632,12 @@ void myBabyMaker::InitBabyNtuple () {
     convMIT_          = false;
     el_lh_            = -999.;
     el_mva_           = -999.;
+
+    // Z mass variables
+    mz_fo_gsf_  = -999.;
+    mz_gsf_iso_ = -999.;
+    mz_fo_ctf_  = -999.;
+    mz_ctf_iso_ = -999.;
 
     d0PV_wwV1_        = -999.;
     dzPV_wwV1_        = -999.;
@@ -951,6 +972,7 @@ void myBabyMaker::InitBabyNtuple () {
     btagpfc_        = false;
 
     // PF L1FastL2L3 Corrected jets
+    emfpfcL1Fj1_       = -999.;
     ptpfcL1Fj1_        = 0.;
     dphipfcL1Fj1_      = -999.;
     ptpfcL1Fj1_b2b_    = -999.;
@@ -1008,6 +1030,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pu_nPUvertices" , &pu_nPUvertices_ );
     babyTree_->Branch("evt_nvtxs"      , &evt_nvtxs_      );
     babyTree_->Branch("evt_ndavtxs"    , &evt_ndavtxs_    );
+
+    // event level variables
+    babyTree_->Branch("nFOels", &nFOels_);
+    babyTree_->Branch("nFOmus", &nFOmus_);
 
     /////////////////////////// 
     // End Event Information //
@@ -1076,6 +1102,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("el_lh", &el_lh_);
     babyTree_->Branch("el_mva", &el_mva_);
     babyTree_->Branch("mu_isCosmic", &mu_isCosmic_);
+
+    // Z mass variables
+    babyTree_->Branch("mz_fo_gsf" , &mz_fo_gsf_ );
+    babyTree_->Branch("mz_gsf_iso", &mz_gsf_iso_);
+    babyTree_->Branch("mz_fo_ctf" , &mz_fo_ctf_ );
+    babyTree_->Branch("mz_ctf_iso", &mz_ctf_iso_);
 
     //////////////////////////// 
     // End Lepton Information //
@@ -1362,6 +1394,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("btagpfc"      , &btagpfc_      );
       
     // PF L1FastL2L3 Corrected jets         
+    babyTree_->Branch("emfpfcL1Fj1"     , &emfpfcL1Fj1_      );
     babyTree_->Branch("ptpfcL1Fj1"      , &ptpfcL1Fj1_       );       
     babyTree_->Branch("dphipfcL1Fj1"    , &dphipfcL1Fj1_     );       
     babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );
