@@ -464,9 +464,8 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
   
     //mm
     if( hypType == 0 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )   return true;
-   
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )       return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )       return true;
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_Mass4_HT150_v") ) return true;
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass4_HT150_v") ) return true;
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v") ) return true;
@@ -474,23 +473,21 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
     
     //em
     else if( hypType == 1 || hypType == 2 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )     return true; 
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )     return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )     return true; 
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )     return true;
-
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_Mass8_HT150_v") ) return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )       return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )       return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )       return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )       return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass4_HT150_v") ) return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v") ) return true;
     }
     
     //ee
     else if( hypType == 3 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )   return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )   return true;
-      
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_Mass4_HT150_v") ) return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_Mass8_HT150_v") ) return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )       return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )       return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )       return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )       return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") ) return true;
     }
   }
   
