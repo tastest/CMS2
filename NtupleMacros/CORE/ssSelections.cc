@@ -503,7 +503,7 @@ int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum 
 /*****************************************************************************************/
 // extra Z veto for b-tagged same sign analysis
 /*****************************************************************************************/
-bool samesign::makesExtraZ(int idx, enum IsolationType iso_type) {
+bool samesign::makesExtraZ(int idx, enum IsolationType iso_type, bool apply_id_iso) {
 
     std::vector<int> ele_idx;
     ele_idx.clear();
@@ -532,12 +532,14 @@ bool samesign::makesExtraZ(int idx, enum IsolationType iso_type) {
             if (cms2.els_p4().at(eidx).pt() < 10.)
                 continue;
 
-            float iso_val = (iso_type == samesign::DET_ISO) ? electronIsolation_rel_v1(eidx, true) : electronIsolation_cor_rel_v1(eidx, true);
-            if (iso_val > 0.2)
-                continue;
-
-            if (!electronId_VBTF(eidx, VBTF_90_HLT_CALOIDT_TRKIDVL))
-                continue;
+            if (apply_id_iso) {
+                float iso_val = (iso_type == samesign::DET_ISO) ? electronIsolation_rel_v1(eidx, true) : electronIsolation_cor_rel_v1(eidx, true);
+                if (iso_val > 0.2)
+                    continue;
+                
+                if (!electronId_VBTF(eidx, VBTF_90_HLT_CALOIDT_TRKIDVL))
+                    continue;                
+            }
 
             LorentzVector zp4 = cms2.els_p4().at(eidx) + cms2.els_p4().at(ele_idx.at(vidx));
             float zcandmass = sqrt(fabs(zp4.mass2()));
@@ -559,12 +561,14 @@ bool samesign::makesExtraZ(int idx, enum IsolationType iso_type) {
             if (cms2.mus_p4().at(midx).pt() < 10.)
                 continue;
 
-            float iso_val = (iso_type == samesign::DET_ISO) ? muonIsoValue(midx, false) : muonCorIsoValue(midx, false);
-            if (iso_val > 0.2)
-                continue;
-
-            if (!muonIdNotIsolated(midx, OSGeneric_v4))
-                continue;
+            if (apply_id_iso) {
+                float iso_val = (iso_type == samesign::DET_ISO) ? muonIsoValue(midx, false) : muonCorIsoValue(midx, false);
+                if (iso_val > 0.2)
+                    continue;
+                
+                if (!muonIdNotIsolated(midx, OSGeneric_v4))
+                    continue;                
+            }
 
             LorentzVector zp4 = cms2.mus_p4().at(midx) + cms2.mus_p4().at(mu_idx.at(vidx));
             float zcandmass = sqrt(fabs(zp4.mass2()));

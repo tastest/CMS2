@@ -98,7 +98,7 @@ enum IsolationType { DET_ISO, COR_DET_ISO };
 /*****************************************************************************************/
 // extra Z veto for b-tagged same sign analysis
 /*****************************************************************************************/
-    bool makesExtraZ(int idx, enum IsolationType iso_type = COR_DET_ISO); //similar to makesExtraZ, uses hyps only
+    bool makesExtraZ(int idx, enum IsolationType iso_type = COR_DET_ISO, bool apply_id_iso = false); //similar to makesExtraZ, uses hyps only
 
 /*****************************************************************************************/
 // number of good vertices in the event
