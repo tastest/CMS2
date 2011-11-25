@@ -20,6 +20,7 @@ const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;MET20); 42X";
 #include "TLorentzVector.h"
 #include "TDatabasePDG.h"
 #include "Math/VectorUtil.h"
+#include "TROOT.h"
 #include "TSystem.h"
 #include "TPRegexp.h"
 #include "monitor.h"
@@ -1777,8 +1778,7 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
   if (nGoodVertex()<1) return false;
 
   cuts_passed = PASSED_BaseLine;
-  if ( realData // && passedTriggerRequirements( hypType(i_hyp) )
-       )  cuts_passed |= PASSED_Trigger;//fixme
+  if ( realData && passedTriggerRequirements( hypType(i_hyp) ) )  cuts_passed |= PASSED_Trigger;
   
   // Baseline cuts
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_lt_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
@@ -2702,12 +2702,17 @@ void ScanChain( TChain* chain,
   unsigned int nEventsTotal = 0;
   
   // make smurf ntuples
+  gSystem->MakeDirectory("smurf");
+  TFile* fSmurf = TFile::Open(Form("smurf/%s.root",prefix.c_str()),"RECREATE");
+  assert(fSmurf);
   SmurfTree smurfTree;
   smurfTree.CreateTree();
-  smurfTree.tree_->SetDirectory(0);
+  smurfTree.tree_->SetDirectory(fSmurf);
+
   std::map<unsigned int, std::set<unsigned int> > runList;
 
   // declare and create array of histograms
+  gROOT->cd();
   initializeHistograms(prefix.c_str(),qcdBackground);
 
 //   if ( !externalElFakeRates ){
@@ -2873,6 +2878,7 @@ void ScanChain( TChain* chain,
 	   t.CpuTime(), nEvents / t.CpuTime());
     printf("Total duplicate count: %d.  Total weight %f\n",   
 	   duplicates_total_n, duplicates_total_weight);
+    delete tree;
     delete f;
   }
   monitor.print();
@@ -2896,13 +2902,12 @@ void ScanChain( TChain* chain,
 	 HypothesisTypeName(2), HypothesisTypeName(3),
 	 hypos_total_weighted->GetBinContent(1), hypos_total_weighted->GetBinContent(2), 
 	 hypos_total_weighted->GetBinContent(3), hypos_total_weighted->GetBinContent(4));
-  gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/%s.root",prefix.c_str()),"RECREATE");
-  assert(fSmurf);
+  fSmurf->cd(); 
   smurfTree.tree_->Write();
   smurfTree.info_.SetTitle(config_info);
   smurfTree.info_.Write();
   fSmurf->Close();
+
   if (realData){
       ofstream json("processed.json");
       ofstream json2("processed_detailed.json");
