@@ -469,10 +469,14 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
                             ++nFOels_;
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep)
+                                foel_p4_ = cms2.els_p4().at(iel);
                             continue;
                         }
                         if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
                             ++nFOels_;
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep)
+                                foel_p4_ = cms2.els_p4().at(iel);
                             continue;
                         }
                     }
@@ -485,10 +489,14 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt())
+                                fomu_p4_ = cms2.mus_p4().at(imu);
                             continue;
                         }
                         if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
                             ++nFOmus_;
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt())
+                                fomu_p4_ = cms2.mus_p4().at(imu);
                             continue;
                         }
                     }
@@ -739,6 +747,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ////////////////////////////
 
                     // Basic Quantities
+                    lp4_ = cms2.els_p4().at(iLep);
                     pt_             = els_p4().at(iLep).pt();
                     eta_            = els_p4().at(iLep).eta();
                     sceta_          = els_etaSC().at(iLep);
@@ -1291,10 +1300,14 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
                             ++nFOels_;
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt())
+                                foel_p4_ = cms2.els_p4().at(iel);
                             continue;
                         }
                         if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
                             ++nFOels_;
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt())
+                                foel_p4_ = cms2.els_p4().at(iel);
                             continue;
                         }
                     }
@@ -1307,10 +1320,14 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep)
+                                fomu_p4_ = cms2.mus_p4().at(imu);
                             continue;
                         }
                         if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
                             ++nFOmus_;
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep)
+                                fomu_p4_ = cms2.mus_p4().at(imu);
                             continue;
                         }
                     }
@@ -1385,6 +1402,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ////////////////////////////
 
                     // Basic Quantities
+                    lp4_ = cms2.mus_p4().at(iLep);
                     pt_       = mus_p4().at(iLep).pt();
                     eta_      = mus_p4().at(iLep).eta();
                     phi_      = mus_p4().at(iLep).phi();
