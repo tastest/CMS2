@@ -82,7 +82,11 @@ private:
     // some useful lepton 4 vectors
     LorentzVector lp4_; // 4-vector of the lepton
     LorentzVector foel_p4_; // 4-vector of the highest additional electron FO in the event
+    Int_t foel_id_;
     LorentzVector fomu_p4_; // 4-vector of the highest additional muon FO in the event
+    Int_t fomu_id_;
+    Float_t foel_mass_;
+    Float_t fomu_mass_;
 
     // tcmet
     Float_t tcmet_;
@@ -616,6 +620,10 @@ void myBabyMaker::InitBabyNtuple () {
     lp4_.SetCoordinates(0,0,0,0); // 4-vector of the lepton
     foel_p4_.SetCoordinates(0,0,0,0); // 4-vector of the highest pt additional FO in the event
     fomu_p4_.SetCoordinates(0,0,0,0); // 4-vector of the highest pt additional FO in the event
+    foel_id_ = -999;
+    fomu_id_ = -999;
+    foel_mass_ = -999.;
+    fomu_mass_ = -999.;
 
     iso_              = -999.;
     iso_nps_          = -999.;
@@ -1057,6 +1065,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("lp4", &lp4_);
     babyTree_->Branch("foel_p4", &foel_p4_);
     babyTree_->Branch("fomu_p4", &fomu_p4_);
+    babyTree_->Branch("foel_id", &foel_id_);
+    babyTree_->Branch("fomu_id", &fomu_id_);
+    babyTree_->Branch("foel_mass", &foel_mass_);
+    babyTree_->Branch("fomu_mass", &fomu_mass_);
     babyTree_->Branch("pt"                  , &pt_                  );
     babyTree_->Branch("eta"                 , &eta_                 );
     babyTree_->Branch("sceta"               , &sceta_               );

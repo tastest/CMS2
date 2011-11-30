@@ -469,18 +469,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
                             ++nFOels_;
-                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep)
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
                                 foel_p4_ = cms2.els_p4().at(iel);
+                                foel_id_ = 11*cms2.els_charge().at(iel);
+                            }
                             continue;
                         }
                         if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
                             ++nFOels_;
-                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep)
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
                                 foel_p4_ = cms2.els_p4().at(iel);
+                                foel_id_ = 11*cms2.els_charge().at(iel);
+                            }
                             continue;
                         }
                     }
-            
+
                     // store number of muon FOs in event (use SS FO definition)
                     nFOmus_ = 0;
                     for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
@@ -489,14 +493,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
-                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt())
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
+                                fomu_id_ = 13*cms2.mus_charge().at(imu);
+                            }
                             continue;
                         }
                         if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
                             ++nFOmus_;
-                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt())
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
+                                fomu_id_ = 13*cms2.mus_charge().at(imu);
+                            }
                             continue;
                         }
                     }
@@ -759,6 +767,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     tcmetphi_       = evt_tcmetPhi();
                     pfmet_          = evt_pfmet();
                     pfmetphi_       = evt_pfmetPhi();
+                    foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
+                    fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
 
                     // Isolation
                     //iso_              = electronIsolation_rel         ( iLep, true               );
@@ -1300,14 +1310,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
                             ++nFOels_;
-                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt())
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
                                 foel_p4_ = cms2.els_p4().at(iel);
+                                foel_id_ = 11*cms2.els_charge().at(iel);
+                            }
                             continue;
                         }
                         if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
                             ++nFOels_;
-                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt())
+                            if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
                                 foel_p4_ = cms2.els_p4().at(iel);
+                                foel_id_ = 11*cms2.els_charge().at(iel);
+                            }
                             continue;
                         }
                     }
@@ -1320,14 +1334,18 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
-                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep)
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
+                                fomu_id_ = 13*cms2.mus_charge().at(imu);
+                            }
                             continue;
                         }
                         if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
                             ++nFOmus_;
-                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep)
+                            if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
+                                fomu_id_ = 13*cms2.mus_charge().at(imu);
+                            }
                             continue;
                         }
                     }
@@ -1411,7 +1429,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     tcmetphi_ = evt_tcmetPhi();
                     pfmet_    = evt_pfmet();
                     pfmetphi_ = evt_pfmetPhi();
-          
+                    foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
+                    fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
+
                     // Isolation
                     iso_          = muonIsoValue(iLep);
                     nt_iso_       = muonIsoValue(iLep, false);
