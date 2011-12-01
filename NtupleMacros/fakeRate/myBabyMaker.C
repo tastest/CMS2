@@ -463,9 +463,16 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                     // store number of electron FOs in event (use SS FO definition)
                     nFOels_ = 0;
+                    ngsfs_ = 0;
                     for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
+                        if (iel == iLep)
+                            continue;
+
                         if (cms2.els_p4().at(iel).pt() < 10.)
                             continue;
+
+                        if (pass_electronSelection(iel, electronSelectionFOV6_ssVBTF80_v3, false, false))
+                            ++ngsfs_;
 
                         if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
                             ++nFOels_;
@@ -487,9 +494,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
                     // store number of muon FOs in event (use SS FO definition)
                     nFOmus_ = 0;
+                    nmus_ = 0;
                     for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
                         if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
+
+                        ++nmus_;
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
@@ -1304,9 +1314,13 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
  
                     // store number of electron FOs in event (use SS FO definition)
                     nFOels_ = 0;
+                    ngsfs_ = 0;
                     for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
                         if (cms2.els_p4().at(iel).pt() < 10.)
                             continue;
+
+                        if (pass_electronSelection(iel, electronSelectionFOV6_ssVBTF80_v3, false, false))
+                            ++ngsfs_;
 
                         if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
                             ++nFOels_;
@@ -1328,9 +1342,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
             
                     // store number of muon FOs in event (use SS FO definition)
                     nFOmus_ = 0;
+                    nmus_ = 0;
                     for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                        if (imu == iLep)
+                            continue;
+
                         if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
+
+                        ++nmus_;
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
@@ -1355,23 +1375,28 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 ////////////////////////////////////////////////////////////////////////
                     mz_fo_ctf_  = -999.;
                     mz_ctf_iso_ = -999.;
+                    mupsilon_fo_mu_ = -999.;
+                    mupsilon_mu_iso_ = -999.;
                     LorentzVector p4fo = cms2.mus_p4().at(iLep);
-                    for (unsigned int ictf = 0; ictf < cms2.trks_trk_p4().size(); ictf++) {
-                        if (ictf == cms2.mus_trkidx().at(iLep)) continue;
+                    for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                        if (imu == iLep) continue;
 
-                        if (fabs(cms2.trks_trk_p4().at(ictf).eta()) > 2.5)
+                        if (fabs(cms2.mus_p4().at(imu).eta()) > 2.5)
                             continue;
 
-                        if (cms2.trks_trk_p4().at(ictf).pt() < 10.)
+                        if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
 
-                        LorentzVector zp4 = p4fo + cms2.trks_trk_p4().at(ictf);
+                        LorentzVector zp4 = p4fo + cms2.mus_p4().at(imu);
                         float zcandmass = sqrt(fabs(zp4.mass2()));
-                        if ( fabs(zcandmass - 91.) > fabs(mz_fo_ctf_ - 91.) )
-                            continue;
-                        
-                        mz_fo_ctf_  = zcandmass;
-                        mz_ctf_iso_ = ctfIsoValuePF(ictf, associateTrackToVertex(ictf));
+                        if ( fabs(zcandmass - 91.) < fabs(mz_fo_ctf_ - 91.) ) {
+                            mz_fo_ctf_  = zcandmass;
+                            mz_ctf_iso_ = muonIsoValue(imu, false);
+                        }
+                        if ( fabs(zcandmass - 9.5) < fabs(mupsilon_fo_mu_ - 9.5) ) {
+                            mupsilon_fo_mu_  = zcandmass;
+                            mupsilon_mu_iso_ = muonIsoValue(imu, false); 
+                        }
                     }
        
 
@@ -1420,15 +1445,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ////////////////////////////
 
                     // Basic Quantities
-                    lp4_ = cms2.mus_p4().at(iLep);
-                    pt_       = mus_p4().at(iLep).pt();
-                    eta_      = mus_p4().at(iLep).eta();
-                    phi_      = mus_p4().at(iLep).phi();
-                    id_       = 13*mus_charge().at(iLep);
-                    tcmet_    = evt_tcmet();
-                    tcmetphi_ = evt_tcmetPhi();
-                    pfmet_    = evt_pfmet();
-                    pfmetphi_ = evt_pfmetPhi();
+                    lp4_       = cms2.mus_p4().at(iLep);
+                    pt_        = mus_p4().at(iLep).pt();
+                    eta_       = mus_p4().at(iLep).eta();
+                    phi_       = mus_p4().at(iLep).phi();
+                    id_        = 13*mus_charge().at(iLep);
+                    tcmet_     = evt_tcmet();
+                    tcmetphi_  = evt_tcmetPhi();
+                    pfmet_     = evt_pfmet();
+                    pfmetphi_  = evt_pfmetPhi();
                     foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
                     fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
 

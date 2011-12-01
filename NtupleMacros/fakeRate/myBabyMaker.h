@@ -56,9 +56,11 @@ private:
     // Pileup - VertexMaker
     Int_t evt_ndavtxs_;
 
-    // event level variables
+    // event level variables (number of additional objects besides the FO under consideration)
     Int_t nFOels_;
     Int_t nFOmus_;
+    Int_t ngsfs_;
+    Int_t nmus_;
 
     /////////////////////////// 
     // End Event Information //
@@ -130,6 +132,8 @@ private:
     Float_t mz_gsf_iso_;
     Float_t mz_fo_ctf_;
     Float_t mz_ctf_iso_;
+    Float_t mupsilon_fo_mu_;
+    Float_t mupsilon_mu_iso_;
 
     Bool_t mu_isCosmic_;
 
@@ -594,6 +598,8 @@ void myBabyMaker::InitBabyNtuple () {
     // event level variables
     nFOels_ = 0;
     nFOmus_ = 0;
+    ngsfs_  = 0;
+    nmus_   = 0;
 
     /////////////////////////// 
     // End Event Information //
@@ -655,6 +661,8 @@ void myBabyMaker::InitBabyNtuple () {
     mz_gsf_iso_ = -999.;
     mz_fo_ctf_  = -999.;
     mz_ctf_iso_ = -999.;
+    mupsilon_fo_mu_  = -999.;
+    mupsilon_mu_iso_ = -999.;
 
     d0PV_wwV1_        = -999.;
     dzPV_wwV1_        = -999.;
@@ -1051,6 +1059,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // event level variables
     babyTree_->Branch("nFOels", &nFOels_);
     babyTree_->Branch("nFOmus", &nFOmus_);
+    babyTree_->Branch("ngsfs", &ngsfs_);
+    babyTree_->Branch("nmus", &nmus_);
 
     /////////////////////////// 
     // End Event Information //
@@ -1132,6 +1142,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mz_gsf_iso", &mz_gsf_iso_);
     babyTree_->Branch("mz_fo_ctf" , &mz_fo_ctf_ );
     babyTree_->Branch("mz_ctf_iso", &mz_ctf_iso_);
+    babyTree_->Branch("mupsilon_fo_mu", &mupsilon_fo_mu_);
+    babyTree_->Branch("mupsilon_mu_iso", &mupsilon_mu_iso_);
 
     //////////////////////////// 
     // End Lepton Information //
