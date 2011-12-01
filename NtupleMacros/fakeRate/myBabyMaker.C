@@ -499,7 +499,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
 
-                        ++nmus_;
+                        if (muonIdNotIsolated(imu, NominalSSv4))
+                            ++nmus_;
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
@@ -1350,7 +1351,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
 
-                        ++nmus_;
+                        if (muonIdNotIsolated(imu, NominalSSv4))
+                            ++nmus_;
 
                         if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
                             ++nFOmus_;
