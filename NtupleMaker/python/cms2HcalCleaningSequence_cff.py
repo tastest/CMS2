@@ -19,7 +19,7 @@ from RecoMET.METProducers.CaloMET_cfi import met
 from CMS2.NtupleMaker.deltaMETMaker_cfi import *
 
 cms2towerMakerHCAL = towerMaker.clone()
-cms2towerMakerHCAL.hbheInput = cms.InputTag("cms2hbherecoReflagged")
+#cms2towerMakerHCAL.hbheInput = cms.InputTag("cms2hbherecoReflagged")
 cms2towerMakerHCAL.UseEcalTiming = cms.bool(False)
 cms2metHCAL = met.clone()
 cms2metHCAL.src = cms.InputTag("cms2towerMakerHCAL")
