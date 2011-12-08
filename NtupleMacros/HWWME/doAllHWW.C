@@ -42,35 +42,35 @@ void doAllHWW() {
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
-  bool runWW    = 0;
+  bool runWW    = 1;
   bool runWjets = 1;
-  bool runWZ    = 0;
-  bool runZZ    = 0;
-  bool runHWW115 = 0;
-  bool runHWW120 = 0;
-  bool runHWW130 = 0;
-  bool runHWW140 = 0;
-  bool runHWW150 = 0;
-  bool runHWW160 = 0;
-  bool runHWW170 = 0;
-  bool runHWW180 = 0;
-  bool runHWW190 = 0;
-  bool runHWW200 = 0;
-  bool runHWW250 = 0;
-  bool runHWW300 = 0;
-  bool runHWW350 = 0;
-  bool runHWW400 = 0;
-  bool runHWW450 = 0;
-  bool runHWW500 = 0;
-  bool runHWW550 = 0;
-  bool runHWW600 = 0;
+  bool runWZ    = 1;
+  bool runZZ    = 1;
+  bool runHWW115 = 1;
+  bool runHWW120 = 1;
+  bool runHWW130 = 1;
+  bool runHWW140 = 1;
+  bool runHWW150 = 1;
+  bool runHWW160 = 1;
+  bool runHWW170 = 1;
+  bool runHWW180 = 1;
+  bool runHWW190 = 1;
+  bool runHWW200 = 1;
+  bool runHWW250 = 1;
+  bool runHWW300 = 1;   
+  bool runHWW350 = 1;
+  bool runHWW400 = 1;
+  bool runHWW450 = 1;
+  bool runHWW500 = 1;
+  bool runHWW550 = 1;
+  bool runHWW600 = 1;
   
   if (runWW) 
-    ProcessSample("ww", "data/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-12/wwfilter/merged_ntuple.root", utilFile,  -1, Lumi, 4.5, -1, "HWW","",false,true);
+    ProcessSample("ww", "data/VVJetsTo4L_TuneD6T_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-12/wwfilter/merged_ntuple*.root", utilFile,  -1, Lumi, 4.5, -1, "HWW","",false,true);
   
   // single lepton 10 filtered
   if  (runWjets) 
-    ProcessSample("wjets","data/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_SingleLepton/V04-01-01/PartonSkim/merged_ntuple.root", utilFile,  -1, Lumi, 31314.0, -1); 
+    ProcessSample("wjets","data/WJetsToLNu_TuneZ2_7TeV-madgraph-tauola_Spring11-PU_S1_START311_V1G1-v1_SingleLepton/V04-01-01/PartonSkim/merged_ntuple*.root", utilFile,  -1, Lumi, 31314.0, -1); 
   
   
   if (runWZ) 
@@ -80,7 +80,7 @@ void doAllHWW() {
     ProcessSample("zz","data/ZZtoAnything_TuneZ2_7TeV-pythia6-tauola_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*.root", utilFile,  -1 ,Lumi, 7.41, -1);
 
   if (runHWW115)
-    ProcessSample("hww115", "data/GluGluToHToWWTo2L2Nu_M-115_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/*.root", utilFile,  -1 ,Lumi, 0.165*4.0/9.0, -1); 
+    ProcessSample("hww115", "data/GluGluToHToWWTo2L2Nu_M-115_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v1/V04-01-01/merged_ntuple*.root", utilFile,  -1 ,Lumi, 0.165*4.0/9.0, -1); 
   
   if (runHWW120)
     ProcessSample("hww120", "data/GluGluToHToWWTo2L2Nu_M-120_7TeV-powheg-pythia6_Spring11-PU_S1_START311_V1G1-v2/V04-01-01/*.root", utilFile,  -1 ,Lumi, 0.250*4.0/9.0, -1); 
