@@ -31,7 +31,7 @@
 #include "TLorentzVector.h"
 #include <vector>
 #include "Math/VectorUtil.h"
-
+#include "math.h"
 
 // HWWME looper related
 #include "doAnalysis.h"
@@ -147,8 +147,8 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
     for( unsigned int event = 0; event < nEvents; ++event) {
       cms2.GetEntry(event);
       
+      // if ( cms2.evt_event() != 100147) continue;
       // std::cout << "Run = " << cms2.evt_run() << ", lumi = " << cms2.evt_lumiBlock() << ", event = " << cms2.evt_event() << "\n";
-      //if(cms2.evt_event()!=18644032) continue;
       //dumpDocLines();
       
       // identifyEvents by MC truth if specified
@@ -178,10 +178,14 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
       if(!realData) 	fillEffHist(process, weight);
       
       // Start Event selection based on the hypothesis
-      
+
       for( unsigned int i_hyp = 0; i_hyp < nHyps; ++i_hyp ) {
-	if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) break;
+
+	if(cms2.hyp_p4().at(i_hyp).mass2() < 0 ) continue;
+	if ( !isfinite(cms2.hyp_p4().at(i_hyp).mass2())) continue;
+
 	_cutWord->SetAllBitsFalse();
+	
 	if (TString(analysis) == "HWW")
 	  ApplyHWWEventSelection(i_hyp, realData);
 	
@@ -196,12 +200,15 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
 
 	int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
 	bool accept = true;
+
 	for (int j = 0; j < kNCuts; j++) {
 	  if (_cutMask->IsTrue(j)) accept &= _cutWord->IsTrue (j);
         }
+
 	// fill the system boost and smurf trees after the event selections
         if (accept){
-	  if(!realData) fillKtHist(process, weight);
+	  const std::vector<LorentzVector>& jets =  getJets(pfJet, i_hyp, 30, 5.0, true, false);
+	  if(!realData) fillKtHist(process, weight, jets.size());
 	  eventCount[type]++;
 	  eventYield[type]+=weight;
 	  eventCount[all]++;
@@ -213,7 +220,6 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
       // Progress
       progress( nEventsTotal, nEventsChain );
     }
-    
     delete tree;
     f.Close();
   }
@@ -236,7 +242,6 @@ void ScanChain(const char* process, TChain *chain, TFile *utilFile_,  int nEvent
        << "; EE "<< eventYield[ee] <<endl;
     
   if(!realData) saveMCUtilOutput(process, utilFile_);
-  
   cout<<"Total Events Before Selection "<<chain->GetEntries()<<"\n";
 }
 
@@ -246,27 +251,26 @@ void ApplyHWWEventSelection( unsigned int i_hyp, bool realData){
   //std::cout << "doAnalysis::ApplyHWWEventSelection...\n";
   if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return;
   if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return;
-
   int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
   
   // no trigger requirements
   _cutWord->SetTrue(kcut_Trigger);
-  
+
   // OS
   if ( fast_sign (cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] ) < 0)  _cutWord->SetTrue(kcut_OS);
- 
+
   // Require at least one good reconstructed primary vertex
   if (nGoodVertex() >= 1) _cutWord->SetTrue(kcut_GoodVertex);
-  
+
   // di-lepton mass cut
   if ( cms2.hyp_p4()[i_hyp].mass() > 12 ) _cutWord->SetTrue(kcut_Mll); 
-  
+
   // Z window veto
   if ( type == ee || type == mumu ) {
     if (!inZmassWindow(cms2.hyp_p4()[i_hyp].mass()))   _cutWord->SetTrue(kcut_zsel);
   }
   if (type == emu) _cutWord->SetTrue(kcut_zsel);
-
+  
   // == letpon ID and Isolation
   bool passedLTFinalRequirements = true;
   bool passedLLFinalRequirements = true;
@@ -310,7 +314,7 @@ void ApplyHWWEventSelection( unsigned int i_hyp, bool realData){
 
   if ( passedLTFinalRequirements )     _cutWord->SetTrue(kcut_LT);
   if ( passedLLFinalRequirements )     _cutWord->SetTrue(kcut_LL);
-
+  
   // MET cut
   if (passedMetRequirements(i_hyp)) _cutWord->SetTrue(kcut_met);
   
@@ -321,10 +325,11 @@ void ApplyHWWEventSelection( unsigned int i_hyp, bool realData){
   if (jets.size() > 0)  
     dPhiDiLepJet1 = TMath::Abs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0)));
   
-  if ( jets.size() == 0 ) {
+  if ( jets.size() < 2 ) {
     if (type == emu || dPhiDiLepJet1 < 165.*TMath::Pi() / 180.)
       _cutWord->SetTrue(kcut_jetveto);
   }
+
   // ==Soft Muon Veto
   if ( numberOfSoftMuons(i_hyp,true) == 0) _cutWord->SetTrue(kcut_softmuonveto);
   
@@ -342,11 +347,11 @@ void ApplyHZZEventSelection( unsigned int i_hyp, bool realData){
 
   //std::cout << "doAnalysis::ApplyHZZEventSelection...\n";
   int type =  getHypothesisType(cms2.hyp_type()[i_hyp]);
-  if ( type == emu ) return;
   
+  if ( type == emu ) return;
   if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return;
   if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return;
-  if ( cms2.hyp_p4().at(i_hyp).pt() < 40 ) return;
+  if ( cms2.hyp_p4().at(i_hyp).pt() < 25 ) return;
 
   // no trigger requirements
   _cutWord->SetTrue(kcut_Trigger);
@@ -410,19 +415,13 @@ void ApplyHZZEventSelection( unsigned int i_hyp, bool realData){
   if ( passedLLFinalRequirements )     _cutWord->SetTrue(kcut_LL);
 
   // MET cut
-  if (passedMetRequirements(i_hyp)) _cutWord->SetTrue(kcut_met);
+  if ( metValue() > 60) _cutWord->SetTrue(kcut_met);
   
-  // Jet Veto  
+  // relax jet-veto  
   const std::vector<LorentzVector>& jets =  getJets(pfJet, i_hyp, 30, 5.0, true, false);
+  if ( jets.size() < 2 ) 
+    _cutWord->SetTrue(kcut_jetveto);
   
-  double dPhiDiLepJet1 = 0.0;
-  if (jets.size() > 0)  
-    dPhiDiLepJet1 = TMath::Abs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_p4().at(i_hyp),jets.at(0)));
-  
-  if ( jets.size() == 0 ) {
-    if (type == emu || dPhiDiLepJet1 < 165.*TMath::Pi() / 180.)
-      _cutWord->SetTrue(kcut_jetveto);
-  }
   // ==Soft Muon Veto
   if ( numberOfSoftMuons(i_hyp,true) == 0) _cutWord->SetTrue(kcut_softmuonveto);
   
@@ -500,7 +499,7 @@ getJets(int type, int i_hyp, double etThreshold, double etaMax, bool sortJets, b
 	 if ( btag && !defaultBTag(type,i) ) continue;
 	 if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
 	 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-	       TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+	      TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
 	 jets.push_back(cms2.pfjets_p4()[i] * jec);
        }
        break;
@@ -1029,10 +1028,22 @@ TH1F  *mus_denom_mc_pt_;
 TH1F  *mus_eff_mc_pt_;
 
 // Histograms for System boost
+// by default these correpsond to 0-jet
 TH1F *kx_;
 TH1F *ky_;
 TH1F *kt_;
 TH2F *boost_;
+
+TH1F *kx_1jet_;
+TH1F *ky_1jet_;
+TH1F *kt_1jet_;
+TH2F *boost_1jet_;
+
+TH1F *kx_2jet_;
+TH1F *ky_2jet_;
+TH1F *kt_2jet_;
+TH2F *boost_2jet_;
+
 
 // Histograms to calculate the probablitiy of a parton -> lepton
 TH2F *parton_;
@@ -1120,10 +1131,24 @@ void InitMCUtilHist(const char* process, TFile *utilFile_) {
     
   }
   
+  // boost in the 0-jet bin 
   kx_ = new TH1F(Form("%s_kx",process), "System Boost in X", 50, -50, 50);
   ky_ = new TH1F(Form("%s_ky",process), "System Boost in Y", 50, -50, 50);
   kt_ = new TH1F(Form("%s_kt",process), "System Boost", 50, 0, 50);
   boost_ = new TH2F(Form("%s_boost",process), "System Boost kX vs kY", 50, -50, 50, 50, -50, 50);
+  
+  // boost in the 1-jet bin
+  kx_1jet_ = new TH1F(Form("%s_kx_1jet",process), "System Boost in X ( 1-Jet)", 50, -100, 100);
+  ky_1jet_ = new TH1F(Form("%s_ky_1jet",process), "System Boost in Y (1-Jet)", 50, -100, 100);
+  kt_1jet_ = new TH1F(Form("%s_kt_1jet",process), "System Boost (1-Jet)", 50, 0, 100);
+  boost_1jet_ = new TH2F(Form("%s_boost_1jet",process), "System Boost (1-Jet)", 50, -100, 100, 50, -100, 100);
+
+  // boost in the 1-jet bin
+  kx_2jet_ = new TH1F(Form("%s_kx_2jet",process), "System Boost in X ( 2-Jet)", 50, -100, 100);
+  ky_2jet_ = new TH1F(Form("%s_ky_2jet",process), "System Boost in Y (2-Jet)", 50, -100, 100);
+  kt_2jet_ = new TH1F(Form("%s_kt_2jet",process), "System Boost (2-Jet)", 50, 0, 100);
+  boost_2jet_ = new TH2F(Form("%s_boost_2jet",process), "System Boost (2-Jet)", 50, -100, 100, 50, -100, 100);
+
 
   if (TString(process) == "wjets") {
     const Double_t ptbins_genfr[9] = {10.,20.,25.,30.,35., 40., 50., 75., 100.};
@@ -1191,13 +1216,16 @@ void InitMCUtilHist(const char* process, TFile *utilFile_) {
   }
 }
 
-void fillKtHist(const char* process, double weight) {
-  // std::cout << "doAnalysis::fillKtHist()..\n";
+void fillKtHist(const char* process, double weight, const int njet) {
+  //std::cout << "doAnalysis::fillKtHist()..\n";
   // define the system boost
   LorentzVector systP4(0.,0.,0.,0.);
   for (unsigned int i = 6;  i < cms2.genps_id().size(); ++i) {
+    //std::cout << "doAnalysis::fillKtHist() i = " << i << " at line "<< __LINE__ << ".\n";
     if (TString(process).Contains("ww",TString::kExact)) {
+      //std::cout << "doAnalysis::fillKtHist()" << __LINE__ << ".\n";
       if(TMath::Abs(cms2.genps_id().at(i)) == 24) 	systP4 += cms2.genps_p4().at(i);
+      //std::cout << "doAnalysis::fillKtHist()" << __LINE__ << ".\n";
     }
     else if (TString(process) == "wz") {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24 || cms2.genps_id().at(i) == 23 ) systP4 += cms2.genps_p4().at(i);
@@ -1209,7 +1237,7 @@ void fillKtHist(const char* process, double weight) {
       if(TMath::Abs(cms2.genps_id().at(i)) == 24) systP4 += cms2.genps_p4().at(i);
     }
   }
-
+  //std::cout << "doAnalysis::fillKtHist()" << __LINE__ << ".\n";
   // add the leading status(3) parton 4-momemtum as well for wjets
   if(TString(process) == "wjets") {
     unsigned int idx_maxpt = -1;
@@ -1224,12 +1252,28 @@ void fillKtHist(const char* process, double weight) {
     }
     if( idx_maxpt >= 0) systP4 += cms2.genps_p4().at(idx_maxpt);
   }
-  
-  kx_->Fill(systP4.Px(), weight);
-  ky_->Fill(systP4.Py(), weight);
-  kt_->Fill(sqrt(systP4.Px()*systP4.Px()+systP4.Py()*systP4.Py()), weight);
-  boost_->Fill(systP4.Px(), systP4.Py());
 
+  if ( njet == 0) {
+    kx_->Fill(systP4.Px(), weight);
+    ky_->Fill(systP4.Py(), weight);
+    kt_->Fill(sqrt(systP4.Px()*systP4.Px()+systP4.Py()*systP4.Py()), weight);
+    boost_->Fill(systP4.Px(), systP4.Py());
+    //std::cout << "doAnalysis::fillKtHist()" << __LINE__ << ".\n";
+  }
+  else if ( njet == 1) {
+    kx_1jet_->Fill(systP4.Px(), weight);
+    ky_1jet_->Fill(systP4.Py(), weight);
+    kt_1jet_->Fill(sqrt(systP4.Px()*systP4.Px()+systP4.Py()*systP4.Py()), weight);
+    boost_1jet_->Fill(systP4.Px(), systP4.Py());
+    //std::cout << "doAnalysis::fillKtHist()" << __LINE__ << ".\n";
+  }
+  else if ( njet >= 2) {
+    kx_2jet_->Fill(systP4.Px(), weight);
+    ky_2jet_->Fill(systP4.Py(), weight);
+    kt_2jet_->Fill(sqrt(systP4.Px()*systP4.Px()+systP4.Py()*systP4.Py()), weight);
+    boost_2jet_->Fill(systP4.Px(), systP4.Py());
+    //std::cout << "doAnalysis::fillKtHist()" << __LINE__ << ".\n";
+  }
 }
 
 
@@ -1457,6 +1501,18 @@ void saveMCUtilOutput(const char* process, TFile *utilFile_)
   ky_->Write();
   kt_->Write();
   boost_->Write();
+
+  kx_1jet_->Write();
+  ky_1jet_->Write();
+  kt_1jet_->Write();
+  boost_1jet_->Write();
+  
+  kx_2jet_->Write();
+  ky_2jet_->Write();
+  kt_2jet_->Write();
+  boost_2jet_->Write();
+
+
 
   // Fake rate related histograms filled only for wjets MC
   if(TString(process) == "wjets") {
