@@ -178,7 +178,7 @@ bool toptag(int type, int i_hyp, double minPt);
 
 // Functions to fill the effiiency / fakerate related histograms
 void fillEffHist(const char* process, double weight);
-void fillKtHist(const char* process, double weight);
+void fillKtHist(const char* process, double weight, const int njet);
 void fillFOHist();
 void findClosestEleFO(LorentzVector v_parton, double& minDR, int& idx_minDR);
 void findClosestMuFO(LorentzVector v_parton, double& minDR, int& idx_minDR);
