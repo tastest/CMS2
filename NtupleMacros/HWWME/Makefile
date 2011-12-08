@@ -16,7 +16,8 @@ ROOFITINCLUDE =
 ifdef CMSSW_VERSION
 	ROOFITINCLUDE = $(shell scramv1 tool info roofitcore | grep INCLUDE | sed 's/^INCLUDE=/-I/')
 endif
-INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE) -I$(CMSROOT)/CORE
+#INCLUDE = -I$(CMSROOT) $(ROOFITINCLUDE) -I$(CMSROOT)/CORE
+INCLUDE = -I$(CMSROOT) -I$(CMSROOT)/CORE
 CFLAGS = -Wall -Wno-unused-function -g -O2 -fPIC $(shell root-config --cflags) $(INCLUDE) $(EXTRACFLAGS)
 
 LINKER = g++
@@ -31,7 +32,7 @@ endif
 endif
 
 
-CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc $(CMSROOT)/CORE/jetSelections.cc $(CMSROOT)/CORE/MITConversionUtilities.cc $(CMSROOT)/CORE/trackSelections.cc $(CMSROOT)/CORE/eventSelections.cc $(CMSROOT)/CORE/metSelections.cc $(CMSROOT)/CORE/mcSelections.cc  
+CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/ssSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc $(CMSROOT)/CORE/jetSelections.cc $(CMSROOT)/CORE/MITConversionUtilities.cc $(CMSROOT)/CORE/trackSelections.cc $(CMSROOT)/CORE/eventSelections.cc $(CMSROOT)/CORE/metSelections.cc $(CMSROOT)/CORE/mcSelections.cc  
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 
