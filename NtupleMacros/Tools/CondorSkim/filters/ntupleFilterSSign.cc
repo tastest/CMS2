@@ -8,7 +8,8 @@
 #include "TTreeCache.h"
 //#include "../Tools/goodrun.cc"
 
-#include "../CORE/CMS2.cc"
+//#include "../CORE/CMS2.cc"
+#include "CMS2.cc"
 //CMS2 cms2;
 
 #include "Rtypes.h"
@@ -159,8 +160,8 @@ bool select ()
 	 return false;
 
 }
-
-void ntupleFilterSSign (const std::string &infile, const std::string &outfile, bool printPass=false)  
+void ntupleFilterSSign (const std::string &infile, const std::string &outfile, bool printPass=false, bool isData = true, std::string runlist = "")
+//void ntupleFilterSSign (const std::string &infile, const std::string &outfile, bool printPass=false)  
 {
      // output file and tree
      TFile *output =TFile::Open(outfile.c_str(), "RECREATE");

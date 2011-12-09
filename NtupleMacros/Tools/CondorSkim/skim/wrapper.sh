@@ -31,6 +31,7 @@ echo "skim $skim_C"
 echo "libminifwlite $libminifwlite"
 echo `ls`
 echo "Host $HOSTNAME"
+echo `env`
 if [ ! -e $ntupleI ]; then
 	echo "Error Skimming $rootfile. Job exit code 1. Cannot find file $ntupleI on hadoop."
 	exit 1
