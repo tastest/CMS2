@@ -269,11 +269,11 @@ std::pair<double, double> gsftrks_dz_dapv (int itrk, int idapv)
 float ctfIsoValuePF(const unsigned int itrk, unsigned int ivtx, float coner, float minptn, float dzcut) {
 
     float trkdz = trks_dz_pv(itrk,ivtx).first;
-    float trketa = cms2.trks_trk_p4().at(itrk).eta();
+    //float trketa = cms2.trks_trk_p4().at(itrk).eta();
 
     float pfciso = 0.;
     float pfniso = 0.;
-    float pffootprint = 0.;
+    //float pffootprint = 0.;
     for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
 
         float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4().at(ipf), cms2.trks_trk_p4().at(itrk));
@@ -281,9 +281,9 @@ float ctfIsoValuePF(const unsigned int itrk, unsigned int ivtx, float coner, flo
         if (dR > coner) continue;
 
         float pfpt  = cms2.pfcands_p4().at(ipf).pt();
-        float pfeta = cms2.pfcands_p4().at(ipf).eta();    
-        float deta  = fabs(pfeta - trketa);
-        int pfid    = abs(cms2.pfcands_particleId().at(ipf));
+        //float pfeta = cms2.pfcands_p4().at(ipf).eta();    
+        //float deta  = fabs(pfeta - trketa);
+        //int pfid    = abs(cms2.pfcands_particleId().at(ipf));
         if (cms2.pfcands_charge().at(ipf) == 0) { 
             if (pfpt > minptn)
                 pfniso += pfpt;           
