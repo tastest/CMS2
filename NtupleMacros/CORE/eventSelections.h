@@ -32,12 +32,12 @@ bool cleaning_standardApril2011();
 //----------------------------------------------------------------
 bool cleaning_standardNovember2011();
 
-//----------------------------------------------------------------
-// 5 August 2010
-// standard event cleaning
-// for low pt dilepton / fake rate data studies
-//----------------------------------------------------------------
-bool cleaning_standardAugust2010(bool isdata);
+////----------------------------------------------------------------
+//// 5 August 2010
+//// standard event cleaning
+//// for low pt dilepton / fake rate data studies
+////----------------------------------------------------------------
+//bool cleaning_standardAugust2010(bool isdata);
 
 //----------------------------------------------------------------
 // standard event cleaning
