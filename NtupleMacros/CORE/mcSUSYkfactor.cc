@@ -82,14 +82,14 @@ float kfactorSUSY(float m0, float m12, string sample){
 
  char* filename;
  float kfactor = 1.0; 
- char *flavor[10] = {"ng", "ns", "nn", "ll", "sb", "ss", "tb", "bb", "gg", "sg"};
+ char *flavor[10] = {(char*)"ng", (char*)"ns", (char*)"nn", (char*)"ll", (char*)"sb", (char*)"ss", (char*)"tb", (char*)"bb", (char*)"gg", (char*)"sg"};
 
- if (sample == "tanbeta3") filename="../data/nlotanbeta3.root";
- else if (sample == "tanbeta3Scale05") filename="../data/nlotanbeta305.root"; 
- else if (sample == "tanbeta3Scale20") filename="../data/nlotanbeta320.root"; 
- else if (sample == "tanbeta10") filename="../data/nlotanbeta10.root";
- else if (sample == "tanbeta10Scale05") filename="../data/nlotanbeta1005.root";
- else if (sample == "tanbeta10Scale20") filename="../data/nlotanbeta1020.root";
+ if      ( sample == "tanbeta3"         ) filename = (char*)"../data/nlotanbeta3.root";
+ else if ( sample == "tanbeta3Scale05"  ) filename = (char*)"../data/nlotanbeta305.root"; 
+ else if ( sample == "tanbeta3Scale20"  ) filename = (char*)"../data/nlotanbeta320.root"; 
+ else if ( sample == "tanbeta10"        ) filename = (char*)"../data/nlotanbeta10.root";
+ else if ( sample == "tanbeta10Scale05" ) filename = (char*)"../data/nlotanbeta1005.root";
+ else if ( sample == "tanbeta10Scale20" ) filename = (char*)"../data/nlotanbeta1020.root";
  else {
   return kfactor;
   cout << "WARNING:: CORE/kfactorSUSY wrong string given, using kfactor=1" << endl; 

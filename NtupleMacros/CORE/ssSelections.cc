@@ -242,36 +242,29 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
 /*****************************************************************************************/
 // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
 /*****************************************************************************************/
-float samesign::sumJetPt(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type){
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
-    unsigned int nJets = good_jets.size();
-    if (nJets == 0)
-        return 0.;
-
-    float sumpt = 0.;
-    for (unsigned int idx = 0; idx < nJets; idx++) {
-        sumpt += good_jets.at(idx).pt();
-    }
-
-    return sumpt;
+float samesign::sumJetPt(int idx_arg, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type){
+  std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
+  unsigned int nJets = good_jets.size();
+  if (nJets == 0) return 0.0;
+  float sumpt = 0.0;
+  for (unsigned int idx = 0; idx < nJets; idx++) {
+    sumpt += good_jets.at(idx).pt();
+  }
+  return sumpt;
 }
 
 /*****************************************************************************************/
 // same as above, but allowing use of on-the-fly JEC corrections
 /*****************************************************************************************/
-float samesign::sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type) {
-
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
-    unsigned int nJets = good_jets.size();
-    if (nJets == 0)
-        return 0.;
-
-    float sumpt = 0.;
-    for (unsigned int idx = 0; idx < nJets; idx++) {
-        sumpt += good_jets.at(idx).pt();
-    }
-
-    return sumpt;
+float samesign::sumJetPt(int idx_arg, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type) {
+  std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type);
+  unsigned int nJets = good_jets.size();
+  if (nJets == 0) return 0.0;
+  float sumpt = 0.0;
+  for (unsigned int idx = 0; idx < nJets; idx++) {
+    sumpt += good_jets.at(idx).pt();
+  }
+  return sumpt;
 }
 
 /*****************************************************************************************/

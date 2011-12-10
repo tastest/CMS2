@@ -422,8 +422,8 @@ std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2,
 
     //project the met
     TVector2 pfMET(cms2.evt_pfmet() * cos(cms2.evt_pfmetPhi()), cms2.evt_pfmet() * sin(cms2.evt_pfmetPhi()));
-    float metProj_long = pfMET * a_l;
-    float metProj_perp = pfMET * a_t;
+    //float metProj_long = pfMET * a_l;
+    //float metProj_perp = pfMET * a_t;
 
     TVector2 uncl = pfMET + dil;
     float unclProj_long = uncl * a_l;
@@ -445,7 +445,7 @@ std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2,
     // clustered
     float cluRedMet_long  = dileptonProj_long + 1.0 * sumJetProj_long;
     float cluRedMet_perp  = dileptonProj_perp + 1.0 * sumJetProj_perp;
-    float cluRedMet       = sqrt(pow(cluRedMet_long, 2) + pow(cluRedMet_perp, 2));   
+    //float cluRedMet       = sqrt(pow(cluRedMet_long, 2) + pow(cluRedMet_perp, 2));   
 
     //
     // CMS INDEPEDENT MINIMIZATION VERSION
@@ -453,7 +453,7 @@ std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2,
 
     float reducedMETIndminRmet_long = (fabs(unclRedMet_long) < fabs(cluRedMet_long) ? unclRedMet_long : cluRedMet_long); 
     float reducedMETIndminRmet_perp = (fabs(unclRedMet_perp) < fabs(cluRedMet_perp) ? unclRedMet_perp : cluRedMet_perp); 
-    float redMETIndminRmet          = sqrt(pow(reducedMETIndminRmet_long, 2) + pow(reducedMETIndminRmet_perp, 2));
+    //float redMETIndminRmet          = sqrt(pow(reducedMETIndminRmet_long, 2) + pow(reducedMETIndminRmet_perp, 2));
     TVector2 redMETIndminRmetxy        = reducedMETIndminRmet_long * a_l + reducedMETIndminRmet_perp * a_t;
 
     return std::make_pair<float, float> (reducedMETIndminRmet_long, reducedMETIndminRmet_perp);
