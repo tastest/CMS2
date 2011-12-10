@@ -286,19 +286,23 @@ int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType
 }
 
 
-/*****************************************************************************************/
-// number of good vertices in the event
-/*****************************************************************************************/
-int samesign::numberOfGoodVertices() {
-    
-    int ngv = 0;
-    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-        if (isGoodVertex(vidx))
-            ++ngv;
-    }
+/////////////////////////////////
+// Moved to eventSelections.cc //
+/////////////////////////////////
 
-    return ngv;
-}
+///*****************************************************************************************/
+//// number of good vertices in the event
+///*****************************************************************************************/
+//int samesign::numberOfGoodVertices() {
+//    
+//    int ngv = 0;
+//    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+//        if (isGoodVertex(vidx))
+//            ++ngv;
+//    }
+//
+//    return ngv;
+//}
 
 /*****************************************************************************************/
 // passes dilepton trigger

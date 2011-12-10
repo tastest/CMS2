@@ -972,12 +972,11 @@ float electronIsolation_rel_v1( const unsigned int index, bool use_calo_iso ) {
 
 // corrected, relative isolation, non-truncated
 float electronIsolation_cor_rel_v1(const unsigned int index, bool use_calo_iso) {
-
-    float ntiso = electronIsolation_rel_v1(index, use_calo_iso);
-    float pt = cms2.els_p4().at(index).pt();
-    int nvtxs = samesign::numberOfGoodVertices();
-    float coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
-    return coriso;
+  float ntiso = electronIsolation_rel_v1(index, use_calo_iso);
+  float pt = cms2.els_p4().at(index).pt();
+  int nvtxs = numberOfGoodVertices();
+  float coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
+  return coriso;
 }
 
 // Relative Isolation, Non-Truncated, FastJet-corrected

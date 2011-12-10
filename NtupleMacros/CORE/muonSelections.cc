@@ -521,12 +521,11 @@ double muonIsoValue_HCAL(unsigned int index, bool truncated){
     return cms2.mus_iso03_hadEt().at(index) / pt;
 }
 double muonCorIsoValue (unsigned int index, bool truncated) {
-
-    double ntiso = muonIsoValue(index, truncated);
-    double pt = cms2.mus_p4().at(index).pt();
-    int nvtxs = samesign::numberOfGoodVertices();
-    double coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
-    return coriso;
+  double ntiso  = muonIsoValue(index, truncated);
+  double pt     = cms2.mus_p4().at(index).pt();
+  int nvtxs     = numberOfGoodVertices();
+  double coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
+  return coriso;
 }
 
 #ifdef PFISOFROMNTUPLE

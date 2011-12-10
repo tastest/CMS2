@@ -124,3 +124,10 @@ bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut = 1.0);
 
 #endif
 
+
+
+/*****************************************************************************************/
+// number of good vertices in the event
+/*****************************************************************************************/
+int numberOfGoodVertices(void);
+

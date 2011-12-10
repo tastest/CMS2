@@ -457,3 +457,16 @@ bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut) {
     
     return false;
 }
+
+
+/*****************************************************************************************/
+// number of good vertices in the event
+/*****************************************************************************************/
+int numberOfGoodVertices(void) {
+  int ngv = 0;
+  for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+    if (isGoodVertex(vidx)) ++ngv;
+  }
+  return ngv;
+}
+

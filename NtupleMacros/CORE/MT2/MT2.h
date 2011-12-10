@@ -65,7 +65,7 @@ class TMt2 {
     ~TMt2   (void);
 
     float GetMt2  ( const float , const float , const LorentzVector , const LorentzVector ,                               const float = 0.0, bool = false );
-    float GetMt2j ( const float , const float , const LorentzVector , const LorentzVector , const vector<LorentzVector> , const float = 0.0, bool = false );
+    //float GetMt2j ( const float , const float , const LorentzVector , const LorentzVector , const vector<LorentzVector> , const float = 0.0, bool = false );
 
     inline float         Mt2   (void) { return mt2_;    }
     inline LorentzVector Nu1p4 (void) { return p4_nu1_; }
