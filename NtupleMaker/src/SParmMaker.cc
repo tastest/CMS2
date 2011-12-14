@@ -63,6 +63,8 @@ SParmMaker::SParmMaker(const edm::ParameterSet& iConfig) {
     produces<float>   (branchprefix+"tanb"         ).setBranchAlias(aliasprefix_+"_tanb"           );
     produces<float>   (branchprefix+"a0"           ).setBranchAlias(aliasprefix_+"_a0"           );
     produces<float>   (branchprefix+"mu"           ).setBranchAlias(aliasprefix_+"_mu"           );
+    produces<float>   (branchprefix+"xsec"         ).setBranchAlias(aliasprefix_+"_xsec"           );
+    produces<float>   (branchprefix+"dilepfiltereff"           ).setBranchAlias(aliasprefix_+"_dilepfiltereff"           );
     produces<int>     (branchprefix+"subProcessId" ).setBranchAlias(aliasprefix_+"_subProcessId" );
     produces<float>   (branchprefix+"weight"       ).setBranchAlias(aliasprefix_+"_weight"       );
     produces<float>   (branchprefix+"pdfWeight1"   ).setBranchAlias(aliasprefix_+"_pdfWeight1"   );
@@ -86,10 +88,12 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     std::auto_ptr<TString> sparm_comment      (new TString);
     std::auto_ptr<int>     sparm_subProcessId (new int);
     std::auto_ptr<float>   sparm_m0           (new float);
-    std::auto_ptr<float>   sparm_m12           (new float);
-    std::auto_ptr<float>   sparm_tanb           (new float);
+    std::auto_ptr<float>   sparm_m12          (new float);
+    std::auto_ptr<float>   sparm_tanb         (new float);
     std::auto_ptr<float>   sparm_a0           (new float);
     std::auto_ptr<float>   sparm_mu           (new float);
+    std::auto_ptr<float>   sparm_xsec         (new float);
+    std::auto_ptr<float>   sparm_dilepfiltereff           (new float);
     std::auto_ptr<float>   sparm_weight       (new float);
     std::auto_ptr<float>   sparm_pdfWeight1   (new float);
     std::auto_ptr<float>   sparm_pdfWeight2   (new float);  
@@ -105,6 +109,8 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
         *sparm_tanb     = -9999.;
         *sparm_a0       = -9999.;
         *sparm_mu       = -9999.;
+        *sparm_xsec     = -9999.;
+        *sparm_dilepfiltereff       = -9999.;
     }
 
     for (std::vector<std::string>::const_iterator it = sparm_handle->comments_begin(); it != sparm_handle->comments_end(); it++) {      
@@ -113,14 +119,18 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
         if (!model_params.Contains("model"))
             continue;
         *sparm_comment = TString(*it);
-        TObjArray* tokens = model_params.Tokenize("_");
+        TObjArray* tokens 	= model_params.Tokenize("_");
+        TString model_params5(((TObjString*)tokens->At(5))->GetString());
+        TObjArray* tokens5  = model_params5.Tokenize(" ");
 		const int npar = tokens->GetEntries() - 1; //the crap before the first _ is not a param
 
 		*sparm_m0      = ((TObjString*)tokens->At(1))->GetString().Atof();
 		*sparm_m12     = ((TObjString*)tokens->At(2))->GetString().Atof();
 		*sparm_tanb    = ((TObjString*)tokens->At(3))->GetString().Atof();
 		*sparm_a0      = ((TObjString*)tokens->At(4))->GetString().ReplaceAll("m", "").Atof(); // need to remove "m" if exists
-		*sparm_mu      = ((TObjString*)tokens->At(5))->GetString().Atof(); 
+		*sparm_mu      = ((TObjString*)tokens5->At(0))->GetString().Atof(); 
+		*sparm_xsec    = ((TObjString*)tokens5->At(1))->GetString().Atof()*1000000000;  // convert from mb to pb
+		*sparm_dilepfiltereff    = ((TObjString*)tokens5->At(2))->GetString().Atof(); 
 		
 		delete tokens;
     }
@@ -151,6 +161,8 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     iEvent.put(sparm_tanb         ,branchprefix+"tanb"           );
     iEvent.put(sparm_a0           ,branchprefix+"a0"           );
     iEvent.put(sparm_mu           ,branchprefix+"mu"           );
+    iEvent.put(sparm_xsec         ,branchprefix+"xsec"           );
+    iEvent.put(sparm_dilepfiltereff           ,branchprefix+"dilepfiltereff"           );
     iEvent.put(sparm_weight       ,branchprefix+"weight"       );
     iEvent.put(sparm_pdfWeight1   ,branchprefix+"pdfWeight1"   );
     iEvent.put(sparm_pdfWeight2   ,branchprefix+"pdfWeight2"   );
