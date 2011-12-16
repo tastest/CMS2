@@ -46,15 +46,9 @@ private:
   virtual void endJob() ;
       
   // ----------member data ---------------------------
-  edm::InputTag sparm_m0InputTag;
-  edm::InputTag sparm_m12InputTag;
-  edm::InputTag sparm_AInputTag;
-  edm::InputTag sparm_muInputTag;
-  edm::InputTag sparm_tanBetaInputTag;
+  edm::InputTag sparm_mphiInputTag;
+  edm::InputTag sparm_mxhiInputTag;
   edm::InputTag sparm_xsecInputTag;
-  edm::InputTag sparm_susyScanBRInputTag;
-  edm::InputTag sparm_susyScanMassInputTag;
-  edm::InputTag sparm_susyScanRunInputTag;
 
   std::string aliasprefix_;
 };
