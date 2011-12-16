@@ -161,6 +161,10 @@ void fill_dyest_histograms(int i_hyp, float weight, unsigned int nJets);
 
 float getHiggsPt();
 float getHiggsPtWeight(float pt, int mH);
+float getZPt();
+float getZRapidity();
+float getZMass();
+float getDYNNLOWeight(float pt, float rap, float mass);
 				
 unsigned int bestZHyp();
 bool hypo (int i_hyp, double weight, bool zStudy = false, bool realData = false ); 

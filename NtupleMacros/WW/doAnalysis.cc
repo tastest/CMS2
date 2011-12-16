@@ -92,6 +92,7 @@ bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
 bool useLHeleId = false;
 bool useMVAeleId = true;
+bool doDYNNLOw = true;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_pf;
@@ -106,6 +107,7 @@ wwcuts_t cuts_passed = 0;
 
 TH1D* HiggsPtKFactor = 0;
 ElectronIDMVA* electronIdMVA = 0;
+vector<TH2D*>     fDYNNLOKFactorHists;           //vector of hist for Drell-Yan NNLO Kfactor
 
 bool goodElectronTMVA(unsigned int i) {
   //cout << "electronIdMVA.MVAValue=" << electronIdMVA->MVAValue(i, 0) << endl;
@@ -2048,9 +2050,9 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
 // 	   cms2.genps_id().at(i), cms2.genps_id_mother().at(i));
 
   hypos_total->Fill(type);
-  hypos_total->Fill(3);
+  hypos_total->Fill(4);
   hypos_total_weighted->Fill(type,weight);
-  hypos_total_weighted->Fill(3,weight);
+  hypos_total_weighted->Fill(4,weight);
 
   // jet count
   hnJet[type]->Fill(cms2.hyp_njets()[i_hyp], weight);
@@ -2154,8 +2156,8 @@ bool hypo (int i_hyp, double weight, bool zStudy, bool realData)
 }//end of void hypo
 
 void initializeHistograms(const char *prefix, bool qcdBackground){
-  hypos_total          = new TH1F(Form("%s_hypos_total",prefix),"Total number of hypothesis counts",4,0,4);
-  hypos_total_weighted = new TH1F(Form("%s_hypos_total_weighted",prefix),"Total number of hypotheses (weighted)",4,0,4);
+  hypos_total          = new TH1F(Form("%s_hypos_total",prefix),"Total number of hypothesis counts",5,0,5);
+  hypos_total_weighted = new TH1F(Form("%s_hypos_total_weighted",prefix),"Total number of hypotheses (weighted)",5,0,5);
   hypos_total_weighted->Sumw2();
 
   for (unsigned int i=0; i<4; ++i){
@@ -2476,6 +2478,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
     else
       tree.type_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? SmurfTree::me : SmurfTree::em;
   }
+
   tree.lep1_  = ltIsFirst ? cms2.hyp_lt_p4().at(i_hyp) : cms2.hyp_ll_p4().at(i_hyp);
   tree.lep2_  = ltIsFirst ? cms2.hyp_ll_p4().at(i_hyp) : cms2.hyp_lt_p4().at(i_hyp);
   tree.lq1_   = ltIsFirst ? cms2.hyp_lt_charge().at(i_hyp) : cms2.hyp_ll_charge().at(i_hyp);
@@ -2549,6 +2552,25 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
 	tree.sfWeightHPt_ = getHiggsPtWeight(pt,ss.Atoi());
       }
     }
+
+    if (doDYNNLOw) {
+      if (sample==SmurfTree::dyee||sample==SmurfTree::dymm||sample==SmurfTree::dytt) {
+	if (isDYee()||isDYmm()||isDYtt()) {
+	  float pt = getZPt();
+	  float rap = getZRapidity();
+	  float mass = getZMass();
+	  float kfact =  getDYNNLOWeight(pt,rap,mass);
+	  tree.scale1fb_ *= kfact;
+	}
+      }
+    }
+
+    for (unsigned int nbc=0;nbc<cms2.puInfo_nPUvertices().size();++nbc) {
+      if (cms2.puInfo_bunchCrossing().at(nbc)==0) tree.npu_ = cms2.puInfo_nPUvertices().at(nbc);
+      else if (cms2.puInfo_bunchCrossing().at(nbc)==-1) tree.npuMinusOne_ = cms2.puInfo_nPUvertices().at(nbc);
+      else if (cms2.puInfo_bunchCrossing().at(nbc)==+1) tree.npuPlusOne_ = cms2.puInfo_nPUvertices().at(nbc);
+    }
+
   }
 
   tree.dstype_ = sample;
@@ -2771,6 +2793,21 @@ void ScanChain( TChain* chain,
     } else {
       set_goodrun_file_json(cms2_json_file);
     }
+  }
+
+  if (doDYNNLOw && (sample==SmurfTree::dyee || sample==SmurfTree::dymm || sample==SmurfTree::dytt) ) {
+    //TFile *tmpFile = new TFile( "files/DYNNLOKFactor_PowhegToFEWZ.root", "READ");
+    //const int nMassBins = 13;
+    TFile *tmpFile = new TFile( "files/fewz_powheg_weights_stepwise_2011_fine7.root", "READ");
+    const int nMassBins = 41;
+    for(int i=0; i<nMassBins; i++){         
+      TString hname = TString::Format("weight_%02d",i+1);
+      TH2D *tmpHist = (TH2D*)tmpFile->Get(hname);
+      tmpHist->SetDirectory(0);
+      fDYNNLOKFactorHists.push_back(tmpHist);
+    }
+    tmpFile->Close();
+    delete tmpFile;
   }
 
   // file loop
@@ -3587,4 +3624,69 @@ float getHiggsPtWeight(float pt, int higgsMass) {
   delete fHiggsPtKFactorFile;
   //cout << "Using new hist for higgs pT k-factors: " << HiggsPtKFactor->GetName() << endl;
   return HiggsPtKFactor->GetBinContent( HiggsPtKFactor->GetXaxis()->FindFixBin(pt));
+}
+
+float getZPt() {
+  for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+    if ( cms2.genps_id().at(i) == 23 ){
+      return cms2.genps_p4().at(i).pt();
+    }
+  }
+  return -999.;
+}
+
+float getZRapidity() {
+  for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+    if ( cms2.genps_id().at(i) == 23 ){
+      return cms2.genps_p4().at(i).Rapidity();
+    }
+  }
+  return -999.;
+}
+
+float getZMass() {
+  for (unsigned int i = 0; i < cms2.genps_id().size(); ++i) {
+    if ( cms2.genps_id().at(i) == 23 ){
+      return cms2.genps_p4().at(i).mass();
+    }
+  }
+  return -999.;
+}
+
+float getDYNNLOWeight(float pt, float rap, float mass) {
+
+  float DYNNLOKFactor = 1.;
+  //Find Mass Bin
+  const UInt_t nMassBins = 41;
+  const Double_t massBinLimits[nMassBins+1] = {15,   20,  25,  30,  35,  40,  45,  50,  55,  60, 
+					       64,   68,  72,  76,  81,  86,  91,  96, 101, 106, 
+					       110, 115, 120, 126, 133, 141, 150, 160, 171, 185, 
+					       200, 220, 243, 273, 320, 380, 440, 510, 600, 1000, 
+					       1500}; //41 bins
+  //const UInt_t nMassBins = 13;
+  //const Double_t massBinLimits[nMassBins+1] = {0,20,30,40,50,60,76,86,96,106,120,150,200,600}; // 13 bins
+  Int_t massBinIndex = -1 ;
+  for(UInt_t binIndex=0; binIndex < nMassBins; ++binIndex){
+    if( mass >= massBinLimits[binIndex] && mass < massBinLimits[binIndex+1]) {
+      massBinIndex = binIndex;
+      break;
+    }
+  }
+  //Found the mass bin
+  if (massBinIndex >= 0 && massBinIndex < Int_t(nMassBins) ) {
+    UInt_t ptBin = fDYNNLOKFactorHists[massBinIndex]->GetXaxis()->FindFixBin(pt);
+    UInt_t yBin = fDYNNLOKFactorHists[massBinIndex]->GetYaxis()->FindFixBin(rap);
+
+    if(Int_t(ptBin) == fDYNNLOKFactorHists[massBinIndex]->GetNbinsX() + 1)
+      ptBin = fDYNNLOKFactorHists[massBinIndex]->GetNbinsX();
+    if(ptBin == 0)
+      ptBin = 1;
+    if(Int_t(yBin) == fDYNNLOKFactorHists[massBinIndex]->GetNbinsY() + 1)
+      yBin = fDYNNLOKFactorHists[massBinIndex]->GetNbinsY();
+    if(yBin == 0)
+      yBin = 1;
+    DYNNLOKFactor = fDYNNLOKFactorHists[massBinIndex]->GetBinContent( ptBin, yBin);
+  } 
+  return DYNNLOKFactor;
+
 }
