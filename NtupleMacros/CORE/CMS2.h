@@ -12,7 +12,7 @@
 #include <vector> 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
-#define PARANOIA
+//#define PARANOIA
 
 using namespace std; 
 class CMS2 {
