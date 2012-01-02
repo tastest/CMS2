@@ -53,27 +53,19 @@ SParmMaker::SParmMaker(const edm::ParameterSet& iConfig) {
   if(branchprefix.find("_") != std::string::npos) branchprefix.replace(branchprefix.find("_"),1,"");
 
   // product of this EDProducer
-  produces<float>               (branchprefix+"m0"         ).setBranchAlias(aliasprefix_+"_m0"       );
-  produces<float>               (branchprefix+"m12"        ).setBranchAlias(aliasprefix_+"_m12"      );
-  produces<float>               (branchprefix+"A"          ).setBranchAlias(aliasprefix_+"_A"        );
-  produces<float>               (branchprefix+"mu"         ).setBranchAlias(aliasprefix_+"_mu"       );
-  produces<float>               (branchprefix+"tanBeta"    ).setBranchAlias(aliasprefix_+"_tanBeta"  );
   produces<float>               (branchprefix+"xsec"       ).setBranchAlias(aliasprefix_+"_xsec"     );
-  produces<float>               (branchprefix+"br"       	).setBranchAlias(aliasprefix_+"_br"     	);
-  produces<float>               (branchprefix+"mass"       	).setBranchAlias(aliasprefix_+"_mass"     	);
-  produces<float>               (branchprefix+"run"       	).setBranchAlias(aliasprefix_+"_run"     	);
+  produces<float>               (branchprefix+"m1"       	).setBranchAlias(aliasprefix_+"_m1"     	);
+  produces<float>               (branchprefix+"m2"       	).setBranchAlias(aliasprefix_+"_m2"     	);
+  produces<float>               (branchprefix+"m3"       	).setBranchAlias(aliasprefix_+"_m3"     	);
+  produces<float>               (branchprefix+"m4"       	).setBranchAlias(aliasprefix_+"_m4"     	);
  
  	
   // parameters from configuration
-  sparm_m0InputTag      = iConfig.getParameter<edm::InputTag>("sparm_m0InputTag"        );
-  sparm_m12InputTag     = iConfig.getParameter<edm::InputTag>("sparm_m12InputTag"       );
-  sparm_AInputTag       = iConfig.getParameter<edm::InputTag>("sparm_AInputTag"         );
-  sparm_muInputTag      = iConfig.getParameter<edm::InputTag>("sparm_muInputTag"        );
-  sparm_tanBetaInputTag = iConfig.getParameter<edm::InputTag>("sparm_tanBetaInputTag"   );
   sparm_xsecInputTag    = iConfig.getParameter<edm::InputTag>("sparm_xsecInputTag"      );
-  sparm_susyScanBRInputTag    			= iConfig.getParameter<edm::InputTag>("sparm_susyScanBRInputTag"      		);
-  sparm_susyScanMassInputTag    = iConfig.getParameter<edm::InputTag>("sparm_susyScanMassInputTag"      			);
-  sparm_susyScanRunInputTag    	= iConfig.getParameter<edm::InputTag>("sparm_susyScanRunInputTag"      				);
+  sparm_m1InputTag      = iConfig.getParameter<edm::InputTag>("sparm_m1InputTag"        );
+  sparm_m2InputTag      = iConfig.getParameter<edm::InputTag>("sparm_m2InputTag"        );
+  sparm_m3InputTag      = iConfig.getParameter<edm::InputTag>("sparm_m3InputTag"        );
+  sparm_m4InputTag      = iConfig.getParameter<edm::InputTag>("sparm_m4InputTag"        );
 
 
 }
@@ -87,72 +79,25 @@ SParmMaker::~SParmMaker() {}
 // ------------ method called to produce the data  ------------
 void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
-  auto_ptr<float>  sparm_m0       (new float);
-  auto_ptr<float>  sparm_m12      (new float);
-  auto_ptr<float>  sparm_A        (new float);
-  auto_ptr<float>  sparm_mu       (new float);
-  auto_ptr<float>  sparm_tanBeta  (new float);
   auto_ptr<float>  sparm_xsec     (new float);
-  auto_ptr<float>  sparm_br   	  (new float);
-  auto_ptr<float>  sparm_mass     (new float);
-  auto_ptr<float>  sparm_run      (new float);
+  auto_ptr<float>  sparm_m1      (new float);
+  auto_ptr<float>  sparm_m2      (new float);
+  auto_ptr<float>  sparm_m3      (new float);
+  auto_ptr<float>  sparm_m4      (new float);
   
-  edm::Handle<double> sparm_m0Handle;
-  edm::Handle<double> sparm_m12Handle;
-  edm::Handle<double> sparm_AHandle;
-  edm::Handle<double> sparm_muHandle;
-  edm::Handle<double> sparm_tanBetaHandle;
   edm::Handle<double> sparm_xsecHandle;
-  edm::Handle<double> sparm_brHandle;
-  edm::Handle<double> sparm_massHandle;
-  edm::Handle<double> sparm_runHandle;
+  edm::Handle<double> sparm_m1Handle;
+  edm::Handle<double> sparm_m2Handle;
+  edm::Handle<double> sparm_m3Handle;
+  edm::Handle<double> sparm_m4Handle;
 
-  iEvent.getByLabel(sparm_m0InputTag,      sparm_m0Handle); 
-  iEvent.getByLabel(sparm_m12InputTag,     sparm_m12Handle); 
-  iEvent.getByLabel(sparm_AInputTag,       sparm_AHandle); 
-  iEvent.getByLabel(sparm_muInputTag,      sparm_muHandle); 
-  iEvent.getByLabel(sparm_tanBetaInputTag, sparm_tanBetaHandle); 
   iEvent.getByLabel(sparm_xsecInputTag,    sparm_xsecHandle); 
-  iEvent.getByLabel(sparm_susyScanBRInputTag,    			sparm_brHandle); 
-  iEvent.getByLabel(sparm_susyScanMassInputTag,    			sparm_massHandle); 
-  iEvent.getByLabel(sparm_susyScanRunInputTag,    			sparm_runHandle); 
+  iEvent.getByLabel(sparm_m1InputTag,      sparm_m1Handle); 
+  iEvent.getByLabel(sparm_m2InputTag,      sparm_m2Handle); 
+  iEvent.getByLabel(sparm_m3InputTag,      sparm_m3Handle); 
+  iEvent.getByLabel(sparm_m4InputTag,      sparm_m4Handle); 
 
 
-
-  if( sparm_m0Handle.isValid() ){
-    *sparm_m0 = (float)*(sparm_m0Handle.product());
-  }
-  else{
-    *sparm_m0 = -9999.;
-  }
-
-  if( sparm_m12Handle.isValid() ){
-    *sparm_m12 = (float)*(sparm_m12Handle.product());
-  }
-  else{
-    *sparm_m12 = -9999.;
-  }
-
-  if( sparm_AHandle.isValid() ){
-    *sparm_A = (float)*(sparm_AHandle.product());
-  }
-  else{
-    *sparm_A = -9999.;
-  }
-
-  if( sparm_muHandle.isValid() ){
-    *sparm_mu = (float)*(sparm_muHandle.product());
-  }
-  else{
-    *sparm_mu = -9999.;
-  }
-  
-  if( sparm_tanBetaHandle.isValid() ){
-    *sparm_tanBeta = (float)*(sparm_tanBetaHandle.product());
-  }
-  else{
-    *sparm_tanBeta = -9999.;
-  }
 
   if( sparm_xsecHandle.isValid() ){
     *sparm_xsec = (float)*(sparm_xsecHandle.product());
@@ -161,41 +106,43 @@ void SParmMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     *sparm_xsec = -9999.;
   }
  
-  if( sparm_brHandle.isValid() ){
-    *sparm_br = (float)*(sparm_brHandle.product());
+  if( sparm_m1Handle.isValid() ){
+    *sparm_m1 = (float)*(sparm_m1Handle.product());
   }
   else{
-    *sparm_br = -9999.;
+    *sparm_m1 = -9999.;
   }
 
-  if( sparm_massHandle.isValid() ){
-    *sparm_mass = (float)*(sparm_massHandle.product());
+  if( sparm_m2Handle.isValid() ){
+    *sparm_m2 = (float)*(sparm_m2Handle.product());
   }
   else{
-    *sparm_mass = -9999.;
+    *sparm_m2 = -9999.;
   }
 
-  if( sparm_runHandle.isValid() ){
-    *sparm_run = (float)*(sparm_runHandle.product());
+  if( sparm_m3Handle.isValid() ){
+    *sparm_m3 = (float)*(sparm_m3Handle.product());
   }
   else{
-    *sparm_run = -9999.;
+    *sparm_m3 = -9999.;
   }
 
+  if( sparm_m4Handle.isValid() ){
+    *sparm_m4 = (float)*(sparm_m4Handle.product());
+  }
+  else{
+    *sparm_m4 = -9999.;
+  }
 
   // put containers into event
   std::string branchprefix = aliasprefix_;
   if(branchprefix.find("_") != std::string::npos) branchprefix.replace(branchprefix.find("_"),1,"");
 
-  iEvent.put(sparm_m0        ,branchprefix+"m0"        );
-  iEvent.put(sparm_m12       ,branchprefix+"m12"       );
-  iEvent.put(sparm_A         ,branchprefix+"A"         );
-  iEvent.put(sparm_mu        ,branchprefix+"mu"        );
-  iEvent.put(sparm_tanBeta   ,branchprefix+"tanBeta"   );
   iEvent.put(sparm_xsec      ,branchprefix+"xsec"      );
-  iEvent.put(sparm_br      		,branchprefix+"br"      	);
-  iEvent.put(sparm_mass      	,branchprefix+"mass"      );
-  iEvent.put(sparm_run      	,branchprefix+"run"      	);
+  iEvent.put(sparm_m1        ,branchprefix+"m1"        );
+  iEvent.put(sparm_m2        ,branchprefix+"m2"        );
+  iEvent.put(sparm_m3        ,branchprefix+"m3"        );
+  iEvent.put(sparm_m4        ,branchprefix+"m4"        );
   
 }
 
