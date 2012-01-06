@@ -8,7 +8,7 @@
 
 namespace samesign {
 
-enum IsolationType { DET_ISO, COR_DET_ISO };
+enum IsolationType { DET_ISO, TIGHT_DET_ISO, COR_DET_ISO };
 
 /****************************************************************
  ***                                                           ***
@@ -101,14 +101,6 @@ enum IsolationType { DET_ISO, COR_DET_ISO };
     bool makesExtraZ(int idx, enum IsolationType iso_type = COR_DET_ISO, bool apply_id_iso = false); //similar to makesExtraZ, uses hyps only
 
 
-/////////////////////////////////
-// Moved to eventSelections.cc //
-/////////////////////////////////
-
-///*****************************************************************************************/
-//// number of good vertices in the event
-///*****************************************************************************************/
-//    int numberOfGoodVertices();
 
 /*****************************************************************************************/
 // passes dilepton trigger

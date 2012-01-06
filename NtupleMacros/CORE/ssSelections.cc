@@ -63,6 +63,8 @@ bool samesign::isIsolatedLepton(int id, int idx, enum IsolationType iso_type)
             return (pass_electronSelection(idx, electronSelection_ssV6_iso));
         else if (iso_type == COR_DET_ISO)
             return (electronIsolation_cor_rel_v1(idx, true) < 0.10);
+        else if (iso_type == TIGHT_DET_ISO)
+            return (electronIsolation_rel_v1(idx, true) < 0.10);
     }
 
     // muons
@@ -70,7 +72,9 @@ bool samesign::isIsolatedLepton(int id, int idx, enum IsolationType iso_type)
         if (iso_type == DET_ISO)
             return (muonIsoValue(idx, false) < 0.15);
         else if (iso_type == COR_DET_ISO)
-            return (muonCorIsoValue(idx, false) < 0.10);   
+            return (muonCorIsoValue(idx, false) < 0.10);
+        else if (iso_type == TIGHT_DET_ISO)
+            return (muonIsoValue(idx, false) < 0.10);
     }
 
     return false;
@@ -106,7 +110,7 @@ bool samesign::isDenominatorLepton(int id, int idx, enum IsolationType iso_type)
 {
     // electrons
     if (abs(id) == 11) {
-        if (iso_type == DET_ISO)
+        if (iso_type == DET_ISO || iso_type == TIGHT_DET_ISO)
             return (pass_electronSelection(idx, electronSelectionFOV6_ssVBTF80_v3, false, false) && electronIsolation_rel_v1(idx, true) < 0.60);
         else if (iso_type == COR_DET_ISO)
             return (pass_electronSelection(idx, electronSelectionFOV6_ssVBTF80_v3, false, false) && electronIsolation_cor_rel_v1(idx, true) < 0.60);            
@@ -114,7 +118,7 @@ bool samesign::isDenominatorLepton(int id, int idx, enum IsolationType iso_type)
 
     // muons
     if (abs(id) == 13) {
-        if (iso_type == DET_ISO)
+        if (iso_type == DET_ISO || iso_type == TIGHT_DET_ISO)
             return (muonId(idx, muonSelectionFO_ssV4));
         else if (iso_type == COR_DET_ISO)
             return (muonIdNotIsolated(idx, muonSelectionFO_ssV4) && muonCorIsoValue(idx, false) < 0.40);
@@ -286,24 +290,6 @@ int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType
 }
 
 
-/////////////////////////////////
-// Moved to eventSelections.cc //
-/////////////////////////////////
-
-///*****************************************************************************************/
-//// number of good vertices in the event
-///*****************************************************************************************/
-//int samesign::numberOfGoodVertices() {
-//    
-//    int ngv = 0;
-//    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-//        if (isGoodVertex(vidx))
-//            ++ngv;
-//    }
-//
-//    return ngv;
-//}
-
 /*****************************************************************************************/
 // passes dilepton trigger
 /*****************************************************************************************/
@@ -366,7 +352,7 @@ bool samesign::passesTrigger(bool is_data, int hyp_type, bool is_high_pt) {
     // triggers for dilepton datasets
     //---------------------------------
   
-    else{
+    else {
   
         //mm
         if (hyp_type == 0) {
@@ -502,64 +488,81 @@ int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum 
 /*****************************************************************************************/
 bool samesign::makesExtraZ(int idx, enum IsolationType iso_type, bool apply_id_iso) {
 
-    std::vector<int> ele_idx;
-    ele_idx.clear();
+    std::vector<unsigned int> ele_idx;
+    std::vector<unsigned int> mu_idx;
 
-    std::vector<int> mu_idx;
-    mu_idx.clear();
 
     int lt_id   = cms2.hyp_lt_id().at(idx);
     int ll_id   = cms2.hyp_ll_id().at(idx);
-    int lt_idx  = cms2.hyp_lt_index().at(idx);
-    int ll_idx  = cms2.hyp_ll_index().at(idx);
+    unsigned int lt_idx  = cms2.hyp_lt_index().at(idx);
+    unsigned int ll_idx  = cms2.hyp_ll_index().at(idx);
 
-    abs(lt_id) == 11 ? ele_idx.push_back(lt_idx) : mu_idx.push_back(lt_idx);
-    abs(ll_id) == 11 ? ele_idx.push_back(ll_idx) : mu_idx.push_back(ll_idx);
+    (abs(lt_id) == 11) ? ele_idx.push_back(lt_idx) : mu_idx.push_back(lt_idx);
+    (abs(ll_id) == 11) ? ele_idx.push_back(ll_idx) : mu_idx.push_back(ll_idx);
 
-    for (unsigned int vidx = 0; vidx < ele_idx.size(); vidx++) {
+    if (ele_idx.size() + mu_idx.size() != 2) {
+        std::cout << "ERROR: don't have 2 leptons in hypothesis!!!  Exiting" << std::endl;
+        return false;
+    }
+        
+    if (ele_idx.size() > 0) {
         for (unsigned int eidx = 0; eidx < cms2.els_p4().size(); eidx++) {
-            
-            if (eidx == ele_idx.at(vidx))
-                continue;
-            if (cms2.els_charge().at(eidx) * cms2.els_charge().at(ele_idx.at(vidx)) > 0)
+
+            bool is_hyp_lep = false;
+            for (unsigned int vidx = 0; vidx < ele_idx.size(); vidx++) {
+                if (eidx == ele_idx.at(vidx))
+                    is_hyp_lep = true;                
+            }
+            if (is_hyp_lep)
                 continue;
 
             if (fabs(cms2.els_p4().at(eidx).eta()) > 2.5)
                 continue;
+
             if (cms2.els_p4().at(eidx).pt() < 10.)
                 continue;
 
             if (apply_id_iso) {
-                float iso_val = (iso_type == samesign::DET_ISO) ? electronIsolation_rel_v1(eidx, true) : electronIsolation_cor_rel_v1(eidx, true);
+                float iso_val = (iso_type == DET_ISO || iso_type == TIGHT_DET_ISO) ? electronIsolation_rel_v1(eidx, true) : electronIsolation_cor_rel_v1(eidx, true);
                 if (iso_val > 0.2)
                     continue;
                 
-                if (!electronId_VBTF(eidx, VBTF_90_HLT_CALOIDT_TRKIDVL))
+                if (!electronId_VBTF(eidx, VBTF_95_NOHOEEND))
                     continue;                
             }
 
-            LorentzVector zp4 = cms2.els_p4().at(eidx) + cms2.els_p4().at(ele_idx.at(vidx));
-            float zcandmass = sqrt(fabs(zp4.mass2()));
-            if (fabs(zcandmass-91.) < 15.)
-                return true;
-        }
+            for (unsigned int vidx = 0; vidx < ele_idx.size(); vidx++) {
+
+                if (cms2.els_charge().at(eidx) * cms2.els_charge().at(ele_idx.at(vidx)) > 0)
+                    continue;
+
+                LorentzVector zp4 = cms2.els_p4().at(eidx) + cms2.els_p4().at(ele_idx.at(vidx));
+                float zcandmass = sqrt(fabs(zp4.mass2()));
+                if (fabs(zcandmass-91.) < 15.)
+                    return true;
+            }
+        }        
     }
 
-    for (unsigned int vidx = 0; vidx < mu_idx.size(); vidx++) {
+    if (mu_idx.size() > 0) {
         for (unsigned int midx = 0; midx < cms2.mus_p4().size(); midx++) {
-            
-            if (midx == mu_idx.at(vidx))
-                continue;
-            if (cms2.mus_charge().at(midx) * cms2.mus_charge().at(mu_idx.at(vidx)) > 0)
+
+            bool is_hyp_lep = false;
+            for (unsigned int vidx = 0; vidx < mu_idx.size(); vidx++) {
+                if (midx == mu_idx.at(vidx))
+                    is_hyp_lep = true;                
+            }
+            if (is_hyp_lep)
                 continue;
 
             if (fabs(cms2.mus_p4().at(midx).eta()) > 2.5)
                 continue;
+
             if (cms2.mus_p4().at(midx).pt() < 10.)
                 continue;
 
             if (apply_id_iso) {
-                float iso_val = (iso_type == samesign::DET_ISO) ? muonIsoValue(midx, false) : muonCorIsoValue(midx, false);
+                float iso_val = (iso_type == DET_ISO || iso_type == TIGHT_DET_ISO) ? muonIsoValue(midx, false) : muonCorIsoValue(midx, false);
                 if (iso_val > 0.2)
                     continue;
                 
@@ -567,10 +570,16 @@ bool samesign::makesExtraZ(int idx, enum IsolationType iso_type, bool apply_id_i
                     continue;                
             }
 
-            LorentzVector zp4 = cms2.mus_p4().at(midx) + cms2.mus_p4().at(mu_idx.at(vidx));
-            float zcandmass = sqrt(fabs(zp4.mass2()));
-            if (fabs(zcandmass-91.) < 15.)
-                return true;
+            for (unsigned int vidx = 0; vidx < mu_idx.size(); vidx++) {
+
+                if (cms2.mus_charge().at(midx) * cms2.mus_charge().at(mu_idx.at(vidx)) > 0)
+                    continue;
+
+                LorentzVector zp4 = cms2.mus_p4().at(midx) + cms2.mus_p4().at(mu_idx.at(vidx));
+                float zcandmass = sqrt(fabs(zp4.mass2()));
+                if (fabs(zcandmass-91.) < 15.)
+                    return true;
+            }
         }
     }
 
