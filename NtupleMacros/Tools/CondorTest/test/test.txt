@@ -1,1 +1,0 @@
-Your file, test.txt, was successfully transfered and read by the script.
