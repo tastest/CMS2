@@ -143,7 +143,7 @@ void setSigPdf_LZ_GZ()
   Int_t i=0;
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz100_lz0_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz100_lz0_gz1000000.root",
 		      "sm_sm",0,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -153,7 +153,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz175_lz0_gz1750000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz175_lz0_gz1750000.root",
 		      "sm_p",0,0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -163,7 +163,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz25_lz0_gz250000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz25_lz0_gz250000.root",
 		      "sm_m",0,-0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -173,7 +173,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz100_lz50_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz100_lz50_gz1000000.root",
 		      "p_sm", 0.5, 0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -183,7 +183,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz175_lz50_gz1750000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz175_lz50_gz1750000.root",
 		      "p_p",0.5,0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -193,7 +193,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz25_lz50_gz250000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz25_lz50_gz250000.root",
 		      "p_m",0.5,-0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -203,7 +203,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz1000000.root",
 		      "m_sm",-0.5,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -213,7 +213,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz175_lzm50_gz1750000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz175_lzm50_gz1750000.root",
 		      "m_p",-0.5,0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -223,7 +223,7 @@ void setSigPdf_LZ_GZ()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz25_lzm50_gz250000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz25_lzm50_gz25000.root",
 		      "m_m",-0.5,-0.75);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -321,7 +321,7 @@ void setSigPdf_LZ_KG()
   Int_t i=0;
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz100_lz0_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg0_gg100_kz100_lz0_gz1000000.root",
 		      "sm_sm",0,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -331,7 +331,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lg0_gg100_kz779311_lz0_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg170_lg0_gg100_kz779311_lz0_gz100.root",
 		      "sm_p",0,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -341,7 +341,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lg0_gg100_kz1220689_lz0_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg30_lg0_gg100_kz1220689_lz0_gz100.root",
 		      "sm_m",0,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -351,7 +351,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz100_lz50_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lg50_gg100_kz100_lz50_gz1000000.root",
 		      "p_sm", 0.5, 0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -361,7 +361,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lg50_gg100_kz779311_lz50_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg170_lg50_gg100_kz779311_lz50_gz100.root",
 		      "p_p",0.5,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -371,7 +371,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lg100_gg100_kz779311_lz100_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg170_lg100_gg100_kz779311_lz100_gz100.root",
 		      "p_p",1.0,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -382,7 +382,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lg50_gg100_kz1220689_lz50_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg30_lg50_gg100_kz1220689_lz50_gz100.root",
 		      "p_m",0.5,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -392,7 +392,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lg100_gg100_kz1220689_lz100_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg30_lg100_gg100_kz1220689_lz100_gz100.root",
 		      "p_m",1.0,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -403,7 +403,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz1000000.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz1000000.root",
 		      "m_sm",-0.5,0);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -413,7 +413,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg170_lgm50_gg100_kz779311_lzm50_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg170_lgm50_gg100_kz779311_lzm50_gz100.root",
 		      "m_p",-0.5,0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -423,7 +423,7 @@ void setSigPdf_LZ_KG()
 
   c1->cd(i+1);
   gPad->SetLogy(kTRUE);
-  samples[i] = Sample("jake-samples/processed_data_job_WW_1j_kg30_lgm50_gg100_kz1220689_lzm50_gz100.root",
+  samples[i] = Sample("samples/processed_data_job_WW_1j_kg30_lgm50_gg100_kz1220689_lzm50_gz100.root",
 		      "m_m",-0.5,-0.70);
   samples[i].hist->Draw();
   samples[i].hist_keys->Draw("same");
@@ -866,28 +866,28 @@ void wwATGC1DFits()
   c8->Divide(2,2);
   
   c8->cd(1);
-  TH1F* h1 = wwATGC1DFit("processed_data_WW_1j_kg100_lg0_gg100_kz175_lz0_gz175_fastsim386_v1.root",
+  TH1F* h1 = wwATGC1DFit("samples/processed_data_WW_1j_kg100_lg0_gg100_kz175_lz0_gz175_fastsim386_v1.root",
 			 "sm_p",0,0.75);
   h1->SetTitle("#Delta#kappa_{Z} 0.75");
   h1->GetXaxis()->SetTitle("|#Delta#kappa_{Z}|");
   h1->Draw();
 
   c8->cd(2);
-  TH1F* h2 = wwATGC1DFit("processed_data_WW_1j_kg100_lg0_gg100_kz25_lz0_gz25_fastsim386_v1.root",
+  TH1F* h2 = wwATGC1DFit("samples/processed_data_WW_1j_kg100_lg0_gg100_kz25_lz0_gz25_fastsim386_v1.root",
 			 "sm_m",0,-0.75);
   h2->SetTitle("#Delta#kappa_{Z} -0.75");
   h2->GetXaxis()->SetTitle("|#Delta#kappa_{Z}|");
   h2->Draw();
 
   c8->cd(3);
-  TH1F* h3 = wwATGC1DFit("processed_data_WW_1j_kg100_lg50_gg100_kz100_lz50_gz100_fastsim386_v1.root",
+  TH1F* h3 = wwATGC1DFit("samples/processed_data_WW_1j_kg100_lg50_gg100_kz100_lz50_gz100_fastsim386_v1.root",
 			 "p_sm",0.5,0);
   h3->SetTitle("#lambda_{Z} 0.5");
   h3->GetXaxis()->SetTitle("|#lambda_{Z}|");
   h3->Draw();
     
   c8->cd(4);
-  TH1F* h4 = wwATGC1DFit("processed_data_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz100_fastsim386_v1.root",
+  TH1F* h4 = wwATGC1DFit("samples/processed_data_WW_1j_kg100_lgm50_gg100_kz100_lzm50_gz100_fastsim386_v1.root",
 			 "p_sm",-0.5,0);
   h4->SetTitle("#lambda_{Z} -0.5");
   h4->GetXaxis()->SetTitle("|#lambda_{Z}|");

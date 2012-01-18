@@ -6,9 +6,9 @@
   setSigPdf_LZ_KG();
   // setBkgPdf();
   // sensitivity();
-  // ww1DFits();
+  ww1DFits();
   // wwATGC1DFits();
-  wwATGC1DLzKgFits();
+  // wwATGC1DLzKgFits();
   // fitData();
   // fitTop();
 }

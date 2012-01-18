@@ -4,11 +4,11 @@
   setDefaults();
   // setSigPdf_LZ_GZ();
   setSigPdf_LZ_KG();
-  // setBkgPdf();
+  setBkgPdf();
   // sensitivity();
   // ww1DFits();
   // wwATGC1DFits();
-  wwATGC1DLzKgFits();
-  // fitData();
+  // wwATGC1DLzKgFits();
+  fitData();
   // fitTop();
 }
