@@ -35,6 +35,7 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt );
 //passes the single-lepton SUSY 2011 trigger selections
 /*****************************************************************************************/
 bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType );
+bool passSingleLep2JetSUSYTrigger2011( bool isData , int lepType );
 
 /*****************************************************************************************/
 //passes the SUSY trigger selections

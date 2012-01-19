@@ -419,6 +419,8 @@ bool passMuMuJJTrigger_v1( bool isData ) {
 
 bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
 
+  //These are the triggers for lepton+3jets 
+
   // no triggers required for MC
   if( !isData ) return true;
 
@@ -436,6 +438,40 @@ bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
     if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;   // 173212-177730 
   }
 
+  else{
+    cout << "susySelections.cc:: ERROR unrecognized lepType " << lepType << ", quitting" << endl;
+    exit(0);
+  }
+
+  return false;
+}
+
+bool passSingleLep2JetSUSYTrigger2011( bool isData , int lepType ) {
+
+  //These are the trigger options for lepton+2jets+MET 
+
+  // no triggers required for MC
+  if( !isData ) return true;
+
+  // electron channel
+  if( lepType == 0 ){
+
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v") ) return true; //160404-163869
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT15_v") ) return true; //165088-166967
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele22_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; //167039-170759
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; //170826-178380
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele30_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralJet30_PFMHT25_v") ) return true; //176461-178380
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v") ) return true; //178420-180252
+
+  }
+  // muon channel
+  else if( lepType == 1 ){
+    
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v") )          return true; //160329-163261
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true; //163269-173198
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true; //173212-180291
+    
+  }
   else{
     cout << "susySelections.cc:: ERROR unrecognized lepType " << lepType << ", quitting" << endl;
     exit(0);
