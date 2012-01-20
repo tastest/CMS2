@@ -377,6 +377,48 @@ if(algo == "TCHEM"){
     return 1.0;
   }
  }
+ if(algo == "TCHEL"){
+   if (jet_eta < 0.8 ) {
+     if (jet_pt < 51) return 1.07583;
+     if (jet_pt < 101) return 1.06113;
+     if (jet_pt < 151) return 1.05073;
+     if (jet_pt < 201) return 1.0446;
+     if (jet_pt < 251) return 1.04277;
+     if (jet_pt < 301) return 1.04521;
+     if (jet_pt < 351) return 1.05195;
+     if (jet_pt < 401) return 1.06297;
+     if (jet_pt < 451) return 1.07827;
+     if (jet_pt < 501) return 1.09786;
+     
+     return 1.0;
+   }
+   if (jet_eta < 1.6) {
+     if (jet_pt < 51)  return 1.13792;
+     if (jet_pt < 101)  return 1.1337;
+     if (jet_pt < 151)  return 1.13283;
+     if (jet_pt < 201)  return 1.13533;
+     if (jet_pt < 251)  return 1.14117;
+     if (jet_pt < 301)  return 1.15038;
+     if (jet_pt < 351)  return 1.16293;
+     if (jet_pt < 401)  return 1.17885;
+     if (jet_pt < 451)  return 1.19811;
+     if (jet_pt < 501)  return 1.22074;
+     return 1.0;
+   }
+   if (jet_eta < 2.4) {
+     if (jet_pt < 51)  return 1.11236;
+     if (jet_pt < 101)  return 1.12409;
+     if (jet_pt < 151)  return 1.13569;
+     if (jet_pt < 201)  return 1.14718;
+     if (jet_pt < 251)  return 1.15854;
+     if (jet_pt < 301)  return 1.16978;
+     if (jet_pt < 351)  return 1.18089;
+     if (jet_pt < 401)  return 1.19189;
+     if (jet_pt < 451)  return 1.20276;
+     if (jet_pt < 501)  return 1.21351;
+     return 1.0;
+   }
+ }
  std::cout << "Error: eta > 2.4 value found" << endl;
  return 1.0;
 }
@@ -427,6 +469,48 @@ double getMisTagSF_Err(double jet_pt, double jet_eta, string algo){
       return 0.0;
     }
   }
+  if(algo == "TCHEL"){
+    if (jet_eta < 0.8 ) {
+      if (jet_pt < 51) return 0.112643;
+      if (jet_pt < 101) return 0.110145;
+      if (jet_pt < 151) return 0.108283;
+      if (jet_pt < 201) return 0.107059;
+      if (jet_pt < 251) return 0.106471;
+      if (jet_pt < 301) return 0.106521;
+      if (jet_pt < 351) return 0.107208;
+      if (jet_pt < 401) return 0.108531;
+      if (jet_pt < 451) return 0.110492;
+      if (jet_pt < 501) return 0.11309;
+      
+      return 0.0;
+    }
+    if (jet_eta < 1.6) {
+      if (jet_pt < 51)  return 0.118623;
+      if (jet_pt < 101)  return 0.117827;
+      if (jet_pt < 151)  return 0.117709;
+      if (jet_pt < 201)  return 0.118268;
+      if (jet_pt < 251)  return 0.119503;
+      if (jet_pt < 301)  return 0.121416;
+      if (jet_pt < 351)  return 0.124006;
+      if (jet_pt < 401)  return 0.127273;
+      if (jet_pt < 451)  return 0.131217;
+      if (jet_pt < 501)  return 0.135839;
+      return 0.0;
+    }
+    if (jet_eta < 2.4) {
+      if (jet_pt < 51)  return 0.117217;
+      if (jet_pt < 101)  return 0.116603;
+      if (jet_pt < 151)  return 0.116739;
+      if (jet_pt < 201)  return 0.117627;
+      if (jet_pt < 251)  return 0.119267;
+      if (jet_pt < 301)  return 0.121657;
+      if (jet_pt < 351)  return 0.124799;
+      if (jet_pt < 401)  return 0.128691;
+      if (jet_pt < 451)  return 0.133336;
+      if (jet_pt < 501)  return 0.138731;
+      return 0.0;
+    }
+  }
   std::cout << "Error: eta > 2.4 value found" << endl;
   return 0.0;
 }
@@ -435,6 +519,7 @@ double getBTagSF(double jet_pt, double jet_eta, string algo){
   
   jet_eta = fabs(jet_eta);
   if(algo == "TCHEM"){
+    /*
     if (jet_eta < 0.8 ) {
       return 0.94;
     }
@@ -446,6 +531,8 @@ double getBTagSF(double jet_pt, double jet_eta, string algo){
       
     return 0.93;
     }
+    */
+    return 0.96;
   }
   std::cout << "Error: eta > 2.4 value found" << endl;
   return 1.0;
