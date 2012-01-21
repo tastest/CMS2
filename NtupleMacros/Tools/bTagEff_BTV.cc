@@ -380,7 +380,7 @@ double getMisTagRate_Err(double jet_pt, double jet_eta, const string algo){
     if (jet_pt < 471) return 0.0183512;
     if (jet_pt < 481) return 0.0185273;
     if (jet_pt < 500) return 0.0186946;
-    return 0.0;
+    return 0.0186946;
   }
   if (jet_eta < 1.6) {
     if (jet_pt < 21)  return 0.0014473;
@@ -431,7 +431,7 @@ double getMisTagRate_Err(double jet_pt, double jet_eta, const string algo){
     if (jet_pt < 471)  return 0.026317;
     if (jet_pt < 481)  return 0.0268442;
     if (jet_pt < 500)  return 0.0273703;
-    return 0.0;
+    return 0.0273703;
   }
   if (jet_eta < 2.4) {
     if (jet_pt < 21)  return 0.00145652;
@@ -482,7 +482,7 @@ double getMisTagRate_Err(double jet_pt, double jet_eta, const string algo){
     if (jet_pt < 471)  return 0.0315183;
     if (jet_pt < 481)  return 0.0322691;
     if (jet_pt < 500)  return 0.0330235;
-    return 0.0;
+    return 0.0330235;
   }
   }
    if(algo == "TCHEL"){
