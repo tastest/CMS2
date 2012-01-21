@@ -60,7 +60,7 @@ double getMisTagRate(double jet_pt, double jet_eta, string algo){
       if (jet_pt < 481) return 0.0873734;
       if (jet_pt < 500) return 0.0883554;
       
-    return 0.0;
+    return 0.0883554;
     }
     if (jet_eta < 1.6) {
       if (jet_pt < 21)  return 0.00663448;
@@ -111,7 +111,7 @@ double getMisTagRate(double jet_pt, double jet_eta, string algo){
       if (jet_pt < 471)  return 0.125587;
       if (jet_pt < 481)  return 0.128221;
       if (jet_pt < 500)  return 0.130854;
-      return 0.0;
+      return 0.130854;
     }
     if (jet_eta < 2.4) {
       if (jet_pt < 21)  return 0.00697778;
@@ -162,9 +162,166 @@ double getMisTagRate(double jet_pt, double jet_eta, string algo){
       if (jet_pt < 471)  return 0.150672;
       if (jet_pt < 481)  return 0.154254;
       if (jet_pt < 500)  return 0.157854;
-      return 0.0;
+      return 0.157854;
     }
   }
+ if(algo == "TCHEL"){
+    if (jet_eta < 0.8 ) {
+      if (jet_pt < 21) return 0.0493695;
+      if (jet_pt < 31) return 0.0681562;
+      if (jet_pt < 41) return 0.0864018;
+      if (jet_pt < 51) return 0.104111;
+      if (jet_pt < 61) return 0.12129;
+      if (jet_pt < 71) return 0.137944;
+      if (jet_pt < 81) return 0.154077;
+      if (jet_pt < 91) return 0.169695;
+      if (jet_pt < 101) return 0.184804;
+      if (jet_pt < 111) return 0.199409;
+      if (jet_pt < 121) return 0.213514;
+      if (jet_pt < 131) return 0.227126;
+      if (jet_pt < 141) return 0.240249;
+      if (jet_pt < 151) return 0.252889;
+      if (jet_pt < 161) return 0.265051;
+      if (jet_pt < 171) return 0.276741;
+      if (jet_pt < 181) return 0.287962;
+      if (jet_pt < 191) return 0.298722;
+      if (jet_pt < 201) return 0.309025;
+      if (jet_pt < 211) return 0.318876;
+      if (jet_pt < 221) return 0.328281;
+      if (jet_pt < 231) return 0.337245;
+      if (jet_pt < 241) return 0.345773;
+      if (jet_pt < 251) return 0.353871;
+      if (jet_pt < 261) return 0.361543;
+      if (jet_pt < 271) return 0.368796;
+      if (jet_pt < 281) return 0.375633;
+      if (jet_pt < 291) return 0.382062;
+      if (jet_pt < 301) return 0.388086;
+      if (jet_pt < 311) return 0.393711;
+      if (jet_pt < 321) return 0.398943;
+      if (jet_pt < 331) return 0.403786;
+      if (jet_pt < 341) return 0.408247;
+      if (jet_pt < 351) return 0.412329;
+      if (jet_pt < 361) return 0.416039;
+      if (jet_pt < 371) return 0.419382;
+      if (jet_pt < 381) return 0.422363;
+      if (jet_pt < 391) return 0.424987;
+      if (jet_pt < 401) return 0.42726;
+      if (jet_pt < 411) return 0.429186;
+      if (jet_pt < 421) return 0.430772;
+      if (jet_pt < 431) return 0.432022;
+      if (jet_pt < 441) return 0.432942;
+      if (jet_pt < 451) return 0.433537;
+      if (jet_pt < 461) return 0.433812;
+      if (jet_pt < 471) return 0.433772;
+      if (jet_pt < 481) return 0.433424;
+      if (jet_pt < 500) return 0.432771;
+    
+     return 0.432771;
+    }
+    if (jet_eta < 1.6) {
+      if (jet_pt < 21)  return 0.0532502;
+      if (jet_pt < 31)  return 0.0734674;
+      if (jet_pt < 41)  return 0.0930739;
+      if (jet_pt < 51)  return 0.112075;
+      if (jet_pt < 61)  return 0.130476;
+      if (jet_pt < 71)  return 0.148282;
+      if (jet_pt < 81)  return 0.165499;
+      if (jet_pt < 91)  return 0.182132;
+      if (jet_pt < 101)  return 0.198187;
+      if (jet_pt < 111)  return 0.213668;
+      if (jet_pt < 121)  return 0.228581;
+      if (jet_pt < 131)  return 0.242932;
+      if (jet_pt < 141)  return 0.256725;
+      if (jet_pt < 151)  return 0.269967;
+      if (jet_pt < 161)  return 0.282662;
+      if (jet_pt < 171)  return 0.294816;
+      if (jet_pt < 181)  return 0.306434;
+      if (jet_pt < 191)  return 0.317522;
+      if (jet_pt < 201)  return 0.328085;
+      if (jet_pt < 211)  return 0.338128;
+      if (jet_pt < 221)  return 0.347657;
+      if (jet_pt < 231)  return 0.356677;
+      if (jet_pt < 241)  return 0.365194;
+      if (jet_pt < 251)  return 0.373212;
+      if (jet_pt < 261)  return 0.380737;
+      if (jet_pt < 271)  return 0.387774;
+      if (jet_pt < 281)  return 0.39433;
+      if (jet_pt < 291)  return 0.400409;
+      if (jet_pt < 301)  return 0.406016;
+      if (jet_pt < 311)  return 0.411157;
+      if (jet_pt < 321)  return 0.415837;
+      if (jet_pt < 331)  return 0.420062;
+      if (jet_pt < 341)  return 0.423837;
+      if (jet_pt < 351)  return 0.427167;
+      if (jet_pt < 361)  return 0.430058;
+      if (jet_pt < 371)  return 0.432515;
+      if (jet_pt < 381)  return 0.434544;
+      if (jet_pt < 391)  return 0.436149;
+      if (jet_pt < 401)  return 0.437336;
+      if (jet_pt < 411)  return 0.438111;
+      if (jet_pt < 421)  return 0.438478;
+      if (jet_pt < 431)  return 0.438444;
+      if (jet_pt < 441)  return 0.438013;
+      if (jet_pt < 451)  return 0.437191;
+      if (jet_pt < 461)  return 0.435984;
+      if (jet_pt < 471)  return 0.434396;
+      if (jet_pt < 481)  return 0.432433;
+      if (jet_pt < 500)  return 0.4301;
+      return 0.4301;
+    }
+    
+    if (jet_eta < 2.4) {
+      if (jet_pt < 21)  return 0.0460609;
+      if (jet_pt < 31)  return 0.063387;
+      if (jet_pt < 41)  return 0.080097;
+      if (jet_pt < 51)  return 0.0961984;
+      if (jet_pt < 61)  return 0.111699;
+      if (jet_pt < 71)  return 0.126606;
+      if (jet_pt < 81)  return 0.140927;
+      if (jet_pt < 91)  return 0.154669;
+      if (jet_pt < 101)  return 0.167841;
+      if (jet_pt < 111)  return 0.18045;
+      if (jet_pt < 121)  return 0.192503;
+      if (jet_pt < 131)  return 0.204008;
+      if (jet_pt < 141)  return 0.214973;
+      if (jet_pt < 151)  return 0.225405;
+      if (jet_pt < 161)  return 0.235311;
+      if (jet_pt < 171)  return 0.2447;
+      if (jet_pt < 181)  return 0.253578;
+      if (jet_pt < 191)  return 0.261954;
+      if (jet_pt < 201)  return 0.269835;
+      if (jet_pt < 211)  return 0.277229;
+      if (jet_pt < 221)  return 0.284142;
+      if (jet_pt < 231)  return 0.290583;
+      if (jet_pt < 241)  return 0.29656;
+      if (jet_pt < 251)  return 0.302079;
+      if (jet_pt < 261)  return 0.307149;
+      if (jet_pt < 271)  return 0.311776;
+      if (jet_pt < 281)  return 0.315969;
+      if (jet_pt < 291)  return 0.319736;
+      if (jet_pt < 301)  return 0.323082;
+      if (jet_pt < 311)  return 0.326018;
+      if (jet_pt < 321)  return 0.328549;
+      if (jet_pt < 331)  return 0.330683;
+      if (jet_pt < 341)  return 0.332428;
+      if (jet_pt < 351)  return 0.333792;
+      if (jet_pt < 361)  return 0.334782;
+      if (jet_pt < 371)  return 0.335406;
+      if (jet_pt < 381)  return 0.335671;
+      if (jet_pt < 391)  return 0.335584;
+      if (jet_pt < 401)  return 0.335154;
+      if (jet_pt < 411)  return 0.334388;
+      if (jet_pt < 421)  return 0.333294;
+      if (jet_pt < 431)  return 0.331879;
+      if (jet_pt < 441)  return 0.33015;
+      if (jet_pt < 451)  return 0.328116;
+      if (jet_pt < 461)  return 0.325783;
+      if (jet_pt < 471)  return 0.32316;
+      if (jet_pt < 481)  return 0.320254;
+      if (jet_pt < 500)  return 0.317072;
+      return 0.317072;
+    }
+ }
   std::cout << "Error: eta > 2.4 value found" << endl;
   return 0.0;
 }
@@ -328,6 +485,163 @@ double getMisTagRate_Err(double jet_pt, double jet_eta, const string algo){
     return 0.0;
   }
   }
+   if(algo == "TCHEL"){
+    if (jet_eta < 0.8 ) {
+      if (jet_pt < 21) return 0.00999474;
+      if (jet_pt < 31) return 0.0137933;
+      if (jet_pt < 41) return 0.0174797;
+      if (jet_pt < 51) return 0.0210553;
+      if (jet_pt < 61) return 0.0245213;
+      if (jet_pt < 71) return 0.0278788;
+      if (jet_pt < 81) return 0.0311291;
+      if (jet_pt < 91) return 0.0342735;
+      if (jet_pt < 101) return 0.0373131;
+      if (jet_pt < 111) return 0.0402492;
+      if (jet_pt < 121) return 0.043083;
+      if (jet_pt < 131) return 0.0458157;
+      if (jet_pt < 141) return 0.0484485;
+      if (jet_pt < 151) return 0.0509828;
+      if (jet_pt < 161) return 0.0534196;
+      if (jet_pt < 171) return 0.0557602;
+      if (jet_pt < 181) return 0.0580058;
+      if (jet_pt < 191) return 0.0601578;
+      if (jet_pt < 201) return 0.0622172;
+      if (jet_pt < 211) return 0.0641852;
+      if (jet_pt < 221) return 0.0660633;
+      if (jet_pt < 231) return 0.0678524;
+      if (jet_pt < 241) return 0.069554;
+      if (jet_pt < 251) return 0.0711691;
+      if (jet_pt < 261) return 0.0726991;
+      if (jet_pt < 271) return 0.0741451;
+      if (jet_pt < 281) return 0.0755083;
+      if (jet_pt < 291) return 0.0767901;
+      if (jet_pt < 301) return 0.0779916;
+      if (jet_pt < 311) return 0.0791139;
+      if (jet_pt < 321) return 0.0801585;
+      if (jet_pt < 331) return 0.0811264;
+      if (jet_pt < 341) return 0.0820189;
+      if (jet_pt < 351) return 0.0828373;
+      if (jet_pt < 361) return 0.0835827;
+      if (jet_pt < 371) return 0.0842564;
+      if (jet_pt < 381) return 0.0848595;
+      if (jet_pt < 391) return 0.0853934;
+      if (jet_pt < 401) return 0.0858592;
+      if (jet_pt < 411) return 0.0862582;
+      if (jet_pt < 421) return 0.0865916;
+      if (jet_pt < 431) return 0.0868605;
+      if (jet_pt < 441) return 0.0870663;
+      if (jet_pt < 451) return 0.0872102;
+      if (jet_pt < 461) return 0.0872933;
+      if (jet_pt < 471) return 0.087317;
+      if (jet_pt < 481) return 0.0872823;
+      if (jet_pt < 500) return 0.0871906;
+    
+     return 0.0871906;
+    }
+    if (jet_eta < 1.6) {
+      if (jet_pt < 21)  return 0.0107611;
+      if (jet_pt < 31)  return 0.0148464;
+      if (jet_pt < 41)  return 0.0188082;
+      if (jet_pt < 51)  return 0.0226477;
+      if (jet_pt < 61)  return 0.0263662;
+      if (jet_pt < 71)  return 0.0299647;
+      if (jet_pt < 81)  return 0.0334445;
+      if (jet_pt < 91)  return 0.0368067;
+      if (jet_pt < 101)  return 0.0400526;
+      if (jet_pt < 111)  return 0.0431833;
+      if (jet_pt < 121)  return 0.0462;
+      if (jet_pt < 131)  return 0.0491039;
+      if (jet_pt < 141)  return 0.0518963;
+      if (jet_pt < 151)  return 0.0545781;
+      if (jet_pt < 161)  return 0.0571508;
+      if (jet_pt < 171)  return 0.0596154;
+      if (jet_pt < 181)  return 0.0619731;
+      if (jet_pt < 191)  return 0.0642251;
+      if (jet_pt < 201)  return 0.0663726;
+      if (jet_pt < 211)  return 0.0684168;
+      if (jet_pt < 221)  return 0.0703588;
+      if (jet_pt < 231)  return 0.0721999;
+      if (jet_pt < 241)  return 0.0739413;
+      if (jet_pt < 251)  return 0.0755841;
+      if (jet_pt < 261)  return 0.0771294;
+      if (jet_pt < 271)  return 0.0785786;
+      if (jet_pt < 281)  return 0.0799328;
+      if (jet_pt < 291)  return 0.0811931;
+      if (jet_pt < 301)  return 0.0823607;
+      if (jet_pt < 311)  return 0.0834369;
+      if (jet_pt < 321)  return 0.0844228;
+      if (jet_pt < 331)  return 0.0853197;
+      if (jet_pt < 341)  return 0.0861286;
+      if (jet_pt < 351)  return 0.0868508;
+      if (jet_pt < 361)  return 0.0874874;
+      if (jet_pt < 371)  return 0.0880397;
+      if (jet_pt < 381)  return 0.0885088;
+      if (jet_pt < 391)  return 0.088896;
+      if (jet_pt < 401)  return 0.0892023;
+      if (jet_pt < 411)  return 0.089429;
+      if (jet_pt < 421)  return 0.0895773;
+      if (jet_pt < 431)  return 0.0896484;
+      if (jet_pt < 441)  return 0.0896434;
+      if (jet_pt < 451)  return 0.0895635;
+      if (jet_pt < 461)  return 0.08941;
+      if (jet_pt < 471)  return 0.0891839;
+      if (jet_pt < 481)  return 0.0888866;
+      if (jet_pt < 500)  return 0.0885191;
+      return 0.0885191;
+    }
+    
+    if (jet_eta < 2.4) {
+      if (jet_pt < 21)  return 0.0093708;
+      if (jet_pt < 31)  return 0.0128833;
+      if (jet_pt < 41)  return 0.0162642;
+      if (jet_pt < 51)  return 0.0195159;
+      if (jet_pt < 61)  return 0.0226404;
+      if (jet_pt < 71)  return 0.02564;
+      if (jet_pt < 81)  return 0.0285168;
+      if (jet_pt < 91)  return 0.031273;
+      if (jet_pt < 101)  return 0.0339108;
+      if (jet_pt < 111)  return 0.0364324;
+      if (jet_pt < 121)  return 0.0388399;
+      if (jet_pt < 131)  return 0.0411356;
+      if (jet_pt < 141)  return 0.0433216;
+      if (jet_pt < 151)  return 0.0454002;
+      if (jet_pt < 161)  return 0.0473734;
+      if (jet_pt < 171)  return 0.0492435;
+      if (jet_pt < 181)  return 0.0510126;
+      if (jet_pt < 191)  return 0.052683;
+      if (jet_pt < 201)  return 0.0542568;
+      if (jet_pt < 211)  return 0.0557363;
+      if (jet_pt < 221)  return 0.0571235;
+      if (jet_pt < 231)  return 0.0584207;
+      if (jet_pt < 241)  return 0.05963;
+      if (jet_pt < 251)  return 0.0607537;
+      if (jet_pt < 261)  return 0.0617939;
+      if (jet_pt < 271)  return 0.0627528;
+      if (jet_pt < 281)  return 0.0636325;
+      if (jet_pt < 291)  return 0.0644354;
+      if (jet_pt < 301)  return 0.0651635;
+      if (jet_pt < 311)  return 0.065819;
+      if (jet_pt < 321)  return 0.0664042;
+      if (jet_pt < 331)  return 0.0669211;
+      if (jet_pt < 341)  return 0.067372;
+      if (jet_pt < 351)  return 0.0677591;
+      if (jet_pt < 361)  return 0.0680846;
+      if (jet_pt < 371)  return 0.0683505;
+      if (jet_pt < 381)  return 0.0685592;
+      if (jet_pt < 391)  return 0.0687127;
+      if (jet_pt < 401)  return 0.0688134;
+      if (jet_pt < 411)  return 0.0688633;
+      if (jet_pt < 421)  return 0.0688646;
+      if (jet_pt < 431)  return 0.0688196;
+      if (jet_pt < 441)  return 0.0687304;
+      if (jet_pt < 451)  return 0.0685992;
+      if (jet_pt < 461)  return 0.0684281;
+      if (jet_pt < 471)  return 0.0682194;
+      if (jet_pt < 481)  return 0.0679752;
+      if (jet_pt < 500)  return 0.0676978;
+      return 0.0676978;
+    }
+ }
   std::cout << "Error: eta > 2.4 value found" << endl;
   return 0.0;
 }
