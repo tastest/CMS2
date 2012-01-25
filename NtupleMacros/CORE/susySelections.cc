@@ -9,7 +9,7 @@
 #include "CMS2.h"
 
 #include "susySelections.h"
-#include "triggerUtils.cc"
+#include "triggerUtils.h"
 #include "electronSelections.h"
 #include "muonSelections.h"
 #include "eventSelections.h"
@@ -299,8 +299,8 @@ bool ZVetoGeneral( float ptcut , float minmass ,  float maxmass , SelectionType 
     if ( abs( cms2.hyp_lt_id().at(i) ) == 13  && !( muonId( cms2.hyp_lt_index().at(i) , mutype ) ) )   continue;
           
     //electron ID
-    if ( abs( cms2.hyp_ll_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_ll_index().at(i) , electronSelection_el_OSV1 , false , false ))) continue;
-    if ( abs( cms2.hyp_lt_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_lt_index().at(i) , electronSelection_el_OSV1 , false , false ))) continue;
+    if ( abs( cms2.hyp_ll_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_ll_index().at(i) , electronSelection_el_OSV3 , false , false ))) continue;
+    if ( abs( cms2.hyp_lt_id().at(i) ) == 11  && !( pass_electronSelection( cms2.hyp_lt_index().at(i) , electronSelection_el_OSV3 , false , false ))) continue;
           
     if( cms2.hyp_p4().at(i).mass() > minmass && cms2.hyp_p4().at(i).mass() < maxmass ){
       //cout << "General Z veto: mass " << cms2.hyp_p4().at(i).mass() << endl;
@@ -357,6 +357,93 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
 
 }
 
+//---------------------------------------------
+// single muon triggers for lljj bump search
+//---------------------------------------------
+
+bool passMuMuJJTrigger_v1( bool isData ) {
+
+  if( isData ){
+    
+    //-----------------------------------------------------------------------------
+    if (evt_run() >= 160329 && evt_run() <= 163261){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v5") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 163269 && evt_run() <= 164236){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v2") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 165088 && evt_run() <= 165887){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v4") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() == 166346 ){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v6") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 165922 && evt_run() <= 167043){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v5") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 167078 && evt_run() <= 170053){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v7") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 170071 && evt_run() <= 173198){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v8") )          return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 173212 && evt_run() <= 178380){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v3") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 178420 && evt_run() <= 179889){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v6") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+    else if (evt_run() >= 179959 && evt_run() <= 180093){
+      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v7") )   return true;
+    }
+    //-----------------------------------------------------------------------------
+  }
+
+  else{
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )  return true;
+  }
+
+  return false;
+}
+
+
+
+bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
+
+  // no triggers required for MC
+  if( !isData ) return true;
+
+  // electron channel
+  if( lepType == 0 ){
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_CentralTriJet30_v") )                     return true; // 160329-164236
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralJet30_v") )                     return true; // 165088-165887
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralJet30_v") )    return true; // 165922-177730
+  }
+
+  // muon channel
+  else if( lepType == 1 ){
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TriCentralJet30_v") )                   return true;   // 160329-165887
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_TriCentralJet30_v") )                return true;   // 165922-173198
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;   // 173212-177730 
+  }
+
+  else{
+    cout << "susySelections.cc:: ERROR unrecognized lepType " << lepType << ", quitting" << endl;
+    exit(0);
+  }
+
+  return false;
+}
+
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection 2011
 /*****************************************************************************************/
@@ -409,12 +496,16 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
       if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu7_v") )   return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu7_v" ) )   return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Mu13_Mu8_v" ) )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
     }
     
     //em
     else if( hypType == 1 || hypType == 2 ){
       if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdL_v") )   return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v") )   return true;
+
     }
     
     //ee
@@ -422,8 +513,8 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
       if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v") )                                   return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v") ) return true;
       if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
-    }
-  }
+    }                                     
+  }        
   
   return false;
     
