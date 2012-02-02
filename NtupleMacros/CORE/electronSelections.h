@@ -1000,7 +1000,7 @@ float electronIsolation_rel_v1_FastJet(const unsigned int, bool);
 float el_fastjet_rel_offset(const unsigned int);
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);  // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, 
-float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=-999.);
+			 float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=-999., int filterId = 0);
 float electronIsolation_cor_rel_v1(const unsigned int, bool);
 
 // remove electrons that are overlapping with a muon

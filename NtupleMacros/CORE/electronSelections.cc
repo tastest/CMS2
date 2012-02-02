@@ -1050,7 +1050,7 @@ float electronIsolation_rel_ww( const unsigned int index, bool use_calo_iso ) {
 }
 
 #ifdef PFISOFROMNTUPLE
-float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
+float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
   if (fabs(coner-0.3)<0.0001) {
     if (cms2.els_iso03_pf().at(iel)<-99.) return 9999.;
     return cms2.els_iso03_pf().at(iel)/cms2.els_p4().at(iel).pt();
@@ -1063,7 +1063,7 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
   }
 }
 #else
-float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
+float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
 
   int elgsftkid = cms2.els_gsftrkidx().at(iel);
   int eltkid = cms2.els_trkidx().at(iel);
@@ -1086,6 +1086,9 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
     float pfeta = cms2.pfcands_p4().at(ipf).eta();    
     float deta = fabs(pfeta - eleta);
     int pfid = abs(cms2.pfcands_particleId().at(ipf));
+
+    if (filterId!=0 && filterId!=pfid) continue;
+
     if (cms2.pfcands_charge().at(ipf)==0) {
       //neutrals
       if (pfpt>minptn) {

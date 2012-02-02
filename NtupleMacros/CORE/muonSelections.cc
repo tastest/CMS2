@@ -529,7 +529,7 @@ double muonCorIsoValue (unsigned int index, bool truncated) {
 }
 
 #ifdef PFISOFROMNTUPLE
-double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
+double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut, int filterId){
   if (fabs(coner-0.3)<0.0001) {
     if (cms2.mus_iso03_pf().at(imu)<-99.) return 9999.;
     return cms2.mus_iso03_pf().at(imu)/cms2.mus_p4().at(imu).pt();
@@ -542,7 +542,7 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
   }
 }
 #else
-double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut){
+double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut, int filterId){
     float pfciso = 0;
     float pfniso = 0;
     int mutkid = cms2.mus_trkidx().at(imu);
@@ -551,6 +551,8 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
         float dR = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf), mus_p4().at(imu) );
         if (dR>coner) continue;
         float pfpt = cms2.pfcands_p4().at(ipf).pt();
+	int pfid = abs(cms2.pfcands_particleId().at(ipf));
+	if (filterId!=0 && filterId!=pfid) continue;
         if (cms2.pfcands_charge().at(ipf)==0) {
             //neutrals
             if (pfpt>minptn) pfniso+=pfpt;
