@@ -1192,6 +1192,12 @@ protected:
 	vector<float> els_etaSC_;
 	TBranch *els_etaSC_branch;
 	bool els_etaSC_isLoaded;
+	vector<float> els_etaSCwidth_;
+	TBranch *els_etaSCwidth_branch;
+	bool els_etaSCwidth_isLoaded;
+	vector<float> els_phiSCwidth_;
+	TBranch *els_phiSCwidth_branch;
+	bool els_phiSCwidth_isLoaded;
 	vector<float> els_fbrem_;
 	TBranch *els_fbrem_branch;
 	bool els_fbrem_isLoaded;
@@ -1234,6 +1240,24 @@ protected:
 	vector<float> els_iso04_pf_;
 	TBranch *els_iso04_pf_branch;
 	bool els_iso04_pf_isLoaded;
+	vector<float> els_iso03_pf_ch_;
+	TBranch *els_iso03_pf_ch_branch;
+	bool els_iso03_pf_ch_isLoaded;
+	vector<float> els_iso04_pf_ch_;
+	TBranch *els_iso04_pf_ch_branch;
+	bool els_iso04_pf_ch_isLoaded;
+	vector<float> els_iso03_pf_gamma05_;
+	TBranch *els_iso03_pf_gamma05_branch;
+	bool els_iso03_pf_gamma05_isLoaded;
+	vector<float> els_iso04_pf_gamma05_;
+	TBranch *els_iso04_pf_gamma05_branch;
+	bool els_iso04_pf_gamma05_isLoaded;
+	vector<float> els_iso03_pf_nhad05_;
+	TBranch *els_iso03_pf_nhad05_branch;
+	bool els_iso03_pf_nhad05_isLoaded;
+	vector<float> els_iso04_pf_nhad05_;
+	TBranch *els_iso04_pf_nhad05_branch;
+	bool els_iso04_pf_nhad05_isLoaded;
 	vector<float> els_layer1_charge_;
 	TBranch *els_layer1_charge_branch;
 	bool els_layer1_charge_isLoaded;
@@ -1576,6 +1600,9 @@ protected:
 	vector<float> mus_caloCompatibility_;
 	TBranch *mus_caloCompatibility_branch;
 	bool mus_caloCompatibility_isLoaded;
+	vector<float> mus_segmCompatibility_;
+	TBranch *mus_segmCompatibility_branch;
+	bool mus_segmCompatibility_isLoaded;
 	vector<float> mus_chi2_;
 	TBranch *mus_chi2_branch;
 	bool mus_chi2_isLoaded;
@@ -2848,10 +2875,10 @@ protected:
 	vector<int> mus_charge_;
 	TBranch *mus_charge_branch;
 	bool mus_charge_isLoaded;
-	vector<int> mus_chi2LocalMomentum_;
+	vector<float> mus_chi2LocalMomentum_;
 	TBranch *mus_chi2LocalMomentum_branch;
 	bool mus_chi2LocalMomentum_isLoaded;
-	vector<int> mus_chi2LocalPosition_;
+	vector<float> mus_chi2LocalPosition_;
 	TBranch *mus_chi2LocalPosition_branch;
 	bool mus_chi2LocalPosition_isLoaded;
 	vector<int> mus_gfit_validHits_;
@@ -2863,13 +2890,13 @@ protected:
 	vector<int> mus_gfit_validSiHits_;
 	TBranch *mus_gfit_validSiHits_branch;
 	bool mus_gfit_validSiHits_isLoaded;
-	vector<int> mus_glbKink_;
+	vector<float> mus_glbKink_;
 	TBranch *mus_glbKink_branch;
 	bool mus_glbKink_isLoaded;
-	vector<int> mus_glbTrackProbability_;
+	vector<float> mus_glbTrackProbability_;
 	TBranch *mus_glbTrackProbability_branch;
 	bool mus_glbTrackProbability_isLoaded;
-	vector<int> mus_globalDeltaEtaPhi_;
+	vector<float> mus_globalDeltaEtaPhi_;
 	TBranch *mus_globalDeltaEtaPhi_branch;
 	bool mus_globalDeltaEtaPhi_isLoaded;
 	vector<int> mus_goodmask_;
@@ -2881,7 +2908,7 @@ protected:
 	vector<int> mus_iso05_ntrk_;
 	TBranch *mus_iso05_ntrk_branch;
 	bool mus_iso05_ntrk_isLoaded;
-	vector<int> mus_localDistance_;
+	vector<float> mus_localDistance_;
 	TBranch *mus_localDistance_branch;
 	bool mus_localDistance_isLoaded;
 	vector<int> mus_lostHits_;
@@ -2911,7 +2938,7 @@ protected:
 	vector<int> mus_pid_TMLastStationTight_;
 	TBranch *mus_pid_TMLastStationTight_branch;
 	bool mus_pid_TMLastStationTight_isLoaded;
-	vector<int> mus_staRelChi2_;
+	vector<float> mus_staRelChi2_;
 	TBranch *mus_staRelChi2_branch;
 	bool mus_staRelChi2_isLoaded;
 	vector<int> mus_sta_validHits_;
@@ -2923,10 +2950,10 @@ protected:
 	vector<int> mus_timeNumStationsUsed_;
 	TBranch *mus_timeNumStationsUsed_branch;
 	bool mus_timeNumStationsUsed_isLoaded;
-	vector<int> mus_trkKink_;
+	vector<float> mus_trkKink_;
 	TBranch *mus_trkKink_branch;
 	bool mus_trkKink_isLoaded;
-	vector<int> mus_trkRelChi2_;
+	vector<float> mus_trkRelChi2_;
 	TBranch *mus_trkRelChi2_branch;
 	bool mus_trkRelChi2_isLoaded;
 	vector<int> mus_trk_charge_;
@@ -5238,6 +5265,16 @@ void Init(TTree *tree) {
 		els_etaSC_branch = tree->GetBranch(tree->GetAlias("els_etaSC"));
 		els_etaSC_branch->SetAddress(&els_etaSC_);
 	}
+	els_etaSCwidth_branch = 0;
+	if (tree->GetAlias("els_etaSCwidth") != 0) {
+		els_etaSCwidth_branch = tree->GetBranch(tree->GetAlias("els_etaSCwidth"));
+		els_etaSCwidth_branch->SetAddress(&els_etaSCwidth_);
+	}
+	els_phiSCwidth_branch = 0;
+	if (tree->GetAlias("els_phiSCwidth") != 0) {
+		els_phiSCwidth_branch = tree->GetBranch(tree->GetAlias("els_phiSCwidth"));
+		els_phiSCwidth_branch->SetAddress(&els_phiSCwidth_);
+	}
 	els_fbrem_branch = 0;
 	if (tree->GetAlias("els_fbrem") != 0) {
 		els_fbrem_branch = tree->GetBranch(tree->GetAlias("els_fbrem"));
@@ -5307,6 +5344,36 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("els_iso04_pf") != 0) {
 		els_iso04_pf_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf"));
 		els_iso04_pf_branch->SetAddress(&els_iso04_pf_);
+	}
+	els_iso03_pf_ch_branch = 0;
+	if (tree->GetAlias("els_iso03_pf_ch") != 0) {
+		els_iso03_pf_ch_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf_ch"));
+		els_iso03_pf_ch_branch->SetAddress(&els_iso03_pf_ch_);
+	}
+	els_iso04_pf_ch_branch = 0;
+	if (tree->GetAlias("els_iso04_pf_ch") != 0) {
+		els_iso04_pf_ch_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf_ch"));
+		els_iso04_pf_ch_branch->SetAddress(&els_iso04_pf_ch_);
+	}
+	els_iso03_pf_gamma05_branch = 0;
+	if (tree->GetAlias("els_iso03_pf_gamma05") != 0) {
+		els_iso03_pf_gamma05_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf_gamma05"));
+		els_iso03_pf_gamma05_branch->SetAddress(&els_iso03_pf_gamma05_);
+	}
+	els_iso04_pf_gamma05_branch = 0;
+	if (tree->GetAlias("els_iso04_pf_gamma05") != 0) {
+		els_iso04_pf_gamma05_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf_gamma05"));
+		els_iso04_pf_gamma05_branch->SetAddress(&els_iso04_pf_gamma05_);
+	}
+	els_iso03_pf_nhad05_branch = 0;
+	if (tree->GetAlias("els_iso03_pf_nhad05") != 0) {
+		els_iso03_pf_nhad05_branch = tree->GetBranch(tree->GetAlias("els_iso03_pf_nhad05"));
+		els_iso03_pf_nhad05_branch->SetAddress(&els_iso03_pf_nhad05_);
+	}
+	els_iso04_pf_nhad05_branch = 0;
+	if (tree->GetAlias("els_iso04_pf_nhad05") != 0) {
+		els_iso04_pf_nhad05_branch = tree->GetBranch(tree->GetAlias("els_iso04_pf_nhad05"));
+		els_iso04_pf_nhad05_branch->SetAddress(&els_iso04_pf_nhad05_);
 	}
 	els_layer1_charge_branch = 0;
 	if (tree->GetAlias("els_layer1_charge") != 0) {
@@ -5877,6 +5944,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("mus_caloCompatibility") != 0) {
 		mus_caloCompatibility_branch = tree->GetBranch(tree->GetAlias("mus_caloCompatibility"));
 		mus_caloCompatibility_branch->SetAddress(&mus_caloCompatibility_);
+	}
+	mus_segmCompatibility_branch = 0;
+	if (tree->GetAlias("mus_segmCompatibility") != 0) {
+		mus_segmCompatibility_branch = tree->GetBranch(tree->GetAlias("mus_segmCompatibility"));
+		mus_segmCompatibility_branch->SetAddress(&mus_segmCompatibility_);
 	}
 	mus_chi2_branch = 0;
 	if (tree->GetAlias("mus_chi2") != 0) {
@@ -9115,6 +9187,8 @@ void GetEntry(unsigned int idx)
 		els_electronMomentumError_isLoaded = false;
 		els_etaErr_isLoaded = false;
 		els_etaSC_isLoaded = false;
+ 		els_etaSCwidth_isLoaded = false;
+ 		els_phiSCwidth_isLoaded = false;
 		els_fbrem_isLoaded = false;
 		els_hOverE_isLoaded = false;
 		els_hcalDepth1OverEcal_isLoaded = false;
@@ -9129,6 +9203,12 @@ void GetEntry(unsigned int idx)
 		els_ip3derr_isLoaded = false;
 		els_iso03_pf_isLoaded = false;
 		els_iso04_pf_isLoaded = false;
+		els_iso03_pf_ch_isLoaded = false;
+		els_iso04_pf_ch_isLoaded = false;
+		els_iso03_pf_gamma05_isLoaded = false;
+		els_iso04_pf_gamma05_isLoaded = false;
+		els_iso03_pf_nhad05_isLoaded = false;
+		els_iso04_pf_nhad05_isLoaded = false;
 		els_layer1_charge_isLoaded = false;
 		els_lh_isLoaded = false;
 		els_mva_isLoaded = false;
@@ -9243,6 +9323,7 @@ void GetEntry(unsigned int idx)
 		mus_jetdr_isLoaded = false;
 		mus_backToBackCompat_isLoaded = false;
 		mus_caloCompatibility_isLoaded = false;
+		mus_segmCompatibility_isLoaded = false;
 		mus_chi2_isLoaded = false;
 		mus_cosmicCompat_isLoaded = false;
 		mus_d0_isLoaded = false;
@@ -10207,6 +10288,8 @@ void LoadAllBranches()
 	if (els_electronMomentumError_branch != 0) els_electronMomentumError();
 	if (els_etaErr_branch != 0) els_etaErr();
 	if (els_etaSC_branch != 0) els_etaSC();
+	if (els_etaSCwidth_branch != 0) els_etaSCwidth();
+	if (els_phiSCwidth_branch != 0) els_phiSCwidth();
 	if (els_fbrem_branch != 0) els_fbrem();
 	if (els_hOverE_branch != 0) els_hOverE();
 	if (els_hcalDepth1OverEcal_branch != 0) els_hcalDepth1OverEcal();
@@ -10221,6 +10304,12 @@ void LoadAllBranches()
 	if (els_ip3derr_branch != 0) els_ip3derr();
 	if (els_iso03_pf_branch != 0) els_iso03_pf();
 	if (els_iso04_pf_branch != 0) els_iso04_pf();
+	if (els_iso03_pf_ch_branch != 0) els_iso03_pf_ch();
+	if (els_iso04_pf_ch_branch != 0) els_iso04_pf_ch();
+	if (els_iso03_pf_gamma05_branch != 0) els_iso03_pf_gamma05();
+	if (els_iso04_pf_gamma05_branch != 0) els_iso04_pf_gamma05();
+	if (els_iso03_pf_nhad05_branch != 0) els_iso03_pf_nhad05();
+	if (els_iso04_pf_nhad05_branch != 0) els_iso04_pf_nhad05();
 	if (els_layer1_charge_branch != 0) els_layer1_charge();
 	if (els_lh_branch != 0) els_lh();
 	if (els_mva_branch != 0) els_mva();
@@ -10335,6 +10424,7 @@ void LoadAllBranches()
 	if (mus_jetdr_branch != 0) mus_jetdr();
 	if (mus_backToBackCompat_branch != 0) mus_backToBackCompat();
 	if (mus_caloCompatibility_branch != 0) mus_caloCompatibility();
+	if (mus_segmCompatibility_branch != 0) mus_segmCompatibility();
 	if (mus_chi2_branch != 0) mus_chi2();
 	if (mus_cosmicCompat_branch != 0) mus_cosmicCompat();
 	if (mus_d0_branch != 0) mus_d0();
@@ -18874,6 +18964,48 @@ void LoadAllBranches()
 		}
 		return els_etaSC_;
 	}
+	vector<float> &els_etaSCwidth()
+	{
+		if (not els_etaSCwidth_isLoaded) {
+			if (els_etaSCwidth_branch != 0) {
+				els_etaSCwidth_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_etaSCwidth_.begin(); i != els_etaSCwidth_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_etaSCwidth_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_etaSCwidth_branch does not exist!\n");
+				exit(1);
+			}
+			els_etaSCwidth_isLoaded = true;
+		}
+		return els_etaSCwidth_;
+	}
+	vector<float> &els_phiSCwidth()
+	{
+		if (not els_phiSCwidth_isLoaded) {
+			if (els_phiSCwidth_branch != 0) {
+				els_phiSCwidth_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_phiSCwidth_.begin(); i != els_phiSCwidth_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_phiSCwidth_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_phiSCwidth_branch does not exist!\n");
+				exit(1);
+			}
+			els_phiSCwidth_isLoaded = true;
+		}
+		return els_phiSCwidth_;
+	}
 	vector<float> &els_fbrem()
 	{
 		if (not els_fbrem_isLoaded) {
@@ -19167,6 +19299,132 @@ void LoadAllBranches()
 			els_iso04_pf_isLoaded = true;
 		}
 		return els_iso04_pf_;
+	}
+	vector<float> &els_iso03_pf_ch()
+	{
+		if (not els_iso03_pf_ch_isLoaded) {
+			if (els_iso03_pf_ch_branch != 0) {
+				els_iso03_pf_ch_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_iso03_pf_ch_.begin(); i != els_iso03_pf_ch_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_iso03_pf_ch_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_iso03_pf_ch_branch does not exist!\n");
+				exit(1);
+			}
+			els_iso03_pf_ch_isLoaded = true;
+		}
+		return els_iso03_pf_ch_;
+	}
+	vector<float> &els_iso04_pf_ch()
+	{
+		if (not els_iso04_pf_ch_isLoaded) {
+			if (els_iso04_pf_ch_branch != 0) {
+				els_iso04_pf_ch_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_iso04_pf_ch_.begin(); i != els_iso04_pf_ch_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_iso04_pf_ch_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_iso04_pf_ch_branch does not exist!\n");
+				exit(1);
+			}
+			els_iso04_pf_ch_isLoaded = true;
+		}
+		return els_iso04_pf_ch_;
+	}
+	vector<float> &els_iso03_pf_gamma05()
+	{
+		if (not els_iso03_pf_gamma05_isLoaded) {
+			if (els_iso03_pf_gamma05_branch != 0) {
+				els_iso03_pf_gamma05_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_iso03_pf_gamma05_.begin(); i != els_iso03_pf_gamma05_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_iso03_pf_gamma05_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_iso03_pf_gamma05_branch does not exist!\n");
+				exit(1);
+			}
+			els_iso03_pf_gamma05_isLoaded = true;
+		}
+		return els_iso03_pf_gamma05_;
+	}
+	vector<float> &els_iso04_pf_gamma05()
+	{
+		if (not els_iso04_pf_gamma05_isLoaded) {
+			if (els_iso04_pf_gamma05_branch != 0) {
+				els_iso04_pf_gamma05_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_iso04_pf_gamma05_.begin(); i != els_iso04_pf_gamma05_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_iso04_pf_gamma05_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_iso04_pf_gamma05_branch does not exist!\n");
+				exit(1);
+			}
+			els_iso04_pf_gamma05_isLoaded = true;
+		}
+		return els_iso04_pf_gamma05_;
+	}
+	vector<float> &els_iso03_pf_nhad05()
+	{
+		if (not els_iso03_pf_nhad05_isLoaded) {
+			if (els_iso03_pf_nhad05_branch != 0) {
+				els_iso03_pf_nhad05_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_iso03_pf_nhad05_.begin(); i != els_iso03_pf_nhad05_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_iso03_pf_nhad05_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_iso03_pf_nhad05_branch does not exist!\n");
+				exit(1);
+			}
+			els_iso03_pf_nhad05_isLoaded = true;
+		}
+		return els_iso03_pf_nhad05_;
+	}
+	vector<float> &els_iso04_pf_nhad05()
+	{
+		if (not els_iso04_pf_nhad05_isLoaded) {
+			if (els_iso04_pf_nhad05_branch != 0) {
+				els_iso04_pf_nhad05_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = els_iso04_pf_nhad05_.begin(); i != els_iso04_pf_nhad05_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch els_iso04_pf_nhad05_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch els_iso04_pf_nhad05_branch does not exist!\n");
+				exit(1);
+			}
+			els_iso04_pf_nhad05_isLoaded = true;
+		}
+		return els_iso04_pf_nhad05_;
 	}
 	vector<float> &els_layer1_charge()
 	{
@@ -21561,6 +21819,27 @@ void LoadAllBranches()
 			mus_caloCompatibility_isLoaded = true;
 		}
 		return mus_caloCompatibility_;
+	}
+	vector<float> &mus_segmCompatibility()
+	{
+		if (not mus_segmCompatibility_isLoaded) {
+			if (mus_segmCompatibility_branch != 0) {
+				mus_segmCompatibility_branch->GetEntry(index);
+				#ifdef PARANOIA
+				for (vector<float>::const_iterator i = mus_segmCompatibility_.begin(); i != mus_segmCompatibility_.end(); ++i) {
+					if (not isfinite(*i)) {
+						printf("branch mus_segmCompatibility_branch contains a bad float: %f\n", *i);
+						exit(1);
+					}
+				}
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch mus_segmCompatibility_branch does not exist!\n");
+				exit(1);
+			}
+			mus_segmCompatibility_isLoaded = true;
+		}
+		return mus_segmCompatibility_;
 	}
 	vector<float> &mus_chi2()
 	{
@@ -29316,7 +29595,7 @@ void LoadAllBranches()
 		}
 		return mus_charge_;
 	}
-	vector<int> &mus_chi2LocalMomentum()
+	vector<float> &mus_chi2LocalMomentum()
 	{
 		if (not mus_chi2LocalMomentum_isLoaded) {
 			if (mus_chi2LocalMomentum_branch != 0) {
@@ -29331,7 +29610,7 @@ void LoadAllBranches()
 		}
 		return mus_chi2LocalMomentum_;
 	}
-	vector<int> &mus_chi2LocalPosition()
+	vector<float> &mus_chi2LocalPosition()
 	{
 		if (not mus_chi2LocalPosition_isLoaded) {
 			if (mus_chi2LocalPosition_branch != 0) {
@@ -29391,7 +29670,7 @@ void LoadAllBranches()
 		}
 		return mus_gfit_validSiHits_;
 	}
-	vector<int> &mus_glbKink()
+	vector<float> &mus_glbKink()
 	{
 		if (not mus_glbKink_isLoaded) {
 			if (mus_glbKink_branch != 0) {
@@ -29406,7 +29685,7 @@ void LoadAllBranches()
 		}
 		return mus_glbKink_;
 	}
-	vector<int> &mus_glbTrackProbability()
+	vector<float> &mus_glbTrackProbability()
 	{
 		if (not mus_glbTrackProbability_isLoaded) {
 			if (mus_glbTrackProbability_branch != 0) {
@@ -29421,7 +29700,7 @@ void LoadAllBranches()
 		}
 		return mus_glbTrackProbability_;
 	}
-	vector<int> &mus_globalDeltaEtaPhi()
+	vector<float> &mus_globalDeltaEtaPhi()
 	{
 		if (not mus_globalDeltaEtaPhi_isLoaded) {
 			if (mus_globalDeltaEtaPhi_branch != 0) {
@@ -29481,7 +29760,7 @@ void LoadAllBranches()
 		}
 		return mus_iso05_ntrk_;
 	}
-	vector<int> &mus_localDistance()
+	vector<float> &mus_localDistance()
 	{
 		if (not mus_localDistance_isLoaded) {
 			if (mus_localDistance_branch != 0) {
@@ -29631,7 +29910,7 @@ void LoadAllBranches()
 		}
 		return mus_pid_TMLastStationTight_;
 	}
-	vector<int> &mus_staRelChi2()
+	vector<float> &mus_staRelChi2()
 	{
 		if (not mus_staRelChi2_isLoaded) {
 			if (mus_staRelChi2_branch != 0) {
@@ -29691,7 +29970,7 @@ void LoadAllBranches()
 		}
 		return mus_timeNumStationsUsed_;
 	}
-	vector<int> &mus_trkKink()
+	vector<float> &mus_trkKink()
 	{
 		if (not mus_trkKink_isLoaded) {
 			if (mus_trkKink_branch != 0) {
@@ -29706,7 +29985,7 @@ void LoadAllBranches()
 		}
 		return mus_trkKink_;
 	}
-	vector<int> &mus_trkRelChi2()
+	vector<float> &mus_trkRelChi2()
 	{
 		if (not mus_trkRelChi2_isLoaded) {
 			if (mus_trkRelChi2_branch != 0) {
@@ -31943,6 +32222,8 @@ namespace tas {
 	vector<float> &els_electronMomentumError();
 	vector<float> &els_etaErr();
 	vector<float> &els_etaSC();
+	vector<float> &els_etaSCwidth();
+	vector<float> &els_phiSCwidth();
 	vector<float> &els_fbrem();
 	vector<float> &els_hOverE();
 	vector<float> &els_hcalDepth1OverEcal();
@@ -31957,6 +32238,12 @@ namespace tas {
 	vector<float> &els_ip3derr();
 	vector<float> &els_iso03_pf();
 	vector<float> &els_iso04_pf();
+	vector<float> &els_iso03_pf_ch();
+	vector<float> &els_iso04_pf_ch();
+	vector<float> &els_iso03_pf_gamma05();
+	vector<float> &els_iso04_pf_gamma05();
+	vector<float> &els_iso03_pf_nhad05();
+	vector<float> &els_iso04_pf_nhad05();
 	vector<float> &els_layer1_charge();
 	vector<float> &els_lh();
 	vector<float> &els_mva();
@@ -32071,6 +32358,7 @@ namespace tas {
 	vector<float> &mus_jetdr();
 	vector<float> &mus_backToBackCompat();
 	vector<float> &mus_caloCompatibility();
+	vector<float> &mus_segmCompatibility();
 	vector<float> &mus_chi2();
 	vector<float> &mus_cosmicCompat();
 	vector<float> &mus_d0();
@@ -32495,18 +32783,18 @@ namespace tas {
 	vector<int> &mus_closestJet();
 	vector<int> &mus_pfmusidx();
 	vector<int> &mus_charge();
-	vector<int> &mus_chi2LocalMomentum();
-	vector<int> &mus_chi2LocalPosition();
+	vector<float> &mus_chi2LocalMomentum();
+	vector<float> &mus_chi2LocalPosition();
 	vector<int> &mus_gfit_validHits();
 	vector<int> &mus_gfit_validSTAHits();
 	vector<int> &mus_gfit_validSiHits();
-	vector<int> &mus_glbKink();
-	vector<int> &mus_glbTrackProbability();
-	vector<int> &mus_globalDeltaEtaPhi();
+	vector<float> &mus_glbKink();
+	vector<float> &mus_glbTrackProbability();
+	vector<float> &mus_globalDeltaEtaPhi();
 	vector<int> &mus_goodmask();
 	vector<int> &mus_iso03_ntrk();
 	vector<int> &mus_iso05_ntrk();
-	vector<int> &mus_localDistance();
+	vector<float> &mus_localDistance();
 	vector<int> &mus_lostHits();
 	vector<int> &mus_nOverlaps();
 	vector<int> &mus_nmatches();
@@ -32516,12 +32804,12 @@ namespace tas {
 	vector<int> &mus_pid_TM2DCompatibilityTight();
 	vector<int> &mus_pid_TMLastStationLoose();
 	vector<int> &mus_pid_TMLastStationTight();
-	vector<int> &mus_staRelChi2();
+	vector<float> &mus_staRelChi2();
 	vector<int> &mus_sta_validHits();
 	vector<int> &mus_timeDirection();
 	vector<int> &mus_timeNumStationsUsed();
-	vector<int> &mus_trkKink();
-	vector<int> &mus_trkRelChi2();
+	vector<float> &mus_trkKink();
+	vector<float> &mus_trkRelChi2();
 	vector<int> &mus_trk_charge();
 	vector<int> &mus_trkidx();
 	vector<int> &mus_type();
