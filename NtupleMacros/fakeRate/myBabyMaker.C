@@ -33,7 +33,6 @@
 #include "../CORE/triggerUtils.cc"
 #include "../Tools/goodrun.cc"
 #include "../CORE/mcSelections.cc"
-#include "../Tools/ElectronIDMVA.cc"
 // namespaces
 using namespace std;
 using namespace tas;
@@ -735,11 +734,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         mcid_       = els_mc_id().at(iLep);
                         mcmotherid_ = els_mc_motherid().at(iLep);
                     }
-                    
-                    // likelihood and MVA discriminators
-                    el_lh_ = cms2.els_lh().at(iLep);                    
-                    el_mva_ = electronIdMVA->MVAValue(iLep, 0);
-
+      
                     // PV
                     d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
                     dzPV_wwV1_ = electron_dzPV_wwV1(iLep);
