@@ -1,3 +1,0 @@
-/tas/cms2/Mu_Run2010A-Sep17ReReco_v2_RECO/V03-06-14/singleLepPt10Skim
-/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14-00
-/tas/cms2/Mu_Run2010B-PromptReco-v2_RECO/V03-06-14
