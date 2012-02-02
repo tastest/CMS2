@@ -23,3 +23,11 @@ cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet0HighPt_With
 cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet1HighPt_WithIPInfo_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet1HighPt_WithIPInfo_BDTG.weights.xml
 cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet2HighPt_WithIPInfo_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet2HighPt_WithIPInfo_BDTG.weights.xml
 
+# IDIsoCombined uses ID+IP+Iso
+cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet0LowPt_IDIsoCombined_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet0LowPt_IDIsoCombined_BDTG.weights.xml
+cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet1LowPt_IDIsoCombined_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet1LowPt_IDIsoCombined_BDTG.weights.xml
+cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet2LowPt_IDIsoCombined_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet2LowPt_IDIsoCombined_BDTG.weights.xml
+cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet0HighPt_IDIsoCombined_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet0HighPt_IDIsoCombined_BDTG.weights.xml
+cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet1HighPt_IDIsoCombined_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet1HighPt_IDIsoCombined_BDTG.weights.xml
+cvs co -r $REV -p UserCode/MitPhysics/data/ElectronMVAWeights/Subdet2HighPt_IDIsoCombined_BDTG.weights.xml  > EgammaAnalysisTools/data/Subdet2HighPt_IDIsoCombined_BDTG.weights.xml
+
