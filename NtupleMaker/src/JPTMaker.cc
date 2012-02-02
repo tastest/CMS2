@@ -14,7 +14,7 @@
 //
 // Original Frank Golf
 // Created:  Sun Jan  18 12:23:38 CDT 2008
-// $Id: JPTMaker.cc,v 1.20 2011/09/14 17:35:35 slava77 Exp $
+// $Id: JPTMaker.cc,v 1.19 2011/03/01 22:10:00 dbarge Exp $
 //
 //
 
@@ -117,9 +117,9 @@ void JPTMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     RefToBase< reco::Jet > jetRef1( Ref < std::vector < reco::JPTJet > > ( jptsHandle ,idx ) );
 
     //
-    double cor           = correctorL2L3       ->correction( *jpt, iEvent, iSetup );
-    double corL1L2L3     = correctorL1L2L3     ->correction( *jpt, iEvent, iSetup );
-    double corL1FastL2L3 = correctorL1FastL2L3 ->correction( *jpt, iEvent, iSetup );
+    double cor           = correctorL2L3       ->correction( *jpt, jetRef1, iEvent, iSetup );
+    double corL1L2L3     = correctorL1L2L3     ->correction( *jpt, jetRef1, iEvent, iSetup );
+    double corL1FastL2L3 = correctorL1FastL2L3 ->correction( *jpt, jetRef1, iEvent, iSetup );
 
     //
     const reco::CaloJet *cJet = dynamic_cast<const reco::CaloJet*>((jpt->getCaloJetRef()).get());

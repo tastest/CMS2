@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// $Id: EEBadRecovMaker.cc,v 1.4 2011/09/22 23:27:13 dbarge Exp $
+// $Id: EEBadRecovMaker.cc,v 1.3 2011/08/10 21:48:22 dbarge Exp $
 
 // C++
 #include <memory>
@@ -12,7 +12,6 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#include "DataFormats/AnomalousEcalDataFormats/interface/AnomalousECALVariables.h"
 
 using namespace std;
 using namespace edm;
@@ -25,9 +24,8 @@ EEBadRecovMaker::EEBadRecovMaker(const edm::ParameterSet& iConfig) {
   maxNrRecHits_ = iConfig.getParameter <unsigned int>  ("MaxNrRecHits"  );
 
   //
-  produces<bool> ("ecalnoisedeadEcalCluster") .setBranchAlias("ecalnoise_deadEcalCluster" );
-  produces<bool> ("ecalnoiseeeBadRecov"    ) .setBranchAlias("ecalnoise_eeBadRecov"     );
-  produces<bool> ("ecalnoiseeeRedRecHits"  ).setBranchAlias ("ecalnoise_eeRedRecHits"   );
+  produces<bool> ("ecalnoiseeeBadRecov") .setBranchAlias("ecalnoise_eeBadRecov" );
+  produces<bool> ("ecalnoiseeeRedRecHits").setBranchAlias("ecalnoise_eeRedRecHits");
 
 }
 
@@ -35,27 +33,6 @@ EEBadRecovMaker::EEBadRecovMaker(const edm::ParameterSet& iConfig) {
 EEBadRecovMaker::~EEBadRecovMaker() {}
 
 void EEBadRecovMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
-
-  //////////////////////////
-  // Ecal Boundary Energy //
-  //////////////////////////
-
-  InputTag ecalAnomalousFilterTag("BE1214","anomalousECALVariables");
-  Handle<AnomalousECALVariables> anomalousECALvarsHandle;
-  iEvent.getByLabel( ecalAnomalousFilterTag, anomalousECALvarsHandle );
-  AnomalousECALVariables anomalousECALvars;
-  if (anomalousECALvarsHandle.isValid()) {
-    anomalousECALvars = *anomalousECALvarsHandle;
-  } else {
-    cout << "anomalous ECAL Vars not valid/found" << endl;
-  }
-  bool isDeadEcalCluster = anomalousECALvars.isDeadEcalCluster();
-
-
-  ////////////////
-  // EEBadRecov // 
-  ////////////////
-
 
   /////////////////////////
   // Get Reduced RecHits // 
@@ -99,19 +76,11 @@ void EEBadRecovMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //iEvent.put( pOut, "Result" ); 
   //if(taggingMode_) return true; else return result;
 
-  
-  //////////////////////////
-  // Ecal Boundary Energy //
-  //////////////////////////
-  auto_ptr <bool> ecalnoise_deadEcalCluster(new bool (isDeadEcalCluster) );
-  iEvent.put(ecalnoise_deadEcalCluster  , "ecalnoisedeadEcalCluster"  );
+  //
+  auto_ptr <bool> ecalnoise_eeBadRecov   (new bool (result)       );
+  auto_ptr <bool> ecalnoise_eeRedRecHits (new bool (eeRedRecHits) );
 
-
-  ////////////////
-  // EEBadRecov //
-  ////////////////
-  auto_ptr <bool> ecalnoise_eeBadRecov    (new bool (result)           );
-  auto_ptr <bool> ecalnoise_eeRedRecHits  (new bool (eeRedRecHits)     );
+  //
   iEvent.put(ecalnoise_eeBadRecov  , "ecalnoiseeeBadRecov"  );
   iEvent.put(ecalnoise_eeRedRecHits, "ecalnoiseeeRedRecHits");
 

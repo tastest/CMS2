@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: MuonMaker.cc,v 1.48 2011/09/23 00:31:16 dbarge Exp $
+// $Id: MuonMaker.cc,v 1.46.8.1 2012/02/02 00:19:42 cerati Exp $
 //
 //
 
@@ -34,7 +34,6 @@ Implementation:
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/MuonReco/interface/MuonPFIsolation.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
@@ -86,15 +85,15 @@ MuonMaker::MuonMaker(const edm::ParameterSet& iConfig) {
   // Muon Quality
   produces<vector<bool> >      ( branchprefix + "updatedSta"         ).setBranchAlias( aliasprefix_ + "_updatedSta" );           // Muon Quality - updatedSta
   produces<vector<bool> >      ( branchprefix + "tightMatch"         ).setBranchAlias( aliasprefix_ + "_tightMatch" );           // Muon Quality - tightMatch
-  produces<vector<int> >       ( branchprefix + "trkKink"            ).setBranchAlias( aliasprefix_ + "_trkKink" );              // Muon Quality - trkKink
-  produces<vector<int> >       ( branchprefix + "glbKink"            ).setBranchAlias( aliasprefix_ + "_glbKink" );              // Muon Quality - glbKink
-  produces<vector<int> >       ( branchprefix + "trkRelChi2"         ).setBranchAlias( aliasprefix_ + "_trkRelChi2" );           // Muon Quality - trkRelChi2
-  produces<vector<int> >       ( branchprefix + "staRelChi2"         ).setBranchAlias( aliasprefix_ + "_staRelChi2" );           // Muon Quality - staRelChi2
-  produces<vector<int> >       ( branchprefix + "chi2LocalPosition"  ).setBranchAlias( aliasprefix_ + "_chi2LocalPosition" );    // Muon Quality - chi2LocalPositions
-  produces<vector<int> >       ( branchprefix + "chi2LocalMomentum"  ).setBranchAlias( aliasprefix_ + "_chi2LocalMomentum" );    // Muon Quality - chi2LocalMomentum
-  produces<vector<int> >       ( branchprefix + "localDistance"      ).setBranchAlias( aliasprefix_ + "_localDistance" );        // Muon Quality - localDistance
-  produces<vector<int> >       ( branchprefix + "globalDeltaEtaPhi"  ).setBranchAlias( aliasprefix_ + "_globalDeltaEtaPhi" );    // Muon Quality - globalDeltaEtaPhi
-  produces<vector<int> >       ( branchprefix + "glbTrackProbability").setBranchAlias( aliasprefix_ + "_glbTrackProbability" );  // Muon Quality - glbTrackProbability
+  produces<vector<float> >       ( branchprefix + "trkKink"            ).setBranchAlias( aliasprefix_ + "_trkKink" );              // Muon Quality - trkKink
+  produces<vector<float> >       ( branchprefix + "glbKink"            ).setBranchAlias( aliasprefix_ + "_glbKink" );              // Muon Quality - glbKink
+  produces<vector<float> >       ( branchprefix + "trkRelChi2"         ).setBranchAlias( aliasprefix_ + "_trkRelChi2" );           // Muon Quality - trkRelChi2
+  produces<vector<float> >       ( branchprefix + "staRelChi2"         ).setBranchAlias( aliasprefix_ + "_staRelChi2" );           // Muon Quality - staRelChi2
+  produces<vector<float> >       ( branchprefix + "chi2LocalPosition"  ).setBranchAlias( aliasprefix_ + "_chi2LocalPosition" );    // Muon Quality - chi2LocalPositions
+  produces<vector<float> >       ( branchprefix + "chi2LocalMomentum"  ).setBranchAlias( aliasprefix_ + "_chi2LocalMomentum" );    // Muon Quality - chi2LocalMomentum
+  produces<vector<float> >       ( branchprefix + "localDistance"      ).setBranchAlias( aliasprefix_ + "_localDistance" );        // Muon Quality - localDistance
+  produces<vector<float> >       ( branchprefix + "globalDeltaEtaPhi"  ).setBranchAlias( aliasprefix_ + "_globalDeltaEtaPhi" );    // Muon Quality - globalDeltaEtaPhi
+  produces<vector<float> >       ( branchprefix + "glbTrackProbability").setBranchAlias( aliasprefix_ + "_glbTrackProbability" );  // Muon Quality - glbTrackProbability
 
   // mu track quantities
   produces<vector<int> >	     (branchprefix+"type"		      ).setBranchAlias(aliasprefix_+"_type"               );	// type
@@ -149,21 +148,6 @@ MuonMaker::MuonMaker(const edm::ParameterSet& iConfig) {
   produces<vector<int> >	     (branchprefix+"iso05ntrk"	      ).setBranchAlias(aliasprefix_+"_iso05_ntrk"         ); // number of tracks in the cone of 0.5 
   produces<vector<float> >	     (branchprefix+"iso03pf"	      ).setBranchAlias(aliasprefix_+"_iso03_pf"         ); // pf isolation in cone of 0.3
   produces<vector<float> >	     (branchprefix+"iso04pf"	      ).setBranchAlias(aliasprefix_+"_iso04_pf"         ); // pf isolation in cone of 0.4
-
-  //
-  produces<vector<float> >	     ( branchprefix + "isoR03pfChargedHadronPt"	  ).setBranchAlias( aliasprefix_ + "_isoR03_pf_ChargedHadronPt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfChargedParticlePt" ).setBranchAlias( aliasprefix_ + "_isoR03_pf_ChargedParticlePt" );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfNeutralHadronEt"	  ).setBranchAlias( aliasprefix_ + "_isoR03_pf_NeutralHadronEt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfPhotonEt"	        ).setBranchAlias( aliasprefix_ + "_isoR03_pf_PhotonEt"          );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfPUPt"	            ).setBranchAlias( aliasprefix_ + "_isoR03_pf_PUPt"              );
-
-  produces<vector<float> >	     ( branchprefix + "isoR04pfChargedHadronPt"	  ).setBranchAlias( aliasprefix_ + "_isoR04_pf_ChargedHadronPt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfChargedParticlePt" ).setBranchAlias( aliasprefix_ + "_isoR04_pf_ChargedParticlePt" );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfNeutralHadronEt"	  ).setBranchAlias( aliasprefix_ + "_isoR04_pf_NeutralHadronEt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfPhotonEt"	        ).setBranchAlias( aliasprefix_ + "_isoR04_pf_PhotonEt"          );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfPUPt"	            ).setBranchAlias( aliasprefix_ + "_isoR04_pf_PUPt"              );
-
-
 
   //new
   produces<vector<float> >           (branchprefix+"gfitd0"             ).setBranchAlias(aliasprefix_+"_gfit_d0"            ); // d0 from global fit, if it exists
@@ -223,6 +207,7 @@ MuonMaker::MuonMaker(const edm::ParameterSet& iConfig) {
   produces<vector<int> >	     (branchprefix+"pidTM2DCompatibilityTight").setBranchAlias(aliasprefix_+"_pid_TM2DCompatibilityTight"); 
   //calo compatibility variable
   produces<vector<float> >           (branchprefix+"caloCompatibility").setBranchAlias(aliasprefix_+"_caloCompatibility");
+  produces<vector<float> >           (branchprefix+"segmCompatibility").setBranchAlias(aliasprefix_+"_segmCompatibility");  
   //overlap index (-1 if none)
   produces<vector<int> >           (branchprefix+"nOverlaps").setBranchAlias(aliasprefix_+"_nOverlaps");
   produces<vector<int> >           (branchprefix+"overlap0").setBranchAlias(aliasprefix_+"_overlap0");
@@ -237,7 +222,7 @@ MuonMaker::MuonMaker(const edm::ParameterSet& iConfig) {
   produces<vector<LorentzVector> >   (branchprefix+"fitfirsthitp4").setBranchAlias(aliasprefix_+"_fitfirsthit_p4");
   produces<vector<LorentzVector> >   (branchprefix+"fitpickyp4"   ).setBranchAlias(aliasprefix_+"_fitpicky_p4"	 );
   produces<vector<LorentzVector> >   (branchprefix+"fittevp4"     ).setBranchAlias(aliasprefix_+"_fittev_p4"     );
-  
+
   muonsInputTag  		= iConfig.getParameter<edm::InputTag>("muonsInputTag" ); 
   beamSpotInputTag 		= iConfig.getParameter<edm::InputTag>("beamSpotInputTag");
   pfCandsInputTag 		= iConfig.getParameter<edm::InputTag>("pfCandsInputTag");
@@ -264,15 +249,15 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   // Muon Quality
   auto_ptr<vector<bool> > vector_mus_updatedSta          ( new vector<bool> );        
   auto_ptr<vector<bool> > vector_mus_tightMatch          ( new vector<bool> );        
-  auto_ptr<vector<int> >  vector_mus_trkKink             ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_glbKink             ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_trkRelChi2          ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_staRelChi2          ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_chi2LocalPosition   ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_chi2LocalMomentum   ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_localDistance       ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_globalDeltaEtaPhi   ( new vector<int>  );        
-  auto_ptr<vector<int> >  vector_mus_glbTrackProbability ( new vector<int>  );        
+  auto_ptr<vector<float> >  vector_mus_trkKink             ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_glbKink             ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_trkRelChi2          ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_staRelChi2          ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_chi2LocalPosition   ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_chi2LocalMomentum   ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_localDistance       ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_globalDeltaEtaPhi   ( new vector<float>  );        
+  auto_ptr<vector<float> >  vector_mus_glbTrackProbability ( new vector<float>  );        
 
   //
   auto_ptr<vector<int> >	   vector_mus_type    	          (new vector<int>	       );        
@@ -326,21 +311,6 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   auto_ptr<vector<int> >	   vector_mus_iso05_ntrk          (new vector<int>  	       );
   auto_ptr<vector<float> >	   vector_mus_iso03_pf            (new vector<float>	       );
   auto_ptr<vector<float> >	   vector_mus_iso04_pf            (new vector<float>	       );
-
-  //
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_ChargedHadronPt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_ChargedParticlePt (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_NeutralHadronEt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_PhotonEt          (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_PUPt              (new vector<float>	       );
-
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_ChargedHadronPt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_ChargedParticlePt (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_NeutralHadronEt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_PhotonEt          (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_PUPt              (new vector<float>	       );
-
-
   //gfit
   auto_ptr<vector<float> >         vector_mus_gfit_d0             (new vector<float>           );
   auto_ptr<vector<float> >         vector_mus_gfit_z0             (new vector<float>           );
@@ -383,6 +353,7 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   auto_ptr<vector<int> >	   vector_mus_pid_TM2DCompatibilityLoose   (new vector<int>    );
   auto_ptr<vector<int> >	   vector_mus_pid_TM2DCompatibilityTight   (new vector<int>    );
   auto_ptr<vector<float> >         vector_mus_caloCompatibility            (new vector<float>  );
+  auto_ptr<vector<float> >         vector_mus_segmCompatibility            (new vector<float>  );
   auto_ptr<vector<int> >           vector_mus_nOverlaps                    (new vector<int>  );
   auto_ptr<vector<int> >           vector_mus_overlap0                     (new vector<int>  );
   auto_ptr<vector<int> >           vector_mus_overlap1                     (new vector<int>  );
@@ -547,20 +518,6 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     vector_mus_iso05_hoEt         ->push_back(muon->isIsolationValid() ? muon->isolationR05().hoEt	     :  -9999.        );
     vector_mus_iso05_ntrk         ->push_back(muon->isIsolationValid() ? muon->isolationR05().nTracks        :  -9999         );
 
-    //
-    MuonPFIsolation pfStructR03 = muon->pfIsolationR03();
-    MuonPFIsolation pfStructR04 = muon->pfIsolationR04();
-    vector_mus_isoR03_pf_ChargedHadronPt  ->push_back( pfStructR03.sumChargedHadronPt   );
-    vector_mus_isoR03_pf_ChargedParticlePt->push_back( pfStructR03.sumChargedParticlePt );
-    vector_mus_isoR03_pf_NeutralHadronEt  ->push_back( pfStructR03.sumNeutralHadronEt   );
-    vector_mus_isoR03_pf_PhotonEt         ->push_back( pfStructR03.sumPhotonEt          );
-    vector_mus_isoR03_pf_PUPt             ->push_back( pfStructR03.sumPUPt              );
-    vector_mus_isoR04_pf_ChargedHadronPt  ->push_back( pfStructR04.sumChargedHadronPt   );
-    vector_mus_isoR04_pf_ChargedParticlePt->push_back( pfStructR04.sumChargedParticlePt );
-    vector_mus_isoR04_pf_NeutralHadronEt  ->push_back( pfStructR04.sumNeutralHadronEt   );
-    vector_mus_isoR04_pf_PhotonEt         ->push_back( pfStructR04.sumPhotonEt          );
-    vector_mus_isoR04_pf_PUPt             ->push_back( pfStructR04.sumPUPt              );
-
     vector_mus_gfit_d0            ->push_back(globalTrack.isNonnull()  ? globalTrack->d0()                   :  -9999.        );
     vector_mus_gfit_z0            ->push_back(globalTrack.isNonnull()  ? globalTrack->dz()                   :  -9999.        );
     vector_mus_gfit_d0Err         ->push_back(globalTrack.isNonnull()  ? globalTrack->d0Error()              :  -9999.        );
@@ -598,6 +555,7 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     vector_mus_pid_TM2DCompatibilityLoose ->push_back(muon->isMatchesValid() ? muon::isGoodMuon(*muon,muon::TM2DCompatibilityLoose): -9999	);
     vector_mus_pid_TM2DCompatibilityTight ->push_back(muon->isMatchesValid() ? muon::isGoodMuon(*muon,muon::TM2DCompatibilityTight): -9999	);
     vector_mus_caloCompatibility          ->push_back(muon->caloCompatibility() );
+    vector_mus_segmCompatibility          ->push_back(muon::segmentCompatibility(*muon));
 
     int mus_overlap0 = -1;
     int mus_overlap1 = -1;
@@ -689,8 +647,8 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
       }
     }
     if (firstGoodVertex!=vertexCollection->end()) {
-      vector_mus_iso03_pf->push_back( muonIsoValuePF( *muon, *firstGoodVertex, 0.3, 1.0, 0.1) );
-      vector_mus_iso04_pf->push_back( muonIsoValuePF( *muon, *firstGoodVertex, 0.4, 1.0, 0.1) );
+      vector_mus_iso03_pf->push_back( muonIsoValuePF( *muon, *firstGoodVertex, 0.3, 1.0, 0.1, 0) );
+      vector_mus_iso04_pf->push_back( muonIsoValuePF( *muon, *firstGoodVertex, 0.4, 1.0, 0.1, 0) );
     } else {
       vector_mus_iso03_pf->push_back( -9999. );
       vector_mus_iso04_pf->push_back( -9999. );
@@ -699,14 +657,14 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     //unbiased revertexing, courtesy of B.Mangano
     if (siTrack.isNonnull() && firstGoodVertex!=vertexCollection->end()) {
       reco::Vertex vertexNoB;
-      reco::TrackRefVector newTkCollection;
+      reco::TrackCollection newTkCollection;
       bool foundMatch(false);
       for(reco::Vertex::trackRef_iterator itk = firstGoodVertex->tracks_begin(); itk!= firstGoodVertex->tracks_end(); itk++){
 	bool refMatching = (itk->key() == siTrack.key());
 	if(refMatching){
 	  foundMatch = true;
 	}else{
-	  newTkCollection.push_back(itk->castTo<reco::TrackRef>());
+	  newTkCollection.push_back(*itk->get());
 	}
       }//track collection for vertexNoB is set
       if(!foundMatch) {
@@ -812,19 +770,7 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put(vector_mus_iso05_ntrk         , branchprefix+"iso05ntrk"          );
   iEvent.put(vector_mus_iso03_pf           , branchprefix+"iso03pf"            );
   iEvent.put(vector_mus_iso04_pf           , branchprefix+"iso04pf"            );
-
-  //
-  iEvent.put( vector_mus_isoR03_pf_ChargedHadronPt        , branchprefix+"isoR03pfChargedHadronPt"         );
-  iEvent.put( vector_mus_isoR03_pf_ChargedParticlePt      , branchprefix+"isoR03pfChargedParticlePt"       );
-  iEvent.put( vector_mus_isoR03_pf_NeutralHadronEt        , branchprefix+"isoR03pfNeutralHadronEt"         );
-  iEvent.put( vector_mus_isoR03_pf_PhotonEt               , branchprefix+"isoR03pfPhotonEt"                );
-  iEvent.put( vector_mus_isoR03_pf_PUPt                   , branchprefix+"isoR03pfPUPt"                    );
-  iEvent.put( vector_mus_isoR04_pf_ChargedHadronPt        , branchprefix+"isoR04pfChargedHadronPt"         );
-  iEvent.put( vector_mus_isoR04_pf_ChargedParticlePt      , branchprefix+"isoR04pfChargedParticlePt"       );
-  iEvent.put( vector_mus_isoR04_pf_NeutralHadronEt        , branchprefix+"isoR04pfNeutralHadronEt"         );
-  iEvent.put( vector_mus_isoR04_pf_PhotonEt               , branchprefix+"isoR04pfPhotonEt"                );
-  iEvent.put( vector_mus_isoR04_pf_PUPt                   , branchprefix+"isoR04pfPUPt"                    );
-
+  
   iEvent.put(vector_mus_gfit_d0            , branchprefix+"gfitd0"             );
   iEvent.put(vector_mus_gfit_z0            , branchprefix+"gfitz0"             );
   iEvent.put(vector_mus_gfit_d0Err         , branchprefix+"gfitd0Err"          );
@@ -888,7 +834,7 @@ void MuonMaker::beginJob() {}
 // ------------ method called once each job just after ending the event loop  ------------
 void MuonMaker::endJob() {}
 
-double MuonMaker::muonIsoValuePF(const Muon& mu, const Vertex& vtx, float coner, float minptn, float dzcut){
+double MuonMaker::muonIsoValuePF(const Muon& mu, const Vertex& vtx, float coner, float minptn, float dzcut, int filterId){
 
   float pfciso = 0;
   float pfniso = 0;
@@ -901,6 +847,9 @@ double MuonMaker::muonIsoValuePF(const Muon& mu, const Vertex& vtx, float coner,
 
     float dR = reco::deltaR(pf->eta(), pf->phi(), mu.eta(), mu.phi());
     if (dR>coner) continue;
+
+    int pfid = abs(pf->pdgId());
+    if (filterId!=0 && filterId!=pfid) continue;
 
     float pfpt = pf->pt();
     if (pf->charge()==0) {
