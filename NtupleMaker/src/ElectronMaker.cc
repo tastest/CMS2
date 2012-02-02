@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.cc,v 1.69.2.1 2011/10/24 08:45:33 cerati Exp $
+// $Id: ElectronMaker.cc,v 1.69.2.1.2.1 2012/02/02 00:19:42 cerati Exp $
 //
 //
 
@@ -124,6 +124,8 @@ ElectronMaker::ElectronMaker(const edm::ParameterSet& iConfig) {
   produces<vector<int> >       ("elsfiduciality"             ).setBranchAlias("els_fiduciality"            );
   produces<vector<int> >       ("elstype"                    ).setBranchAlias("els_type"                   );
   produces<vector<int> >       ("elsscindex"                 ).setBranchAlias("els_scindex"                );
+  produces<vector<float> >     ("elsetaSCwidth"              ).setBranchAlias("els_etaSCwidth"             );
+  produces<vector<float> >     ("elsphiSCwidth"              ).setBranchAlias("els_phiSCwidth"             );
 
   // Corrections and uncertainties
   //
@@ -186,8 +188,15 @@ ElectronMaker::ElectronMaker(const edm::ParameterSet& iConfig) {
   produces<vector<float> >     ("elshcalIso04"               ).setBranchAlias("els_hcalIso04"              );
   produces<vector<float> >     ("elshcalDepth1TowerSumEt04"  ).setBranchAlias("els_hcalDepth1TowerSumEt04" );
   produces<vector<float> >     ("elshcalDepth2TowerSumEt04"  ).setBranchAlias("els_hcalDepth2TowerSumEt04" );
-  produces<vector<float> >     ("elsiso03pf"	             ).setBranchAlias("els_iso03_pf"    ); // pf isolation in cone of 0.3
-  produces<vector<float> >     ("elsiso04pf"	             ).setBranchAlias("els_iso04_pf"    ); // pf isolation in cone of 0.4
+  produces<vector<float> >     ("elsiso03pf"	             ).setBranchAlias("els_iso03_pf"    ); // pf isolation in cone of 0.3, 1 GeV threshold
+  produces<vector<float> >     ("elsiso04pf"	             ).setBranchAlias("els_iso04_pf"    ); // pf isolation in cone of 0.4, 1 GeV threshold
+
+  produces<vector<float> >     ("elsiso03pfch"	             ).setBranchAlias("els_iso03_pf_ch"    ); // pf isolation in cone of 0.3, charged only
+  produces<vector<float> >     ("elsiso03pfgamma05"          ).setBranchAlias("els_iso03_pf_gamma05"); // pf isolation in cone of 0.3, photons only with threshold 0.5 GeV
+  produces<vector<float> >     ("elsiso03pfnhad05"           ).setBranchAlias("els_iso03_pf_nhad05"); // pf isolation in cone of 0.3, neutral hadrons only with threshold 0.5 GeV
+  produces<vector<float> >     ("elsiso04pfch"	             ).setBranchAlias("els_iso04_pf_ch"    ); // pf isolation in cone of 0.3, charged only
+  produces<vector<float> >     ("elsiso04pfgamma05"          ).setBranchAlias("els_iso04_pf_gamma05"); // pf isolation in cone of 0.3, photons only with threshold 0.5 GeV
+  produces<vector<float> >     ("elsiso04pfnhad05"           ).setBranchAlias("els_iso04_pf_nhad05"); // pf isolation in cone of 0.3, neutral hadrons only with threshold 0.5 GeV
 
   // track variables
   //
@@ -338,6 +347,8 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   auto_ptr<vector<int> >		els_fiduciality				(new vector<int>		) ;
   auto_ptr<vector<int> >		els_type				(new vector<int>		) ;
   auto_ptr<vector<int> >		els_scindex				(new vector<int>		) ;	 
+  auto_ptr<vector<float> >		els_etaSCwidth                   	(new vector<float>		) ;
+  auto_ptr<vector<float> >		els_phiSCwidth				(new vector<float>		) ;
 
   // uncertainties and corrections
   // somewhat complicated: see 
@@ -406,6 +417,13 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   auto_ptr<vector<float> >	        els_iso03_pf                            (new vector<float>	       );
   auto_ptr<vector<float> >	        els_iso04_pf                            (new vector<float>	       );
+
+  auto_ptr<vector<float> >	        els_iso03_pf_ch                                 (new vector<float>	       );
+  auto_ptr<vector<float> >	        els_iso03_pf_gamma05                            (new vector<float>	       );
+  auto_ptr<vector<float> >	        els_iso03_pf_nhad05                             (new vector<float>	       );
+  auto_ptr<vector<float> >	        els_iso04_pf_ch                                 (new vector<float>	       );
+  auto_ptr<vector<float> >	        els_iso04_pf_gamma05                            (new vector<float>	       );
+  auto_ptr<vector<float> >	        els_iso04_pf_nhad05                             (new vector<float>	       );
 
   // track variables
   //
@@ -612,6 +630,9 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     
     els_sigmaEtaEta    ->push_back( el->scSigmaEtaEta()                      );
     els_sigmaIEtaIEta  ->push_back( el->scSigmaIEtaIEta()                    );
+
+    els_etaSCwidth     ->push_back( el->superCluster()->etaWidth()		);
+    els_phiSCwidth     ->push_back( el->superCluster()->phiWidth()	       	);
 
 
     //get cms2scsseeddetid--sorry for junk from photons...
@@ -1016,11 +1037,23 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     }
 
     if (firstGoodVertex!=vertexCollection->end()) {
-      els_iso03_pf->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.3, 1.0, 0.1, 0.07, 0.025, 0.025) );
-      els_iso04_pf->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.4, 1.0, 0.1, 0.07, 0.025, 0.025) );
+      els_iso03_pf->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.3, 1.0, 0.1, 0.07, 0.025, 0.025, 0) );
+      els_iso04_pf->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.4, 1.0, 0.1, 0.07, 0.025, 0.025, 0) );
+      els_iso03_pf_ch->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.3, 99999., 0.1, 0.07, 0.025, 0.025, 0) );     
+      els_iso03_pf_gamma05->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.3, 0.5, 0.1, 0.07, 0.025, 0.025, 22) );
+      els_iso03_pf_nhad05->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.3, 0.5, 0.1, 0.07, 0.025, 0.025, 130) ); 
+      els_iso04_pf_ch->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.4, 99999., 0.1, 0.07, 0.025, 0.025, 0) );     
+      els_iso04_pf_gamma05->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.4, 0.5, 0.1, 0.07, 0.025, 0.025, 22) );
+      els_iso04_pf_nhad05->push_back( electronIsoValuePF( *el, *firstGoodVertex, 0.4,  0.5, 0.1, 0.07, 0.025, 0.025, 130) ); 
     } else {
       els_iso03_pf->push_back( -9999. );
       els_iso04_pf->push_back( -9999. );
+      els_iso03_pf_ch->push_back( -9999. );     
+      els_iso03_pf_gamma05->push_back( -9999. );
+      els_iso03_pf_nhad05->push_back( -9999. );
+      els_iso04_pf_ch->push_back( -9999. );
+      els_iso04_pf_gamma05->push_back( -9999. );
+      els_iso04_pf_nhad05->push_back( -9999. );
     }
 
     //unbiased revertexing, courtesy of B.Mangano
@@ -1134,6 +1167,8 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put(els_fiduciality			,"elsfiduciality"			);
   iEvent.put(els_type				,"elstype"				);
   iEvent.put(els_scindex			,"elsscindex"				);
+  iEvent.put(els_etaSCwidth			,"elsetaSCwidth"			);
+  iEvent.put(els_phiSCwidth			,"elsphiSCwidth"			);
 
   // Corrections and uncertainties
   //
@@ -1196,6 +1231,13 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   iEvent.put(els_iso03_pf                       ,"elsiso03pf"            );
   iEvent.put(els_iso04_pf                       ,"elsiso04pf"            );
+
+  iEvent.put(els_iso03_pf_ch                            ,"elsiso03pfch"            );
+  iEvent.put(els_iso03_pf_gamma05                       ,"elsiso03pfgamma05"            );
+  iEvent.put(els_iso03_pf_nhad05                        ,"elsiso03pfnhad05"            );
+  iEvent.put(els_iso04_pf_ch                            ,"elsiso04pfch"            );
+  iEvent.put(els_iso04_pf_gamma05                       ,"elsiso04pfgamma05"            );
+  iEvent.put(els_iso04_pf_nhad05                        ,"elsiso04pfnhad05"            );
 
   //Hit Pattern Information
 
@@ -1277,7 +1319,7 @@ template<typename T> const edm::ValueMap<T>& ElectronMaker::getValueMap(const ed
 }
 
 double ElectronMaker::electronIsoValuePF(const GsfElectron& el, const Vertex& vtx, float coner, float minptn, float dzcut,
-					 float footprintdr, float gammastripveto, float elestripveto){
+					 float footprintdr, float gammastripveto, float elestripveto, int filterId){
 
   float pfciso = 0.;
   float pfniso = 0.;
@@ -1302,6 +1344,8 @@ double ElectronMaker::electronIsoValuePF(const GsfElectron& el, const Vertex& vt
     float deta = fabs(pfeta - eleta);
     int pfid = abs(pf->pdgId());
     float pfpt = pf->pt();
+
+    if (filterId!=0 && filterId!=pfid) continue;
 
     if (pf->charge()==0) {
       //neutrals
