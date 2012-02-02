@@ -21,10 +21,10 @@ int main()
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
-  bool runTest   = 0;
+  bool runTest   = 1;
   bool runWW     = 0;
   bool runHWW    = 0;
-  bool runGGWW   = 1;
+  bool runGGWW   = 0;
   bool runWZ     = 0;
   bool runZZ     = 0;
   bool runWjets  = 0;
@@ -35,7 +35,7 @@ int main()
   bool runDYmm   = 0;
   bool runDYtt   = 0;
   bool runttbar  = 0;
-  bool runtW     = 1;
+  bool runtW     = 0;
   bool runData   = 0;
 
   // 
@@ -57,10 +57,13 @@ int main()
   const double integratedLumi = 1000.0; // pb^1  
   cout << "Integrated luminosity to scale to: " << integratedLumi << endl;
 
+  TString cms2_json_file = "";
   if (runTest){
     std::vector<string> samples;
-    samples.push_back(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
-    ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1);
+    //samples.push_back(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
+    //ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1);
+    samples.push_back("/home/users/cerati/UpdateCMS2ForLeptonMVA/CMSSW_4_2_7_patch1_V04-02-36/src/CMS2/NtupleMaker/test/ntuple.root");
+    ProcessSample(samples, SmurfTree::data, 3.1, -1, -1, false, true, cms2_json_file);
   }
 
   if (runWW)
@@ -244,7 +247,7 @@ int main()
   }
  
   // RealData
-  TString cms2_json_file = "files/Cert_160404-178677_7TeV_PromptReco_Collisions11_JSON.txt";
+  //TString cms2_json_file = "files/Cert_160404-178677_7TeV_PromptReco_Collisions11_JSON.txt";
 
   std::vector<string> dataSamples;
   dataSamples.push_back(dataset+"/DoubleElectron_Run2011A-May10ReReco-v1/V04-02-36/vvfilter/*.root");

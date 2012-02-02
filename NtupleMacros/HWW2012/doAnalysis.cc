@@ -26,6 +26,7 @@ const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;MET20); 42X";
 #include "monitor.h"
 #include "../Tools/goodrun.h"
 #include "../Tools/ElectronIDMVA.h"
+#include "../Tools/MuonIDMVA.h"
 #include "TTreeCache.h"
 using namespace std;
 
@@ -105,6 +106,7 @@ wwcuts_t cuts_passed = 0;
 
 TH1D* HiggsPtKFactor = 0;
 ElectronIDMVA* electronIdMVA = 0;
+MuonIDMVA* muonIdMVA = 0;
 vector<TH2D*>     fDYNNLOKFactorHists;           //vector of hist for Drell-Yan NNLO Kfactor
 
 bool goodElectronTMVA(unsigned int i) {
@@ -374,6 +376,7 @@ bool ww_mudZPV(unsigned int index, float cut){
   return fabs(dzpv)<cut;
 }
 bool ww_muId(unsigned int index){ 
+  //muonIdMVA->MVAValue(index, 0);
   if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
   if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
   // if (cms2.trks_nlayers().at(cms2.mus_trkidx().at(index))<=8) return false;
@@ -1879,6 +1882,22 @@ void ProcessSample( std::vector<std::string> file_patterns,
 			   "./files/Subdet0HighPt_WithIPInfo_BDTG.weights.xml",
 			   "./files/Subdet1HighPt_WithIPInfo_BDTG.weights.xml",
 			   "./files/Subdet2HighPt_WithIPInfo_BDTG.weights.xml");
+//   electronIdMVA->Initialize("BDTG method", 3,
+// 			   "./files/Subdet0LowPt_IDIsoCombined_BDTG.weights.xml",
+// 			   "./files/Subdet1LowPt_IDIsoCombined_BDTG.weights.xml",
+// 			   "./files/Subdet2LowPt_IDIsoCombined_BDTG.weights.xml",
+// 			   "./files/Subdet0HighPt_IDIsoCombined_BDTG.weights.xml",
+// 			   "./files/Subdet1HighPt_IDIsoCombined_BDTG.weights.xml",
+// 			   "./files/Subdet2HighPt_IDIsoCombined_BDTG.weights.xml");
+
+//   muonIdMVA = new MuonIDMVA();
+//   muonIdMVA->Initialize("BDTG method", 1,
+// 			"./files/BarrelPtBin0_IDIsoCombined_BDTG.weights.xml",
+// 			"./files/EndcapPtBin0_IDIsoCombined_BDTG.weights.xml",
+// 			"./files/BarrelPtBin1_IDIsoCombined_BDTG.weights.xml",
+// 			"./files/EndcapPtBin1_IDIsoCombined_BDTG.weights.xml",
+// 			"./files/BarrelPtBin2_IDIsoCombined_BDTG.weights.xml",
+// 			"./files/EndcapPtBin2_IDIsoCombined_BDTG.weights.xml");
 
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
@@ -1889,6 +1908,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
   ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file);
 
   delete electronIdMVA;
+//   delete muonIdMVA;
   delete tchain;
 }
 
