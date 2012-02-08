@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.15 2011/11/10 18:45:07 fgolf Exp $
+// $Id: jetSelections.h,v 1.16 2012/02/08 21:03:53 fgolf Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -12,24 +12,24 @@
 #define haveGEN 0
 
 enum JetType {
-     JETS_TYPE_JPT,
-     JETS_TYPE_PF_FAST_CORR,
-     JETS_TYPE_PF_CORR,
-     JETS_TYPE_PF_UNCORR,
-     JETS_TYPE_CALO_CORR,
-     JETS_TYPE_CALO_UNCORR,
+    JETS_TYPE_JPT,
+    JETS_TYPE_PF_FAST_CORR,
+    JETS_TYPE_PF_CORR,
+    JETS_TYPE_PF_UNCORR,
+    JETS_TYPE_CALO_CORR,
+    JETS_TYPE_CALO_UNCORR,
 #if haveGEN
-     JETS_TYPE_GEN
+    JETS_TYPE_GEN
 #endif
 };
 
 enum CleaningType {
-     JETS_CLEAN_NONE,			// dirty, dirty jets
-     JETS_CLEAN_HYP_E_MU,		// e or mu from hypothesis
-     JETS_CLEAN_HYP_E,			// e only from hypothesis
-     JETS_CLEAN_SINGLE_E,		// e in single-lepton final state (QCD)
-     JETS_CLEAN_SINGLE_MU,      // mu in single-lepton final state (QCD)
-     JETS_CLEAN_SS_E_MU         // mu in single-lepton final state (QCD)
+    JETS_CLEAN_NONE,			// dirty, dirty jets
+    JETS_CLEAN_HYP_E_MU,		// e or mu from hypothesis
+    JETS_CLEAN_HYP_E,			// e only from hypothesis
+    JETS_CLEAN_SINGLE_E,		// e in single-lepton final state (QCD)
+    JETS_CLEAN_SINGLE_MU,      // mu in single-lepton final state (QCD)
+    JETS_CLEAN_SS_E_MU         // mu in single-lepton final state (QCD)
 };
 
 enum BtagType {
@@ -53,47 +53,51 @@ static const float BtagWP[] = {-999999., 1.7, 3.3, 1.93, 3.41, 1.74, 2.00};
 
 // vector of p4's of the jets passing selections
 std::vector<LorentzVector> getJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
-				    bool sort = false,
-				    enum JetType = JET_DEFAULT_TYPE,
-				    enum CleaningType = JET_DEFAULT_CLEANING,
-				    double deltaR = JET_DEFAULT_DR,
-				    double min_pt = JET_DEFAULT_PT,
-				    double max_eta = JET_DEFAULT_ETA);
+                                    bool sort = false,
+                                    enum JetType = JET_DEFAULT_TYPE,
+                                    enum CleaningType = JET_DEFAULT_CLEANING,
+                                    double deltaR = JET_DEFAULT_DR,
+                                    double min_pt = JET_DEFAULT_PT,
+                                    double max_eta = JET_DEFAULT_ETA,
+                                    double rescale = 1.0);
 
 // vector of bools aligned with the jet collection telling you which
 // jets passed the selections
 std::vector<bool> getJetFlags (unsigned int i_hyp,  // hyp or single-e to use for cleaning
-			       enum JetType = JET_DEFAULT_TYPE,
-			       enum CleaningType = JET_DEFAULT_CLEANING,
-			       double deltaR = JET_DEFAULT_DR,
-			       double min_pt = JET_DEFAULT_PT,
-			       double max_eta = JET_DEFAULT_ETA);
+                               enum JetType = JET_DEFAULT_TYPE,
+                               enum CleaningType = JET_DEFAULT_CLEANING,
+                               double deltaR = JET_DEFAULT_DR,
+                               double min_pt = JET_DEFAULT_PT,
+                               double max_eta = JET_DEFAULT_ETA,
+                               double rescale = 1.0);
 
 // number of jets passing selections
 int nJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
-	   enum JetType = JET_DEFAULT_TYPE,
-	   enum CleaningType = JET_DEFAULT_CLEANING,
-	   double deltaR = JET_DEFAULT_DR,
-	   double min_pt = JET_DEFAULT_PT,
-	   double max_eta = JET_DEFAULT_ETA);
+           enum JetType = JET_DEFAULT_TYPE,
+           enum CleaningType = JET_DEFAULT_CLEANING,
+           double deltaR = JET_DEFAULT_DR,
+           double min_pt = JET_DEFAULT_PT,
+           double max_eta = JET_DEFAULT_ETA,
+           double rescale = 1.0);
 
 // scalar sum pt of jets passing selections
 double sumPt (unsigned int i_hyp,  // hyp or single-e to use for cleaning
-	      enum JetType = JET_DEFAULT_TYPE,
-	      enum CleaningType = JET_DEFAULT_CLEANING,
-	      double deltaR = JET_DEFAULT_DR,
-	      double min_pt = JET_DEFAULT_PT,
-	      double max_eta = JET_DEFAULT_ETA);
+              enum JetType = JET_DEFAULT_TYPE,
+              enum CleaningType = JET_DEFAULT_CLEANING,
+              double deltaR = JET_DEFAULT_DR,
+              double min_pt = JET_DEFAULT_PT,
+              double max_eta = JET_DEFAULT_ETA,
+              double rescale = 1.0);
 
 // code to retrieve jet corrections from jet-correction text files
 class FactorizedJetCorrector;
 FactorizedJetCorrector *makeJetCorrector (const char *l2corr 		 = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L2Relative_AK5Calo.txt", 
-					  const char *l3corr 		 = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5Calo.txt", 
-					  const char *l2l3_residual_corr = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10DataV1_L2L3Residual_AK5Calo.txt");
+                                          const char *l3corr 		 = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10_L3Absolute_AK5Calo.txt", 
+                                          const char *l2l3_residual_corr = "$CMSSW_BASE/src/CondFormats/JetMETObjects/data/Spring10DataV1_L2L3Residual_AK5Calo.txt");
 FactorizedJetCorrector *makeJetCorrector (const std::vector<std::string> &vector_of_file_names);
 // either specify a jet corrector in the call to jetCorrection 
 double jetCorrection (const LorentzVector &jet, 
-		      FactorizedJetCorrector *jetCorrector);
+                      FactorizedJetCorrector *jetCorrector);
 // or set it once and have it be used it in all subsequent calls to jetCorrection
 void setJetCorrector (FactorizedJetCorrector *);
 double jetCorrection (const LorentzVector &jet);
@@ -114,7 +118,8 @@ std::vector<LorentzVector> getBtaggedJets (unsigned int i_hyp,  // hyp or single
                                            enum BtagType = JETS_DEFAULT_BTAG,
                                            double deltaR = JET_DEFAULT_DR,
                                            double min_pt = JET_DEFAULT_PT,
-                                           double max_eta = JET_DEFAULT_ETA);
+                                           double max_eta = JET_DEFAULT_ETA,
+                                           double rescale = 1.0);
 
 // vector of bools aligned with the jet collection telling you which
 // jets passed the selections
@@ -124,7 +129,8 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp,  // hyp or single-e to
                                       enum BtagType = JETS_DEFAULT_BTAG,
                                       double deltaR = JET_DEFAULT_DR,
                                       double min_pt = JET_DEFAULT_PT,
-                                      double max_eta = JET_DEFAULT_ETA);
+                                      double max_eta = JET_DEFAULT_ETA,
+                                      double rescale = 1.0);
 
 // number of jets passing selections
 int nBtaggedJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
@@ -133,6 +139,7 @@ int nBtaggedJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
                   enum BtagType = JETS_DEFAULT_BTAG,
                   double deltaR = JET_DEFAULT_DR,
                   double min_pt = JET_DEFAULT_PT,
-                  double max_eta = JET_DEFAULT_ETA);
+                  double max_eta = JET_DEFAULT_ETA,
+                  double rescale = 1.0);
 
 #endif // SEL_JETS_H
