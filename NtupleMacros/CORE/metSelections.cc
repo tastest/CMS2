@@ -460,3 +460,25 @@ std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2,
 
 }
 
+//-----------------------------------------------------
+// function to scale the hadronic component of the MET
+//-----------------------------------------------------
+std::pair<float, float> scaleMET(std::pair<float, float> p_met, LorentzVector p4_dilep, double rescale) {
+    
+    float met    = p_met.first;
+    float metPhi = p_met.second;
+    float metx   = met * cos(metPhi);
+    float mety   = met * sin(metPhi);
+
+    float lepx = p4_dilep.Px();
+    float lepy = p4_dilep.Py();
+      
+    //hadronic component of MET (well, mostly), scaled
+    float metHx     = (metx + lepx) * rescale;
+    float metHy     = (mety + lepy) * rescale;
+    float metNewx   = metHx - lepx;
+    float metNewy   = metHy - lepy;
+    float metNewPhi = atan2(metNewy, metNewx);
+
+    return ( std::make_pair(sqrt(metNewx * metNewx + metNewy * metNewy), metNewPhi) );
+}
