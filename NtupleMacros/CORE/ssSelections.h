@@ -69,6 +69,18 @@ enum IsolationType { DET_ISO, TIGHT_DET_ISO, COR_DET_ISO };
 
 
 /*****************************************************************************************/
+// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
+/*****************************************************************************************/
+    std::vector<bool> getJetFlags(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10, enum IsolationType iso_type = DET_ISO);
+
+/*****************************************************************************************/
+// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
+// e/mu with pt > x (defaults are 10/5 GeV)
+/*****************************************************************************************/
+    std::vector<bool> getJetFlags(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10, enum IsolationType iso_type = DET_ISO);
+
+
+/*****************************************************************************************/
 // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
 /*****************************************************************************************/
     float sumJetPt(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt = 5, double ele_minpt = 10, enum IsolationType iso_type = DET_ISO);
