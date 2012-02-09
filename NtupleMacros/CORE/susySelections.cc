@@ -520,14 +520,16 @@ bool passSingleLep3JetSUSYTrigger2011( bool isData , int lepType ) {
   if( lepType == 0 ){
     if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_CentralTriJet30_v") )                     return true; // 160329-164236
     if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralJet30_v") )                     return true; // 165088-165887
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralJet30_v") )    return true; // 165922-177730
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralJet30_v") )    return true; // 165922-178380
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v") )  return true; // 178420-180291
   }
 
   // muon channel
   else if( lepType == 1 ){
     if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TriCentralJet30_v") )                   return true;   // 160329-165887
     if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_TriCentralJet30_v") )                return true;   // 165922-173198
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;   // 173212-177730 
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;   // 173212-178380
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v") )       return true;   // 178420-180291
   }
 
   else{
