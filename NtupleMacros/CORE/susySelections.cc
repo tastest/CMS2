@@ -484,23 +484,21 @@ bool passSingleLep2JetSUSYTrigger2011( bool isData , int lepType ) {
 
   // electron channel
   if( lepType == 0 ){
-
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v") ) return true; //160404-163869
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT15_v") ) return true; //165088-166967
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele22_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; //167039-170759
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; //170826-178380
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele30_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralJet30_PFMHT25_v") ) return true; //176461-178380
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v") ) return true; //178420-180252
-
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v") )                                   return true; // 160329-164236
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT15_v") ) return true; // 165088-165887
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele22_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; // 166979-173198
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; // 170826-176309
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele30_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralJet30_PFMHT25_v") )            return true; // 173212-178380
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v") )                                      return true; // 178420-180291
   }
+
   // muon channel
-  else if( lepType == 1 ){
-    
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v") )          return true; //160329-163261
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true; //163269-173198
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true; //173212-180291
-    
+  else if( lepType == 1 ){    
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_v") )          return true; // 160329-165887
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true; // 160329-173198
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true; // 173212-180291
   }
+
   else{
     cout << "susySelections.cc:: ERROR unrecognized lepType " << lepType << ", quitting" << endl;
     exit(0);
