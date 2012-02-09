@@ -422,62 +422,25 @@ bool passMuMuJJTrigger_v1( bool isData ) {
 
 bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
 
-  //These are the all the triggers considered for single lepton+jets 
+  //------------------------------------------------------------------------
+  // These are the all the triggers considered for single lepton+jets 
+  //------------------------------------------------------------------------
 
   // no triggers required for MC
   if( !isData ) return true;
 
-  // electron channel
-  if( lepType == 0 ){
-
-    //l+2j+MHT
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v") ) return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT15_v") ) return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele22_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele30_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralJet30_PFMHT25_v") ) return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v") ) return true;
-    //l+3j
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_CentralTriJet30_v") )                     return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralJet30_v") )                     return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralJet30_v") )    return true;
-    //btag
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_BTagIP_v") )                     return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_CentralJet30_BTagIP_v1") )                     return true;
-
-  }
-
-  // muon channel
-  else if( lepType == 1 ){
-    //single mu
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v") )          return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true;
-    //l+2j+MHT
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_DiCentralPFJet25_PFMHT15_v") )          return true;
-    //l+3j
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TriCentralJet30_v") )                   return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_TriCentralJet30_v") )                return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;
-    //btag
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_CentralJet30_BTagIP_v") )         return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_CentralJet30_BTagIP_v") )                return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_CentralJet30_BTagIP_v") )                   return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu12_CentralJet30_BTagIP_v") )                   return true;
-
-  }
-
-  else{
-    cout << "susySelections.cc:: ERROR unrecognized lepType " << lepType << ", quitting" << endl;
-    exit(0);
-  }
+  if( passSingleLep2JetSUSYTrigger2011( isData , lepType ) )   return true; // l+dijet+MHT triggers
+  if( passSingleLep3JetSUSYTrigger2011( isData , lepType ) )   return true; // l+trijet triggers
+  if( passSingleMuTrigger2011(          isData , lepType ) )   return true; // single muon triggers
 
   return false;
 }
 
 bool passSingleLep2JetSUSYTrigger2011( bool isData , int lepType ) {
 
-  //These are the trigger options for lepton+2jets+MET 
+  //-------------------------------------------------------
+  // These are the trigger options for lepton+2jets+MET 
+  //-------------------------------------------------------
 
   // no triggers required for MC
   if( !isData ) return true;
@@ -507,9 +470,40 @@ bool passSingleLep2JetSUSYTrigger2011( bool isData , int lepType ) {
   return false;
 }
 
+bool passSingleMuTrigger2011( bool isData , int lepType ) {
+  
+  //----------------------------
+  // single muon triggers
+  //----------------------------
+
+  // no triggers required for MC
+  if( !isData ) return true;
+
+  // false for electron channel
+  if( lepType == 0 ){
+    return false;
+  }
+
+  // muon channel
+  else if( lepType == 1 ){    
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_v") )          return true; // 160329-165887
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true; // 160329-173198
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true; // 173212-180291
+  }
+
+  else{
+    cout << "susySelections.cc:: " << __LINE__ << " ERROR unrecognized lepType " << lepType << ", quitting" << endl;
+    exit(0);
+  }
+
+  return false;
+}
+
 bool passSingleLep3JetSUSYTrigger2011( bool isData , int lepType ) {
 
+  //-------------------------------------------------------
   //These are the triggers for lepton+3jets
+  //-------------------------------------------------------
 
   // no triggers required for MC
   if( !isData ) return true;
