@@ -93,6 +93,9 @@ float kfactorSUSY(float m0, float m12, string sample){
  else if ( sample == "tanbeta10_2012"        ) filename = (char*)"../data/msugra_tanb10_2012_kfactor_nominal.root";
  else if ( sample == "tanbeta10Scale05_2012" ) filename = (char*)"../data/msugra_tanb10_2012_kfactor_scale05.root";
  else if ( sample == "tanbeta10Scale20_2012" ) filename = (char*)"../data/msugra_tanb10_2012_kfactor_scale20.root";
+ else if ( sample == "tanbeta10_2012final"   ) filename = (char*)"../data/combined_kfactor_msugra_m0_m12_10_0_1.root";
+ else if ( sample == "tanbeta10Up_2012final" ) filename = (char*)"../data/combined_kfactorUp_msugra_m0_m12_10_0_1.root";
+ else if ( sample == "tanbeta10Dn_2012final" ) filename = (char*)"../data/combined_kfactorDn_msugra_m0_m12_10_0_1.root";
  else {
   return kfactor;
   cout << "WARNING:: CORE/kfactorSUSY wrong string given, using kfactor=1" << endl; 
