@@ -829,45 +829,58 @@ double getMisTagSF_Err(double jet_pt, double jet_eta, string algo){
   return 0.0;
 }
 
-double getBTagSF(double jet_pt, double jet_eta, string algo){
+//2-17-2012
+//from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#Recommendation_for_b_c_tagging_a
+//scale factors updated using
+//https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/SFb-ttbar_payload.txt
+
+//need the discriminator value as arg
+//no pt dependence
+//only valid eta range is abs(eta) < 2.4 -- leave this up to the user to check
+
+float getBTagSF(const string algo, const float discriminator){
   
-  jet_eta = fabs(jet_eta);
-  if(algo == "TCHEM"){
-    /*
-    if (jet_eta < 0.8 ) {
-      return 0.94;
-    }
-    if (jet_eta < 1.6) {
-    
-      return 0.93;
+  if(algo == "TCHE"){
+    return 0.00152129076412*discriminator + 0.95678084337;
   }
-    if (jet_eta < 2.4) {
-      
-    return 0.93;
-    }
-    */
-    return 0.96;
-  }
-  std::cout << "Error: eta > 2.4 value found" << endl;
-  return 1.0;
+  std::cout << "Error in getBTagSF: unsupported algo " << algo << endl;
+  return -1.0;
 }
 
-double getBTagSF_Err(double jet_pt, double jet_eta, string algo){
+//I assume this is a relative error
+float getBTagSF_Err(const string algo){
 
-  jet_eta = fabs(jet_eta);
-  if(algo == "TCHEM"){
-    if (jet_eta < 0.8 ) {
-      return 0.094;
-    }
-    if (jet_eta < 1.6) {
-      
-      return 0.093;
-    }
-    if (jet_eta < 2.4) {
-      
-      return 0.093;
-    }
+  if(algo == "TCHE"){
+	return 0.04;
   }
-  std::cout << "Error: eta > 2.4 value found" << endl;
+  std::cout << "Error in getBTagSF_Err: unsupported algo " << algo << endl;
+  return 0.0;
+}
+
+//below from
+//https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/eff_b_c-ttbar_payload.txt
+//where x is the discriminator value
+
+float getBTagEff(const string algo, const float x, const bool isgen){
+  
+  if(algo == "TCHE"){
+	if( !isgen )
+	  return -3.67153247396e-07*x*x*x*x +  -2.81599797034e-05*x*x*x +  0.00293190163243*x*x +  -0.0849600849778*x +  0.928524440715;
+	else
+	  return  3.90732786802e-06*x*x*x*x +  -0.000239934437355*x*x*x +  0.00664986827287*x*x +  -0.112578996016*x +  1.00775721404;
+  }
+  std::cout << "Error in getBTagEff: unsupported algo " << algo << endl;
+  return -1.0;
+}
+
+//From txt file above:
+//Absolute err = effb_err_max - effb
+float getBTagEff_Err(const string algo, const float x, const bool isgen){
+
+  if(algo == "TCHE"){
+	const float eff = 3.03337430722e-06*x*x*x*x + -0.000171604835897*x*x*x + 0.00474711667943*x*x + -0.0929933040514*x + 0.978347619293;
+	return eff - getBTagEff(algo, x, isgen);
+  }
+  std::cout << "Error in getBTagEff_Err: unsupported algo " << algo << endl;
   return 0.0;
 }
