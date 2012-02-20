@@ -93,7 +93,7 @@ bool lockToCoreSelectors = false;
 bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
 bool useLHeleId = false;
 bool useMVAeleId = true;
-bool doDYNNLOw = true;
+bool doDYNNLOw = false;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
 std::vector<std::string> jetcorr_filenames_pfL1FastJetL2L3;
@@ -480,7 +480,7 @@ bool passedTrigger(TString trigName) {
   return cms2.passHLTTrigger(trigName);
 }
 
-bool passedTriggerRequirements(HypTypeInNtuples type) {
+bool passedTriggerRequirements() {
   // return true; // no trigger requirements
   // return cms2.filter_ele10mu10IsoId_passed();
   if ( passedTrigger("HLT_Mu17_Ele8_CaloIdL_v1") || 
@@ -492,6 +492,9 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_Mu17_Ele8_CaloIdL_v8") ||
        passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1") ||
        passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7") ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v8") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v1") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v2") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v3") ||
@@ -499,14 +502,27 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v5") || 
        passedTrigger("HLT_Mu8_Ele17_CaloIdL_v6") ||
        passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1") ||
-       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3") 
-      ) return true;
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v7") ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v8") 
+       ) return true;
   if ( passedTrigger("HLT_DoubleMu7_v1") ||
        passedTrigger("HLT_DoubleMu7_v2") ||
        passedTrigger("HLT_Mu13_Mu8_v2") ||
        passedTrigger("HLT_Mu13_Mu8_v3") ||
        passedTrigger("HLT_Mu13_Mu8_v4") ||
-       passedTrigger("HLT_Mu13_Mu8_v6") ) return true;
+       passedTrigger("HLT_Mu13_Mu8_v6") ||
+       passedTrigger("HLT_Mu13_Mu8_v7") ||
+       passedTrigger("HLT_Mu17_Mu8_v2") ||
+       passedTrigger("HLT_Mu17_Mu8_v3") ||
+       passedTrigger("HLT_Mu17_Mu8_v4") ||
+       passedTrigger("HLT_Mu17_Mu8_v6") ||
+       passedTrigger("HLT_Mu17_Mu8_v7") ||
+       passedTrigger("HLT_Mu17_Mu8_v10") ||
+       passedTrigger("HLT_Mu17_Mu8_v11") ||
+       passedTrigger("HLT_Mu17_TkMu8_v3") ||
+       passedTrigger("HLT_Mu17_TkMu8_v4") ) return true;
   if ( passedTrigger("HLT_Mu15_v2") ||
        passedTrigger("HLT_Mu24_v1") ||
        passedTrigger("HLT_Mu24_v2") ||
@@ -530,7 +546,13 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_IsoMu24_v5") ||
        passedTrigger("HLT_IsoMu24_v6") ||
        passedTrigger("HLT_IsoMu24_v7") ||
-       passedTrigger("HLT_IsoMu24_v8") ) return true;
+       passedTrigger("HLT_IsoMu24_v8") ||
+       passedTrigger("HLT_IsoMu24_eta2p1_v3") ||
+       passedTrigger("HLT_IsoMu24_eta2p1_v6") ||
+       passedTrigger("HLT_IsoMu24_eta2p1_v7") ||
+       passedTrigger("HLT_IsoMu30_eta2p1_v3") ||
+       passedTrigger("HLT_IsoMu30_eta2p1_v6") ||
+       passedTrigger("HLT_IsoMu30_eta2p1_v7") ) return true;
   if ( passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1") ||
        passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2") ||
        passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3") ||
@@ -539,7 +561,10 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6") ||
        passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") ||
        passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") ||
-       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") ) return true;
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8") ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9") ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10") ) return true;
   if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
        passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ||
        passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ||
@@ -551,10 +576,120 @@ bool passedTriggerRequirements(HypTypeInNtuples type) {
        passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v1") ||
        passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v2") ||
        passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v3") ||
-       passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v3") ) return true;
-
+       passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v3") ||
+       passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v4") ||
+       passedTrigger("HLT_Ele80_CaloIdVT_TrkIdT_v2") ||
+       passedTrigger("HLT_Ele80_CaloIdVT_TrkIdT_v3") ) return true;
   return false;
 }
+
+/*
+bool passedTriggerRequirementsWithRuns() {
+  // return true; // no trigger requirements
+  // return cms2.filter_ele10mu10IsoId_passed();
+  if ( passedTrigger("HLT_Mu17_Ele8_CaloIdL_v1",1,175972) || 
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v2",1,175972) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v3",1,175972) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v4",1,175972) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v5",1,175972) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v6",1,175972) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdL_v8",1,175972) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1",175973,999999) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3",175973,999999) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4",175973,999999) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7",175973,999999) ||
+       passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v8",175973,999999) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v1",1,167913) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v2",1,167913) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v3",1,167913) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v4",1,167913) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v5",1,167913) || 
+       passedTrigger("HLT_Mu8_Ele17_CaloIdL_v6",1,167913) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1",167914,999999) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3",167914,999999) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4",167914,999999) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v7",167914,999999) ||
+       passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v8",167914,999999) 
+      ) return true;
+  if ( passedTrigger("HLT_DoubleMu7_v1",1,164237) ||
+       passedTrigger("HLT_DoubleMu7_v2",1,164237) ||
+       passedTrigger("HLT_Mu13_Mu8_v2",165085,178419) ||
+       passedTrigger("HLT_Mu13_Mu8_v3",165085,178419) ||
+       passedTrigger("HLT_Mu13_Mu8_v4",165085,178419) ||
+       passedTrigger("HLT_Mu13_Mu8_v6",165085,178419) ||
+       passedTrigger("HLT_Mu13_Mu8_v7",165085,178419) ||
+       passedTrigger("HLT_Mu17_Mu8_v2",178420,999999) ||
+       passedTrigger("HLT_Mu17_Mu8_v3",178420,999999) ||
+       passedTrigger("HLT_Mu17_Mu8_v4",178420,999999) ||
+       passedTrigger("HLT_Mu17_Mu8_v6",178420,999999) ||
+       passedTrigger("HLT_Mu17_Mu8_v7",178420,999999) ||
+       passedTrigger("HLT_Mu17_Mu8_v10",178420,999999) ||
+       passedTrigger("HLT_Mu17_Mu8_v11",178420,999999) ||
+       passedTrigger("HLT_Mu17_TkMu8_v3") ||
+       passedTrigger("HLT_Mu17_TkMu8_v4") ) return true;
+  if ( passedTrigger("HLT_Mu15_v2",1,163261) ||
+       passedTrigger("HLT_Mu24_v1",163262,164237) ||
+       passedTrigger("HLT_Mu24_v2",163262,164237) ||
+       passedTrigger("HLT_Mu30_v1",165085,173235) ||
+       passedTrigger("HLT_Mu30_v2",165085,173235) ||
+       passedTrigger("HLT_Mu30_v3",165085,173235) ||
+       passedTrigger("HLT_Mu30_v4",165085,173235) ||
+       passedTrigger("HLT_Mu30_v5",165085,173235) ||
+       passedTrigger("HLT_Mu30_v7",165085,173235) ||
+       passedTrigger("HLT_Mu40_v5",173236,175972) ||
+       passedTrigger("HLT_Mu40_eta2p1_v1",175973,999999) ||
+       passedTrigger("HLT_Mu40_eta2p1_v4",175973,999999) ||
+       passedTrigger("HLT_Mu40_eta2p1_v5",175973,999999) ||
+       passedTrigger("HLT_IsoMu17_v5",163262,167043) ||
+       passedTrigger("HLT_IsoMu17_v6",163262,167043) ||
+       passedTrigger("HLT_IsoMu17_v8",163262,167043) ||
+       passedTrigger("HLT_IsoMu17_v9",163262,167043) ||
+       passedTrigger("HLT_IsoMu17_v10",163262,167043) ||
+       passedTrigger("HLT_IsoMu17_v11",163262,167043) ||
+       passedTrigger("HLT_IsoMu17_eta2p1_v1",167044,167913) ||
+       passedTrigger("HLT_IsoMu20_v8",170053,175910) ||
+       passedTrigger("HLT_IsoMu24_v1",175911,175921) ||
+       passedTrigger("HLT_IsoMu24_v2",175911,175921) ||
+       passedTrigger("HLT_IsoMu24_v4",175911,175921) ||
+       passedTrigger("HLT_IsoMu24_v5",175911,175921) ||
+       passedTrigger("HLT_IsoMu24_v6",175911,175921) ||
+       passedTrigger("HLT_IsoMu24_v7",175911,175921) ||
+       passedTrigger("HLT_IsoMu24_v8",175911,175921) ||
+       passedTrigger("HLT_IsoMu24_eta2p1_v3",175922,176544) ||
+       passedTrigger("HLT_IsoMu24_eta2p1_v6",175922,176544) ||
+       passedTrigger("HLT_IsoMu24_eta2p1_v7",175922,176544) ||
+       passedTrigger("HLT_IsoMu30_eta2p1_v3",176545,999999) ||
+       passedTrigger("HLT_IsoMu30_eta2p1_v6",176545,999999) ||
+       passedTrigger("HLT_IsoMu30_eta2p1_v7",176545,999999) ) return true;
+  if ( passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1",1,170052) ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2",1,170052) ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3",1,170052) ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4",1,170052) ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5",1,170052) ||
+       passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6",1,170052) ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5",170053,999999) ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6",170053,999999) ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7",170053,999999) ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8",170053,999999) ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9",170053,999999) ||
+       passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10",170053,999999) ) return true;
+  if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1",1,164237) ||
+       passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2",1,164237) ||
+       passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3",1,164237) ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1",165085,166967) ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2",165085,166967) ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3",165085,166967) ||
+       passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4",165085,166967) ||
+       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v1",166968,170901) ||
+       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v2",166968,170901) ||
+       passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v3",166968,170901) ||
+       passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v3",170902,178419) ||
+       passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v4",170902,178419) ||
+       passedTrigger("HLT_Ele80_CaloIdVT_TrkIdT_v2",178420,999999) ||
+       passedTrigger("HLT_Ele80_CaloIdVT_TrkIdT_v3",178420,999999) ) return true;
+  return false;
+}
+*/
 
 //
 // MET
@@ -1166,7 +1301,7 @@ bool hypo (int i_hyp, double weight, bool realData)
   if (nGoodVertex()<1) return false;
 
   cuts_passed = PASSED_BaseLine;
-  if ( realData && passedTriggerRequirements( hypType(i_hyp) ) )  cuts_passed |= PASSED_Trigger;
+  if ( realData && passedTriggerRequirements() )  cuts_passed |= PASSED_Trigger;
   
   // Baseline cuts
   if (abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muBase(cms2.hyp_lt_index()[i_hyp]) ) cuts_passed &= ~PASSED_BaseLine;
@@ -1314,6 +1449,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.scale1fb_    = weight;
   tree.met_         = metValue();
   tree.sumet_       = sumetValue();
+  tree.metSig_      = cms2.evt_pfmetSignificance();
   tree.metPhi_      = metPhiValue();
   metStruct trkMET  = trackerMET(i_hyp,0.1);
   tree.trackMet_    = trkMET.met;
@@ -1373,7 +1509,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.mt1_ = mt(tree.lep1_.pt(),tree.met_,tree.dPhiLep1MET_);
   tree.mt2_ = mt(tree.lep2_.pt(),tree.met_,tree.dPhiLep2MET_);
 
-  if (sample!=SmurfTree::data){
+  if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){
     tree.genmet_ = cms2.gen_met();
     tree.genmetPhi_ = cms2.gen_metPhi();
     tree.lep1McId_ = ltIsFirst ? cms2.hyp_lt_mc_id().at(i_hyp) : cms2.hyp_ll_mc_id().at(i_hyp);
@@ -1492,7 +1628,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
 	tree.lep3_ = cms2.mus_p4().at(lep->second);
 	tree.lq3_   = cms2.mus_charge().at(lep->second);
 	tree.lid3_ = tree.lq3_>0?-13:13;
-	if (sample!=SmurfTree::data){// GC
+	if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){// GC
 	  tree.lep3McId_ = cms2.mus_mc_id().at(lep->second);
 	  tree.lep3MotherMcId_  = cms2.mus_mc_motherid().at(lep->second);
 	}
@@ -1502,7 +1638,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
 	tree.lep3_ = cms2.els_p4().at(lep->second);
 	tree.lq3_   = cms2.els_charge().at(lep->second);
 	tree.lid3_ = tree.lq3_>0?-11:11;
-	if (sample!=SmurfTree::data){// GC
+	if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){// GC
 	  tree.lep3McId_ = cms2.els_mc_id().at(lep->second);
 	  tree.lep3MotherMcId_  = cms2.els_mc_motherid().at(lep->second);
 	}
@@ -1541,11 +1677,38 @@ void ScanChain( TChain* chain,
 		bool realData,
 		TString cms2_json_file)
 {
+
   std::string prefix = SmurfTree::name(sample);
   if ( chain->GetListOfFiles()->GetEntries()==0 ){
     printf("\nERROR: chain is empty for sample: %s\n\n",prefix.c_str());
     assert(0);
   }
+
+  TObjArray *listOfFiles = chain->GetListOfFiles();
+  TIter fileIter(listOfFiles);
+  TChainElement *file0 = ((TChainElement*)fileIter.Next());
+  if (prefix=="ttbar" || prefix=="dymm" || prefix=="dyee"){
+    if (TString(file0->GetTitle()).Contains("madgraph")) prefix+="_mg";
+  }
+  if (prefix=="tw"){
+    if (TString(file0->GetTitle()).Contains("DS")) prefix+="_ds";
+  }
+  if (prefix=="qqww"){
+    if (TString(file0->GetTitle()).Contains("mcatnlo")) prefix="ww_mcnlo";
+    if (TString(file0->GetTitle()).Contains("scaleup")) prefix+="_up";
+    if (TString(file0->GetTitle()).Contains("scaledown")) prefix+="_down";
+  }
+  if (prefix=="wz" || prefix=="zz"){
+    if (TString(file0->GetTitle()).Contains("pythia")) prefix+="_py";
+  }
+  if (prefix=="wgstar"){
+    prefix="wg3l";
+  }
+  if (prefix=="dyttDataDriven"){
+    prefix="data-emb-tau123";
+  }
+  fileIter.Reset();
+
   if ( gSystem->Getenv("ZSelection") )
     pass_all = PASSED_ZControlSampleTight | PASSED_JETVETO | PASSED_LT_FINAL | PASSED_LL_FINAL | 
       PASSED_SOFTMUVETO | PASSED_EXTRALEPTONVETO | PASSED_TOPVETO;
@@ -1602,9 +1765,9 @@ void ScanChain( TChain* chain,
     if(cms2_json_file=="") {  
       std::cout<<"\n WARNING: Running on the real Data, but not JSON file!"<<std::endl;
       // assert(0);
-    } else {
+    } else if (cms2_json_file.Contains(".json")) {
       set_goodrun_file_json(cms2_json_file);
-    }
+    } else set_goodrun_file(cms2_json_file);
   }
 
   if (doDYNNLOw && (sample==SmurfTree::dyee || sample==SmurfTree::dymm || sample==SmurfTree::dytt) ) {
@@ -1623,8 +1786,6 @@ void ScanChain( TChain* chain,
   }
 
   // file loop
-  TObjArray *listOfFiles = chain->GetListOfFiles();
-  TIter fileIter(listOfFiles);
   monitor.counters.clear();
   while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
 //        printf("current file: %s (%s), %s\n", currentFile->GetName(), 
@@ -1937,7 +2098,7 @@ float getHiggsPtWeight(float pt, int higgsMass) {
   if (pt<0) return 1.;
   if (HiggsPtKFactor!=0 && TString(HiggsPtKFactor->GetName()).Contains(Form("%i",higgsMass))) 
     return HiggsPtKFactor->GetBinContent( HiggsPtKFactor->GetXaxis()->FindFixBin(pt));
-  TFile *fHiggsPtKFactorFile = TFile::Open("./files/ggHWW_KFactors_PowhegToHQT.root");
+  TFile *fHiggsPtKFactorFile = TFile::Open("./files/ggHWW_KFactors_PowhegToHQT_WithAdditionalMassPoints.root");
   assert(fHiggsPtKFactorFile);
   char kfactorHistName[100];
   sprintf(kfactorHistName, "KFactor_PowhegToHQT_mH%d", higgsMass);

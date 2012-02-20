@@ -58,7 +58,7 @@ bool fakableMuon(unsigned int i, MuFOTypes);
 // trigger
 //
 
-bool passedTriggerRequirements(HypTypeInNtuples type);
+bool passedTriggerRequirements();
 
 //
 // Met
