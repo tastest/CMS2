@@ -52,6 +52,7 @@ ifeq ($(shell root-config --platform),macosx)
 endif
 
 CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc $(CMSROOT)/CORE/jetSelections.cc $(CMSROOT)/CORE/MITConversionUtilities.cc $(CMSROOT)/CORE/trackSelections.cc $(CMSROOT)/CORE/eventSelections.cc $(CMSROOT)/CORE/metSelections.cc $(CMSROOT)/Tools/ElectronIDMVA.cc $(CMSROOT)/Tools/MuonIDMVA.cc $(CMSROOT)/Tools/goodrun.cc 
+
 # $(CMSROOT)/CORE/utilities.cc
 #$(CMSROOT)/CORE/fakerates.cc
 # CORESOURCES = $(wildcard $(CMSROOT)/CORE/*.cc) 
@@ -130,7 +131,8 @@ clean: # clean up
 	$(CMSROOT)/CORE/*.o \
 	$(CMSROOT)/CORE/*.d \
 	$(CMSROOT)/CORE/*.so \
-	$(CMSROOT)/Tools/*.so \
+	$(CMSROOT)/Tools/*.o \
+    $(CMSROOT)/Tools/*.d \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	processed_data.* *.list \
 	*.o *.d *.so *.exe LinkDef_out*; echo "Done"
