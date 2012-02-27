@@ -1,6 +1,12 @@
 #! /bin/bash
 
 MAXJOBS=5
+if [ $1 != "" ]; then
+    if [ $1 -le 1000 ] && [ $1 -ge 1 ]; then
+	MAXJOBS=$1
+    fi
+fi
+
 
 echo "Submitting $MAXJOBS test jobs."
 echo "Use   condor_q $USER   to check your jobs" 
