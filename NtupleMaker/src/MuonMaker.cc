@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  pts/4
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: MuonMaker.cc,v 1.49 2012/02/02 00:39:08 cerati Exp $
+// $Id: MuonMaker.cc,v 1.46.8.2 2012/03/08 09:12:37 cerati Exp $
 //
 //
 
@@ -34,7 +34,6 @@ Implementation:
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
-#include "DataFormats/MuonReco/interface/MuonPFIsolation.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/MuonReco/interface/MuonSelectors.h"
 #include "DataFormats/MuonReco/interface/MuonCocktails.h"
@@ -149,21 +148,6 @@ MuonMaker::MuonMaker(const edm::ParameterSet& iConfig) {
   produces<vector<int> >	     (branchprefix+"iso05ntrk"	      ).setBranchAlias(aliasprefix_+"_iso05_ntrk"         ); // number of tracks in the cone of 0.5 
   produces<vector<float> >	     (branchprefix+"iso03pf"	      ).setBranchAlias(aliasprefix_+"_iso03_pf"         ); // pf isolation in cone of 0.3
   produces<vector<float> >	     (branchprefix+"iso04pf"	      ).setBranchAlias(aliasprefix_+"_iso04_pf"         ); // pf isolation in cone of 0.4
-
-  //
-  produces<vector<float> >	     ( branchprefix + "isoR03pfChargedHadronPt"	  ).setBranchAlias( aliasprefix_ + "_isoR03_pf_ChargedHadronPt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfChargedParticlePt" ).setBranchAlias( aliasprefix_ + "_isoR03_pf_ChargedParticlePt" );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfNeutralHadronEt"	  ).setBranchAlias( aliasprefix_ + "_isoR03_pf_NeutralHadronEt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfPhotonEt"	        ).setBranchAlias( aliasprefix_ + "_isoR03_pf_PhotonEt"          );
-  produces<vector<float> >	     ( branchprefix + "isoR03pfPUPt"	            ).setBranchAlias( aliasprefix_ + "_isoR03_pf_PUPt"              );
-
-  produces<vector<float> >	     ( branchprefix + "isoR04pfChargedHadronPt"	  ).setBranchAlias( aliasprefix_ + "_isoR04_pf_ChargedHadronPt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfChargedParticlePt" ).setBranchAlias( aliasprefix_ + "_isoR04_pf_ChargedParticlePt" );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfNeutralHadronEt"	  ).setBranchAlias( aliasprefix_ + "_isoR04_pf_NeutralHadronEt"   );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfPhotonEt"	        ).setBranchAlias( aliasprefix_ + "_isoR04_pf_PhotonEt"          );
-  produces<vector<float> >	     ( branchprefix + "isoR04pfPUPt"	            ).setBranchAlias( aliasprefix_ + "_isoR04_pf_PUPt"              );
-
-
 
   //new
   produces<vector<float> >           (branchprefix+"gfitd0"             ).setBranchAlias(aliasprefix_+"_gfit_d0"            ); // d0 from global fit, if it exists
@@ -327,21 +311,6 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   auto_ptr<vector<int> >	   vector_mus_iso05_ntrk          (new vector<int>  	       );
   auto_ptr<vector<float> >	   vector_mus_iso03_pf            (new vector<float>	       );
   auto_ptr<vector<float> >	   vector_mus_iso04_pf            (new vector<float>	       );
-
-  //
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_ChargedHadronPt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_ChargedParticlePt (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_NeutralHadronEt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_PhotonEt          (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR03_pf_PUPt              (new vector<float>	       );
-
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_ChargedHadronPt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_ChargedParticlePt (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_NeutralHadronEt   (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_PhotonEt          (new vector<float>	       );
-  auto_ptr<vector<float> >	   vector_mus_isoR04_pf_PUPt              (new vector<float>	       );
-
-
   //gfit
   auto_ptr<vector<float> >         vector_mus_gfit_d0             (new vector<float>           );
   auto_ptr<vector<float> >         vector_mus_gfit_z0             (new vector<float>           );
@@ -549,20 +518,6 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     vector_mus_iso05_hoEt         ->push_back(muon->isIsolationValid() ? muon->isolationR05().hoEt	     :  -9999.        );
     vector_mus_iso05_ntrk         ->push_back(muon->isIsolationValid() ? muon->isolationR05().nTracks        :  -9999         );
 
-    //
-    MuonPFIsolation pfStructR03 = muon->pfIsolationR03();
-    MuonPFIsolation pfStructR04 = muon->pfIsolationR04();
-    vector_mus_isoR03_pf_ChargedHadronPt  ->push_back( pfStructR03.sumChargedHadronPt   );
-    vector_mus_isoR03_pf_ChargedParticlePt->push_back( pfStructR03.sumChargedParticlePt );
-    vector_mus_isoR03_pf_NeutralHadronEt  ->push_back( pfStructR03.sumNeutralHadronEt   );
-    vector_mus_isoR03_pf_PhotonEt         ->push_back( pfStructR03.sumPhotonEt          );
-    vector_mus_isoR03_pf_PUPt             ->push_back( pfStructR03.sumPUPt              );
-    vector_mus_isoR04_pf_ChargedHadronPt  ->push_back( pfStructR04.sumChargedHadronPt   );
-    vector_mus_isoR04_pf_ChargedParticlePt->push_back( pfStructR04.sumChargedParticlePt );
-    vector_mus_isoR04_pf_NeutralHadronEt  ->push_back( pfStructR04.sumNeutralHadronEt   );
-    vector_mus_isoR04_pf_PhotonEt         ->push_back( pfStructR04.sumPhotonEt          );
-    vector_mus_isoR04_pf_PUPt             ->push_back( pfStructR04.sumPUPt              );
-
     vector_mus_gfit_d0            ->push_back(globalTrack.isNonnull()  ? globalTrack->d0()                   :  -9999.        );
     vector_mus_gfit_z0            ->push_back(globalTrack.isNonnull()  ? globalTrack->dz()                   :  -9999.        );
     vector_mus_gfit_d0Err         ->push_back(globalTrack.isNonnull()  ? globalTrack->d0Error()              :  -9999.        );
@@ -702,14 +657,14 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     //unbiased revertexing, courtesy of B.Mangano
     if (siTrack.isNonnull() && firstGoodVertex!=vertexCollection->end()) {
       reco::Vertex vertexNoB;
-      reco::TrackRefVector newTkCollection;
+      reco::TrackCollection newTkCollection;
       bool foundMatch(false);
       for(reco::Vertex::trackRef_iterator itk = firstGoodVertex->tracks_begin(); itk!= firstGoodVertex->tracks_end(); itk++){
 	bool refMatching = (itk->key() == siTrack.key());
 	if(refMatching){
 	  foundMatch = true;
 	}else{
-	  newTkCollection.push_back(itk->castTo<reco::TrackRef>());
+	  newTkCollection.push_back(*itk->get());
 	}
       }//track collection for vertexNoB is set
       if(!foundMatch) {
@@ -815,19 +770,7 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put(vector_mus_iso05_ntrk         , branchprefix+"iso05ntrk"          );
   iEvent.put(vector_mus_iso03_pf           , branchprefix+"iso03pf"            );
   iEvent.put(vector_mus_iso04_pf           , branchprefix+"iso04pf"            );
-
-  //
-  iEvent.put( vector_mus_isoR03_pf_ChargedHadronPt        , branchprefix+"isoR03pfChargedHadronPt"         );
-  iEvent.put( vector_mus_isoR03_pf_ChargedParticlePt      , branchprefix+"isoR03pfChargedParticlePt"       );
-  iEvent.put( vector_mus_isoR03_pf_NeutralHadronEt        , branchprefix+"isoR03pfNeutralHadronEt"         );
-  iEvent.put( vector_mus_isoR03_pf_PhotonEt               , branchprefix+"isoR03pfPhotonEt"                );
-  iEvent.put( vector_mus_isoR03_pf_PUPt                   , branchprefix+"isoR03pfPUPt"                    );
-  iEvent.put( vector_mus_isoR04_pf_ChargedHadronPt        , branchprefix+"isoR04pfChargedHadronPt"         );
-  iEvent.put( vector_mus_isoR04_pf_ChargedParticlePt      , branchprefix+"isoR04pfChargedParticlePt"       );
-  iEvent.put( vector_mus_isoR04_pf_NeutralHadronEt        , branchprefix+"isoR04pfNeutralHadronEt"         );
-  iEvent.put( vector_mus_isoR04_pf_PhotonEt               , branchprefix+"isoR04pfPhotonEt"                );
-  iEvent.put( vector_mus_isoR04_pf_PUPt                   , branchprefix+"isoR04pfPUPt"                    );
-
+  
   iEvent.put(vector_mus_gfit_d0            , branchprefix+"gfitd0"             );
   iEvent.put(vector_mus_gfit_z0            , branchprefix+"gfitz0"             );
   iEvent.put(vector_mus_gfit_d0Err         , branchprefix+"gfitd0Err"          );
@@ -869,6 +812,7 @@ void MuonMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
   iEvent.put(vector_mus_pid_TM2DCompatibilityLoose	, branchprefix+"pidTM2DCompatibilityLoose" );
   iEvent.put(vector_mus_pid_TM2DCompatibilityTight	, branchprefix+"pidTM2DCompatibilityTight" );
   iEvent.put(vector_mus_caloCompatibility               , branchprefix+"caloCompatibility"         );
+  iEvent.put(vector_mus_segmCompatibility               , branchprefix+"segmCompatibility"         );
   iEvent.put(vector_mus_nOverlaps                       , branchprefix+"nOverlaps"                 );
   iEvent.put(vector_mus_overlap0                        , branchprefix+"overlap0"                 );
   iEvent.put(vector_mus_overlap1                        , branchprefix+"overlap1"                 );

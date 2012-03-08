@@ -13,7 +13,7 @@
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: PFCandidateMaker.cc,v 1.8 2011/09/14 17:41:57 slava77 Exp $
+// $Id: PFCandidateMaker.cc,v 1.7 2011/08/04 22:14:32 dbarge Exp $
 //
 //
 
@@ -125,10 +125,9 @@ void PFCandidateMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
      pfCandidates  = pfCandidatesHandle.product();
 
      //get pfelectrons
-     typedef edm::ValueMap<reco::PFCandidatePtr> PFCandMap;
-     Handle<PFCandMap> pfElectronsHandle;
+     Handle<PFCandidateCollection> pfElectronsHandle;
      iEvent.getByLabel(pfElectronsTag_, pfElectronsHandle);
-     const PFCandMap *pfElectrons  = pfElectronsHandle.product();
+     const PFCandidateCollection *pfElectrons  = pfElectronsHandle.product();
   
 
      // get tracks
@@ -231,11 +230,7 @@ void PFCandidateMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	    if (pf_it->gsfTrackRef().isNonnull()) {
 	      int pfGsfTkId = pf_it->gsfTrackRef().key();
 	      unsigned int elsIndex = 0;
-	      PFCandMap::const_iterator el_pit = pfElectrons->begin();
-	      unsigned int nE = el_pit.size();
-	      for(unsigned int iE = 0; iE < nE; ++iE){
-		const PFCandidatePtr& el_it = el_pit[iE];
-		if (el_it.isNull()) continue;
+	      for(PFCandidateCollection::const_iterator el_it = pfElectrons->begin(); el_it != pfElectrons->end(); el_it++ ){
 		int elGsfTkId = -1;
 		if (el_it->gsfTrackRef().isNonnull()) elGsfTkId = el_it->gsfTrackRef().key();
 		if (elGsfTkId==pfGsfTkId) {

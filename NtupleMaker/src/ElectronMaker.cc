@@ -13,7 +13,7 @@ Implementation:
 //
 // Original Author:  Puneeth Kalavase
 //         Created:  Fri Jun  6 11:07:38 CDT 2008
-// $Id: ElectronMaker.cc,v 1.72 2012/02/02 00:39:08 cerati Exp $
+// $Id: ElectronMaker.cc,v 1.69.2.1.2.1 2012/02/02 00:19:42 cerati Exp $
 //
 //
 
@@ -728,7 +728,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     els_z0                    ->push_back( el_track->dz()                            );		
     els_d0corr                ->push_back( -1*(el_track->dxy(beamSpot))              );
     els_z0corr                ->push_back( el_track->dz(beamSpot)                    );
-   
+    
     // Lorentz Vectors	
     //
     LorentzVector trk_p4( el_track->px(), el_track->py(), 
@@ -1059,7 +1059,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
     //unbiased revertexing, courtesy of B.Mangano
     if (el->closestCtfTrack().ctfTrack.isNonnull() && firstGoodVertex!=vertexCollection->end()) {
 	  reco::Vertex vertexNoB;
-	  reco::TrackRefVector newTkCollection;
+	  reco::TrackCollection newTkCollection;
 	  bool foundMatch(false);
 	  for(reco::Vertex::trackRef_iterator itk = firstGoodVertex->tracks_begin(); itk!= firstGoodVertex->tracks_end(); itk++){
 		bool refMatching;
@@ -1071,7 +1071,7 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 		if(refMatching && shFraction > 0.5){
 		  foundMatch = true;
 		}else{
-		  newTkCollection.push_back(itk->castTo<reco::TrackRef>());
+		  newTkCollection.push_back(*itk->get());
 		}
 	  }//track collection for vertexNoB is set
 	  if(!foundMatch) {
@@ -1109,8 +1109,6 @@ void ElectronMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	  els_ip3derr       ->push_back( -999. );
 	  
 	}
-
-
   }//electron loop
   
 
