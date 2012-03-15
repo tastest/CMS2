@@ -65,7 +65,7 @@ LIB = libCMS2NtupleMacrosLooper.so
 
 FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
 
-LIBS = $(CORELIB) $(LIB)
+LIBS = $(CORELIB) $(LIB) $(FWLIB)
 
 .PHONY: all help compile clean cms2env
 
@@ -133,6 +133,8 @@ clean: # clean up
 	$(CMSROOT)/CORE/*.so \
 	$(CMSROOT)/Tools/*.o \
     $(CMSROOT)/Tools/*.d \
+	../Tools/MiniFWLite/*.o \
+    ../Tools/MiniFWLite/*.d \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	processed_data.* *.list \
 	*.o *.d *.so *.exe LinkDef_out*; echo "Done"

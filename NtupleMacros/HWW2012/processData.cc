@@ -21,7 +21,7 @@ int main()
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
-  bool runTest   = 1;
+  bool runTest   = 0;
   bool runWW     = 0;
   bool runWWmcnlo= 0;
   bool runWWup   = 0;
@@ -41,7 +41,7 @@ int main()
   bool runDYtt   = 0;
   bool runttbar  = 0;
   bool runttbarmg= 0;
-  bool runtW     = 0;
+  bool runtW     = 1;
   bool runtWds   = 0;
   bool runEmb    = 0;
   bool runData   = 0;
@@ -143,7 +143,7 @@ int main()
     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-150_7TeV-powheg-pythia6_Fall11-PU_S6_START42_V14B-v1/V04-02-36/vvfilter/*.root");
     ProcessSample(samples, SmurfTree::hww150, integratedLumi, -1, -1); samples.clear();
 
-    samples.push_back("/nfs-7a/userdata/cerati/VBF_HToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall11-PU_S6_START42_V14B-v1/V04-02-36/vvfilter/*.root");
+    samples.push_back("/nfs-6/userdata/cerati/VBF_HToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall11-PU_S6_START42_V14B-v1/V04-02-36/vvfilter/*.root");
     samples.push_back(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Fall11-PU_S6_START42_V14B-v1/V04-02-36/DiLeptonFilter/*.root");
     samples.push_back(dataset+"/GluGluToHToWWTo2Tau2Nu_M-160_7TeV-powheg-pythia6_Fall11-PU_S6_START42_V14B-v1/V04-02-36/vvfilter/*.root");
     samples.push_back(dataset+"/GluGluToHToWWToLNuTauNu_M-160_7TeV-powheg-pythia6_Fall11-PU_S6_START42_V14B-v1/V04-02-36/vvfilter/*.root");
@@ -267,7 +267,7 @@ int main()
   if (runtW) {
     std::vector<string> samples;
     samples.push_back(dataset+"/T_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Fall11-PU_S6_START42_V14B-v1/V04-02-36/vvfilter/*.root");
-    samples.push_back("/nfs-7a/userdata/cerati/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Fall11-PU_S6_START42_V14B-v2/V04-02-36/vvfilter/*.root");
+    samples.push_back("/nfs-6/userdata/cerati/Tbar_TuneZ2_tW-channel-DR_7TeV-powheg-tauola_Fall11-PU_S6_START42_V14B-v2/V04-02-36/vvfilter/*.root");
     ProcessSample(samples, SmurfTree::tw, integratedLumi, -1, -1);
   }
 
