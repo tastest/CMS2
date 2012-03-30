@@ -7,7 +7,6 @@
 
 #include "SimpleJetCorrectionUncertainty.h"
 #include "JetCorrectorParameters.h"
-#include "FWCore/Utilities/interface/Exception.h"
 #include <vector>
 #include <string>
 
@@ -37,7 +36,8 @@ float SimpleJetCorrectionUncertainty::uncertainty(std::vector<float> fX, float f
   float result = 1.;
   int bin = mParameters->binIndex(fX);
   if (bin<0) 
-    throw cms::Exception("SimpleJetCorrectionUncertainty")<<" bin variables out of range";
+    //throw cms::Exception("SimpleJetCorrectionUncertainty")<<" bin variables out of range";
+    handleError("SimpleJetCorrectionUncertainty"," bin variables out of range"); 
   result = uncertaintyBin((unsigned)bin,fY,fDirection);
   return result;
 }
@@ -45,10 +45,12 @@ float SimpleJetCorrectionUncertainty::uncertainty(std::vector<float> fX, float f
 float SimpleJetCorrectionUncertainty::uncertaintyBin(unsigned fBin, float fY, bool fDirection) const 
 {
   if (fBin >= mParameters->size()) 
-    throw cms::Exception("SimpleJetCorrectionUncertainty")<<" wrong bin: "<<fBin<<": only "<<mParameters->size()<<" are available";
+    //throw cms::Exception("SimpleJetCorrectionUncertainty")<<" wrong bin: "<<fBin<<": only "<<mParameters->size()<<" are available";
+    handleError("SimpleJetCorrectionUncertainty"," wrong bin"); 
   const std::vector<float>& p = mParameters->record(fBin).parameters();
   if ((p.size() % 3) != 0)
-    throw cms::Exception ("SimpleJetCorrectionUncertainty")<<"wrong # of parameters: multiple of 3 expected, "<<p.size()<< " got";
+    //throw cms::Exception ("SimpleJetCorrectionUncertainty")<<"wrong # of parameters: multiple of 3 expected, "<<p.size()<< " got";    
+    handleError("SimpleJetCorrectionUncertainty"," wrong # of parameters: multiple of 3 expected"); 
   std::vector<float> yGrid,value;
   unsigned int N = p.size()/3;
   float result = -1.0;
@@ -89,7 +91,8 @@ float SimpleJetCorrectionUncertainty::linearInterpolation(float fZ, const float 
       if (fY[0] == fY[1])
         r = fY[0];
       else
-        throw cms::Exception("SimpleJetCorrectionUncertainty")<<" interpolation error";
+        //throw cms::Exception("SimpleJetCorrectionUncertainty")<<" interpolation error";
+        handleError("SimpleJetCorrectionUncertainty"," interpolation error"); 
     } 
   else   
     {
