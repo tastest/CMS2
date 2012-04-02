@@ -1,4 +1,6 @@
 #include "analysisObjects.h"
+#include "../CORE/trackSelections.h"
+#include "../CORE/electronSelections.h"
 
 #include "Math/VectorUtil.h"
 
@@ -38,7 +40,7 @@ WWJetType jetType(){
     return pfJet;
 }
 
-std::vector<JetPair>
+    std::vector<JetPair>
 getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool applyJEC, FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3, bool sortJets, bool btag)
 {
 
@@ -46,7 +48,7 @@ getJets(WWJetType type, int i_hyp, double etThreshold, double etaMax, bool apply
 
 }
 
-std::vector<JetPair>
+    std::vector<JetPair>
 getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold, double etaMax, bool applyJEC, FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3, bool sortJets, bool btag)
 {
     std::vector<JetPair> jets;
@@ -188,4 +190,77 @@ bool defaultBTag(WWJetType type, unsigned int iJet){
     return BTag(type,iJet)>2.1;
 }
 
+//
+// modified pf iso
+//
+
+void electronIsoValuePF2012(float &chiso, float &nhiso, float &emiso, const unsigned int iel, const unsigned int idavtx) {
+
+    //take dz from gsf, and if it does not exist (should always exist) take it from ctf track
+    int elgsftkid = cms2.els_gsftrkidx().at(iel);
+    int eltkid = cms2.els_trkidx().at(iel);
+    float eldz = elgsftkid >= 0 ? gsftrks_dz_dapv(elgsftkid, idavtx ).first : trks_dz_dapv(eltkid, idavtx).first;
+    float eleta = cms2.els_p4().at(iel).eta();
+
+    // init parameters
+    chiso        = 0.;
+    nhiso        = 0.;
+    emiso        = 0.;
+
+    // define vetoes
+    float coner = 0.3;
+    float dzcut = 0.1;
+    float emstripveto = 0.0;
+    float chdr = 0.0;
+    float emdr = 0.0;
+    if (cms2.els_fiduciality()[iel] & (1<<ISEB)) {
+        if (!(cms2.els_type()[iel] & (1<<ISTRACKERDRIVEN))) {
+            chdr = 0.015;
+            emdr = 0.08;
+            emstripveto = 0.0;
+        }
+    } else {
+        chdr = 0.015;
+        emdr = 0.08;
+        emstripveto = 0.0;
+    }
+
+    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
+
+        // basic preselection
+        float dR = ROOT::Math::VectorUtil::DeltaR( cms2.pfcands_p4().at(ipf), cms2.els_p4().at(iel) );
+        int pfid = abs(cms2.pfcands_particleId().at(ipf));
+        int pftkid = cms2.pfcands_trkidx().at(ipf);
+        if (dR > coner) continue;
+
+        // get isolation parameters
+        float pfpt = cms2.pfcands_p4().at(ipf).pt();
+        float pfeta = cms2.pfcands_p4().at(ipf).eta();
+        float deta = fabs(pfeta - eleta);
+
+        // neutrals
+        if (cms2.pfcands_charge().at(ipf) == 0) {
+            if (pfid == 22) {
+                if (deta <= emstripveto) continue;
+                if (dR <= emdr) continue;
+                emiso += pfpt;
+            }
+            else {
+                nhiso += pfpt;
+            }
+        }
+
+        // charged
+        else {
+            if (pfid == 11) continue;
+            if (pfid == 13) continue;
+            if (dR <= chdr) continue;
+            if (pftkid < 0) continue;
+            if(fabs(trks_dz_dapv(pftkid, idavtx).first - eldz ) >= dzcut) continue;
+             chiso += pfpt;
+        }
+
+    }
+
+}
 
