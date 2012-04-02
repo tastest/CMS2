@@ -165,7 +165,7 @@ double getMisTagRate(double jet_pt, double jet_eta, string algo){
       return 0.157854;
     }
   }
- if(algo == "TCHEL"){
+  else if(algo == "TCHEL"){
     if (jet_eta < 0.8 ) {
       if (jet_pt < 21) return 0.0493695;
       if (jet_pt < 31) return 0.0681562;
@@ -321,8 +321,45 @@ double getMisTagRate(double jet_pt, double jet_eta, string algo){
       if (jet_pt < 500)  return 0.317072;
       return 0.317072;
     }
- }
-  std::cout << "Error: eta > 2.4 value found" << endl;
+  }
+  //CSV values/functional forms are from
+  // https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/MistagFuncs.C
+  // which is linked from
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG
+  // also note that no uncertainty on this quantity is provided
+  else if( algo == "CSVL" ) {
+	if( jet_eta < 0.5 )
+	  return 242534*(((1+(0.0182863*jet_pt))+(4.50105e-05*(jet_pt*jet_pt)))/(1+(108569*jet_pt)));
+
+	else if( jet_eta >= 0.5 && jet_eta < 1.0 )
+	  return 129.938*(((1+(0.0197657*jet_pt))+(4.73472e-05*(jet_pt*jet_pt)))/(1+(55.2415*jet_pt)));
+
+	else if( jet_eta >= 1.0 && jet_eta < 1.5 )
+		return 592.214*(((1+(0.00671207*jet_pt))+(6.46109e-05*(jet_pt*jet_pt)))/(1+(134.318*jet_pt)));
+
+	else if( jet_eta >= 1.5 && jet_eta < 2.4 )
+	  return 93329*(((1+(0.0219705*jet_pt))+(3.76566e-05*(jet_pt*jet_pt)))/(1+(18245.1*jet_pt)));
+	  
+	//averaged over eta
+	else
+	  return 18168.8*(((1+(0.020356*jet_pt))+(2.73475e-05*(jet_pt*jet_pt)))/(1+(5239.42*jet_pt)));
+  }
+  else if( algo == "CSVM" ) {
+	if( jet_eta < 0.8 )
+	  return (0.00967751+(2.54564e-05*jet_pt))+(-6.92256e-10*(jet_pt*jet_pt));
+
+	else if( jet_eta >= 0.8 && jet_eta < 1.6 )
+	  return (0.00974141+(5.09503e-05*jet_pt))+(2.0641e-08*(jet_pt*jet_pt));
+
+	else if( jet_eta >= 1.6 && jet_eta < 2.4 )
+	  return (0.013595+(0.000104538*jet_pt))+(-1.36087e-08*(jet_pt*jet_pt));
+
+	//averaged over eta
+	else
+	  return (0.0113428+(5.18983e-05*jet_pt))+(-2.59881e-08*(jet_pt*jet_pt));
+  }
+
+  std::cout << "ERROR in getMisTagRate (bTagEff_BTV.cc): bad algo name or eta value" << endl;
   return 0.0;
 }
 
@@ -733,6 +770,40 @@ if(algo == "TCHEM"){
      return 1.21351;
    }
  }
+ //CSV values provided in:
+ // https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/SFlightFuncs.C
+ // from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG
+ else if( algo == "CSVL" ) {
+   if( jet_eta < 0.5 )
+	 return ((1.07536+(0.000175506*jet_pt))+(-8.63317e-07*(jet_pt*jet_pt)))+(3.27516e-10*(jet_pt*(jet_pt*jet_pt)));
+
+   if( jet_eta >= 0.5 && jet_eta < 1.0 )
+	 return ((1.07846+(0.00032458*jet_pt))+(-1.30258e-06*(jet_pt*jet_pt)))+(8.50608e-10*(jet_pt*(jet_pt*jet_pt)));
+
+   if( jet_eta >= 1.0 && jet_eta < 1.5 )
+	 return ((1.08294+(0.000474818*jet_pt))+(-1.43857e-06*(jet_pt*jet_pt)))+(1.13308e-09*(jet_pt*(jet_pt*jet_pt)));
+
+   if( jet_eta >= 1.5 && jet_eta < 2.4 )
+	 return ((1.0617+(0.000173654*jet_pt))+(-5.29009e-07*(jet_pt*jet_pt)))+(5.55931e-10*(jet_pt*(jet_pt*jet_pt)));
+
+   else //averaged over eta
+	 return ((1.0344+(0.000962994*jet_pt))+(-3.65392e-06*(jet_pt*jet_pt)))+(3.23525e-09*(jet_pt*(jet_pt*jet_pt)));
+
+ }
+ else if( algo == "CSVM" ) {
+   if( jet_eta < 0.8 )
+	 return (1.06182+(0.000617034*jet_pt))+(-1.5732e-06*(jet_pt*jet_pt))+3.02909e-10*(jet_pt*(jet_pt*jet_pt));
+
+   if( jet_eta >= 0.8 && jet_eta < 1.6 )
+	 return (1.111+(-9.64191e-06*jet_pt))+(1.80811e-07*(jet_pt*jet_pt))-5.44868e-10*(jet_pt*(jet_pt*jet_pt));
+
+   if( jet_eta >= 1.6 && jet_eta < 2.4 )
+	 return (1.08498+(-0.000701422*jet_pt))+(3.43612e-06*(jet_pt*jet_pt))-4.11794e-09*(jet_pt*(jet_pt*jet_pt));
+
+   else //averaged over eta
+	 return (1.04318+(0.000848162*jet_pt))+(-2.5795e-06*(jet_pt*jet_pt))+1.64156e-09*(jet_pt*(jet_pt*jet_pt));
+ }
+
  std::cout << "Error: eta > 2.4 value found" << endl;
  return 1.0;
 }
@@ -825,7 +896,58 @@ double getMisTagSF_Err(double jet_pt, double jet_eta, string algo){
       return 0.138731;
     }
   }
-  std::cout << "Error: eta > 2.4 value found" << endl;
+  //CSV values provided in:
+  // https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/SFlightFuncs.C
+  // from https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG
+  // For error, i'm using half the difference btwn max and min provided
+ else if( algo == "CSVL" ) {
+   float min=0,max=0;
+   const float x = jet_pt;
+   if( jet_eta < 0.5 ) {
+	 min = ((0.994425+(-8.66392e-05*x))+(-3.03813e-08*(x*x)))+(-3.52151e-10*(x*(x*x)));
+	 max = ((1.15628+(0.000437668*x))+(-1.69625e-06*(x*x)))+(1.00718e-09*(x*(x*x)));
+   }
+   else if( jet_eta >= 0.5 && jet_eta < 1.0 ) {
+	 min = ((0.998088+(6.94916e-05*x))+(-4.82731e-07*(x*x)))+(1.63506e-10*(x*(x*x)));
+	 max = ((1.15882+(0.000579711*x))+(-2.12243e-06*(x*x)))+(1.53771e-09*(x*(x*x)));
+   }
+   else if( jet_eta >= 1.0 && jet_eta < 1.5 ) {
+	 min = ((1.00294+(0.000289844*x))+(-7.9845e-07*(x*x)))+(5.38525e-10*(x*(x*x)));
+	 max = ((1.16292+(0.000659848*x))+(-2.07868e-06*(x*x)))+(1.72763e-09*(x*(x*x)));
+   }
+   else if( jet_eta >= 1.5 && jet_eta < 2.4 ) {
+	 min = ((0.979816+(0.000138797*x))+(-3.14503e-07*(x*x)))+(2.38124e-10*(x*(x*x)));
+	 max = ((1.14357+(0.00020854*x))+(-7.43519e-07*(x*x)))+(8.73742e-10*(x*(x*x)));
+   }
+   else { //averaged over eta
+	 min = ((0.956023+(0.000825106*x))+(-3.18828e-06*(x*x)))+(2.81787e-09*(x*(x*x)));
+	 max = ((1.11272+(0.00110104*x))+(-4.11956e-06*(x*x)))+(3.65263e-09*(x*(x*x)));
+   }
+   return (max-min)/2;
+ }
+ else if( algo == "CSVM" ) {
+   float min=0,max=0;
+   const float x = jet_pt;
+   if( jet_eta < 0.8 ) {
+	 min = (0.972455+(7.51396e-06*x))+(4.91857e-07*(x*x))-1.47661e-09*(x*(x*x));
+	 max = (1.15116+(0.00122657*x))+(-3.63826e-06*(x*x))+2.08242e-09*(x*(x*x));
+   }
+   else if( jet_eta >= 0.8 && jet_eta < 1.6 ) {
+	 min = (1.02055+(-0.000378856*x))+(1.49029e-06*(x*x))-1.74966e-09*(x*(x*x));
+	 max = (1.20146+(0.000359543*x))+(-1.12866e-06*(x*x))+6.59918e-10*(x*(x*x));
+   }
+   else if( jet_eta >= 1.6 && jet_eta < 2.4 ) {
+	 min = ((0.983476+(-0.000607242*x))+(3.17997e-06*(x*x)))-4.01242e-09*(x*(x*x));
+	 max = ((1.18654+(-0.000795808*x))+(3.69226e-06*(x*x)))-4.22347e-09*(x*(x*x));
+   }
+   else { //averaged over eta
+	 min = ((0.962627+(0.000448344*x))+(-1.25579e-06*(x*x)))+4.82283e-10*(x*(x*x));
+	 max = ((1.12368+(0.00124806*x))+(-3.9032e-06*(x*x)))+2.80083e-09*(x*(x*x));
+   }
+   return (max-min)/2;
+ }
+
+  std::cout << "ERROR in getMisTagSF_Err (bTagEff_BTV.cc): bad algo name or eta value" << endl;
   return 0.0;
 }
 
