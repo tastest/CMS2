@@ -965,6 +965,9 @@ float getBTagSF(const string algo, const float discriminator){
   if(algo == "TCHE"){
     return 0.00152129076412*discriminator + 0.95678084337;
   }
+  else if (algo == "CSV" ){
+    return -0.113472343605*discriminator +  1.04926963159;
+  }
   std::cout << "Error in getBTagSF: unsupported algo " << algo << endl;
   return -1.0;
 }
@@ -973,7 +976,10 @@ float getBTagSF(const string algo, const float discriminator){
 float getBTagSF_Err(const string algo){
 
   if(algo == "TCHE"){
-	return 0.04;
+    return 0.04;
+  }
+  else if (algo == "CSV" ){
+    return 0.04;
   }
   std::cout << "Error in getBTagSF_Err: unsupported algo " << algo << endl;
   return 0.0;
