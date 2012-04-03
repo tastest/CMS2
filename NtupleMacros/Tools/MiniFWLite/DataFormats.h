@@ -1,6 +1,9 @@
 #ifndef DataFormats_h
 #define DataFormats_h
 
+#include <set>
+#include <map>
+
 namespace edm
 {
     struct BranchKey {};
@@ -15,7 +18,10 @@ namespace edm
         public:
             struct Transients {};
     };
-    class BranchID {};
+    class BranchID {
+        public:
+          bool operator<(BranchID const& rhs) const {return true;}
+    };
     class EventEntryDescription {
         public:
             struct Transients {};
@@ -58,6 +64,11 @@ namespace edm
     };
     class RunID {};
     class Timestamp {};
+    class IndexIntoFile {
+        public:
+            struct Transients {};
+            struct RunOrLumiEntry {};
+    };
     template <typename T> class Transient {};
 }
 
