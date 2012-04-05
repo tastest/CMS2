@@ -17,9 +17,12 @@ const double m_W      = 80.4;
 //Center-of-Mass Energy
 const double e_com = 7000;
 
-const int nMassPts  = 2500;
-const int RangeLow  = 0;
-const int RangeHigh = 2500;
+//const int nMassPts  = 2500;
+const int nMassPts  = 200;
+//const int RangeLow  = 0;
+const int RangeLow  = 100;
+//const int RangeHigh = 2500;
+const int RangeHigh = 300;
 
 const int SENTINEL = -1000;
 const int NCHAN    = 4;

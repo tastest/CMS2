@@ -365,18 +365,16 @@ bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
 
   // electron channel
   if( lepType == 0 ){
-    if( passUnprescaledHLTTriggerPattern("Ele10_CaloIdL_CaloIsoVL_TrkIdVL_TrkIsoVL_HT200_v") )         return true; // 160329-164236
-    if( passUnprescaledHLTTriggerPattern("Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_HT200_v") )          return true; // 165088-166967
-    if( passUnprescaledHLTTriggerPattern("Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_HT250_v") )          return true; // 167039-173198
-    if( passUnprescaledHLTTriggerPattern("Ele15_CaloIdT_CaloIsoVL_TrkIdT_TrkIsoVL_HT250_PFMHT25_v") )  return true; // 173199-175648  --> remains at 5E33
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_CentralTriJet30_v") )                     return true; // 160329-164236
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralJet30_v") )                     return true; // 165088-165887
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralJet30_v") )    return true; // 165922-177730
   }
 
   // muon channel
   else if( lepType == 1 ){
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu8_HT200_v") )            return true;   // 160329-164236
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu15_HT200_v") )           return true;   // 165088-166967
-    if( passUnprescaledHLTTriggerPattern("HLT_HT250_Mu15_PFMHT20_v") )   return true;   // 167039-173198
-    if( passUnprescaledHLTTriggerPattern("HLT_HT250_Mu15_PFMHT40_v") )   return true;   // 173199-175648  --> remains at 5E33
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TriCentralJet30_v") )                   return true;   // 160329-165887
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_TriCentralJet30_v") )                return true;   // 165922-173198
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;   // 173212-177730 
   }
 
   else{

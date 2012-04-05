@@ -26,6 +26,7 @@
 #include "TTree.h"
 #include "TCanvas.h"
 #include "TVirtualPad.h"
+#include "TPaveText.h"
 #include "TString.h"
 #include <fstream>
 #include <algorithm>
@@ -112,7 +113,8 @@ vector<TString> getUncommonBranches(vector<TString> aliasnames,
 
 //-----------------------------------------------------------------------
 
-void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true", bool drawWithErrors="true") {
+void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true", bool drawWithErrors="true",
+		    double ksMinThreshold = 0.001) {
   
   //TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
   
@@ -224,19 +226,19 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     TString histtitle = alias + ", " + fname1;
     h1->SetTitle(histtitle.Data());
     h1->Draw();
-    c1->SaveAs("diff.eps(");
+    c1->SaveAs("diff.ps(");
     c1->SetLogy();
     
     //if the canvas has been divided, want to set the logy
-    for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
-      if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+    for(int ii = 0; ii < c1->GetListOfPrimitives()->GetSize(); ii++) {
+      if(string(c1->GetListOfPrimitives()->At(ii)->ClassName()) != "TVirtualPad")
 	continue;
-      TVirtualPad *vPad = (TVirtualPad*)(c1->GetListOfPrimitives()->At(i));
+      TVirtualPad *vPad = (TVirtualPad*)(c1->GetListOfPrimitives()->At(ii));
       if(vPad != NULL) {
 	vPad->SetLogy();
       }
     }
-    c1->SaveAs("diff.eps(");
+    c1->SaveAs("diff.ps(");
     c1->SetLogy(0);
   }
 
@@ -282,17 +284,17 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     TString histtitle = alias + ", " + fname2;
     h2->SetTitle(histtitle.Data());
     h2->Draw();
-    c1->SaveAs("diff.eps(");
+    c1->SaveAs("diff.ps(");
     c1->SetLogy();
     //if the canvas has been divided, want to set the logy
-    for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
-      if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+    for(int ii = 0; ii < c1->GetListOfPrimitives()->GetSize(); ii++) {
+      if(string(c1->GetListOfPrimitives()->At(ii)->ClassName()) != "TVirtualPad")
 	continue;
-      TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+      TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(ii);
       if(vPad != NULL)
 	vPad->SetLogy();
     }
-    c1->SaveAs("diff.eps(");
+    c1->SaveAs("diff.ps(");
     c1->SetLogy(0);
   }
 
@@ -305,16 +307,16 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     cout << "Comparing Branch: " << alias << endl;
     TString hist1name = "h1_"+ alias;
     TString hist2name = "h2_"+ alias;
-    TString command1 = (alias)+">>"+hist1name;
-    TString command2 = (alias)+">>"+hist2name;
+    TString command1 = (alias)+"+9990.*((abs("+alias +"+9999)<1)*1.)>>"+hist1name;
+    TString command2 = (alias)+"+9990.*((abs("+alias +"+9999)<1)*1.)>>"+hist2name;
     TBranch *branch = tree2->GetBranch(tree2->GetAlias(alias));
     TString branchname(branch->GetName());
         
     if(branchname.Contains("p4") ) {
       hist1name = "h1_"+ alias + "_Pt";
       hist2name = "h2_"+ alias + "_Pt";
-      command1 = alias + ".Pt()>>"+hist1name;
-      command2 = alias + ".Pt()>>"+hist2name;
+      command1 = alias + ".pt()+14130.*((abs("+alias+".pt()-14140.7)<1)*1.)>>"+hist1name;
+      command2 = alias + ".pt()+14130.*((abs("+alias+".pt()-14140.7)<1)*1.)>>"+hist2name;
     }
     
     tree1->Draw(command1.Data());
@@ -340,9 +342,29 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     }
     c1->Clear();
 
-    if(areHistosTheSame(h1, h2) && doNotSaveSameHistos)
+    bool histos_theSame = areHistosTheSame(h1, h2);
+    if(histos_theSame && doNotSaveSameHistos)
       continue;
     
+    if (! histos_theSame){
+      double min1 = h1->GetXaxis()->GetXmin();
+      double min2 = h2->GetXaxis()->GetXmin(); 
+      double max1 = h1->GetXaxis()->GetXmax();
+      double max2 = h2->GetXaxis()->GetXmax();
+
+      double hmin = min1 > min2 ? min2 : min1;
+      double hmax = max1 > max2 ? max1 : max2;
+
+      command1 += Form("_fix(100,%f,%f)", hmin, hmax);
+      command2 += Form("_fix(100,%f,%f)", hmin, hmax);
+      hist1name += "_fix";
+      hist2name += "_fix";
+      tree1->Draw(command1.Data());
+      tree2->Draw(command2.Data());
+      h1 = (TH1F*)gDirectory->Get(hist1name.Data());
+      h2 = (TH1F*)gDirectory->Get(hist2name.Data());
+   }
+
     if(drawWithErrors) {
       h1->TH1F::Sumw2();
       h2->TH1F::Sumw2();
@@ -352,6 +374,19 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
     h1->Scale(1./h1->GetEntries());
     h2->Scale(1./h2->GetEntries());
 
+
+    double bDiff = 0;
+    unsigned int nX1 = h1->GetNbinsX();
+    for(unsigned int iB=0; iB<=nX1+1; ++iB){
+      if(h1->GetBinError(iB)==0 && h1->GetBinContent(iB)!=0) h1->SetBinError(iB,1e-3*fabs(h1->GetBinContent(iB)));
+      if(h2->GetBinError(iB)==0 && h2->GetBinContent(iB)!=0) h2->SetBinError(iB,1e-3*fabs(h2->GetBinContent(iB)));
+      bDiff +=fabs(h1->GetBinContent(iB) - h2->GetBinContent(iB));
+    }
+    double ksProb = 0;
+    if (bDiff == 0) ksProb = 1;
+    else ksProb = h1->KolmogorovTest(h2);
+
+    if (bDiff ==0 || ksProb > ksMinThreshold ) continue;
 
     if(h1->GetNbinsX() != h2->GetNbinsX() ) {
       cout << "Branch " << v_commonBranches.at(i) << " not the same between the 2 files" 
@@ -381,32 +416,36 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
 	c1->cd(2);
 	h2->Draw("e");
       }
-            
+      TPaveText ksPt(0,0, 0.35, 0.05, "NDC");
+      ksPt.AddText(Form("P(KS)=%g, diffBins=%g, eblk %g ered %g",ksProb, bDiff, h1->GetEntries(), h2->GetEntries()));
+      ksPt.Draw();
+
+
       if(i < v_commonBranches.size() - 1) {
-	c1->SaveAs("diff.eps(");
+	c1->SaveAs("diff.ps(");
 	c1->SetLogy();
 	//if the canvas has been divided, want to set the logy
-	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
-	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	for(int ii = 0; ii < c1->GetListOfPrimitives()->GetSize(); ii++) {
+	  if(string(c1->GetListOfPrimitives()->At(ii)->ClassName()) != "TVirtualPad")
 	    continue;
-	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(ii);
 	  if(vPad != NULL)
 	    vPad->SetLogy();
 	}
-	c1->SaveAs("diff.eps(");
+	c1->SaveAs("diff.ps(");
 	c1->SetLogy(0);
       } else {
 	cout << "done" << endl;
-	c1->SaveAs("diff.eps(");
+	c1->SaveAs("diff.ps(");
 	c1->SetLogy();
-	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
-	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	for(int ii = 0; ii < c1->GetListOfPrimitives()->GetSize(); ii++) {
+	  if(string(c1->GetListOfPrimitives()->At(ii)->ClassName()) != "TVirtualPad")
 	    continue;
-	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(ii);
 	  if(vPad != NULL)
 	    vPad->SetLogy();
 	}
-	c1->SaveAs("diff.eps)");
+	c1->SaveAs("diff.ps)");
 	c1->SetLogy(0);
       } 
       continue;
@@ -466,39 +505,42 @@ void compareNtuples(TString file1, TString file2, bool doNotSaveSameHistos="true
 	  h2->Draw("samese");
 	}
 
-
       }
+      TPaveText ksPt(0,0, 0.35, 0.05, "NDC");
+      ksPt.AddText(Form("P(KS)=%g, diffBins=%g, eblk %g ered %g",ksProb, bDiff, h1->GetEntries(), h2->GetEntries()));
+      ksPt.Draw();
+      
         
       if(i < v_commonBranches.size() - 1) {
-	c1->SaveAs("diff.eps(");
+	c1->SaveAs("diff.ps(");
 	c1->SetLogy();
 	//if the canvas has been divided, want to set the logy
-	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
-	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	for(int ii = 0; ii < c1->GetListOfPrimitives()->GetSize(); ii++) {
+	  if(string(c1->GetListOfPrimitives()->At(ii)->ClassName()) != "TVirtualPad")
 	    continue;
-	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(ii);
 	  if(vPad != NULL)
 	    vPad->SetLogy();
 	}
-	c1->SaveAs("diff.eps(");
+	c1->SaveAs("diff.ps(");
 	c1->SetLogy(0);
       } else {
 	cout << "done" << endl;
-	c1->SaveAs("diff.eps(");
+	c1->SaveAs("diff.ps(");
 	c1->SetLogy();
-	for(int i = 0; i < c1->GetListOfPrimitives()->GetSize(); i++) {
-	  if(string(c1->GetListOfPrimitives()->At(i)->ClassName()) != "TVirtualPad")
+	for(int ii = 0; ii < c1->GetListOfPrimitives()->GetSize(); ii++) {
+	  if(string(c1->GetListOfPrimitives()->At(ii)->ClassName()) != "TVirtualPad")
 	    continue;
-	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(i);
+	  TVirtualPad *vPad = (TVirtualPad*)c1->GetListOfPrimitives()->At(ii);
 	  if(vPad != NULL)
 	    vPad->SetLogy();
 	}
-	c1->SaveAs("diff.eps)");
+	c1->SaveAs("diff.ps)");
 	c1->SetLogy(0);
       }
     
   }//for loop
-    
-  
+   
+  //c1->SaveAs("diff.ps)");  
 }
   
