@@ -1,6 +1,9 @@
 #include "MT2.h"
 #include "math.h"
 #include "Math/VectorUtil.h"
+#include "iostream"
+
+using namespace std;
 
 ///////////////////////////////////////////////////////////////
 // MT2 Calculated with the Bisection method from Cheng & Han //

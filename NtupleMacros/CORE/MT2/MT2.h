@@ -11,9 +11,10 @@
 #ifndef MT2_H
 #define MT2_H
 
-#include "MT2Utility.cc"
+#include "MT2Utility.h"
 #include "Math/LorentzVector.h"
 #include "TMath.h"
+#include <vector>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
@@ -39,7 +40,7 @@ double MT2J(
   const float,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
+  const std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
   float = 0.0,
   enum_mt2_method = BISECT,
   bool = false
