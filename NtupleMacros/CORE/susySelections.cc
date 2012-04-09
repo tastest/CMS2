@@ -337,6 +337,22 @@ TString triggerName(TString triggerPattern){
 
 
 //---------------------------------------------
+// Check if trigger passes
+//---------------------------------------------
+
+bool passHLTTriggerPattern(const char* arg){
+
+  TString HLTTriggerPattern(arg);
+  TString HLTTrigger = triggerName( HLTTriggerPattern );
+
+  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
+    return false;
+  }
+  return passHLTTrigger( HLTTrigger );
+}
+
+
+//---------------------------------------------
 // Check if trigger is unprescaled and passes
 //---------------------------------------------
 bool passUnprescaledHLTTriggerPattern(const char* arg){

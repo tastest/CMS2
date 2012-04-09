@@ -63,7 +63,7 @@ bool ZVetoGeneral( float ptcut = 20 , float minmass = 76 ,  float maxmass = 106 
 // Check if trigger is unprescaled and passes
 //---------------------------------------------
 bool passUnprescaledHLTTriggerPattern(const char* arg);
-
+bool passHLTTriggerPattern(const char* arg);
 
 #endif
 
