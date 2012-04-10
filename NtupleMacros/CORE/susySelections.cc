@@ -659,6 +659,28 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
     
 }
 
+
+bool passSUSYTrigger2012_v1( bool isData , int hypType ) {
+
+  //mm
+  if( hypType == 0 ){
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )     return true;
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TkMu8_v" ) )   return true;
+  }
+  
+  //em
+  else if( hypType == 1 || hypType == 2 ){
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+    if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+ }
+  
+  //ee
+  else if( hypType == 3 ){
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+  }
+}
+
+
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection
 /*****************************************************************************************/
