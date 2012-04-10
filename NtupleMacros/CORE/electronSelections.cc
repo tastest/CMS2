@@ -1367,3 +1367,77 @@ double electron_d0PV_mindz(unsigned int index){
     return dxyPV;
 }
 
+//
+// 2012 PF Isolation
+//
+
+void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx)
+{
+
+    // isolation sums
+    pfiso_ch = 0.0;
+    pfiso_em = 0.0; 
+    pfiso_nh = 0.0;
+       
+    // loop on pfcandidates
+    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
+            
+        // skip electrons and muons
+        const int particleId = abs(cms2.pfcands_particleId()[ipf]);
+        if (particleId == 11)    continue;
+        if (particleId == 13)    continue;
+    
+        // deltaR between electron and cadidate
+        const float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4()[ipf], cms2.els_p4()[iel]);
+        if (dR > R)              continue;
+
+        // charged hadrons closest vertex
+        // should be the primary vertex
+        if (particleId == 211) {
+            int pfVertexIndex = chargedHadronVertex(ipf);
+            if (pfVertexIndex != ivtx) continue;
+        }
+
+        // endcap region
+        if (!(cms2.els_fiduciality()[iel] & (1<<ISEB))) {
+            if (particleId == 211 && dR <= 0.015)   continue;
+            if (particleId == 22  && dR <= 0.08)    continue;
+        }
+
+        // add to isolation sum
+        if (particleId == 211)      pfiso_ch += cms2.pfcands_p4()[ipf].pt();
+        if (particleId == 22)       pfiso_em += cms2.pfcands_p4()[ipf].pt();
+        if (particleId == 130)      pfiso_nh += cms2.pfcands_p4()[ipf].pt();
+
+    }
+
+}
+
+int chargedHadronVertex(const unsigned int ipf) 
+{
+
+    double  dzmin = 10000;
+    bool    found = false;
+    int     iVertex = -1;
+
+    // loop on vertices
+    for (unsigned int index = 0; index < cms2.vtxs_position().size(); ++index) {
+
+        // find the dz
+        const unsigned int itrk = cms2.pfcands_trkidx()[ipf];
+        double dz = fabs(cms2.trks_vertex_p4()[itrk].z() - cms2.vtxs_position()[index].z());
+
+        // find the closest dz
+        if (dz < dzmin) {
+            dzmin = dz;
+            iVertex = index;
+            found = true;
+        }
+    }
+
+    if (found) return iVertex;
+    return -1;
+
+}
+
+

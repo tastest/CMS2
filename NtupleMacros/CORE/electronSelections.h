@@ -1037,5 +1037,13 @@ double electron_dzPV_smurfV3(unsigned int index);
 // dz
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv);
 
+//
+// 2012 PF Iso
+//
+
+void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx);
+int chargedHadronVertex(const unsigned int ipf);
+
+
 #endif
 
