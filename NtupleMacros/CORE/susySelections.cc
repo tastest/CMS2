@@ -678,6 +678,8 @@ bool passSUSYTrigger2012_v1( bool isData , int hypType ) {
   else if( hypType == 3 ){
     if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
   }
+
+  return false;
 }
 
 
