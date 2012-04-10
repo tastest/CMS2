@@ -426,10 +426,10 @@ void LeptonTreeMaker::MakeElectronTagAndProbeTree(LeptonTree &leptonTree, const 
             leptonTree.eventSelection_ = LeptonTree::ZeeTagAndProbe;
 
             // fill the tree - probe specific variables
-            leptonTree.probe_       = cms2.mus_p4()[probe];
-            leptonTree.qProbe_      = cms2.mus_charge()[probe];
-            leptonTree.tag_         = cms2.mus_p4()[tag];
-            leptonTree.qTag_        = cms2.mus_charge()[tag];
+            leptonTree.probe_       = cms2.els_p4()[probe];
+            leptonTree.qProbe_      = cms2.els_charge()[probe];
+            leptonTree.tag_         = cms2.els_p4()[tag];
+            leptonTree.qTag_        = cms2.els_charge()[tag];
 
             leptonTree.tagAndProbeMass_ = (cms2.els_p4()[probe] + cms2.els_p4()[tag]).M();
             //leptonTree.leadingAwayJetPt_ =  GetAwayJetPt(cms2.els_p4()[probe], cms2.els_p4()[tag]);

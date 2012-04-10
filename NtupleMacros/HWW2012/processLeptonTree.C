@@ -7,7 +7,7 @@ void test()
 
     processLeptonTree("test.root", SmurfDataType::data, 
         "/smurf/dlevans/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/merged_ntuple_190459_0.root", 
-        true, "nogoodrunlist");
+        true, "");
 
 }
 
@@ -21,8 +21,8 @@ void processLeptonTree(TString outfileid, enum SmurfDataType::DataType sample, T
 
     gSystem->Load("libCMS2NtupleMacrosCORE.so");
     gSystem->Load("libCMS2NtupleMacrosLooper.so");
-    //gSystem->Load("libCMS2NtupleMacrosTools.so");
-    gSystem->Load("libMiniFWLite.so");
+    gSystem->Load("/tas/dlevans/HWW2012/CMSSW_5_2_3/src/CMS2/NtupleMacros/HWW2012/libMiniFWLite.so");
+
     //
     // const config parameters
     //

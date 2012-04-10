@@ -21,6 +21,7 @@
 
 
 class TChain;
+typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVectorD;
 
 class LeptonTreeMaker
 {
@@ -48,8 +49,7 @@ class LeptonTreeMaker
 
     private:
 
-bool loosefo(unsigned int index);
-
+        bool loosefo(unsigned int index);
 
         //
         // efficiencies
