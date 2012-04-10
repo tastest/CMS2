@@ -986,7 +986,7 @@ bool electronId_smurf_v2ss(const unsigned int index);
 //bool electronId_extra(const unsigned int index);
 
 // WP2012
-electronIdComponent_t electronId_WP2012(const unsigned int index, const vbtf_tightness tightness);
+electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_tightness tightness);
 
 // "VBTF" id
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
