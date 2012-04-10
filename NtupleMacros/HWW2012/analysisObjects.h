@@ -61,11 +61,5 @@ double BTag(LorentzVector jetP4);
 double BTag(WWJetType type, unsigned int iJet);
 bool defaultBTag(WWJetType type, unsigned int iJet);
 
-//
-// new PFIso
-//
-
-void electronIsoValuePF2012(float &chiso, float &nhiso, float &emiso, const unsigned int iel, const unsigned int idavtx);
-
 #endif
 
