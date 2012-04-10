@@ -64,6 +64,7 @@ bool ZVetoGeneral( float ptcut = 20 , float minmass = 76 ,  float maxmass = 106 
 //---------------------------------------------
 bool passUnprescaledHLTTriggerPattern(const char* arg);
 bool passHLTTriggerPattern(const char* arg);
+int passTriggerPrescale(const char* arg);
 
 #endif
 

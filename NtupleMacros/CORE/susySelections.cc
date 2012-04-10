@@ -374,6 +374,34 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
 }
 
 //---------------------------------------------
+// function returns:
+// -1: no matching trigger found
+//  0: trigger not passed
+//  1: trigger passed, un-prescaled
+//  N: trigger passed, prescale N
+//---------------------------------------------
+
+int passTriggerPrescale(const char* arg){
+
+  //Find exact trigger name
+  TString HLTTriggerPattern(arg);
+  TString HLTTrigger = triggerName( HLTTriggerPattern );
+
+  //Return -1 if no matching trigger found
+  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND") )  return -1;
+ 
+  //Return 0 if trigger didn't pass
+  if( !passHLTTrigger( HLTTrigger ) ) return 0;
+
+  //Return 1 if trigger passes and is unprescaled
+  if( passUnprescaledHLTTrigger( HLTTrigger ) ) return 1;
+
+  //Return prescale if prescaled trigger passes
+  return HLT_prescale( HLTTrigger );
+
+}
+
+//---------------------------------------------
 // single muon triggers for lljj bump search
 //---------------------------------------------
 
