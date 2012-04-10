@@ -950,6 +950,24 @@ enum ElectronIDComponent {
   ELEID_IP,
 };
 
+namespace wp2012 {
+enum ElectronIDComponentWP2012 {
+    DETAIN          = (1<<0),
+    DPHIIN          = (1<<1),
+    SIGMAIETAIETA   = (1<<2),
+    HOE             = (1<<3),
+    OOEMOOP         = (1<<4),
+    D0VTX           = (1<<5),
+    DZVTX           = (1<<6),
+    ISO             = (1<<7),
+    VTXFIT          = (1<<8),
+    MHITS           = (1<<9)
+};
+electronIdComponent_t PassAllWP2012Cuts = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
+                                | OOEMOOP | D0VTX | DZVTX | ISO | VTXFIT | MHITS;
+};
+
+
 // master selection function
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
 bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true, int vertex_index = -1);
@@ -966,6 +984,9 @@ bool electronId_smurf_v2ss(const unsigned int index);
 // "cand" electron id
 //bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 //bool electronId_extra(const unsigned int index);
+
+// WP2012
+electronIdComponent_t electronId_WP2012(const unsigned int index, const vbtf_tightness tightness);
 
 // "VBTF" id
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
@@ -1043,6 +1064,13 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
 
 void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx);
 int chargedHadronVertex(const unsigned int ipf);
+
+//
+// 2012 cut based ID
+//
+
+
+
 
 
 #endif

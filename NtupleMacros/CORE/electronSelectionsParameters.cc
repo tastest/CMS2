@@ -10,7 +10,7 @@
 
 
 
-void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutsee, std::vector<double> &cutooemoop, std::vector<double> &cutd0vtx, std::vector<double> &cutdzvtx, std::vector<bool> &cutvtxfit, std::vector<unsigned int> &cutmhit, std::vector<double> &cutrelisohighpt, std::vector<double> &cutrelisolowpt)
+void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutsee, std::vector<double> &cutooemoop, std::vector<double> &cutd0vtx, std::vector<double> &cutdzvtx, std::vector<bool> &cutvtxfit, std::vector<int> &cutmhit, std::vector<double> &cutrelisohighpt, std::vector<double> &cutrelisolowpt)
 {
 
     switch (tightness) {
@@ -24,7 +24,7 @@ void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta
                 double d0Vtx_tmp[2]         = {0.040, 0.040};
                 double dzVtx_tmp[2]         = {0.200, 0.200};
                 bool vtxFit_tmp[2]          = {false, false};
-                unsigned int mHits_tmp[2]   = {999, 999};
+                int mHits_tmp[2]            = {999, 999};
                 double isoHi_tmp[2]         = {0.150, 0.150};
                 double isoLo_tmp[2]         = {0.150, 0.150};
                 eidAssign(cutdeta,          dEtaIn_tmp, 2);
@@ -50,7 +50,7 @@ void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta
                 double d0Vtx_tmp[2]         = {0.020, 0.020};
                 double dzVtx_tmp[2]         = {0.200, 0.200};
                 bool vtxFit_tmp[2]          = {true, true};
-                unsigned int mHits_tmp[2]   = {1, 1};
+                int mHits_tmp[2]            = {1, 1};
                 double isoHi_tmp[2]         = {0.150, 0.150};
                 double isoLo_tmp[2]         = {0.150, 0.100};
                 eidAssign(cutdeta,          dEtaIn_tmp, 2);
@@ -76,7 +76,7 @@ void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta
                 double d0Vtx_tmp[2]         = {0.020, 0.020};
                 double dzVtx_tmp[2]         = {0.100, 0.100};
                 bool vtxFit_tmp[2]          = {true, true};
-                unsigned int mHits_tmp[2]   = {1, 1};
+                int mHits_tmp[2]            = {1, 1};
                 double isoHi_tmp[2]         = {0.150, 0.150};
                 double isoLo_tmp[2]         = {0.150, 0.100};
                 eidAssign(cutdeta,          dEtaIn_tmp, 2);
@@ -102,7 +102,7 @@ void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta
                 double d0Vtx_tmp[2]         = {0.020, 0.020};
                 double dzVtx_tmp[2]         = {0.100, 0.100};
                 bool vtxFit_tmp[2]          = {true, true};
-                unsigned int mHits_tmp[2]   = {0, 0};
+                int mHits_tmp[2]            = {0, 0};
                 double isoHi_tmp[2]         = {0.100, 0.100};
                 double isoLo_tmp[2]         = {0.100, 0.070};
                 eidAssign(cutdeta,          dEtaIn_tmp, 2);
@@ -2436,7 +2436,7 @@ void eidAssign(std::vector<bool> &cutarr, bool cutvals[], unsigned int size)
     }
 }
 
-void eidAssign(std::vector<unsigned int> &cutarr, unsigned int cutvals[], unsigned int size)
+void eidAssign(std::vector<int> &cutarr, int cutvals[], unsigned int size)
 {
     cutarr.clear();
     for (unsigned int i = 0; i < size; ++i) {

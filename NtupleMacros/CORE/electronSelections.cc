@@ -730,6 +730,86 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
   return accept;
 }
 
+// WP2012
+electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_tightness tightness)
+{
+
+
+    // set return value
+    unsigned int mask = 0;
+
+    // cut values
+    std::vector<double> dEtaInThresholds;
+    std::vector<double> dPhiInThresholds;
+    std::vector<double> sigmaIEtaIEtaThresholds;
+    std::vector<double> hoeThresholds;
+    std::vector<double> ooemoopThresholds;
+    std::vector<double> d0VtxThresholds;
+    std::vector<double> dzVtxThresholds;
+    std::vector<bool> vtxFitThresholds;
+    std::vector<int> mHitsThresholds;
+    std::vector<double> isoHiThresholds;
+    std::vector<double> isoLoThresholds;
+
+    // set cut values
+    eidGetWP2012(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, sigmaIEtaIEtaThresholds, 
+                    ooemoopThresholds, d0VtxThresholds, dzVtxThresholds, vtxFitThresholds, mHitsThresholds, 
+                    isoHiThresholds, isoLoThresholds);
+
+    // useful kinematic variables
+    unsigned int det = ((cms2.els_fiduciality()[index] & (1<<ISEB)) == (1<<ISEB)) ? 0 : 1;
+    float etaAbs = fabs(cms2.els_etaSC()[index]);
+    float pt     = cms2.els_p4()[index].pt();
+
+    // get effective area
+    float AEff = 0.18;
+    if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.19;
+    if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.21;
+    if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.38;
+    if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.61;
+    if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.73;
+    if (etaAbs > 2.4) AEff = 0.78;
+
+    // pf iso
+    // calculate from the ntuple for now...
+    float pfiso_ch = 0.0;
+    float pfiso_em = 0.0;
+    float pfiso_nh = 0.0;
+    electronIsoValuePF2012(pfiso_ch, pfiso_em, pfiso_nh, 0.3, index, 0);
+
+    // rho
+    float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
+    float pfiso = (pfiso_ch + pfiso_n) / pt;   
+
+    // |1/E - 1/p|
+    float ooemoop = fabs( (1.0/cms2.els_ecalEnergy()[index]) - (1.0/cms2.els_p4In()[index].R()) );
+
+    // MIT conversion vtx fit
+    bool vtxFitConversion = isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
+
+    // d0
+    float d0vtx = electron_d0PV_smurfV3(index);
+    float dzvtx = electron_dzPV_smurfV3(index);
+ 
+    // test cuts
+    if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[det])             mask |= wp2012::DETAIN;
+    if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[det])             mask |= wp2012::DPHIIN;
+    if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[det])     mask |= wp2012::SIGMAIETAIETA;
+    if (cms2.els_hOverE()[index] < hoeThresholds[det])                      mask |= wp2012::HOE;
+    if (ooemoop < ooemoopThresholds[det])                                   mask |= wp2012::OOEMOOP;
+    if (d0vtx < d0VtxThresholds[det])                                       mask |= wp2012::D0VTX;
+    if (dzvtx < d0VtxThresholds[det])                                       mask |= wp2012::DZVTX;
+    if (!vtxFitThresholds[det] || !vtxFitConversion)                        mask |= wp2012::VTXFIT;
+    if (cms2.els_exp_innerlayers()[index] <= mHitsThresholds[det])          mask |= wp2012::MHITS;
+    if (pt >= 20.0 && pfiso < isoHiThresholds[det])                         mask |= wp2012::ISO;
+    if (pt < 20.0 && pfiso < isoLoThresholds[det])                          mask |= wp2012::ISO;
+
+    // return the mask
+    return mask;
+
+}
+
 // VBTF stuff
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
