@@ -228,7 +228,7 @@ int leptonOrTauIsFromW(int idx, int id, bool alsoSusy) {
 //print event info
 /*****************************************************************************************/
 void printEventInfo(){
-  cout << cms2.evt_dataset() << endl;
+  //cout << cms2.evt_dataset() << endl;
   cout << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
 }
 

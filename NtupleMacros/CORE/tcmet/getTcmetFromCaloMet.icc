@@ -78,7 +78,7 @@ void printMet(string label, float tcmet_x_pre, float tcmet_y_pre, float tcmet_x 
 void printHeader(ostream& ostr){
 
   ostr << endl;
-  ostr << evt_dataset() << endl;
+  //ostr << evt_dataset() << endl;
   ostr << evt_run() << " " << evt_lumiBlock() << " " << evt_event() << endl;
 
   ostr << "|" << setw(12) << "label"   << setw(4)
