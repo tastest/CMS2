@@ -734,7 +734,6 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
 electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_tightness tightness)
 {
 
-
     // set return value
     unsigned int mask = 0;
 
@@ -783,7 +782,7 @@ electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_t
     float pfiso = (pfiso_ch + pfiso_n) / pt;   
 
     // |1/E - 1/p|
-    float ooemoop = fabs( (1.0/cms2.els_ecalEnergy()[index]) - (1.0/cms2.els_p4In()[index].R()) );
+    float ooemoop = fabs( (1.0/cms2.els_ecalEnergy()[index]) - (cms2.els_eOverPIn()[index]/cms2.els_ecalEnergy()[index]) );
 
     // MIT conversion vtx fit
     bool vtxFitConversion = isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
