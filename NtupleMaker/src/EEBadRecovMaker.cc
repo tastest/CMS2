@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// $Id: EEBadRecovMaker.cc,v 1.5 2012/03/15 22:02:08 dbarge Exp $
+// $Id: EEBadRecovMaker.cc,v 1.5.2.1 2012/04/11 10:41:55 jaehyeok Exp $
 
 // C++
 #include <memory>
@@ -14,7 +14,7 @@
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 
 //#include "DataFormats/AnomalousEcalDataFormats/interface/AnomalousECALVariables.h"
-#include "DataFormats/METReco/interface/AnomalousECALVariables.h"
+//#include "DataFormats/METReco/interface/AnomalousECALVariables.h"
 
 
 using namespace std;
@@ -28,7 +28,7 @@ EEBadRecovMaker::EEBadRecovMaker(const edm::ParameterSet& iConfig) {
   maxNrRecHits_ = iConfig.getParameter <unsigned int>  ("MaxNrRecHits"  );
 
   //
-  produces<bool> ("ecalnoisedeadEcalCluster") .setBranchAlias("ecalnoise_deadEcalCluster" );
+  //produces<bool> ("ecalnoisedeadEcalCluster") .setBranchAlias("ecalnoise_deadEcalCluster" ); // commented out for 51X 
   produces<bool> ("ecalnoiseeeBadRecov"    ) .setBranchAlias("ecalnoise_eeBadRecov"     );
   produces<bool> ("ecalnoiseeeRedRecHits"  ).setBranchAlias ("ecalnoise_eeRedRecHits"   );
 
@@ -42,7 +42,7 @@ void EEBadRecovMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //////////////////////////
   // Ecal Boundary Energy //
   //////////////////////////
-
+/*
   InputTag ecalAnomalousFilterTag("BE1214","anomalousECALVariables");
   Handle<AnomalousECALVariables> anomalousECALvarsHandle;
   iEvent.getByLabel( ecalAnomalousFilterTag, anomalousECALvarsHandle );
@@ -53,7 +53,7 @@ void EEBadRecovMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     cout << "anomalous ECAL Vars not valid/found" << endl;
   }
   bool isDeadEcalCluster = anomalousECALvars.isDeadEcalCluster();
-
+*/ // commented out for 51X 
 
   ////////////////
   // EEBadRecov // 
@@ -106,9 +106,10 @@ void EEBadRecovMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //////////////////////////
   // Ecal Boundary Energy //
   //////////////////////////
+/*
   auto_ptr <bool> ecalnoise_deadEcalCluster(new bool (isDeadEcalCluster) );
   iEvent.put(ecalnoise_deadEcalCluster  , "ecalnoisedeadEcalCluster"  );
-
+*/ // commented out for 51X 
 
   ////////////////
   // EEBadRecov //
