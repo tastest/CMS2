@@ -1064,6 +1064,7 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
 
 void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx);
 int chargedHadronVertex(const unsigned int ipf);
+float electronIsoValuePF2012_FastJetEffArea( int index , float conesize = 0.3 , int ivtx = 0);
 
 //
 // 2012 cut based ID

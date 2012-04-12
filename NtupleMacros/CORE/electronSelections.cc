@@ -809,6 +809,35 @@ electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_t
 
 }
 
+float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int ivtx ){
+
+    float etaAbs = fabs(cms2.els_etaSC()[index]);
+    float pt     = cms2.els_p4()[index].pt();
+
+    // get effective area
+    float AEff = 0.18;
+    if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.19;
+    if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.21;
+    if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.38;
+    if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.61;
+    if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.73;
+    if (etaAbs > 2.4) AEff = 0.78;
+
+    // pf iso
+    // calculate from the ntuple for now...
+    float pfiso_ch = 0.0;
+    float pfiso_em = 0.0;
+    float pfiso_nh = 0.0;
+    electronIsoValuePF2012(pfiso_ch, pfiso_em, pfiso_nh, conesize, index, 0);
+
+    // rho
+    float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
+    float pfiso = (pfiso_ch + pfiso_n) / pt;   
+
+    return pfiso;
+}
+
 // VBTF stuff
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
