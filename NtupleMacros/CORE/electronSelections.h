@@ -963,7 +963,7 @@ enum ElectronIDComponentWP2012 {
     VTXFIT          = (1<<8),
     MHITS           = (1<<9)
 };
-electronIdComponent_t PassAllWP2012Cuts = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
+static const electronIdComponent_t PassAllWP2012Cuts = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
                                 | OOEMOOP | D0VTX | DZVTX | ISO | VTXFIT | MHITS;
 };
 
