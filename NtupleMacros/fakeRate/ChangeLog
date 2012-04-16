@@ -1,3 +1,23 @@
+04-16-2012 - Ryan Kelley 
+    * Tagged with VFR12-00-00 
+    * Initial commit of updates for 2012
+    * Added triggers for 2012
+        - HLT_ele17_CaloIdL_CaloIsoVL_v*
+        - HLT_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+        - HLT_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+        - HLT_ele8_CaloIdL_CaloIsoVL_v*
+        - HLT_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+        - HLT_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+        - HLT_ele8_CaloIdT_TrkIdVL_v*
+        - HLT_mu5_v*
+        - HLT_mu8_v*
+        - HLT_mu12_v*
+        - HLT_mu17_v*
+        - HLT_mu15_eta2p1_v*
+        - HLT_mu24_eta2p1_v*
+        - HLT_mu30_eta2p1_v*
+    * Todo: remove 2012 trigger and selections
+
 26-09-2011 - Frank Golf
 	* tagged with FakeRates26September2011v2
 	* added branches for number of L1FastL2L3 PF jets with pt > 30 (40) GeV
