@@ -403,7 +403,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
         if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
         if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
+        // if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
         if (trkidx < 0)                                                          return false; // require a matching track
         if (cms2.trks_nlayers().at(trkidx) < 9)                                  return false; // require at least 8 tracker layers with hits
@@ -431,6 +431,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
         if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
         if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
+        // if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
         if (trkidx < 0)                                                          return false; // require a matching track
         if (cms2.trks_nlayers().at(trkidx) < 9)                                  return false; // require at least 8 tracker layers with hits
