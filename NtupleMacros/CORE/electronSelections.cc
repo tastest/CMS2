@@ -1479,7 +1479,7 @@ double electron_d0PV_mindz(unsigned int index){
 // 2012 PF Isolation
 //
 
-void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx)
+void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, bool barrelVetoes)
 {
 
     // isolation sums
@@ -1510,6 +1510,9 @@ void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, c
         if (!(cms2.els_fiduciality()[iel] & (1<<ISEB))) {
             if (particleId == 211 && dR <= 0.015)   continue;
             if (particleId == 22  && dR <= 0.08)    continue;
+        } else if (barrelVetoes && cms2.els_mva()[iel] < -0.1) {
+            if (particleId == 211 && dR <= 0.015)   continue;
+            if (particleId == 22  && dR <= 0.08)    continue;            
         }
 
         // add to isolation sum
