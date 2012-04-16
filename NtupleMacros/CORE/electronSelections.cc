@@ -14,20 +14,21 @@
 //#include "ssSelections.h"
 
 using namespace tas;
+using namespace wp2012;
 
 bool pass_electronSelectionCompareMask( const cuts_t cuts_passed, const cuts_t selectionType ) {
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-bool pass_electronSelection( const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index ) {
+bool pass_electronSelection( const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack) {
   checkElectronSelections();
-  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, useGsfTrack, vertex_index);
+  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, useGsfTrack);
   if ( (cuts_passed & selectionType) == selectionType ) return true;
   return false;
 }
 
-cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index ) {
+cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack) {
 
     // keep track of which cuts passed
     cuts_t cuts_passed = 0;
@@ -83,35 +84,19 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (fabs(electron_dzPV_smurfV3(index)) < 0.1 ) cuts_passed |= (1ll<<ELEIP_PV_DZ_1MM);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.04 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.20 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2_FO);
-    if (vertex_index < 0) {
-        int vtxidx = firstGoodVertex();
-        if (vtxidx >= 0) {
-            if (useGsfTrack) {
-                if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, false).first) < 0.02)
-                    cuts_passed |= (1ll<<ELEIP_SS200);
-            }
-            else if (cms2.els_trkidx()[index] >= 0) {            
-                if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, false).first) < 0.02)
-                    cuts_passed |= (1ll<<ELEIP_SS200);  
-            }
-        }
-        else if (fabs(cms2.els_d0corr()[index]) < 0.02)
-            cuts_passed |= (1ll<<ELEIP_SS200);  
-    }
-    else {
+    int vtxidx = firstGoodVertex();
+    if (vtxidx >= 0) {
         if (useGsfTrack) {
-            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vertex_index, false).first) < 0.02)
+            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, false).first) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
-        else if (cms2.els_trkidx()[index] < 0) {
-            if (fabs(cms2.els_d0corr()[index]) < 0.02)
-                cuts_passed |= (1ll<<ELEIP_SS200);
-        }
-        else {
-            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, false).first) < 0.02)
-                cuts_passed |= (1ll<<ELEIP_SS200);
+        else if (cms2.els_trkidx()[index] >= 0) {            
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, false).first) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);  
         }
     }
+    else if (fabs(cms2.els_d0corr()[index]) < 0.02)
+        cuts_passed |= (1ll<<ELEIP_SS200);  
 
     ////////////////////
     // Identification //
@@ -123,6 +108,11 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (electronId_smurf_v3(index)) cuts_passed |= (1ll<<ELEID_SMURFV3_EXTRA);
     if (electronId_smurf_v1ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV1SS_EXTRA);
     if (electronId_smurf_v2ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV2SS_EXTRA);
+
+    // 2012 ID
+    electronIdComponent_t answer_med_2012 = electronId_WP2012(index, MEDIUM);
+    if ((answer_med_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO);
+    if ((answer_med_2012 & PassWP2012CutsNoIsoNoIP) == PassWP2012CutsNoIsoNoIP) cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP);
 
     // VBTF ID
     electronIdComponent_t answer_vbtf = 0;

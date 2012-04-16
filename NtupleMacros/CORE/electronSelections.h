@@ -88,6 +88,8 @@ enum EleSelectionType {
   ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdT_TrkIdVL
   ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
   ELEID_VBTF_95_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
+  ELEID_WP2012_MEDIUM_NOISO,          // WP2012 MEDIUM ELECTRON ID, NO ISO
+  ELEID_WP2012_MEDIUM_NOISO_NOIP,     // WP2012 MEDIUM ELECTRON ID, NO ISO, NO IP
 
 //////////////////////////
 // Conversion Rejection //
@@ -898,8 +900,50 @@ static const cuts_t electronSelectionFOV6_ssVBTF80_v3 =       // V3 - relaxed is
 /////////////////////////////////////
 
 
+/////////////////////////////////////
+// 2012 SS Selections              //
+/////////////////////////////////////
 
+// Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_ssV7_noIso = 
+                       electronSelectionFO_SS_baselineV2   |
+                       (1ll<<ELEID_WP2012_MEDIUM_NOISO)    |
+                       (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                       (1ll<<ELE_NOT_TRANSITION)           |
+                       (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
+static const cuts_t electronSelection_ssV7_iso =
+                       (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelection_ssV7 = 
+                       electronSelection_ssV7_noIso |
+                       electronSelection_ssV7_iso;
+
+// Loose "Fakeable Object" Selection (fake rate denominators)
+
+static const cuts_t electronSelectionFOV7_v1 =       // V1 - relaxed Id & Isolation
+                 electronSelectionFO_SS_baselineV2   |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+static const cuts_t electronSelectionFOV7_v2 =       // V2 - relaxed Id
+                 electronSelectionFO_SS_baselineV2   |
+                 electronSelection_ssV7_iso          |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
+                 (1ll<<ELE_NOT_TRANSITION)           |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+static const cuts_t electronSelectionFOV7_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
+                 electronSelectionFO_SS_baselineV2     |
+                 (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP) |
+                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS)   |
+                 (1ll<<ELE_NOT_TRANSITION)             |
+                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
+
+/////////////////////////////////////
+// End 2012 SS Selections          //
+/////////////////////////////////////
 
 
 
@@ -965,13 +1009,19 @@ enum ElectronIDComponentWP2012 {
 };
 static const electronIdComponent_t PassAllWP2012Cuts = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
                                 | OOEMOOP | D0VTX | DZVTX | ISO | VTXFIT | MHITS;
+
+static const electronIdComponent_t PassWP2012CutsNoIso = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
+                                | OOEMOOP | D0VTX | DZVTX | VTXFIT | MHITS;
+
+static const electronIdComponent_t PassWP2012CutsNoIsoNoIP = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
+                                | OOEMOOP | DZVTX | VTXFIT | MHITS;
 };
 
 
 // master selection function
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true, int vertex_index = -1);
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true, int vertex_index = -1);
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true);
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true);
 
 // "smurf" electron id
 // WARNING!!! this is not the full smurf selection, just the additional ID on top of VBTF80 for low pt guys
