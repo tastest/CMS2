@@ -1,5 +1,6 @@
 // Header
 #include "muonSelections.h"
+#include "electronSelections.h"
 
 // C++ includes
 #include <iostream>
@@ -19,66 +20,71 @@ using namespace tas;
 // Identification //
 ////////////////////
 
-bool muonId(unsigned int index, SelectionType type, int vertex_index){
+bool muonId(unsigned int index, SelectionType type){
 
-  float isovalue;
-  bool  truncated = true;
-    
-  switch(type) {
+    float isovalue;
+    bool  truncated = true;
 
-    ///////////////////
-    // Opposite Sign //
-    ///////////////////
+    switch(type) {
+
+        ///////////////////
+        // Opposite Sign //
+        ///////////////////
 
     case OSGeneric_v4:
-      if (!muonIdNotIsolated( index, type )) return false;      
-      return muonIsoValuePF(index,0,0.3) < 0.15;
-      break;
+        if (!muonIdNotIsolated( index, type )) return false;      
+        return muonIsoValuePF(index,0,0.3) < 0.15;
+        break;
     case OSGeneric_v3:
-      truncated = false;
-      isovalue  = 0.15;
-      break;
+        truncated = false;
+        isovalue  = 0.15;
+        break;
     case OSGeneric_v3_FO:
-      truncated = false;
-      isovalue  = 0.4;
-      break;
+        truncated = false;
+        isovalue  = 0.4;
+        break;
     case OSZ_v4:
-      isovalue = 0.15;
-      break;
+        isovalue = 0.15;
+        break;
     case OSZ_v3:
-      if (!muonIdNotIsolated( index, type )) return false;      
-      return muonIsoValuePF(index,0,0.3) < 0.15;
-      break;
+        if (!muonIdNotIsolated( index, type )) return false;      
+        return muonIsoValuePF(index,0,0.3) < 0.15;
+        break;
     case OSZ_v2:
-      isovalue = 0.15;
-      break;
+        isovalue = 0.15;
+        break;
 
-    ///////////////
-    // Same Sign //
-    ///////////////
+        ////////////////////
+        // Same Sign 2011 //
+        ////////////////////
   
-    case NominalSSv3:
-      if (!muonIdNotIsolated(index, type, vertex_index)) return false;
-      return (muonIsoValue(index, false) < 0.15);
-      break;
-    case muonSelectionFO_ssV3:
-      if (!muonIdNotIsolated(index, type, vertex_index)) return false;
-      return (muonIsoValue(index, false) < 0.40);
-      break;
     case NominalSSv4:
-      if (!muonIdNotIsolated(index, type)) return false;
-      return (muonIsoValue(index, false) < 0.15);
-      break;
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValue(index, false) < 0.15);
+        break;
     case muonSelectionFO_ssV4:
-      if (!muonIdNotIsolated(index, type)) return false;
-      return (muonIsoValue(index, false) < 0.40);
-      break;
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValue(index, false) < 0.40);
+        break;
 
-    ///////////////
-    // Higgs, WW //
-    ///////////////
+        ////////////////////
+        // Same Sign 2012 //
+        ////////////////////
+  
+    case NominalSSv5:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValue(index, false) < 0.15);
+        break;
+    case muonSelectionFO_ssV5:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValue(index, false) < 0.40);
+        break;
 
-    // WW
+        ///////////////
+        // Higgs, WW //
+        ///////////////
+
+        // WW
     case NominalWWV0:
     case NominalWWV1:
         isovalue = 0.15;
@@ -97,7 +103,7 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         isovalue = 1.0;
         break;
 
-    // SMURF
+        // SMURF
     case muonSelectionFO_mu_smurf_10:
         if (!muonIdNotIsolated( index, type )) return false;
         return muonIsoValuePF(index,0,0.3) < 1.0;
@@ -130,42 +136,43 @@ bool muonId(unsigned int index, SelectionType type, int vertex_index){
         }
         break;
 
-    /////////////
-    // Default //
-    /////////////
+        /////////////
+        // Default //
+        /////////////
     default:
-      std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
-      exit(1);
-      return false;
-  } 
-  return 
-    muonIdNotIsolated( index, type, vertex_index ) &&   // Id
-    muonIsoValue(index,truncated) < isovalue;           // Isolation cut
+        std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
+        exit(1);
+        return false;
+    } 
+    return 
+        muonIdNotIsolated( index, type ) &&   // Id
+        muonIsoValue(index,truncated) < isovalue;           // Isolation cut
 }
 
 
 bool isGoodStandardMuon( unsigned int index ){
-  if ( TMath::Abs( mus_p4()[index].eta() ) > 2.4 )              return false;
-  if ( mus_gfit_chi2()[index] / mus_gfit_ndof()[index] >= 50 )  return false;
-  if ( ( ( mus_type()[index] ) & (1<<1) ) == 0 )                return false;
-  if ( ( ( mus_type()[index] ) & (1<<2) ) == 0 )                return false;
-  if ( mus_validHits()[index] < 11 )                            return false;
-  if ( mus_gfit_validSTAHits()[index] == 0)                     return false;
-  return true;
+    if ( TMath::Abs( mus_p4()[index].eta() ) > 2.4 )              return false;
+    if ( mus_gfit_chi2()[index] / mus_gfit_ndof()[index] >= 50 )  return false;
+    if ( ( ( mus_type()[index] ) & (1<<1) ) == 0 )                return false;
+    if ( ( ( mus_type()[index] ) & (1<<2) ) == 0 )                return false;
+    if ( mus_validHits()[index] < 11 )                            return false;
+    if ( mus_gfit_validSTAHits()[index] == 0)                     return false;
+    return true;
 }
 
 ////////////////////
 // Identification //
 ////////////////////
 
-bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index){
+bool muonIdNotIsolated(unsigned int index, SelectionType type) {
 
     if ( cms2.mus_p4()[index].pt() < 5.0) {
-      // std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
+        // std::cout << "muonID ERROR: requested muon is too low pt,  Abort." << std::endl;
         return false;
     }
 
-    int vtxidx = firstGoodVertex();    
+    int vtxidx = firstGoodVertex();
+    int trkidx = cms2.mus_trkidx().at(index);
     
     // Muon Selections that are standard for Analysis & Fake Selections
     bool standardMuon = true;
@@ -245,27 +252,27 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         return true;
 
     case OSGeneric_v4:
-      //baseline selector for 2011 OS analysis
-      if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
-      if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
-      if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
-      if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
-      return true;
+        //baseline selector for 2011 OS analysis
+        if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
+        if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
+        if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
+        return true;
 
     case OSGeneric_v3:
-      //baseline selector for 2011 OS analysis
-      if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
-      if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
-      if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
-      if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
-      return true;
+        //baseline selector for 2011 OS analysis
+        if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
+        if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
+        if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
+        return true;
 
     case OSGeneric_v3_FO:
 	    // Fakes for 2011: reliso < 0.4, d0 < 0.2, chisq/ndof < 50
-      if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
-      if (TMath::Abs(mud0PV_smurfV3(index)) > 0.2)                             return false; // d0(PV) < 0.2 cm
-      if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
-      return true;
+        if( !standardMuon )                                                      return false; // |eta| < 2.4, chisq/ndof < 50, tracker & global muon, 11 or more TRK hits, glb fit mu hits, dpt/pt < 0.1
+        if (TMath::Abs(mud0PV_smurfV3(index)) > 0.2)                             return false; // d0(PV) < 0.2 cm
+        if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
+        return true;
 
     case OSZ_v4:
         // baseline selector for 2011 Z+MET analysis
@@ -275,8 +282,8 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
         if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-	if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
-	if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
+        if (TMath::Abs(mud0PV_smurfV3(index)) > 0.02)                            return false; // d0(PV) < 0.02 cm
+        if (TMath::Abs(mudzPV_smurfV3(index)) > 1  )                             return false; // dz(PV) < 1 cm
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1)         return false; // dpt/pt 
         if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
         if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6 
@@ -344,58 +351,8 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (cms2.mus_nmatches().at(index)<2) return false;
         return true;
         break;
+
         //baseline selector for 2011 SS analysis
-    case NominalSSv3:
-        if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt() > 0.1)       return false; // dpt/pt < 0.1
-        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
-        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6 
-        // now, cut on dz, d0 using supplied vertex index
-        //if (vertex_index < 0) return false; // are our hypothesis leptons consistent with a vertex
-        // note, the d0 computed here is w.r.t. a DA primary vertex
-        // NOT a standard primary vertex
-        // if not consistent vertex is found, computer d0 w.r.t to the beamSpot
-        // if the muon doesn't have an associated track. get d0 w.r.t. beamSpot
-        if (vertex_index < 0 || cms2.mus_trkidx().at(index) < 0) {
-            if (fabs(cms2.mus_d0corr().at(index)) > 0.02)
-                return false;
-        }
-        else {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index, true).first) > 0.02)
-                return false;
-        }
-        return true;
-        break;
-        //baseline selector for 2011 SS analysis
-    case muonSelectionFO_ssV3:
-        if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
-        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
-        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
-        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt() > 0.1)       return false; // dpt/pt < 0.1
-        // now, cut on dz, d0 using supplied vertex index
-        //if (vertex_index < 0) return false; // are our hypothesis leptons consistent with a vertex
-        // note, the d0 computed here is w.r.t. a DA primary vertex
-        // NOT a standard primary vertex
-        // if not consistent vertex is found, computer d0 w.r.t to the beamSpot
-        // if the muon doesn't have an associated track. get d0 w.r.t. beamSpot
-        if (vertex_index < 0 || cms2.mus_trkidx().at(index) < 0) {
-            if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
-                return false;
-        }
-        else {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index, true).first) > 0.2)
-                return false;
-        }
-        return true;
-        break;
     case NominalSSv4:
         if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
@@ -408,12 +365,8 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6
         // cut on d0, dz using first good DA vertex
         // if there isn't a good vertex, use the beamSpot
-        if ((vertex_index < 0 && vtxidx < 0) || cms2.mus_trkidx().at(index) < 0) {
+        if (vtxidx < 0 || cms2.mus_trkidx().at(index) < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.02)
-                return false;
-        }
-        else if (vertex_index >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index).first) > 0.02)
                 return false;
         }
         else if (vtxidx >= 0) {
@@ -433,12 +386,8 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt() > 0.1)       return false; // dpt/pt < 0.1
         // cut on d0, dz using first good DA vertex
         // if there isn't a good vertex, use the beamSpot
-        if ((vertex_index < 0 && vtxidx < 0) || cms2.mus_trkidx().at(index) < 0) {
+        if (vtxidx < 0 || cms2.mus_trkidx().at(index) < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
-                return false;
-        }
-        else if (vertex_index >= 0) {
-            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vertex_index).first) > 0.2)
                 return false;
         }
         else if (vtxidx >= 0) {
@@ -447,10 +396,65 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         }
         return true;
         break;
+
+        //baseline selector for 2012 SS analysis
+    case NominalSSv5:
+        if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
+        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
+        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
+        if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
+
+        if (trkidx < 0)                                                          return false; // require a matching track
+        if (cms2.trks_nlayers().at(trkidx) < 9)                                  return false; // require at least 8 tracker layers with hits
+        if (cms2.trks_valid_pixelhits().at(trkidx) == 0)                         return false; // require at least 1 valid pixel hit
+
+        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
+        if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
+        if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6
+        // cut on d0, dz using first good DA vertex
+        // if there isn't a good vertex, use the beamSpot
+        if (vtxidx < 0 || trkidx < 0) {
+            if (fabs(cms2.mus_d0corr().at(index)) > 0.02)
+                return false;
+        }
+        else if (vtxidx >= 0) {
+            if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.02)
+                return false;            
+        }
+        else return false;
+        return true;
+        break;
+        //baseline FO selector for 2012 SS analysis
+    case muonSelectionFO_ssV5:
+        if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
+        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
+        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
+
+        if (trkidx < 0)                                                          return false; // require a matching track
+        if (cms2.trks_nlayers().at(trkidx) < 9)                                  return false; // require at least 8 tracker layers with hits
+        if (cms2.trks_valid_pixelhits().at(trkidx) == 0)                         return false; // require at least 1 valid pixel hit
+
+        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
+        // cut on d0, dz using first good DA vertex
+        // if there isn't a good vertex, use the beamSpot
+        if (vtxidx < 0 || trkidx < 0) {
+            if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
+                return false;
+        }
+        else if (vtxidx >= 0) {
+            if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx).first) > 0.2)
+                return false;            
+        }
+        else return false;
+        return true;
+        break;
+
     case muonSelectionFO_mu_smurf_04:
     case muonSelectionFO_mu_smurf_10:
     case NominalSmurfV6:
-      {
+    {
         if (type == NominalSmurfV6){
             if (cms2.mus_p4().at(index).pt()<20){
                 if (TMath::Abs(mud0PV_smurfV3(index)) >= 0.01)    return false; // d0 from pvtx
@@ -465,21 +469,21 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type, int vertex_index)
         if (TMath::Abs(mudzPV_smurfV3(index)) >= 0.1)       return false; // dz from pvtx
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
         if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
-	bool goodMuonGlobalMuon = false;
+        bool goodMuonGlobalMuon = false;
         if (((cms2.mus_type().at(index)) & (1<<1)) != 0) { // global muon
-	  goodMuonGlobalMuon = true;
-	  if (cms2.mus_nmatches().at(index)<2) goodMuonGlobalMuon = false;
-	  if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) goodMuonGlobalMuon = false; //glb fit chisq
-	  if (cms2.mus_gfit_validSTAHits().at(index)==0 ) goodMuonGlobalMuon = false; // Glb fit must have hits in mu chambers
-	} 
-	bool goodMuonTrackerMuon = false;
-	if (((cms2.mus_type().at(index)) & (1<<2)) != 0) { // tracker muon
-	  goodMuonTrackerMuon = true;
-	  if (cms2.mus_pid_TMLastStationTight().at(index) == 0 ) goodMuonTrackerMuon = false; // last station tight
-	}
-	return goodMuonGlobalMuon || goodMuonTrackerMuon;
+            goodMuonGlobalMuon = true;
+            if (cms2.mus_nmatches().at(index)<2) goodMuonGlobalMuon = false;
+            if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) goodMuonGlobalMuon = false; //glb fit chisq
+            if (cms2.mus_gfit_validSTAHits().at(index)==0 ) goodMuonGlobalMuon = false; // Glb fit must have hits in mu chambers
+        } 
+        bool goodMuonTrackerMuon = false;
+        if (((cms2.mus_type().at(index)) & (1<<2)) != 0) { // tracker muon
+            goodMuonTrackerMuon = true;
+            if (cms2.mus_pid_TMLastStationTight().at(index) == 0 ) goodMuonTrackerMuon = false; // last station tight
+        }
+        return goodMuonGlobalMuon || goodMuonTrackerMuon;
         break;
-      }
+    }
     default:
         std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
         return false;
@@ -521,25 +525,25 @@ double muonIsoValue_HCAL(unsigned int index, bool truncated){
     return cms2.mus_iso03_hadEt().at(index) / pt;
 }
 double muonCorIsoValue (unsigned int index, bool truncated) {
-  double ntiso  = muonIsoValue(index, truncated);
-  double pt     = cms2.mus_p4().at(index).pt();
-  int nvtxs     = numberOfGoodVertices();
-  double coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
-  return coriso;
+    double ntiso  = muonIsoValue(index, truncated);
+    double pt     = cms2.mus_p4().at(index).pt();
+    int nvtxs     = numberOfGoodVertices();
+    double coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
+    return coriso;
 }
 
 #ifdef PFISOFROMNTUPLE
 double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut, int filterId){
-  if (fabs(coner-0.3)<0.0001) {
-    if (cms2.mus_iso03_pf().at(imu)<-99.) return 9999.;
-    return cms2.mus_iso03_pf().at(imu)/cms2.mus_p4().at(imu).pt();
-  } else if (fabs(coner-0.4)<0.0001) {
-    if (cms2.mus_iso04_pf().at(imu)<-99.) return 9999.;
-    return cms2.mus_iso04_pf().at(imu)/cms2.mus_p4().at(imu).pt();
-  } else {
-    cout << "muonIsoValuePF: CONE SIZE NOT SUPPORTED" << endl;
-    return 9999.;
-  }
+    if (fabs(coner-0.3)<0.0001) {
+        if (cms2.mus_iso03_pf().at(imu)<-99.) return 9999.;
+        return cms2.mus_iso03_pf().at(imu)/cms2.mus_p4().at(imu).pt();
+    } else if (fabs(coner-0.4)<0.0001) {
+        if (cms2.mus_iso04_pf().at(imu)<-99.) return 9999.;
+        return cms2.mus_iso04_pf().at(imu)/cms2.mus_p4().at(imu).pt();
+    } else {
+        cout << "muonIsoValuePF: CONE SIZE NOT SUPPORTED" << endl;
+        return 9999.;
+    }
 }
 #else
 double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut, int filterId){
@@ -551,8 +555,8 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
         float dR = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf), mus_p4().at(imu) );
         if (dR>coner) continue;
         float pfpt = cms2.pfcands_p4().at(ipf).pt();
-	int pfid = abs(cms2.pfcands_particleId().at(ipf));
-	if (filterId!=0 && filterId!=pfid) continue;
+        int pfid = abs(cms2.pfcands_particleId().at(ipf));
+        if (filterId!=0 && filterId!=pfid) continue;
         if (cms2.pfcands_charge().at(ipf)==0) {
             //neutrals
             if (pfpt>minptn) pfniso+=pfpt;
@@ -715,3 +719,56 @@ bool isPFMuon( int index , bool requireSamePt , float dpt_max ){
 
 }
 
+void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int imu, const int ivtx)
+{
+
+    // isolation sums
+    pfiso_ch = 0.0;
+    pfiso_em = 0.0; 
+    pfiso_nh = 0.0;
+       
+    // loop on pfcandidates
+    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
+            
+        // skip electrons and muons
+        const int particleId = abs(cms2.pfcands_particleId()[ipf]);
+        if (particleId == 11)    continue;
+        if (particleId == 13)    continue;
+    
+        // deltaR between electron and cadidate
+        const float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4()[ipf], cms2.mus_p4()[imu]);
+        if (dR > R)              continue;
+
+        // charged hadrons closest vertex
+        // should be the primary vertex
+        if (particleId == 211 || particleId == 321 || particleId == 2212 || particleId == 999211) {
+            int pfVertexIndex = chargedHadronVertex(ipf);
+            if (pfVertexIndex != ivtx) continue;
+        }
+
+        // add to isolation sum
+        if (particleId == 211 || particleId == 321 || particleId == 2212 || particleId == 999211)      pfiso_ch += cms2.pfcands_p4()[ipf].pt();
+        if (particleId == 22)                                                                          pfiso_em += cms2.pfcands_p4()[ipf].pt();
+        if (particleId == 130 || particleId == 111 || particleId == 310 || particleId == 2112)         pfiso_nh += cms2.pfcands_p4()[ipf].pt();
+    }
+}
+
+float muonIsoValuePF2012_FastJetEffArea(int index, float conesize, int ivtx)
+{
+    float pt     = cms2.mus_p4()[index].pt();
+
+    // pf iso
+    // calculate from the ntuple for now...
+    float pfiso_ch = 0.0;
+    float pfiso_em = 0.0;
+    float pfiso_nh = 0.0;
+    muonIsoValuePF2012(pfiso_ch, pfiso_em, pfiso_nh, conesize, index, ivtx);
+
+    // rho
+    float AEff = TMath::Pi() * pow(conesize, 2); // this is wrong, but leave for now until i figure out what the correct thing to do is
+    float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
+    float pfiso = (pfiso_ch + pfiso_n) / pt;   
+
+    return pfiso;    
+}

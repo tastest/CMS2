@@ -23,17 +23,25 @@ enum SelectionType {
       OSZ_v3,
       OSZ_v2,
 
-    ///////////////
-    // Same Sign //
-    ///////////////
+    ////////////////////
+    // Same Sign 2011 //
+    ///////////////////
 
       // Analysis
-      NominalSSv3,
       NominalSSv4,
    
       // Fakes
-      muonSelectionFO_ssV3,
       muonSelectionFO_ssV4,
+
+    ////////////////////
+    // Same Sign 2012 //
+    ///////////////////
+
+      // Analysis
+      NominalSSv5,
+   
+      // Fakes
+      muonSelectionFO_ssV5,
 
     ///////////////
     // Higgs, WW //
@@ -64,8 +72,8 @@ enum SelectionType {
 // Identification //
 ////////////////////
 
-bool muonId           ( unsigned int index, SelectionType type, int vertex_index = -1);
-bool muonIdNotIsolated( unsigned int index, SelectionType type, int vertex_index = -1);
+bool muonId           ( unsigned int index, SelectionType type);
+bool muonIdNotIsolated( unsigned int index, SelectionType type);
 bool isGoodStandardMuon( unsigned int index );
 
 ///////////////
@@ -79,6 +87,8 @@ double muonIsoValue_FastJet  ( unsigned int , bool = true );
 double mu_fastjet_rel_offset ( unsigned int , bool = true );
 
 double muonIsoValuePF        ( unsigned int imu, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, int filterId = 0);
+void muonIsoValuePF2012  (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int imu, const int ivtx);
+float muonIsoValuePF2012_FastJetEffArea( int index , float conesize = 0.3 , int ivtx = 0);
 double muonCorIsoValue (unsigned int , bool = true);
 
 ///////////////////////
