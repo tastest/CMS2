@@ -106,26 +106,27 @@ private:
     Float_t ecal_iso_nps_;    // ECAL Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
     Float_t ecal_nt_iso_;     // ECAL Isolation ( not truncated )
     Float_t ecal_nt_iso_nps_; // ECAL Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t hcal_iso_;      // HCAL Isolation ( not truncated )
-    Float_t hcal_nt_iso_;   // HCAL Isolation ( truncated )
-    Float_t nt_pfiso03_;    // PF Isolation (not truncated) with a cone size of 0.3
-    Float_t ch_nt_pfiso03_; // TRK PF Isolation (not truncated) with a cone size of 0.3
-    Float_t nh_nt_pfiso03_; // ECAL PF Isolation (not truncated) with a cone size of 0.3
-    Float_t em_nt_pfiso03_; // HCAL TRK PF Isolation (not truncated) with a cone size of 0.3
-    Float_t nt_pfiso04_;    // PF Isolation (not truncated) with a cone size of 0.4
-    Float_t ch_nt_pfiso04_; // TRK PF Isolation (not truncated) with a cone size of 0.4
-    Float_t nh_nt_pfiso04_; // ECAL PF Isolation (not truncated) with a cone size of 0.4
-    Float_t em_nt_pfiso04_; // HCAL TRK PF Isolation (not truncated) with a cone size of 0.4
+    Float_t hcal_iso_;        // HCAL Isolation ( not truncated )
+    Float_t hcal_nt_iso_;     // HCAL Isolation ( truncated )
+    Float_t nt_pfiso03_;      // PF Isolation (not truncated) with a cone size of 0.3
+    Float_t ch_nt_pfiso03_;   // TRK PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nh_nt_pfiso03_;   // ECAL PF Isolation (not truncated) with a cone size of 0.3
+    Float_t em_nt_pfiso03_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nt_pfiso04_;      // PF Isolation (not truncated) with a cone size of 0.4
+    Float_t ch_nt_pfiso04_;   // TRK PF Isolation (not truncated) with a cone size of 0.4
+    Float_t nh_nt_pfiso04_;   // ECAL PF Isolation (not truncated) with a cone size of 0.4
+    Float_t em_nt_pfiso04_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.4
 
     // PV
     Float_t d0PV_wwV1_;       // electron_d0PV_wwV1(iEl)
     Float_t dzPV_wwV1_;       // electron_dzPV_wwV1(iEl)
 
     // Id
-    Bool_t closestMuon_;     // true if els_closestMuon().at(index) == -1
-    Bool_t el_id_smurfV5_;
-    Bool_t el_id_vbtf80_;
-    Bool_t el_id_vbtf90_;
+    Bool_t  closestMuon_;     // true if els_closestMuon().at(index) == -1
+    Bool_t  el_id_smurfV5_;
+    Bool_t  el_id_vbtf80_;
+    Bool_t  el_id_vbtf90_;
+    Float_t el_id_effarea_;  // 2012 working point effective area
 
     // Z mass variables
     Float_t mz_fo_gsf_;
@@ -151,9 +152,8 @@ private:
     float ht_pf_L1FastL2L3_;  
 
     // MC truth information
-    // Int_t mc1id_;
-    // Float_t mc1pt_;
-    // Float_t mc1dr_;
+    Int_t mcid_;                // els_mc_id or mus_mc_id
+    Int_t mcmotherid_;          // els_mc_motherid or mus_mc_motherid
     Int_t mc3id_;
     Float_t mc3pt_;
     Float_t mc3dr_;
@@ -343,54 +343,74 @@ HLT_Mu30_eta2p1_v3
 */
 
     // Electrons
-    Int_t ele17_CaloIdL_CaloIsoVL_vstar_;                              // HLT_Ele17_CaloIdL_CaloIsoVL_v*
-    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;             // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;       // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Int_t ele8_CaloIdL_CaloIsoVL_vstar_;                               // HLT_Ele8_CaloIdL_CaloIsoVL_v*
-    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;              // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;        // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Int_t ele8_CaloIdT_TrkIdVL_vstar_;                                 // HLT_Ele8_CaloIdT_TrkIdVL_v*
+    Int_t ele8_CaloIdL_CaloIsoVL_vstar_;                                     // HLT_Ele8_CaloIdL_CaloIsoVL_v*
+    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;                    // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;              // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Int_t ele8_CaloIdT_TrkIdVL_vstar_;                                       // HLT_Ele8_CaloIdT_TrkIdVL_v*
+    Int_t ele17_CaloIdL_CaloIsoVL_vstar_;                                    // HLT_Ele17_CaloIdL_CaloIsoVL_v*
+    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;                   // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;             // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Int_t ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_;      // HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
+    Int_t ele27_WP80_vstar_;                                                 // HLT_Ele27_WP80_v*
 
-    Int_t ele17_CaloIdL_CaloIsoVL_version_;                            // HLT_Ele17_CaloIdL_CaloIsoVL_v*
-    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_;           // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_;     // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Int_t ele8_CaloIdL_CaloIsoVL_version_;                             // HLT_Ele8_CaloIdL_CaloIsoVL_v*
-    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_;            // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_;      // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Int_t ele8_CaloIdT_TrkIdVL_version_;                               // HLT_Ele8_CaloIdT_TrkIdVL_v*
+    Int_t ele8_CaloIdL_CaloIsoVL_version_;                                   // HLT_Ele8_CaloIdL_CaloIsoVL_v*
+    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_;                  // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Int_t ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_;            // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Int_t ele8_CaloIdT_TrkIdVL_version_;                                     // HLT_Ele8_CaloIdT_TrkIdVL_v*
+    Int_t ele17_CaloIdL_CaloIsoVL_version_;                                  // HLT_Ele17_CaloIdL_CaloIsoVL_v*
+    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_;                 // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Int_t ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_;           // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Int_t ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_;    // HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
+    Int_t ele27_WP80_version_;                                               // HLT_Ele27_WP80_v*
 
-    Float_t dr_ele17_CaloIdL_CaloIsoVL_vstar_;                         // HLT_Ele17_CaloIdL_CaloIsoVL_v*
-    Float_t dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;        // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Float_t dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;  // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Float_t dr_ele8_CaloIdL_CaloIsoVL_vstar_;                          // HLT_Ele8_CaloIdL_CaloIsoVL_v*
-    Float_t dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;         // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Float_t dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;   // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Float_t dr_ele8_CaloIdT_TrkIdVL_vstar_;                            // HLT_Ele8_CaloIdT_TrkIdVL_v*
+    Float_t dr_ele8_CaloIdL_CaloIsoVL_vstar_;                                // HLT_Ele8_CaloIdL_CaloIsoVL_v*
+    Float_t dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;               // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Float_t dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;         // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Float_t dr_ele8_CaloIdT_TrkIdVL_vstar_;                                  // HLT_Ele8_CaloIdT_TrkIdVL_v*
+    Float_t dr_ele17_CaloIdL_CaloIsoVL_vstar_;                               // HLT_Ele17_CaloIdL_CaloIsoVL_v*
+    Float_t dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;              // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Float_t dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;        // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Float_t dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_; // HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
+    Float_t dr_ele27_WP80_vstar_;                                            // HLT_Ele27_WP80_v*
 
     // Muons
-    Int_t mu5_vstar_;               // HLT_Mu5_v*  // also in 2011
-    Int_t mu8_vstar_;               // HLT_Mu8_v*  // also in 2011
-    Int_t mu12_vstar_;              // HLT_Mu12_v* // also in 2011
-    Int_t mu17_vstar_;              // HLT_Mu17_v* 
-    Int_t mu15_eta2p1_vstar_;       // HLT_Mu15_eta2p1_v* 
-    Int_t mu24_eta2p1_vstar_;       // HLT_Mu24_eta2p1_v* 
-    Int_t mu30_eta2p1_vstar_;       // HLT_Mu30_eta2p1_v* 
+    Int_t mu5_vstar_;                   // HLT_Mu5_v*            // also in 2011
+    Int_t mu8_vstar_;                   // HLT_Mu8_v*            // also in 2011
+    Int_t mu12_vstar_;                  // HLT_Mu12_v*           // also in 2011
+    Int_t mu17_vstar_;                  // HLT_Mu17_v*
+    Int_t mu15_eta2p1_vstar_;           // HLT_Mu15_eta2p1_v*
+    Int_t mu24_eta2p1_vstar_;           // HLT_Mu24_eta2p1_v*
+    Int_t mu30_eta2p1_vstar_;           // HLT_Mu30_eta2p1_v*
+    Int_t isoMu24_eta2p1_vstar_;        // HLT_IsoMu24_eta2p1_v*
+    Int_t isoMu30_eta2p1_vstar_;        // HLT_IsoMu30_eta2p1_v*
 
-    Int_t mu5_version_;             // HLT_Mu5_v*  // also in 2011
-    Int_t mu8_version_;             // HLT_Mu8_v*  // also in 2011
-    Int_t mu12_version_;            // HLT_Mu12_v* // also in 2011
-    Int_t mu17_version_;            // HLT_Mu17_v* 
-    Int_t mu15_eta2p1_version_;     // HLT_Mu15_eta2p1_v* 
-    Int_t mu24_eta2p1_version_;     // HLT_Mu24_eta2p1_v* 
-    Int_t mu30_eta2p1_version_;     // HLT_Mu30_eta2p1_v* 
+    Int_t mu5_version_;                 // HLT_Mu5_v*            // also in 2011
+    Int_t mu8_version_;                 // HLT_Mu8_v*            // also in 2011
+    Int_t mu12_version_;                // HLT_Mu12_v*           // also in 2011
+    Int_t mu17_version_;                // HLT_Mu17_v*
+    Int_t mu15_eta2p1_version_;         // HLT_Mu15_eta2p1_v*
+    Int_t mu24_eta2p1_version_;         // HLT_Mu24_eta2p1_v*
+    Int_t mu30_eta2p1_version_;         // HLT_Mu30_eta2p1_v*
+    Int_t isoMu24_eta2p1_version_;      // HLT_IsoMu24_eta2p1_v*
+    Int_t isoMu30_eta2p1_version_;      // HLT_IsoMu30_eta2p1_v*
 
-    Float_t dr_mu5_vstar_;          // HLT_Mu5_v*  // also in 2011
-    Float_t dr_mu8_vstar_;          // HLT_Mu8_v*  // also in 2011
-    Float_t dr_mu12_vstar_;         // HLT_Mu12_v* // also in 2011
-    Float_t dr_mu17_vstar_;         // HLT_Mu17_v* 
-    Float_t dr_mu15_eta2p1_vstar_;  // HLT_Mu15_eta2p1_v* 
-    Float_t dr_mu24_eta2p1_vstar_;  // HLT_Mu24_eta2p1_v* 
-    Float_t dr_mu30_eta2p1_vstar_;  // HLT_Mu30_eta2p1_v* 
+    Float_t dr_mu5_vstar_;              // HLT_Mu5_v*            // also in 2011
+    Float_t dr_mu8_vstar_;              // HLT_Mu8_v*            // also in 2011
+    Float_t dr_mu12_vstar_;             // HLT_Mu12_v*           // also in 2011
+    Float_t dr_mu17_vstar_;             // HLT_Mu17_v*
+    Float_t dr_mu15_eta2p1_vstar_;      // HLT_Mu15_eta2p1_v*
+    Float_t dr_mu24_eta2p1_vstar_;      // HLT_Mu24_eta2p1_v*
+    Float_t dr_mu30_eta2p1_vstar_;      // HLT_Mu30_eta2p1_v*
+    Float_t dr_isoMu24_eta2p1_vstar_;   // HLT_IsoMu24_eta2p1_v*
+    Float_t dr_isoMu30_eta2p1_vstar_;   // HLT_IsoMu30_eta2p1_v*
+
+// To add
+//HLT_IsoMu24_eta2p1_v*
+//HLT_IsoMu30_eta2p1_v*
+//HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
+//HLT_Ele27_WP80_v*
+    
+
 
     ///////////////////////  
     // End 2012 Triggers //
@@ -461,10 +481,6 @@ HLT_Mu30_eta2p1_v3
     // Missing hit info
     Int_t els_exp_innerlayers_;
 
-    //Some MC informatio added 16 Sep 2010
-    Int_t mcid_;        // els_mc_id or mus_mc_id
-    Int_t mcmotherid_;  // els_mc_motherid or mus_mc_motherid
-
     // regular expressions for triggers
     TPMERegexp ele8_regexp;
     TPMERegexp ele8_CaloIdL_TrkIdVL_regexp;
@@ -479,6 +495,8 @@ HLT_Mu30_eta2p1_v3
     TPMERegexp ele17_CaloIdL_CaloIsoVL_regexp;
     TPMERegexp ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp;
     TPMERegexp ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp;
+    TPMERegexp ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_rexexp;
+    TPMERegexp ele27_WP80_rexexp;
     TPMERegexp photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp;
     TPMERegexp mu3_regexp;      
     TPMERegexp mu5_regexp;          
@@ -493,6 +511,8 @@ HLT_Mu30_eta2p1_v3
     TPMERegexp mu24_eta2p1_regexp;     
     TPMERegexp mu30_eta2p1_regexp;     
     TPMERegexp mu8_Jet40_regexp;
+    TPMERegexp isoMu24_eta2p1_regexp;
+    TPMERegexp isoMu30_eta2p1_regexp;
 
 
     // electron ID MVA

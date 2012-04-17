@@ -1,5 +1,11 @@
+04-17-2012 - Ryan Kelley 
+    * Added more triggers
+        - HLT_IsoMu24_eta2p1_v* 
+        - HLT_IsoMu30_eta2p1_v*
+        - HLT_Ele27_WP80_v*
+        - HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
+
 04-16-2012 - Ryan Kelley 
-    * Tagged with VFR12-00-00 
     * Initial commit of updates for 2012
     * Added triggers for 2012
         - HLT_ele17_CaloIdL_CaloIsoVL_v*

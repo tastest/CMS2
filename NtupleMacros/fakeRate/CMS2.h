@@ -124,16 +124,16 @@ protected:
 	float evt_rhoJEC_;
 	TBranch *evt_rhoJEC_branch;
 	bool evt_rhoJEC_isLoaded;
-	float evt_kfactor_;
+	float	evt_kfactor_;
 	TBranch *evt_kfactor_branch;
 	bool evt_kfactor_isLoaded;
-	float evt_scale1fb_;
+	float	evt_scale1fb_;
 	TBranch *evt_scale1fb_branch;
 	bool evt_scale1fb_isLoaded;
-	float evt_xsec_excl_;
+	float	evt_xsec_excl_;
 	TBranch *evt_xsec_excl_branch;
 	bool evt_xsec_excl_isLoaded;
-	float evt_xsec_incl_;
+	float	evt_xsec_incl_;
 	TBranch *evt_xsec_incl_branch;
 	bool evt_xsec_incl_isLoaded;
 	float gen_met_;
@@ -2047,27 +2047,12 @@ protected:
 	vector<float> pfjets_corL1L2L3_;
 	TBranch *pfjets_corL1L2L3_branch;
 	bool pfjets_corL1L2L3_isLoaded;
-	vector<float> pfjets_electronE_;
-	TBranch *pfjets_electronE_branch;
-	bool pfjets_electronE_isLoaded;
-	vector<float> pfjets_hfEmE_;
-	TBranch *pfjets_hfEmE_branch;
-	bool pfjets_hfEmE_isLoaded;
-	vector<float> pfjets_hfHadronE_;
-	TBranch *pfjets_hfHadronE_branch;
-	bool pfjets_hfHadronE_isLoaded;
-	vector<float> pfjets_muonE_;
-	TBranch *pfjets_muonE_branch;
-	bool pfjets_muonE_isLoaded;
 	vector<float> pfjets_neutralEmE_;
 	TBranch *pfjets_neutralEmE_branch;
 	bool pfjets_neutralEmE_isLoaded;
 	vector<float> pfjets_neutralHadronE_;
 	TBranch *pfjets_neutralHadronE_branch;
 	bool pfjets_neutralHadronE_isLoaded;
-	vector<float> pfjets_photonE_;
-	TBranch *pfjets_photonE_branch;
-	bool pfjets_photonE_isLoaded;
 	vector<float> pfmus_deltaP_;
 	TBranch *pfmus_deltaP_branch;
 	bool pfmus_deltaP_isLoaded;
@@ -3052,9 +3037,6 @@ protected:
 	vector<int> mus_nmatches_;
 	TBranch *mus_nmatches_branch;
 	bool mus_nmatches_isLoaded;
-	vector<int> mus_numberOfMatchedStations_;
-	TBranch *mus_numberOfMatchedStations_branch;
-	bool mus_numberOfMatchedStations_isLoaded;
 	vector<int> mus_overlap0_;
 	TBranch *mus_overlap0_branch;
 	bool mus_overlap0_isLoaded;
@@ -3133,33 +3115,15 @@ protected:
 	vector<int> pfels_particleId_;
 	TBranch *pfels_particleId_branch;
 	bool pfels_particleId_isLoaded;
-	vector<int> pfjets_chargedHadronMultiplicity_;
-	TBranch *pfjets_chargedHadronMultiplicity_branch;
-	bool pfjets_chargedHadronMultiplicity_isLoaded;
 	vector<int> pfjets_chargedMultiplicity_;
 	TBranch *pfjets_chargedMultiplicity_branch;
 	bool pfjets_chargedMultiplicity_isLoaded;
-	vector<int> pfjets_electronMultiplicity_;
-	TBranch *pfjets_electronMultiplicity_branch;
-	bool pfjets_electronMultiplicity_isLoaded;
-	vector<int> pfjets_hfEmMultiplicity_;
-	TBranch *pfjets_hfEmMultiplicity_branch;
-	bool pfjets_hfEmMultiplicity_isLoaded;
-	vector<int> pfjets_hfHadronMultiplicity_;
-	TBranch *pfjets_hfHadronMultiplicity_branch;
-	bool pfjets_hfHadronMultiplicity_isLoaded;
 	vector<int> pfjets_muonMultiplicity_;
 	TBranch *pfjets_muonMultiplicity_branch;
 	bool pfjets_muonMultiplicity_isLoaded;
-	vector<int> pfjets_neutralHadronMultiplicity_;
-	TBranch *pfjets_neutralHadronMultiplicity_branch;
-	bool pfjets_neutralHadronMultiplicity_isLoaded;
 	vector<int> pfjets_neutralMultiplicity_;
 	TBranch *pfjets_neutralMultiplicity_branch;
 	bool pfjets_neutralMultiplicity_isLoaded;
-	vector<int> pfjets_photonMultiplicity_;
-	TBranch *pfjets_photonMultiplicity_branch;
-	bool pfjets_photonMultiplicity_isLoaded;
 	vector<int> pfmus_musidx_;
 	TBranch *pfmus_musidx_branch;
 	bool pfmus_musidx_isLoaded;
@@ -3460,6 +3424,12 @@ protected:
 	vector<unsigned int> l1_techtrigprescales_;
 	TBranch *l1_techtrigprescales_branch;
 	bool l1_techtrigprescales_isLoaded;
+	int	evt_nEvts_;
+	TBranch *evt_nEvts_branch;
+	bool evt_nEvts_isLoaded;
+	float	evt_filt_eff_;
+	TBranch *evt_filt_eff_branch;
+	bool evt_filt_eff_isLoaded;
 public: 
 void Init(TTree *tree) {
 	hlt_bits_branch = 0;
@@ -6843,26 +6813,6 @@ void Init(TTree *tree) {
 		pfjets_corL1L2L3_branch = tree->GetBranch(tree->GetAlias("pfjets_corL1L2L3"));
 		pfjets_corL1L2L3_branch->SetAddress(&pfjets_corL1L2L3_);
 	}
-	pfjets_electronE_branch = 0;
-	if (tree->GetAlias("pfjets_electronE") != 0) {
-		pfjets_electronE_branch = tree->GetBranch(tree->GetAlias("pfjets_electronE"));
-		pfjets_electronE_branch->SetAddress(&pfjets_electronE_);
-	}
-	pfjets_hfEmE_branch = 0;
-	if (tree->GetAlias("pfjets_hfEmE") != 0) {
-		pfjets_hfEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_hfEmE"));
-		pfjets_hfEmE_branch->SetAddress(&pfjets_hfEmE_);
-	}
-	pfjets_hfHadronE_branch = 0;
-	if (tree->GetAlias("pfjets_hfHadronE") != 0) {
-		pfjets_hfHadronE_branch = tree->GetBranch(tree->GetAlias("pfjets_hfHadronE"));
-		pfjets_hfHadronE_branch->SetAddress(&pfjets_hfHadronE_);
-	}
-	pfjets_muonE_branch = 0;
-	if (tree->GetAlias("pfjets_muonE") != 0) {
-		pfjets_muonE_branch = tree->GetBranch(tree->GetAlias("pfjets_muonE"));
-		pfjets_muonE_branch->SetAddress(&pfjets_muonE_);
-	}
 	pfjets_neutralEmE_branch = 0;
 	if (tree->GetAlias("pfjets_neutralEmE") != 0) {
 		pfjets_neutralEmE_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralEmE"));
@@ -6872,11 +6822,6 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("pfjets_neutralHadronE") != 0) {
 		pfjets_neutralHadronE_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralHadronE"));
 		pfjets_neutralHadronE_branch->SetAddress(&pfjets_neutralHadronE_);
-	}
-	pfjets_photonE_branch = 0;
-	if (tree->GetAlias("pfjets_photonE") != 0) {
-		pfjets_photonE_branch = tree->GetBranch(tree->GetAlias("pfjets_photonE"));
-		pfjets_photonE_branch->SetAddress(&pfjets_photonE_);
 	}
 	pfmus_deltaP_branch = 0;
 	if (tree->GetAlias("pfmus_deltaP") != 0) {
@@ -8518,11 +8463,6 @@ void Init(TTree *tree) {
 		mus_nmatches_branch = tree->GetBranch(tree->GetAlias("mus_nmatches"));
 		mus_nmatches_branch->SetAddress(&mus_nmatches_);
 	}
-	mus_numberOfMatchedStations_branch = 0;
-	if (tree->GetAlias("mus_numberOfMatchedStations") != 0) {
-		mus_numberOfMatchedStations_branch = tree->GetBranch(tree->GetAlias("mus_numberOfMatchedStations"));
-		mus_numberOfMatchedStations_branch->SetAddress(&mus_numberOfMatchedStations_);
-	}
 	mus_overlap0_branch = 0;
 	if (tree->GetAlias("mus_overlap0") != 0) {
 		mus_overlap0_branch = tree->GetBranch(tree->GetAlias("mus_overlap0"));
@@ -8653,50 +8593,20 @@ void Init(TTree *tree) {
 		pfels_particleId_branch = tree->GetBranch(tree->GetAlias("pfels_particleId"));
 		pfels_particleId_branch->SetAddress(&pfels_particleId_);
 	}
-	pfjets_chargedHadronMultiplicity_branch = 0;
-	if (tree->GetAlias("pfjets_chargedHadronMultiplicity") != 0) {
-		pfjets_chargedHadronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedHadronMultiplicity"));
-		pfjets_chargedHadronMultiplicity_branch->SetAddress(&pfjets_chargedHadronMultiplicity_);
-	}
 	pfjets_chargedMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_chargedMultiplicity") != 0) {
 		pfjets_chargedMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_chargedMultiplicity"));
 		pfjets_chargedMultiplicity_branch->SetAddress(&pfjets_chargedMultiplicity_);
-	}
-	pfjets_electronMultiplicity_branch = 0;
-	if (tree->GetAlias("pfjets_electronMultiplicity") != 0) {
-		pfjets_electronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_electronMultiplicity"));
-		pfjets_electronMultiplicity_branch->SetAddress(&pfjets_electronMultiplicity_);
-	}
-	pfjets_hfEmMultiplicity_branch = 0;
-	if (tree->GetAlias("pfjets_hfEmMultiplicity") != 0) {
-		pfjets_hfEmMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_hfEmMultiplicity"));
-		pfjets_hfEmMultiplicity_branch->SetAddress(&pfjets_hfEmMultiplicity_);
-	}
-	pfjets_hfHadronMultiplicity_branch = 0;
-	if (tree->GetAlias("pfjets_hfHadronMultiplicity") != 0) {
-		pfjets_hfHadronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_hfHadronMultiplicity"));
-		pfjets_hfHadronMultiplicity_branch->SetAddress(&pfjets_hfHadronMultiplicity_);
 	}
 	pfjets_muonMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_muonMultiplicity") != 0) {
 		pfjets_muonMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_muonMultiplicity"));
 		pfjets_muonMultiplicity_branch->SetAddress(&pfjets_muonMultiplicity_);
 	}
-	pfjets_neutralHadronMultiplicity_branch = 0;
-	if (tree->GetAlias("pfjets_neutralHadronMultiplicity") != 0) {
-		pfjets_neutralHadronMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralHadronMultiplicity"));
-		pfjets_neutralHadronMultiplicity_branch->SetAddress(&pfjets_neutralHadronMultiplicity_);
-	}
 	pfjets_neutralMultiplicity_branch = 0;
 	if (tree->GetAlias("pfjets_neutralMultiplicity") != 0) {
 		pfjets_neutralMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_neutralMultiplicity"));
 		pfjets_neutralMultiplicity_branch->SetAddress(&pfjets_neutralMultiplicity_);
-	}
-	pfjets_photonMultiplicity_branch = 0;
-	if (tree->GetAlias("pfjets_photonMultiplicity") != 0) {
-		pfjets_photonMultiplicity_branch = tree->GetBranch(tree->GetAlias("pfjets_photonMultiplicity"));
-		pfjets_photonMultiplicity_branch->SetAddress(&pfjets_photonMultiplicity_);
 	}
 	pfmus_musidx_branch = 0;
 	if (tree->GetAlias("pfmus_musidx") != 0) {
@@ -9197,6 +9107,16 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("l1_techtrigprescales") != 0) {
 		l1_techtrigprescales_branch = tree->GetBranch(tree->GetAlias("l1_techtrigprescales"));
 		l1_techtrigprescales_branch->SetAddress(&l1_techtrigprescales_);
+	}
+	evt_nEvts_branch = 0;
+	if (tree->GetAlias("evt_nEvts") != 0) {
+		evt_nEvts_branch = tree->GetBranch(tree->GetAlias("evt_nEvts"));
+		evt_nEvts_branch->SetAddress(&evt_nEvts_);
+	}
+	evt_filt_eff_branch = 0;
+	if (tree->GetAlias("evt_filt_eff") != 0) {
+		evt_filt_eff_branch = tree->GetBranch(tree->GetAlias("evt_filt_eff"));
+		evt_filt_eff_branch->SetAddress(&evt_filt_eff_);
 	}
   tree->SetMakeClass(0);
 }
@@ -9880,13 +9800,8 @@ void GetEntry(unsigned int idx)
 		pfjets_cor_isLoaded = false;
 		pfjets_corL1FastL2L3_isLoaded = false;
 		pfjets_corL1L2L3_isLoaded = false;
-		pfjets_electronE_isLoaded = false;
-		pfjets_hfEmE_isLoaded = false;
-		pfjets_hfHadronE_isLoaded = false;
-		pfjets_muonE_isLoaded = false;
 		pfjets_neutralEmE_isLoaded = false;
 		pfjets_neutralHadronE_isLoaded = false;
-		pfjets_photonE_isLoaded = false;
 		pfmus_deltaP_isLoaded = false;
 		pfmus_ecalE_isLoaded = false;
 		pfmus_hcalE_isLoaded = false;
@@ -10215,7 +10130,6 @@ void GetEntry(unsigned int idx)
 		mus_muonBestTrackType_isLoaded = false;
 		mus_nOverlaps_isLoaded = false;
 		mus_nmatches_isLoaded = false;
-		mus_numberOfMatchedStations_isLoaded = false;
 		mus_overlap0_isLoaded = false;
 		mus_overlap1_isLoaded = false;
 		mus_pfcharge_isLoaded = false;
@@ -10242,15 +10156,9 @@ void GetEntry(unsigned int idx)
 		pfels_charge_isLoaded = false;
 		pfels_flag_isLoaded = false;
 		pfels_particleId_isLoaded = false;
-		pfjets_chargedHadronMultiplicity_isLoaded = false;
 		pfjets_chargedMultiplicity_isLoaded = false;
-		pfjets_electronMultiplicity_isLoaded = false;
-		pfjets_hfEmMultiplicity_isLoaded = false;
-		pfjets_hfHadronMultiplicity_isLoaded = false;
 		pfjets_muonMultiplicity_isLoaded = false;
-		pfjets_neutralHadronMultiplicity_isLoaded = false;
 		pfjets_neutralMultiplicity_isLoaded = false;
-		pfjets_photonMultiplicity_isLoaded = false;
 		pfmus_musidx_isLoaded = false;
 		pfmus_charge_isLoaded = false;
 		pfmus_flag_isLoaded = false;
@@ -10351,6 +10259,8 @@ void GetEntry(unsigned int idx)
 		hyp_trilep_third_index_isLoaded = false;
 		l1_prescales_isLoaded = false;
 		l1_techtrigprescales_isLoaded = false;
+		evt_nEvts_isLoaded = false;
+		evt_filt_eff_isLoaded = false;
 	}
 
 void LoadAllBranches() 
@@ -11032,13 +10942,8 @@ void LoadAllBranches()
 	if (pfjets_cor_branch != 0) pfjets_cor();
 	if (pfjets_corL1FastL2L3_branch != 0) pfjets_corL1FastL2L3();
 	if (pfjets_corL1L2L3_branch != 0) pfjets_corL1L2L3();
-	if (pfjets_electronE_branch != 0) pfjets_electronE();
-	if (pfjets_hfEmE_branch != 0) pfjets_hfEmE();
-	if (pfjets_hfHadronE_branch != 0) pfjets_hfHadronE();
-	if (pfjets_muonE_branch != 0) pfjets_muonE();
 	if (pfjets_neutralEmE_branch != 0) pfjets_neutralEmE();
 	if (pfjets_neutralHadronE_branch != 0) pfjets_neutralHadronE();
-	if (pfjets_photonE_branch != 0) pfjets_photonE();
 	if (pfmus_deltaP_branch != 0) pfmus_deltaP();
 	if (pfmus_ecalE_branch != 0) pfmus_ecalE();
 	if (pfmus_hcalE_branch != 0) pfmus_hcalE();
@@ -11367,7 +11272,6 @@ void LoadAllBranches()
 	if (mus_muonBestTrackType_branch != 0) mus_muonBestTrackType();
 	if (mus_nOverlaps_branch != 0) mus_nOverlaps();
 	if (mus_nmatches_branch != 0) mus_nmatches();
-	if (mus_numberOfMatchedStations_branch != 0) mus_numberOfMatchedStations();
 	if (mus_overlap0_branch != 0) mus_overlap0();
 	if (mus_overlap1_branch != 0) mus_overlap1();
 	if (mus_pfcharge_branch != 0) mus_pfcharge();
@@ -11394,15 +11298,9 @@ void LoadAllBranches()
 	if (pfels_charge_branch != 0) pfels_charge();
 	if (pfels_flag_branch != 0) pfels_flag();
 	if (pfels_particleId_branch != 0) pfels_particleId();
-	if (pfjets_chargedHadronMultiplicity_branch != 0) pfjets_chargedHadronMultiplicity();
 	if (pfjets_chargedMultiplicity_branch != 0) pfjets_chargedMultiplicity();
-	if (pfjets_electronMultiplicity_branch != 0) pfjets_electronMultiplicity();
-	if (pfjets_hfEmMultiplicity_branch != 0) pfjets_hfEmMultiplicity();
-	if (pfjets_hfHadronMultiplicity_branch != 0) pfjets_hfHadronMultiplicity();
 	if (pfjets_muonMultiplicity_branch != 0) pfjets_muonMultiplicity();
-	if (pfjets_neutralHadronMultiplicity_branch != 0) pfjets_neutralHadronMultiplicity();
 	if (pfjets_neutralMultiplicity_branch != 0) pfjets_neutralMultiplicity();
-	if (pfjets_photonMultiplicity_branch != 0) pfjets_photonMultiplicity();
 	if (pfmus_musidx_branch != 0) pfmus_musidx();
 	if (pfmus_charge_branch != 0) pfmus_charge();
 	if (pfmus_flag_branch != 0) pfmus_flag();
@@ -11503,6 +11401,8 @@ void LoadAllBranches()
 	if (hyp_trilep_third_index_branch != 0) hyp_trilep_third_index();
 	if (l1_prescales_branch != 0) l1_prescales();
 	if (l1_techtrigprescales_branch != 0) l1_techtrigprescales();
+	if (evt_nEvts_branch != 0) evt_nEvts();
+	if (evt_filt_eff_branch != 0) evt_filt_eff();
 }
 
 	TBits &hlt_bits()
@@ -12100,10 +12000,6 @@ void LoadAllBranches()
 			if (evt_kfactor_branch != 0) {
 				evt_kfactor_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_kfactor_)) {
-					printf("branch evt_kfactor_branch contains a bad float: %f\n", evt_kfactor_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_kfactor_branch does not exist!\n");
@@ -12119,10 +12015,6 @@ void LoadAllBranches()
 			if (evt_scale1fb_branch != 0) {
 				evt_scale1fb_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_scale1fb_)) {
-					printf("branch evt_scale1fb_branch contains a bad float: %f\n", evt_scale1fb_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_scale1fb_branch does not exist!\n");
@@ -12138,10 +12030,6 @@ void LoadAllBranches()
 			if (evt_xsec_excl_branch != 0) {
 				evt_xsec_excl_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_xsec_excl_)) {
-					printf("branch evt_xsec_excl_branch contains a bad float: %f\n", evt_xsec_excl_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_excl_branch does not exist!\n");
@@ -12157,10 +12045,6 @@ void LoadAllBranches()
 			if (evt_xsec_incl_branch != 0) {
 				evt_xsec_incl_branch->GetEntry(index);
 				#ifdef PARANOIA
-				if (not isfinite(evt_xsec_incl_)) {
-					printf("branch evt_xsec_incl_branch contains a bad float: %f\n", evt_xsec_incl_);
-					exit(1);
-				}
 				#endif // #ifdef PARANOIA
 			} else { 
 				printf("branch evt_xsec_incl_branch does not exist!\n");
@@ -25501,90 +25385,6 @@ void LoadAllBranches()
 		}
 		return pfjets_corL1L2L3_;
 	}
-	vector<float> &pfjets_electronE()
-	{
-		if (not pfjets_electronE_isLoaded) {
-			if (pfjets_electronE_branch != 0) {
-				pfjets_electronE_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = pfjets_electronE_.begin(); i != pfjets_electronE_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch pfjets_electronE_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_electronE_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_electronE_isLoaded = true;
-		}
-		return pfjets_electronE_;
-	}
-	vector<float> &pfjets_hfEmE()
-	{
-		if (not pfjets_hfEmE_isLoaded) {
-			if (pfjets_hfEmE_branch != 0) {
-				pfjets_hfEmE_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = pfjets_hfEmE_.begin(); i != pfjets_hfEmE_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch pfjets_hfEmE_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_hfEmE_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_hfEmE_isLoaded = true;
-		}
-		return pfjets_hfEmE_;
-	}
-	vector<float> &pfjets_hfHadronE()
-	{
-		if (not pfjets_hfHadronE_isLoaded) {
-			if (pfjets_hfHadronE_branch != 0) {
-				pfjets_hfHadronE_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = pfjets_hfHadronE_.begin(); i != pfjets_hfHadronE_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch pfjets_hfHadronE_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_hfHadronE_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_hfHadronE_isLoaded = true;
-		}
-		return pfjets_hfHadronE_;
-	}
-	vector<float> &pfjets_muonE()
-	{
-		if (not pfjets_muonE_isLoaded) {
-			if (pfjets_muonE_branch != 0) {
-				pfjets_muonE_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = pfjets_muonE_.begin(); i != pfjets_muonE_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch pfjets_muonE_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_muonE_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_muonE_isLoaded = true;
-		}
-		return pfjets_muonE_;
-	}
 	vector<float> &pfjets_neutralEmE()
 	{
 		if (not pfjets_neutralEmE_isLoaded) {
@@ -25626,27 +25426,6 @@ void LoadAllBranches()
 			pfjets_neutralHadronE_isLoaded = true;
 		}
 		return pfjets_neutralHadronE_;
-	}
-	vector<float> &pfjets_photonE()
-	{
-		if (not pfjets_photonE_isLoaded) {
-			if (pfjets_photonE_branch != 0) {
-				pfjets_photonE_branch->GetEntry(index);
-				#ifdef PARANOIA
-				for (vector<float>::const_iterator i = pfjets_photonE_.begin(); i != pfjets_photonE_.end(); ++i) {
-					if (not isfinite(*i)) {
-						printf("branch pfjets_photonE_branch contains a bad float: %f\n", *i);
-						exit(1);
-					}
-				}
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_photonE_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_photonE_isLoaded = true;
-		}
-		return pfjets_photonE_;
 	}
 	vector<float> &pfmus_deltaP()
 	{
@@ -31338,21 +31117,6 @@ void LoadAllBranches()
 		}
 		return mus_nmatches_;
 	}
-	vector<int> &mus_numberOfMatchedStations()
-	{
-		if (not mus_numberOfMatchedStations_isLoaded) {
-			if (mus_numberOfMatchedStations_branch != 0) {
-				mus_numberOfMatchedStations_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch mus_numberOfMatchedStations_branch does not exist!\n");
-				exit(1);
-			}
-			mus_numberOfMatchedStations_isLoaded = true;
-		}
-		return mus_numberOfMatchedStations_;
-	}
 	vector<int> &mus_overlap0()
 	{
 		if (not mus_overlap0_isLoaded) {
@@ -31743,21 +31507,6 @@ void LoadAllBranches()
 		}
 		return pfels_particleId_;
 	}
-	vector<int> &pfjets_chargedHadronMultiplicity()
-	{
-		if (not pfjets_chargedHadronMultiplicity_isLoaded) {
-			if (pfjets_chargedHadronMultiplicity_branch != 0) {
-				pfjets_chargedHadronMultiplicity_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_chargedHadronMultiplicity_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_chargedHadronMultiplicity_isLoaded = true;
-		}
-		return pfjets_chargedHadronMultiplicity_;
-	}
 	vector<int> &pfjets_chargedMultiplicity()
 	{
 		if (not pfjets_chargedMultiplicity_isLoaded) {
@@ -31772,51 +31521,6 @@ void LoadAllBranches()
 			pfjets_chargedMultiplicity_isLoaded = true;
 		}
 		return pfjets_chargedMultiplicity_;
-	}
-	vector<int> &pfjets_electronMultiplicity()
-	{
-		if (not pfjets_electronMultiplicity_isLoaded) {
-			if (pfjets_electronMultiplicity_branch != 0) {
-				pfjets_electronMultiplicity_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_electronMultiplicity_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_electronMultiplicity_isLoaded = true;
-		}
-		return pfjets_electronMultiplicity_;
-	}
-	vector<int> &pfjets_hfEmMultiplicity()
-	{
-		if (not pfjets_hfEmMultiplicity_isLoaded) {
-			if (pfjets_hfEmMultiplicity_branch != 0) {
-				pfjets_hfEmMultiplicity_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_hfEmMultiplicity_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_hfEmMultiplicity_isLoaded = true;
-		}
-		return pfjets_hfEmMultiplicity_;
-	}
-	vector<int> &pfjets_hfHadronMultiplicity()
-	{
-		if (not pfjets_hfHadronMultiplicity_isLoaded) {
-			if (pfjets_hfHadronMultiplicity_branch != 0) {
-				pfjets_hfHadronMultiplicity_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_hfHadronMultiplicity_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_hfHadronMultiplicity_isLoaded = true;
-		}
-		return pfjets_hfHadronMultiplicity_;
 	}
 	vector<int> &pfjets_muonMultiplicity()
 	{
@@ -31833,21 +31537,6 @@ void LoadAllBranches()
 		}
 		return pfjets_muonMultiplicity_;
 	}
-	vector<int> &pfjets_neutralHadronMultiplicity()
-	{
-		if (not pfjets_neutralHadronMultiplicity_isLoaded) {
-			if (pfjets_neutralHadronMultiplicity_branch != 0) {
-				pfjets_neutralHadronMultiplicity_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_neutralHadronMultiplicity_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_neutralHadronMultiplicity_isLoaded = true;
-		}
-		return pfjets_neutralHadronMultiplicity_;
-	}
 	vector<int> &pfjets_neutralMultiplicity()
 	{
 		if (not pfjets_neutralMultiplicity_isLoaded) {
@@ -31862,21 +31551,6 @@ void LoadAllBranches()
 			pfjets_neutralMultiplicity_isLoaded = true;
 		}
 		return pfjets_neutralMultiplicity_;
-	}
-	vector<int> &pfjets_photonMultiplicity()
-	{
-		if (not pfjets_photonMultiplicity_isLoaded) {
-			if (pfjets_photonMultiplicity_branch != 0) {
-				pfjets_photonMultiplicity_branch->GetEntry(index);
-				#ifdef PARANOIA
-				#endif // #ifdef PARANOIA
-			} else { 
-				printf("branch pfjets_photonMultiplicity_branch does not exist!\n");
-				exit(1);
-			}
-			pfjets_photonMultiplicity_isLoaded = true;
-		}
-		return pfjets_photonMultiplicity_;
 	}
 	vector<int> &pfmus_musidx()
 	{
@@ -33378,6 +33052,36 @@ void LoadAllBranches()
 		}
 		return l1_techtrigprescales_;
 	}
+	int &evt_nEvts()
+	{
+		if (not evt_nEvts_isLoaded) {
+			if (evt_nEvts_branch != 0) {
+				evt_nEvts_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_nEvts_branch does not exist!\n");
+				exit(1);
+			}
+			evt_nEvts_isLoaded = true;
+		}
+		return evt_nEvts_;
+	}
+	float &evt_filt_eff()
+	{
+		if (not evt_filt_eff_isLoaded) {
+			if (evt_filt_eff_branch != 0) {
+				evt_filt_eff_branch->GetEntry(index);
+				#ifdef PARANOIA
+				#endif // #ifdef PARANOIA
+			} else { 
+				printf("branch evt_filt_eff_branch does not exist!\n");
+				exit(1);
+			}
+			evt_filt_eff_isLoaded = true;
+		}
+		return evt_filt_eff_;
+	}
 	bool passHLTTrigger(TString trigName) {
 		int trigIndx;
 		vector<TString>::const_iterator begin_it = hlt_trigNames().begin();
@@ -34130,13 +33834,8 @@ namespace tas {
 	vector<float> &pfjets_cor();
 	vector<float> &pfjets_corL1FastL2L3();
 	vector<float> &pfjets_corL1L2L3();
-	vector<float> &pfjets_electronE();
-	vector<float> &pfjets_hfEmE();
-	vector<float> &pfjets_hfHadronE();
-	vector<float> &pfjets_muonE();
 	vector<float> &pfjets_neutralEmE();
 	vector<float> &pfjets_neutralHadronE();
-	vector<float> &pfjets_photonE();
 	vector<float> &pfmus_deltaP();
 	vector<float> &pfmus_ecalE();
 	vector<float> &pfmus_hcalE();
@@ -34465,7 +34164,6 @@ namespace tas {
 	vector<int> &mus_muonBestTrackType();
 	vector<int> &mus_nOverlaps();
 	vector<int> &mus_nmatches();
-	vector<int> &mus_numberOfMatchedStations();
 	vector<int> &mus_overlap0();
 	vector<int> &mus_overlap1();
 	vector<int> &mus_pfcharge();
@@ -34492,15 +34190,9 @@ namespace tas {
 	vector<int> &pfels_charge();
 	vector<int> &pfels_flag();
 	vector<int> &pfels_particleId();
-	vector<int> &pfjets_chargedHadronMultiplicity();
 	vector<int> &pfjets_chargedMultiplicity();
-	vector<int> &pfjets_electronMultiplicity();
-	vector<int> &pfjets_hfEmMultiplicity();
-	vector<int> &pfjets_hfHadronMultiplicity();
 	vector<int> &pfjets_muonMultiplicity();
-	vector<int> &pfjets_neutralHadronMultiplicity();
 	vector<int> &pfjets_neutralMultiplicity();
-	vector<int> &pfjets_photonMultiplicity();
 	vector<int> &pfmus_musidx();
 	vector<int> &pfmus_charge();
 	vector<int> &pfmus_flag();
@@ -34601,6 +34293,8 @@ namespace tas {
 	vector<unsigned int> &hyp_trilep_third_index();
 	vector<unsigned int> &l1_prescales();
 	vector<unsigned int> &l1_techtrigprescales();
+	int &evt_nEvts();
+	float &evt_filt_eff();
 	bool passHLTTrigger(TString trigName);
 	bool passL1Trigger(TString trigName);
 }

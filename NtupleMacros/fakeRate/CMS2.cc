@@ -677,13 +677,8 @@ namespace tas {
 	vector<float> &pfjets_cor() { return cms2.pfjets_cor(); }
 	vector<float> &pfjets_corL1FastL2L3() { return cms2.pfjets_corL1FastL2L3(); }
 	vector<float> &pfjets_corL1L2L3() { return cms2.pfjets_corL1L2L3(); }
-	vector<float> &pfjets_electronE() { return cms2.pfjets_electronE(); }
-	vector<float> &pfjets_hfEmE() { return cms2.pfjets_hfEmE(); }
-	vector<float> &pfjets_hfHadronE() { return cms2.pfjets_hfHadronE(); }
-	vector<float> &pfjets_muonE() { return cms2.pfjets_muonE(); }
 	vector<float> &pfjets_neutralEmE() { return cms2.pfjets_neutralEmE(); }
 	vector<float> &pfjets_neutralHadronE() { return cms2.pfjets_neutralHadronE(); }
-	vector<float> &pfjets_photonE() { return cms2.pfjets_photonE(); }
 	vector<float> &pfmus_deltaP() { return cms2.pfmus_deltaP(); }
 	vector<float> &pfmus_ecalE() { return cms2.pfmus_ecalE(); }
 	vector<float> &pfmus_hcalE() { return cms2.pfmus_hcalE(); }
@@ -1012,7 +1007,6 @@ namespace tas {
 	vector<int> &mus_muonBestTrackType() { return cms2.mus_muonBestTrackType(); }
 	vector<int> &mus_nOverlaps() { return cms2.mus_nOverlaps(); }
 	vector<int> &mus_nmatches() { return cms2.mus_nmatches(); }
-	vector<int> &mus_numberOfMatchedStations() { return cms2.mus_numberOfMatchedStations(); }
 	vector<int> &mus_overlap0() { return cms2.mus_overlap0(); }
 	vector<int> &mus_overlap1() { return cms2.mus_overlap1(); }
 	vector<int> &mus_pfcharge() { return cms2.mus_pfcharge(); }
@@ -1039,15 +1033,9 @@ namespace tas {
 	vector<int> &pfels_charge() { return cms2.pfels_charge(); }
 	vector<int> &pfels_flag() { return cms2.pfels_flag(); }
 	vector<int> &pfels_particleId() { return cms2.pfels_particleId(); }
-	vector<int> &pfjets_chargedHadronMultiplicity() { return cms2.pfjets_chargedHadronMultiplicity(); }
 	vector<int> &pfjets_chargedMultiplicity() { return cms2.pfjets_chargedMultiplicity(); }
-	vector<int> &pfjets_electronMultiplicity() { return cms2.pfjets_electronMultiplicity(); }
-	vector<int> &pfjets_hfEmMultiplicity() { return cms2.pfjets_hfEmMultiplicity(); }
-	vector<int> &pfjets_hfHadronMultiplicity() { return cms2.pfjets_hfHadronMultiplicity(); }
 	vector<int> &pfjets_muonMultiplicity() { return cms2.pfjets_muonMultiplicity(); }
-	vector<int> &pfjets_neutralHadronMultiplicity() { return cms2.pfjets_neutralHadronMultiplicity(); }
 	vector<int> &pfjets_neutralMultiplicity() { return cms2.pfjets_neutralMultiplicity(); }
-	vector<int> &pfjets_photonMultiplicity() { return cms2.pfjets_photonMultiplicity(); }
 	vector<int> &pfmus_musidx() { return cms2.pfmus_musidx(); }
 	vector<int> &pfmus_charge() { return cms2.pfmus_charge(); }
 	vector<int> &pfmus_flag() { return cms2.pfmus_flag(); }
@@ -1148,6 +1136,8 @@ namespace tas {
 	vector<unsigned int> &hyp_trilep_third_index() { return cms2.hyp_trilep_third_index(); }
 	vector<unsigned int> &l1_prescales() { return cms2.l1_prescales(); }
 	vector<unsigned int> &l1_techtrigprescales() { return cms2.l1_techtrigprescales(); }
+	int &evt_nEvts() { return cms2.evt_nEvts(); }
+	float &evt_filt_eff() { return cms2.evt_filt_eff(); }
 	bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }
 	bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }
 }

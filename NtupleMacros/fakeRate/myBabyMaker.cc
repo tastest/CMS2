@@ -21,7 +21,8 @@
 #include "TDatabasePDG.h"
 
 // TAS includes
-#ifdef __NON_ROOT_BUILD__  // for linking CORE and Tools as a standalone librabry (need to define __NON_ROOT_BUILD__ in your build script)
+// for linking CORE and Tools as a standalone librabry (need to define __NON_ROOT_BUILD__ in your build script)
+#ifdef __NON_ROOT_BUILD__  
 #include "CMS2.h"
 #include "CORE/utilities.h"
 #include "CORE/electronSelections.h"
@@ -37,8 +38,9 @@
 #include "CORE/mcSelections.h"
 #include "CORE/ssSelections.h"
 #include "CORE/susySelections.h"
+// for compiling in ACLiC (.L myBabyMaker.c++ method)
 #else
-#include "CMS2.cc"  // for compiling in ACLiC (.L myBabyMaker.c++ method)
+#include "CMS2.cc"  
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
 #include "../CORE/electronSelections.cc"
@@ -85,7 +87,19 @@ void PrintTriggerDebugHeader(string outfileName){
     outfile.close();
 }
 
-void PrintTriggerDebugLine(int itrg, int id, bool match, bool matchId, double dr, LorentzVector lepton_p4, LorentzVector p4tr, string trigString, int nTrig, string outfileName )
+void PrintTriggerDebugLine
+    (
+        int itrg, 
+        int id, 
+        bool match, 
+        bool matchId, 
+        double dr, 
+        const LorentzVector& lepton_p4, 
+        const LorentzVector& p4tr, 
+        const string& trigString, 
+        int nTrig, 
+        const string& outfileName
+    )
 {
     ofstream outfile( Form("triggerStudy/%s", outfileName.c_str() ), ios::app );
 
@@ -412,6 +426,7 @@ void myBabyMaker::InitBabyNtuple()
     el_id_smurfV5_    = false;
     el_id_vbtf80_     = false;
     el_id_vbtf90_     = false;
+    el_id_effarea_    = -999.0;
     convHitPattern_   = false;
     convPartnerTrack_ = false;
     convMIT_          = false;
@@ -775,6 +790,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("el_id_smurfV5"       , &el_id_smurfV5_       );
     babyTree_->Branch("el_id_vbtf80"        , &el_id_vbtf80_        );
     babyTree_->Branch("el_id_vbtf90"        , &el_id_vbtf90_        );
+    babyTree_->Branch("el_id_effarea"       , &el_id_effarea_       );
     babyTree_->Branch("conv0MissHits"       , &conv0MissHits_       );
     babyTree_->Branch("convHitPattern"      , &convHitPattern_      );
     babyTree_->Branch("convPartnerTrack"    , &convPartnerTrack_    );
@@ -1044,33 +1060,37 @@ void myBabyMaker::CloseBabyNtuple()
 
 // constructor
 myBabyMaker::myBabyMaker () 
-    : ele8_regexp                                          ("HLT_Ele8_v(\\d+)"                                          , "o")
-    , ele8_CaloIdL_TrkIdVL_regexp                          ("HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)"                          , "o")
-    , ele8_CaloIdL_CaloIsoVL_regexp                        ("HLT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)"                        , "o")
-    , ele8_CaloIdL_CaloIsoVL_Jet40_regexp                  ("HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v(\\d+)"                  , "o")
-    , ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_regexp       ("HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v(\\d+)"       , "o")
-    , ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp       ("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"       , "o")
-    , ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp ("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)" , "o")
-    , ele8_CaloIdT_TrkIdVL_regexp                          ("HLT_Ele8_CaloIdT_TrkIdVL_v(\\d+)"                          , "o")
-    , ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp ("HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v(\\d+)"       , "o")
-    , ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_regexp ("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"       , "o")
-    , ele17_CaloIdL_CaloIsoVL_regexp                       ("HLT_Ele17_CaloIdL_CaloIsoVL_v(\\d+)"                       , "o")
-    , ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp      ("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"      , "o")
-    , ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)", "o")
-    , photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp ("HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)" , "o")
-    , mu3_regexp        ("HLT_Mu3_v(\\d+)"        , "o")
-    , mu5_regexp        ("HLT_Mu5_v(\\d+)"        , "o")          
-    , mu8_regexp        ("HLT_Mu8_v(\\d+)"        , "o")      
-    , mu12_regexp       ("HLT_Mu12_v(\\d+)"       , "o")     
-    , mu15_regexp       ("HLT_Mu15_v(\\d+)"       , "o")     
-    , mu17_regexp       ("HLT_Mu17_v(\\d+)"       , "o")     
-    , mu20_regexp       ("HLT_Mu20_v(\\d+)"       , "o")     
-    , mu24_regexp       ("HLT_Mu24_v(\\d+)"       , "o")     
-    , mu30_regexp       ("HLT_Mu30_v(\\d+)"       , "o")     
-    , mu15_eta2p1_regexp("HLT_Mu15_eta2p1_v(\\d+)", "o")     
-    , mu24_eta2p1_regexp("HLT_Mu24_eta2p1_v(\\d+)", "o")     
-    , mu30_eta2p1_regexp("HLT_Mu30_eta2p1_v(\\d+)", "o")     
-    , mu8_Jet40_regexp  ("HLT_Mu8_Jet40_v(\\d+)"  , "o")
+    : ele8_regexp                                                 ("HLT_Ele8_v(\\d+)"                                                 , "o")
+    , ele8_CaloIdL_TrkIdVL_regexp                                 ("HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)"                                 , "o")
+    , ele8_CaloIdL_CaloIsoVL_regexp                               ("HLT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)"                               , "o")
+    , ele8_CaloIdL_CaloIsoVL_Jet40_regexp                         ("HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v(\\d+)"                         , "o")
+    , ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_regexp              ("HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v(\\d+)"              , "o")
+    , ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp              ("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"              , "o")
+    , ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp        ("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)"        , "o")
+    , ele8_CaloIdT_TrkIdVL_regexp                                 ("HLT_Ele8_CaloIdT_TrkIdVL_v(\\d+)"                                 , "o")
+    , ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp        ("HLT_Ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_v(\\d+)"              , "o")
+    , ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_regexp        ("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"              , "o")
+    , ele17_CaloIdL_CaloIsoVL_regexp                              ("HLT_Ele17_CaloIdL_CaloIsoVL_v(\\d+)"                              , "o")
+    , ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp             ("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"             , "o")
+    , ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp       ("HLT_Eele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)"      , "o")
+    , ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_rexexp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v(\\d+)", "o")
+    , ele27_WP80_rexexp                                           ("HLT_Ele27_WP80_v(\\d+)"                                           , "o")
+    , photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp        ("HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)"        , "o")
+    , mu3_regexp           ("HLT_Mu3_v(\\d+)"           , "o")
+    , mu5_regexp           ("HLT_Mu5_v(\\d+)"           , "o")          
+    , mu8_regexp           ("HLT_Mu8_v(\\d+)"           , "o")      
+    , mu12_regexp          ("HLT_Mu12_v(\\d+)"          , "o")     
+    , mu15_regexp          ("HLT_Mu15_v(\\d+)"          , "o")     
+    , mu17_regexp          ("HLT_Mu17_v(\\d+)"          , "o")     
+    , mu20_regexp          ("HLT_Mu20_v(\\d+)"          , "o")     
+    , mu24_regexp          ("HLT_Mu24_v(\\d+)"          , "o")     
+    , mu30_regexp          ("HLT_Mu30_v(\\d+)"          , "o")     
+    , mu15_eta2p1_regexp   ("HLT_Mu15_eta2p1_v(\\d+)"   , "o")     
+    , mu24_eta2p1_regexp   ("HLT_Mu24_eta2p1_v(\\d+)"   , "o")     
+    , mu30_eta2p1_regexp   ("HLT_Mu30_eta2p1_v(\\d+)"   , "o")     
+    , mu8_Jet40_regexp     ("HLT_Mu8_Jet40_v(\\d+)"     , "o")
+    , isoMu24_eta2p1_regexp("HLT_IsoMu24_eta2p1_v(\\d+)", "o")
+    , isoMu30_eta2p1_regexp("HLT_IsoMu30_eta2p1_v(\\d+)", "o")
 {
 }
 
@@ -1117,13 +1137,12 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     int i_permilleOld = 0;
     unsigned int nEventsTotal = 0;
     unsigned int nEventsChain = 0;
-    int nEvents = -1;
+    int nEvents = -1; 
     if (nEvents==-1){
         nEventsChain = chain->GetEntries();
     } else {
         nEventsChain = nEvents;
     }
-    nEventsChain = chain->GetEntries();
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
     map<int,int> m_events;
@@ -1138,6 +1157,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
         unsigned int nGoodEvents(0);
         unsigned int nLoop = nEntries;
         unsigned int z;
+
         for( z = 0; z < nLoop; z++) { // Event Loop
             cms2.GetEntry(z);
 
@@ -1496,11 +1516,22 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
                     }
 
+                    // ID
                     el_id_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5_id );
                     el_id_vbtf80_  = electronId_VBTF(iLep, VBTF_35X_80, false, false);
                     el_id_vbtf90_  = electronId_VBTF(iLep, VBTF_35X_90, false, false);
                     if( els_closestMuon().at(iLep) == -1 )
                         closestMuon_ = true;
+
+                    // electron ID effective area
+                    // 2012 working point effective id (taken From electronSelections.h -- electronId_WP2012()) 
+                    el_id_effarea_ = 0.18;
+                    if (fabs(eta_ ) > 1.0   && fabs(eta_) <= 1.479 ) { el_id_effarea_ = 0.19; }
+                    if (fabs(eta_ ) > 1.479 && fabs(eta_) <= 2.0   ) { el_id_effarea_ = 0.21; }
+                    if (fabs(eta_ ) > 2.0   && fabs(eta_) <= 2.2   ) { el_id_effarea_ = 0.38; }
+                    if (fabs(eta_ ) > 2.2   && fabs(eta_) <= 2.3   ) { el_id_effarea_ = 0.61; }
+                    if (fabs(eta_ ) > 2.3   && fabs(eta_) <= 2.4   ) { el_id_effarea_ = 0.73; }
+                    if (fabs(eta_) > 2.4)                            { el_id_effarea_ = 0.78; }
                     
                     // PV
                     d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
@@ -1544,37 +1575,45 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     ///////////////////////
 
                     // Electrons
-                    triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                        = MatchTriggerClass(els_p4().at(iLep), &ele17_CaloIdL_CaloIsoVL_regexp                       );
-                    triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar       = MatchTriggerClass(els_p4().at(iLep), &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp      );
-                    triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar = MatchTriggerClass(els_p4().at(iLep), &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp);
-                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                         = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdL_CaloIsoVL_regexp                        ); 
-                    triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar        = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp       );
-                    triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar  = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp );
-                    triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_vstar                           = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdT_TrkIdVL_regexp                          ); 
+                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                                = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdL_CaloIsoVL_regexp                               );
+                    triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar               = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp              );
+                    triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar         = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp        );
+                    triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_vstar                                  = MatchTriggerClass(els_p4().at(iLep), &ele8_CaloIdT_TrkIdVL_regexp                                 );
+                    triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                               = MatchTriggerClass(els_p4().at(iLep), &ele17_CaloIdL_CaloIsoVL_regexp                              );
+                    triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar              = MatchTriggerClass(els_p4().at(iLep), &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp             );
+                    triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar        = MatchTriggerClass(els_p4().at(iLep), &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp       );
+                    triggerMatchStruct struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar = MatchTriggerClass(els_p4().at(iLep), &ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_rexexp);
+                    triggerMatchStruct struct_ele27_WP80_vstar                                            = MatchTriggerClass(els_p4().at(iLep), &ele27_WP80_rexexp                                           );
 
-                    ele17_CaloIdL_CaloIsoVL_vstar_                          = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_         = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_   = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
-                    ele8_CaloIdL_CaloIsoVL_vstar_                           = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_          = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_    = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
-                    ele8_CaloIdT_TrkIdVL_vstar_                             = struct_ele8_CaloIdT_TrkIdVL_vstar.nHLTObjects_;
+                    ele8_CaloIdL_CaloIsoVL_vstar_                                   = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
+                    ele8_CaloIdT_TrkIdVL_vstar_                                     = struct_ele8_CaloIdT_TrkIdVL_vstar.nHLTObjects_;
+                    ele17_CaloIdL_CaloIsoVL_vstar_                                  = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                 = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_           = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
+                    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_    = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.nHLTObjects_;
+                    ele27_WP80_vstar_                                               = struct_ele27_WP80_vstar.nHLTObjects_;
 
-                    ele17_CaloIdL_CaloIsoVL_version_                        = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_       = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_ = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
-                    ele8_CaloIdL_CaloIsoVL_version_                         = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_        = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_  = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
-                    ele8_CaloIdT_TrkIdVL_version_                           = struct_ele8_CaloIdT_TrkIdVL_vstar.version_;
+                    ele8_CaloIdL_CaloIsoVL_version_                                 = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_          = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
+                    ele8_CaloIdT_TrkIdVL_version_                                   = struct_ele8_CaloIdT_TrkIdVL_vstar.version_;
+                    ele17_CaloIdL_CaloIsoVL_version_                                = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_               = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_         = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
+                    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_  = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.version_;
+                    ele27_WP80_version_                                             = struct_ele27_WP80_vstar.version_;
 
-                    dr_ele17_CaloIdL_CaloIsoVL_vstar_                       = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
-                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_      = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
-                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_= struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
-                    dr_ele8_CaloIdL_CaloIsoVL_vstar_                        = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
-                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
-                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_ = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
-                    dr_ele8_CaloIdT_TrkIdVL_vstar_                          = struct_ele8_CaloIdT_TrkIdVL_vstar.dR_;
+                    dr_ele8_CaloIdL_CaloIsoVL_vstar_                                = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
+                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
+                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
+                    dr_ele8_CaloIdT_TrkIdVL_vstar_                                  = struct_ele8_CaloIdT_TrkIdVL_vstar.dR_;
+                    dr_ele17_CaloIdL_CaloIsoVL_vstar_                               = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
+                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
+                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_        = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
+                    dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.dR_;
+                    dr_ele27_WP80_vstar_                                            = struct_ele27_WP80_vstar.dR_;
 
                     ///////////////////////  
                     // end 2012 Triggers //
@@ -1583,6 +1622,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     ///////////////////////  
                     // 2011 Triggers     //
                     ///////////////////////
+                    
 
                     // Electrons
                     triggerMatchStruct struct_ele8_vstar                                          = MatchTriggerClass( els_p4().at(iLep), &ele8_regexp                                         );
@@ -1926,10 +1966,15 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                             pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
                         }
                     } 
+
                     // Pileup - VertexMaker
+                    unsigned int first_good_vertex_index = 0;
                     for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
                         if (!isGoodVertex(vidx))
+                        {
+                            first_good_vertex_index = vidx;
                             continue;
+                        }
 
                         ++evt_nvtxs_;
                     }
@@ -1974,6 +2019,12 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     hcal_nt_iso_  = muonIsoValue_HCAL(iLep, false);
                     nt_pfiso03_   = muonIsoValuePF(iLep, 0, 0.3);
                     nt_pfiso04_   = muonIsoValuePF(iLep, 0, 0.4);
+
+                    // PF Isolation
+                    muonIsoValuePF2012(ch_nt_pfiso03_, em_nt_pfiso03_, nh_nt_pfiso03_, 0.3, iLep, first_good_vertex_index);
+                    nt_pfiso03_ = (ch_nt_pfiso03_ + em_nt_pfiso03_ + nh_nt_pfiso03_)/mus_p4().at(iLep).pt(); 
+                    muonIsoValuePF2012(ch_nt_pfiso04_, em_nt_pfiso04_, nh_nt_pfiso04_, 0.4, iLep, first_good_vertex_index);
+                    nt_pfiso04_ = (ch_nt_pfiso04_ + em_nt_pfiso04_ + nh_nt_pfiso04_)/mus_p4().at(iLep).pt(); 
 
                     // mc information
                     if (!isData) 
@@ -2062,37 +2113,45 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     ///////////////////////
 
                     // Muons
-                    triggerMatchStruct struct_mu5_vstar         = MatchTriggerClass( mus_p4().at(iLep), &mu5_regexp        , 13);
-                    triggerMatchStruct struct_mu8_vstar         = MatchTriggerClass( mus_p4().at(iLep), &mu8_regexp        , 13);
-                    triggerMatchStruct struct_mu12_vstar        = MatchTriggerClass( mus_p4().at(iLep), &mu12_regexp       , 13);
-                    triggerMatchStruct struct_mu17_vstar        = MatchTriggerClass( mus_p4().at(iLep), &mu17_regexp       , 13);
-                    triggerMatchStruct struct_mu15_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &mu15_eta2p1_regexp, 13);
-                    triggerMatchStruct struct_mu24_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &mu24_eta2p1_regexp, 13);
-                    triggerMatchStruct struct_mu30_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &mu30_eta2p1_regexp, 13);
+                    triggerMatchStruct struct_mu5_vstar            = MatchTriggerClass( mus_p4().at(iLep), &mu5_regexp           , 13);
+                    triggerMatchStruct struct_mu8_vstar            = MatchTriggerClass( mus_p4().at(iLep), &mu8_regexp           , 13);
+                    triggerMatchStruct struct_mu12_vstar           = MatchTriggerClass( mus_p4().at(iLep), &mu12_regexp          , 13);
+                    triggerMatchStruct struct_mu17_vstar           = MatchTriggerClass( mus_p4().at(iLep), &mu17_regexp          , 13);
+                    triggerMatchStruct struct_mu15_eta2p1_vstar    = MatchTriggerClass( mus_p4().at(iLep), &mu15_eta2p1_regexp   , 13);
+                    triggerMatchStruct struct_mu24_eta2p1_vstar    = MatchTriggerClass( mus_p4().at(iLep), &mu24_eta2p1_regexp   , 13);
+                    triggerMatchStruct struct_mu30_eta2p1_vstar    = MatchTriggerClass( mus_p4().at(iLep), &mu30_eta2p1_regexp   , 13);
+                    triggerMatchStruct struct_isoMu24_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &isoMu24_eta2p1_regexp, 13);
+                    triggerMatchStruct struct_isoMu30_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &isoMu30_eta2p1_regexp, 13);
 
-                    mu5_vstar_            = struct_mu5_vstar.nHLTObjects_;
-                    mu8_vstar_            = struct_mu8_vstar.nHLTObjects_;
-                    mu12_vstar_           = struct_mu12_vstar.nHLTObjects_;
-                    mu17_vstar_           = struct_mu17_vstar.nHLTObjects_;
-                    mu15_eta2p1_vstar_    = struct_mu15_eta2p1_vstar.nHLTObjects_;
-                    mu24_eta2p1_vstar_    = struct_mu24_eta2p1_vstar.nHLTObjects_;
-                    mu30_eta2p1_vstar_    = struct_mu30_eta2p1_vstar.nHLTObjects_;
+                    mu5_vstar_               = struct_mu5_vstar.nHLTObjects_;
+                    mu8_vstar_               = struct_mu8_vstar.nHLTObjects_;
+                    mu12_vstar_              = struct_mu12_vstar.nHLTObjects_;
+                    mu17_vstar_              = struct_mu17_vstar.nHLTObjects_;
+                    mu15_eta2p1_vstar_       = struct_mu15_eta2p1_vstar.nHLTObjects_;
+                    mu24_eta2p1_vstar_       = struct_mu24_eta2p1_vstar.nHLTObjects_;
+                    mu30_eta2p1_vstar_       = struct_mu30_eta2p1_vstar.nHLTObjects_;
+                    isoMu24_eta2p1_vstar_    = struct_isoMu24_eta2p1_vstar.nHLTObjects_;
+                    isoMu30_eta2p1_vstar_    = struct_isoMu30_eta2p1_vstar.nHLTObjects_;
 
-                    mu5_version_          = struct_mu5_vstar.version_;
-                    mu8_version_          = struct_mu8_vstar.version_;
-                    mu12_version_         = struct_mu12_vstar.version_;
-                    mu17_version_         = struct_mu17_vstar.version_;
-                    mu15_eta2p1_version_  = struct_mu15_eta2p1_vstar.version_;
-                    mu24_eta2p1_version_  = struct_mu24_eta2p1_vstar.version_;
-                    mu30_eta2p1_version_  = struct_mu30_eta2p1_vstar.version_;
+                    mu5_version_             = struct_mu5_vstar.version_;
+                    mu8_version_             = struct_mu8_vstar.version_;
+                    mu12_version_            = struct_mu12_vstar.version_;
+                    mu17_version_            = struct_mu17_vstar.version_;
+                    mu15_eta2p1_version_     = struct_mu15_eta2p1_vstar.version_;
+                    mu24_eta2p1_version_     = struct_mu24_eta2p1_vstar.version_;
+                    mu30_eta2p1_version_     = struct_mu30_eta2p1_vstar.version_;
+                    isoMu24_eta2p1_version_  = struct_isoMu24_eta2p1_vstar.version_;
+                    isoMu30_eta2p1_version_  = struct_isoMu30_eta2p1_vstar.version_;
 
-                    dr_mu5_vstar_         = struct_mu5_vstar.dR_;
-                    dr_mu8_vstar_         = struct_mu8_vstar.dR_;
-                    dr_mu12_vstar_        = struct_mu12_vstar.dR_;
-                    dr_mu17_vstar_        = struct_mu17_vstar.dR_;
-                    dr_mu15_eta2p1_vstar_ = struct_mu15_eta2p1_vstar.dR_;
-                    dr_mu24_eta2p1_vstar_ = struct_mu24_eta2p1_vstar.dR_;
-                    dr_mu30_eta2p1_vstar_ = struct_mu30_eta2p1_vstar.dR_;
+                    dr_mu5_vstar_            = struct_mu5_vstar.dR_;
+                    dr_mu8_vstar_            = struct_mu8_vstar.dR_;
+                    dr_mu12_vstar_           = struct_mu12_vstar.dR_;
+                    dr_mu17_vstar_           = struct_mu17_vstar.dR_;
+                    dr_mu15_eta2p1_vstar_    = struct_mu15_eta2p1_vstar.dR_;
+                    dr_mu24_eta2p1_vstar_    = struct_mu24_eta2p1_vstar.dR_;
+                    dr_mu30_eta2p1_vstar_    = struct_mu30_eta2p1_vstar.dR_;
+                    dr_isoMu24_eta2p1_vstar_ = struct_isoMu24_eta2p1_vstar.dR_;
+                    dr_isoMu30_eta2p1_vstar_ = struct_isoMu30_eta2p1_vstar.dR_;
 
                     ///////////////////////  
                     // End 2012 Triggers //
