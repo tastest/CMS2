@@ -14,7 +14,7 @@ bool isMITConversion(unsigned int elidx,
   if(nconvs == 0) 
     return false;
   bool isGoodConversion = false;
-  
+
   for(unsigned int iconv = 0; iconv < nconvs; iconv++) {
     
     bool conversionMatchFound = false;
@@ -23,7 +23,7 @@ bool isMITConversion(unsigned int elidx,
       if(cms2.convs_tkalgo()[iconv][itk] == 29 && cms2.convs_tkidx()[iconv][itk] == cms2.els_gsftrkidx()[elidx])
 	conversionMatchFound = true;
       if(matchCTF) {
-	if(cms2.convs_tkalgo()[iconv][itk] > 3 && cms2.convs_tkalgo()[iconv][itk] < 14 && cms2.convs_tkidx()[iconv][itk] == cms2.els_trkidx()[elidx])
+	if(cms2.convs_tkalgo()[iconv][itk] > 3 && cms2.convs_tkalgo()[iconv][itk] < 14 && cms2.convs_tkalgo()[iconv][itk] != 12 && cms2.convs_tkidx()[iconv][itk] == cms2.els_trkidx()[elidx])
 	  conversionMatchFound = true;
       }
     
