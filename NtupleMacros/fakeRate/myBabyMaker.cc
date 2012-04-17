@@ -1,3 +1,5 @@
+#include "myBabyMaker.h"
+
  // C++ includes
 #include <iostream>
 #include <fstream>
@@ -18,10 +20,8 @@
 #include "TVector2.h"
 #include "TDatabasePDG.h"
 
-#include "myBabyMaker.h"
-
 // TAS includes
-#ifdef __NON_ROOT_BUILD__
+#ifdef __NON_ROOT_BUILD__  // for linking CORE and Tools as a standalone librabry (need to define __NON_ROOT_BUILD__ in your build script)
 #include "CMS2.h"
 #include "CORE/utilities.h"
 #include "CORE/electronSelections.h"
@@ -38,7 +38,7 @@
 #include "CORE/ssSelections.h"
 #include "CORE/susySelections.h"
 #else
-#include "CMS2.cc"
+#include "CMS2.cc"  // for compiling in ACLiC (.L myBabyMaker.c++ method)
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
 #include "../CORE/electronSelections.cc"
@@ -84,8 +84,9 @@ void PrintTriggerDebugHeader(string outfileName){
         << "\t"         << "trigString" << endl << endl;
     outfile.close();
 }
-void PrintTriggerDebugLine(int itrg, int id, bool match, bool matchId, double dr, LorentzVector lepton_p4, LorentzVector p4tr, string trigString, int nTrig, string outfileName ){
 
+void PrintTriggerDebugLine(int itrg, int id, bool match, bool matchId, double dr, LorentzVector lepton_p4, LorentzVector p4tr, string trigString, int nTrig, string outfileName )
+{
     ofstream outfile( Form("triggerStudy/%s", outfileName.c_str() ), ios::app );
 
     int precis = 2;
@@ -114,7 +115,8 @@ bool found_ele17_CaloIdL_CaloIsoVL = false;
 bool found_ele8_CaloIdL_CaloIsoVL_Jet40 = false;
 
 // function for dR matching offline letpon to trigger object 
-pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, double dR_cut = 0.4, int pid = 11 ){
+pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, double dR_cut = 0.4, int pid = 11 )
+{
     float dR_min = numeric_limits<float>::max();
     dR_min = 99.0;
     int nTrig = nHLTObjects( trigString );
@@ -193,7 +195,6 @@ pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, 
                         }
                     }
 
-
                     //
                     if(
                         ( strcmp( trigString, "HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v1") == 0 ) || 
@@ -204,10 +205,6 @@ pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, 
                             PrintTriggerDebugHeader( Form("%s.txt",triggers.at(i).c_str()) );
                         }
                     }
-
-
-
-
 
                     PrintTriggerDebugLine( itrg, id, match, matchId, dr, lepton_p4, p4tr, trigString, nTrig, Form("%s.txt", triggers.at(i).c_str() ) );
                 }
@@ -233,13 +230,14 @@ pair<int, float> TriggerMatch( LorentzVector lepton_p4, const char* trigString, 
 }
 
 // struct for trigger matching
-struct triggerMatchStruct {
-    triggerMatchStruct (int NumHLTObjs_, float delta_R_, int vers_) {
-        nHLTObjects_ = NumHLTObjs_;
-        dR_ = delta_R_;
-        version_ = vers_;
+struct triggerMatchStruct 
+{
+    triggerMatchStruct (int NumHLTObjs_, float delta_R_, int vers_) 
+        : nHLTObjects_(NumHLTObjs_)
+        , dR_(delta_R_)
+        , version_(vers_)
+    {
     }
-
     int nHLTObjects_;
     float dR_;
     int version_;
@@ -270,7 +268,6 @@ triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, TPMERegexp* regexp
     }
 
     assert (loopCounts < 2);
-
     return triggerMatchInfo;
 }
 
@@ -278,7 +275,8 @@ triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, TPMERegexp* regexp
 // THIS NEEDS TO BE IN CORE //
 //////////////////////////////
 
-struct DorkyEventIdentifier {
+struct DorkyEventIdentifier
+{
     // this is a workaround for not having unique event id's in MC
     unsigned long int run, event,lumi;
     bool operator < (const DorkyEventIdentifier &) const;
@@ -306,22 +304,24 @@ bool DorkyEventIdentifier::operator == (const DorkyEventIdentifier &other) const
 }
 
 std::set<DorkyEventIdentifier> already_seen;
-bool is_duplicate (const DorkyEventIdentifier &id) {
+bool is_duplicate (const DorkyEventIdentifier &id)
+{
     std::pair<std::set<DorkyEventIdentifier>::const_iterator, bool> ret =
         already_seen.insert(id);
     return !ret.second;
 }
 
 // transverse mass
-float Mt( LorentzVector p4, float met, float met_phi ){
+float Mt( LorentzVector p4, float met, float met_phi )
+{
     return sqrt( 2*met*( p4.pt() - ( p4.Px()*cos(met_phi) + p4.Py()*sin(met_phi) ) ) );
 }
 
 #endif // __CINT__
 
 // set good run list
-void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson) {
-
+void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson)
+{
     if (goodRunIsJson)
         set_goodrun_file_json(fileName);
     else
@@ -333,17 +333,17 @@ void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson) {
 //------------------------------------------
 // Initialize baby ntuple variables
 //------------------------------------------
-void myBabyMaker::InitBabyNtuple () {
-
+void myBabyMaker::InitBabyNtuple() 
+{
     /////////////////////////// 
     // Event Information     //
     ///////////////////////////
     
-    // 
-    run_ = -1;
-    ls_  = -1;
-    evt_ = 0;
-    weight_ = 1.;
+    // Basic Event Information
+    run_    = -1;
+    ls_     = -1;
+    evt_    = 0;
+    weight_ = 1.0;
   
     // Pileup - PUSummaryInfoMaker
     pu_nPUvertices_ = -1;
@@ -365,7 +365,6 @@ void myBabyMaker::InitBabyNtuple () {
     ///////////////////////////
 
 
-
     //////////////////////////// 
     // Lepton Information     //
     ////////////////////////////
@@ -380,28 +379,34 @@ void myBabyMaker::InitBabyNtuple () {
     pfmetphi_         = -999.;
     hoe_              = -999.;
 
-    lp4_.SetCoordinates(0,0,0,0); // 4-vector of the lepton
+    lp4_.SetCoordinates(0,0,0,0);     // 4-vector of the lepton
     foel_p4_.SetCoordinates(0,0,0,0); // 4-vector of the highest pt additional FO in the event
     fomu_p4_.SetCoordinates(0,0,0,0); // 4-vector of the highest pt additional FO in the event
-    foel_id_ = -999;
-    fomu_id_ = -999;
-    foel_mass_ = -999.;
-    fomu_mass_ = -999.;
+    foel_id_   = -999;
+    fomu_id_   = -999;
+    foel_mass_ = -999.0;
+    fomu_mass_ = -999.0;
 
-    iso_              = -999.;
-    iso_nps_          = -999.;
-    nt_iso_           = -999.;
-    nt_iso_nps_       = -999.;
-    trck_iso_         = -999.;
-    trck_nt_iso_      = -999.;
-    ecal_iso_         = -999.;
-    ecal_iso_nps_     = -999.;
-    ecal_nt_iso_      = -999.;
-    ecal_nt_iso_nps_  = -999.;
-    hcal_iso_         = -999.;
-    hcal_nt_iso_      = -999.;
-    nt_pfiso03_       = -999.;
-    nt_pfiso04_       = -999.;
+    iso_             = -999.;
+    iso_nps_         = -999.;
+    nt_iso_          = -999.;
+    nt_iso_nps_      = -999.;
+    trck_iso_        = -999.;
+    trck_nt_iso_     = -999.;
+    ecal_iso_        = -999.;
+    ecal_iso_nps_    = -999.;
+    ecal_nt_iso_     = -999.;
+    ecal_nt_iso_nps_ = -999.;
+    hcal_iso_        = -999.;
+    hcal_nt_iso_     = -999.;
+    nt_pfiso03_      = -999.;
+    ch_nt_pfiso03_     = -999.;
+    nh_nt_pfiso03_     = -999.;
+    em_nt_pfiso03_   = -999.;
+    nt_pfiso04_      = -999.;
+    ch_nt_pfiso04_     = -999.;
+    nh_nt_pfiso04_     = -999.;
+    em_nt_pfiso04_   = -999.;
 
     closestMuon_      = false;
     el_id_smurfV5_    = false;
@@ -410,19 +415,17 @@ void myBabyMaker::InitBabyNtuple () {
     convHitPattern_   = false;
     convPartnerTrack_ = false;
     convMIT_          = false;
-    el_lh_            = -999.;
-    el_mva_           = -999.;
 
     // Z mass variables
-    mz_fo_gsf_  = -999.;
-    mz_gsf_iso_ = -999.;
-    mz_fo_ctf_  = -999.;
-    mz_ctf_iso_ = -999.;
+    mz_fo_gsf_       = -999.;
+    mz_gsf_iso_      = -999.;
+    mz_fo_ctf_       = -999.;
+    mz_ctf_iso_      = -999.;
     mupsilon_fo_mu_  = -999.;
     mupsilon_mu_iso_ = -999.;
 
-    d0PV_wwV1_        = -999.;
-    dzPV_wwV1_        = -999.;
+    d0PV_wwV1_       = -999.;
+    dzPV_wwV1_       = -999.;
 
     mu_isCosmic_ = false;;
 
@@ -441,12 +444,10 @@ void myBabyMaker::InitBabyNtuple () {
     ht_pf_L1FastL2L3_ = -999;
 
     // MC truth information
-    // mc1id_ = -999;
-    // mc1pt_ = -999.;
-    // mc1dr_ = -999.;
-    mc3id_ = -999;
-    mc3pt_ = -999.;
-    mc3dr_ = -999.;
+    mc3id_         = -999;
+    mc3pt_         = -999.;
+    mc3dr_         = -999.;
+    mc3p4_.SetCoordinates(0,0,0,0);
     leptonIsFromW_ = -999;
 
     //////////////////////////// 
@@ -708,10 +709,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Event Information     //
     ///////////////////////////
 
-    babyTree_->Branch("run"    , &run_    );
-    babyTree_->Branch("ls"     , &ls_     );
-    babyTree_->Branch("evt"    , &evt_    );
-    babyTree_->Branch("weight" , &weight_ );
+    babyTree_->Branch("run"            , &run_            );
+    babyTree_->Branch("ls"             , &ls_             );
+    babyTree_->Branch("evt"            , &evt_            );
+    babyTree_->Branch("weight"         , &weight_         );
   
     // Pileup
     babyTree_->Branch("pu_nPUvertices" , &pu_nPUvertices_ );
@@ -719,10 +720,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("evt_ndavtxs"    , &evt_ndavtxs_    );
 
     // event level variables
-    babyTree_->Branch("nFOels", &nFOels_);
-    babyTree_->Branch("nFOmus", &nFOmus_);
-    babyTree_->Branch("ngsfs", &ngsfs_);
-    babyTree_->Branch("nmus", &nmus_);
+    babyTree_->Branch("nFOels"         , &nFOels_         );
+    babyTree_->Branch("nFOmus"         , &nFOmus_         );
+    babyTree_->Branch("ngsfs"          , &ngsfs_          );
+    babyTree_->Branch("nmus"           , &nmus_           );
 
     /////////////////////////// 
     // End Event Information //
@@ -734,13 +735,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Lepton Information     //
     ////////////////////////////
 
-    babyTree_->Branch("lp4", &lp4_);
-    babyTree_->Branch("foel_p4", &foel_p4_);
-    babyTree_->Branch("fomu_p4", &fomu_p4_);
-    babyTree_->Branch("foel_id", &foel_id_);
-    babyTree_->Branch("fomu_id", &fomu_id_);
-    babyTree_->Branch("foel_mass", &foel_mass_);
-    babyTree_->Branch("fomu_mass", &fomu_mass_);
+    babyTree_->Branch("lp4"                 , &lp4_                 );
+    babyTree_->Branch("foel_p4"             , &foel_p4_             );
+    babyTree_->Branch("fomu_p4"             , &fomu_p4_             );
+    babyTree_->Branch("foel_id"             , &foel_id_             );
+    babyTree_->Branch("fomu_id"             , &fomu_id_             );
+    babyTree_->Branch("foel_mass"           , &foel_mass_           );
+    babyTree_->Branch("fomu_mass"           , &fomu_mass_           );
     babyTree_->Branch("pt"                  , &pt_                  );
     babyTree_->Branch("eta"                 , &eta_                 );
     babyTree_->Branch("sceta"               , &sceta_               );
@@ -762,7 +763,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hcal_iso"            , &hcal_iso_            );
     babyTree_->Branch("hcal_nt_iso"         , &hcal_nt_iso_         );
     babyTree_->Branch("nt_pfiso03"          , &nt_pfiso03_          );
+    babyTree_->Branch("ch_nt_pfiso03"       , &ch_nt_pfiso03_       );
+    babyTree_->Branch("nh_nt_pfiso03"       , &nh_nt_pfiso03_       );
+    babyTree_->Branch("em_nt_pfiso03"       , &em_nt_pfiso03_       );
     babyTree_->Branch("nt_pfiso04"          , &nt_pfiso04_          );
+    babyTree_->Branch("ch_nt_pfiso04"       , &ch_nt_pfiso04_       );
+    babyTree_->Branch("nh_nt_pfiso04"       , &nh_nt_pfiso04_       );
+    babyTree_->Branch("em_nt_pfiso04"       , &em_nt_pfiso04_       );
     babyTree_->Branch("id"                  , &id_                  );
     babyTree_->Branch("closestMuon"         , &closestMuon_         );
     babyTree_->Branch("el_id_smurfV5"       , &el_id_smurfV5_       );
@@ -776,8 +783,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfmt"                , &pfmt_                );
     babyTree_->Branch("q3"                  , &q3_                  );
     babyTree_->Branch("els_exp_innerlayers" , &els_exp_innerlayers_ );
-    babyTree_->Branch("mcid"                , &mcid_                );
-    babyTree_->Branch("mcmotherid"          , &mcmotherid_          );
     babyTree_->Branch("d0PV_wwV1"           , &d0PV_wwV1_           );
     babyTree_->Branch("dzPV_wwV1"           , &dzPV_wwV1_           );
     babyTree_->Branch("ht_calo"             , &ht_calo_             );
@@ -785,30 +790,26 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ht_pf"               , &ht_pf_               );
     babyTree_->Branch("ht_pf_L2L3"          , &ht_pf_L2L3_          );
     babyTree_->Branch("ht_pf_L1FastL2L3"    , &ht_pf_L1FastL2L3_    );
-    // babyTree_->Branch("mc1id", &mc1id_);
-    // babyTree_->Branch("mc1pt", &mc1pt_);
-    // babyTree_->Branch("mc1dr", &mc1dr_);
-    babyTree_->Branch("mc3id", &mc3id_);
-    babyTree_->Branch("mc3pt", &mc3pt_);
-    babyTree_->Branch("mc3dr", &mc3dr_);
-    babyTree_->Branch("leptonIsFromW", &leptonIsFromW_);
-    babyTree_->Branch("el_lh", &el_lh_);
-    babyTree_->Branch("el_mva", &el_mva_);
-    babyTree_->Branch("mu_isCosmic", &mu_isCosmic_);
+    babyTree_->Branch("mcid"                , &mcid_                );
+    babyTree_->Branch("mcmotherid"          , &mcmotherid_          );
+    babyTree_->Branch("mc3id"               , &mc3id_               );
+    babyTree_->Branch("mc3pt"               , &mc3pt_               );
+    babyTree_->Branch("mc3p4"               , &mc3p4_               );
+    babyTree_->Branch("mc3dr"               , &mc3dr_               );
+    babyTree_->Branch("leptonIsFromW"       , &leptonIsFromW_       );
+    babyTree_->Branch("mu_isCosmic"         , &mu_isCosmic_         );
 
     // Z mass variables
-    babyTree_->Branch("mz_fo_gsf" , &mz_fo_gsf_ );
-    babyTree_->Branch("mz_gsf_iso", &mz_gsf_iso_);
-    babyTree_->Branch("mz_fo_ctf" , &mz_fo_ctf_ );
-    babyTree_->Branch("mz_ctf_iso", &mz_ctf_iso_);
-    babyTree_->Branch("mupsilon_fo_mu", &mupsilon_fo_mu_);
+    babyTree_->Branch("mz_fo_gsf"      , &mz_fo_gsf_      );
+    babyTree_->Branch("mz_gsf_iso"     , &mz_gsf_iso_     );
+    babyTree_->Branch("mz_fo_ctf"      , &mz_fo_ctf_      );
+    babyTree_->Branch("mz_ctf_iso"     , &mz_ctf_iso_     );
+    babyTree_->Branch("mupsilon_fo_mu" , &mupsilon_fo_mu_ );
     babyTree_->Branch("mupsilon_mu_iso", &mupsilon_mu_iso_);
 
     //////////////////////////// 
     // End Lepton Information //
     ////////////////////////////
-
-
 
     //////////////////////////////////////////////////////
     // Fake Rate Numerator & Denominator Selections     //
@@ -855,12 +856,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // WW, HWW
 
     // Electrons
-    babyTree_->Branch("num_el_smurfV6", &num_el_smurfV6_ );
-    babyTree_->Branch("num_el_smurfV6lh", &num_el_smurfV6lh_ );
-    babyTree_->Branch("v1_el_smurfV1" , &v1_el_smurfV1_  );
-    babyTree_->Branch("v2_el_smurfV1" , &v2_el_smurfV1_  );
-    babyTree_->Branch("v3_el_smurfV1" , &v3_el_smurfV1_  );
-    babyTree_->Branch("v4_el_smurfV1" , &v4_el_smurfV1_  );
+    babyTree_->Branch("num_el_smurfV6"   , &num_el_smurfV6_   );
+    babyTree_->Branch("num_el_smurfV6lh" , &num_el_smurfV6lh_ );
+    babyTree_->Branch("v1_el_smurfV1"    , &v1_el_smurfV1_    );
+    babyTree_->Branch("v2_el_smurfV1"    , &v2_el_smurfV1_    );
+    babyTree_->Branch("v3_el_smurfV1"    , &v3_el_smurfV1_    );
+    babyTree_->Branch("v4_el_smurfV1"    , &v4_el_smurfV1_    );
 
     // Muons
     babyTree_->Branch("num_mu_smurfV6",  &num_mu_smurfV6_ );
@@ -868,17 +869,16 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("fo_mu_smurf_10",  &fo_mu_smurf_10_ );
   
     // OS
-    babyTree_->Branch("num_el_OSV2"  , &num_el_OSV2_      );
-    babyTree_->Branch("num_mu_OSGV2" , &num_mu_OSGV2_     );
-    babyTree_->Branch("num_mu_OSZV2" , &num_mu_OSZV2_     );
-    babyTree_->Branch("fo_el_OSV2"   , &fo_el_OSV2_       );
-    babyTree_->Branch("fo_mu_OSGV2"  , &fo_mu_OSGV2_      );
+    babyTree_->Branch("num_el_OSV2"  , &num_el_OSV2_  );
+    babyTree_->Branch("num_mu_OSGV2" , &num_mu_OSGV2_ );
+    babyTree_->Branch("num_mu_OSZV2" , &num_mu_OSZV2_ );
+    babyTree_->Branch("fo_el_OSV2"   , &fo_el_OSV2_   );
+    babyTree_->Branch("fo_mu_OSGV2"  , &fo_mu_OSGV2_  );
 
-    // OS
-    babyTree_->Branch("num_el_OSV3"  , &num_el_OSV3_      );
-    babyTree_->Branch("num_mu_OSGV3" , &num_mu_OSGV3_     );
-    babyTree_->Branch("fo_el_OSV3"   , &fo_el_OSV3_       );
-    babyTree_->Branch("fo_mu_OSGV3"  , &fo_mu_OSGV3_      );
+    babyTree_->Branch("num_el_OSV3"  , &num_el_OSV3_  );
+    babyTree_->Branch("num_mu_OSGV3" , &num_mu_OSGV3_ );
+    babyTree_->Branch("fo_el_OSV3"   , &fo_el_OSV3_   );
+    babyTree_->Branch("fo_mu_OSGV3"  , &fo_mu_OSGV3_  );
 
 
     //////////////////////////////////////////////////////
@@ -1009,8 +1009,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
 
     // B-tagged PF L1FastL2L3 Corrected jets         
-    babyTree_->Branch("ptbtagpfcL1Fj1"      , &ptbtagpfcL1Fj1_       );       
-    babyTree_->Branch("dphibtagpfcL1Fj1"    , &dphibtagpfcL1Fj1_       );       
+    babyTree_->Branch("ptbtagpfcL1Fj1"   , &ptbtagpfcL1Fj1_   );
+    babyTree_->Branch("dphibtagpfcL1Fj1" , &dphibtagpfcL1Fj1_ );
     
     // B Tagging
     babyTree_->Branch("nbjet"        , &nbjet_        );
@@ -1029,12 +1029,14 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
 }
 
 // Fill the baby
-void myBabyMaker::FillBabyNtuple() { 
+void myBabyMaker::FillBabyNtuple()
+{ 
     babyTree_->Fill(); 
 }
 
 // Close the baby
-void myBabyMaker::CloseBabyNtuple() {
+void myBabyMaker::CloseBabyNtuple()
+{
     babyFile_->cd();
     babyTree_->Write();
     babyFile_->Close();
@@ -1078,8 +1080,8 @@ myBabyMaker::myBabyMaker ()
 //      =11 do electrons
 //      =13 do muons
 //-----------------------------------
-void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isData, int eormu, bool applyFOfilter, string jetcorrPath) {
-
+void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData, int eormu, bool applyFOfilter, const std::string& jetcorrPath)
+{
     already_seen.clear();
 
     // Make a baby ntuple
@@ -1186,8 +1188,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                 bindex.push_back(iJet);
             }
 
-// PF Jets
-
+            // PF Jets
             int this_nbpfjet = 0;
             vector<unsigned int> bpfindex;
             for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
@@ -1201,8 +1202,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                 bpfindex.push_back(iJet);
             }
 
-// Electrons
-      
+            // Electrons
             if (eormu == -1 || eormu==11) {
                 for (unsigned int iLep = 0 ; iLep < els_p4().size(); iLep++) {
 
@@ -1219,7 +1219,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // store number of electron FOs in event (use SS FO definition)
                     nFOels_ = 0;
                     ngsfs_ = 0;
-                    for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
+                    for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++)
+                    {
                         if (iel == iLep)
                             continue;
 
@@ -1250,7 +1251,8 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // store number of muon FOs in event (use SS FO definition)
                     nFOmus_ = 0;
                     nmus_ = 0;
-                    for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                    for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++)
+                    {
                         if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
 
@@ -1311,14 +1313,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     fo_el_OSV3_    = pass_electronSelection( iLep, electronSelection_el_OSV3_FO       );
 
                     ////////////////////////////////////////////////////////////
-                    // Skip this electron if it fails the loosest denominator //
+                    // Skip this muon if it fails the loosest denominator.    //
+                    // Ignore this OR if applyFOfilter is set to false.       //
                     ////////////////////////////////////////////////////////////
                     if (applyFOfilter) {  
                         if (
-                            (!v1_el_ssV6_)    && (!v2_el_ssV6_)    && (!v3_el_ssV6_)    &&                      // SS 2011
-                            (!v1_el_ssV7_)    && (!v2_el_ssV7_)    && (!v3_el_ssV7_)    &&                      // SS 2012
-                            (!fo_el_OSV2_)    && (!fo_el_OSV3_)    &&                                           // OS 2011
-                            (!v1_el_smurfV1_) && (!v1_el_smurfV1_) && (!v3_el_smurfV1_) && (!v4_el_smurfV1_)    // WW 2011
+                            !v1_el_ssV7_    && !v2_el_ssV7_    && !v3_el_ssV7_    &&                    // SS 2012
+                            !v1_el_ssV6_    && !v2_el_ssV6_    && !v3_el_ssV6_    &&                    // SS 2011
+                            !fo_el_OSV2_    && !fo_el_OSV3_    &&                                       // OS 2011
+                            !v1_el_smurfV1_ && !v1_el_smurfV1_ && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
                             ) 
                             continue;
                     }
@@ -1413,10 +1416,15 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         }
 
                     }
+
                     // Pileup - VertexMaker
+                    unsigned int first_good_vertex_index = 0;
                     for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
                         if (!isGoodVertex(vidx))
+                        {
+                            first_good_vertex_index = vidx;
                             continue;
+                        }
 
                         ++evt_nvtxs_;
                     }
@@ -1454,62 +1462,46 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
 
                     // Isolation
-                    iso_              = electronIsolation_rel         ( iLep, true  );
-                    iso_nps_          = electronIsolation_rel         ( iLep, true  );  // wrong
-                    nt_iso_           = electronIsolation_rel_v1      ( iLep, true  );
-                    nt_iso_nps_       = electronIsolation_rel_v1      ( iLep, true  );
+                    iso_             = electronIsolation_rel         (iLep, true );
+                    iso_nps_         = electronIsolation_rel         (iLep, true );  // wrong
+                    nt_iso_          = electronIsolation_rel_v1      (iLep, true );
+                    nt_iso_nps_      = electronIsolation_rel_v1      (iLep, true );
+                    trck_iso_        = electronIsolation_rel         (iLep, false);
+                    trck_nt_iso_     = electronIsolation_rel_v1      (iLep, false);
+                    ecal_iso_        = electronIsolation_ECAL_rel    (iLep       );
+                    ecal_iso_nps_    = electronIsolation_ECAL_rel    (iLep       );  // wrong
+                    ecal_nt_iso_     = electronIsolation_ECAL_rel_v1 (iLep, true );
+                    ecal_nt_iso_nps_ = electronIsolation_ECAL_rel_v1 (iLep, false);
+                    hcal_iso_        = electronIsolation_HCAL_rel    (iLep       );
+                    hcal_nt_iso_     = electronIsolation_HCAL_rel_v1 (iLep       );
 
-                    trck_iso_         = electronIsolation_rel         ( iLep, false );
-                    trck_nt_iso_      = electronIsolation_rel_v1      ( iLep, false );
+                    // PF Isolation
+                    electronIsoValuePF2012(ch_nt_pfiso03_, em_nt_pfiso03_, nh_nt_pfiso03_, 0.3, iLep, first_good_vertex_index);
+                    nt_pfiso03_ = (ch_nt_pfiso03_ + em_nt_pfiso03_ + nh_nt_pfiso03_)/els_p4().at(iLep).pt(); 
+                    electronIsoValuePF2012(ch_nt_pfiso04_, em_nt_pfiso04_, nh_nt_pfiso04_, 0.4, iLep, first_good_vertex_index);
+                    nt_pfiso04_ = (ch_nt_pfiso04_ + em_nt_pfiso04_ + nh_nt_pfiso04_)/els_p4().at(iLep).pt(); 
 
-                    ecal_iso_         = electronIsolation_ECAL_rel    ( iLep        );
-                    ecal_iso_nps_     = electronIsolation_ECAL_rel    ( iLep        );  // wrong
-                    ecal_nt_iso_      = electronIsolation_ECAL_rel_v1 ( iLep, true  );
-                    ecal_nt_iso_nps_  = electronIsolation_ECAL_rel_v1 ( iLep, false );
-                    hcal_iso_         = electronIsolation_HCAL_rel    ( iLep );
-                    hcal_nt_iso_      = electronIsolation_HCAL_rel_v1 ( iLep );
-          
-                    nt_pfiso03_       = electronIsoValuePF(iLep, 0, 0.3);
-                    nt_pfiso04_       = electronIsoValuePF(iLep, 0, 0.4);
-
+                    // mc information
                     if (!isData) {
+                        mcid_       = els_mc_id().at(iLep);
+                        mcmotherid_ = els_mc_motherid().at(iLep);
                         int status3_index = mc3idx_eormu(11, iLep);
-                        if (status3_index >= 0) {
+                        if (status3_index >= 0)
+                        {
                             mc3id_ = cms2.genps_id().at(status3_index);
                             mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
+                            mc3p4_ = cms2.genps_p4().at(status3_index);                            
                         }
                         mc3dr_ = mc3dr_eormu(11, iLep);            
                         leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
                     }
 
-                    // safety
-                    /*
-                      Float_t x1 = electronIsolation_relOriginal(iLep, true);    // Original isolation, truncated
-                      Float_t x2 = electronIsolation_rel_v1(iLep, true, true);   // new function, truncated
-                      if( fabs(x1 - x2) > .000001 ){
-                      //cout << "T Iso: " << x1 << " != " << x2 << endl;
-                      }
-
-                      Float_t y1 = electronIsolation_rel_v1Original(iLep, true);  // Original isolation, not truncated
-                      Float_t y2 = electronIsolation_rel_v1(iLep, true, false);   // new function, non truncated
-                      if( fabs(y1 - y2) > .000001 ){
-                      //cout << "NT Iso: " << y1 << " != " << y2 << endl;
-                      }
-                    */
-
-                    el_id_smurfV5_  = pass_electronSelection( iLep, electronSelection_smurfV5_id );
-                    el_id_vbtf80_   = electronId_VBTF(iLep, VBTF_35X_80, false, false);
-                    el_id_vbtf90_   = electronId_VBTF(iLep, VBTF_35X_90, false, false);
-                    if( els_closestMuon().at(iLep) == -1 ) closestMuon_ = true;
-                    if (! isData) {
-                        mcid_       = els_mc_id().at(iLep);
-                        mcmotherid_ = els_mc_motherid().at(iLep);
-                    }
+                    el_id_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5_id );
+                    el_id_vbtf80_  = electronId_VBTF(iLep, VBTF_35X_80, false, false);
+                    el_id_vbtf90_  = electronId_VBTF(iLep, VBTF_35X_90, false, false);
+                    if( els_closestMuon().at(iLep) == -1 )
+                        closestMuon_ = true;
                     
-                    // likelihood and MVA discriminators
-                    el_lh_ = cms2.els_lh().at(iLep);                    
-                    // el_mva_ = electronIdMVA->MVAValue(iLep, 0);
-
                     // PV
                     d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
                     dzPV_wwV1_ = electron_dzPV_wwV1(iLep);
@@ -1547,41 +1539,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     // End Lepton Information //
                     ////////////////////////////
 
-
-
-                    ///////////////////////  
-                    // 2011 Triggers     //
-                    ///////////////////////
-
-                    // Electrons
-                    triggerMatchStruct struct_ele8_vstar                                          = MatchTriggerClass( els_p4().at(iLep), &ele8_regexp                                         );
-                    triggerMatchStruct struct_ele8_CaloIdL_TrkIdVL_vstar                          = MatchTriggerClass( els_p4().at(iLep), &ele8_CaloIdL_TrkIdVL_regexp                         );
-                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                  = MatchTriggerClass( els_p4().at(iLep), &ele8_CaloIdL_CaloIsoVL_Jet40_regexp                 );
-                    triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar       = MatchTriggerClass( els_p4().at(iLep), &ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp);
-                    triggerMatchStruct struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar = MatchTriggerClass( els_p4().at(iLep), &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
-
-                    ele8_vstar_                                             = struct_ele8_vstar.nHLTObjects_;
-                    ele8_CaloIdL_TrkIdVL_vstar_                             = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
-                    ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.nHLTObjects_;
-                    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_          = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.nHLTObjects_;
-                    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-
-                    ele8_version_                                           = struct_ele8_vstar.version_;
-                    ele8_CaloIdL_TrkIdVL_version_                           = struct_ele8_CaloIdL_TrkIdVL_vstar.version_; 
-                    ele8_CaloIdL_CaloIsoVL_Jet40_version_                   = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.version_;
-                    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_        = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.version_;
-                    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-
-                    dr_ele8_vstar_                                          = struct_ele8_vstar.dR_;
-                    dr_ele8_CaloIdL_TrkIdVL_vstar_                          = struct_ele8_CaloIdL_TrkIdVL_vstar.dR_;
-                    dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.dR_;
-                    dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.dR_;
-                    dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
-
-                    ///////////////////////  
-                    // end 2011 Triggers //
-                    ///////////////////////
-
                     ///////////////////////  
                     // 2012 Triggers     //
                     ///////////////////////
@@ -1618,6 +1575,43 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
                     dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_ = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
                     dr_ele8_CaloIdT_TrkIdVL_vstar_                          = struct_ele8_CaloIdT_TrkIdVL_vstar.dR_;
+
+                    ///////////////////////  
+                    // end 2012 Triggers //
+                    ///////////////////////
+
+                    ///////////////////////  
+                    // 2011 Triggers     //
+                    ///////////////////////
+
+                    // Electrons
+                    triggerMatchStruct struct_ele8_vstar                                          = MatchTriggerClass( els_p4().at(iLep), &ele8_regexp                                         );
+                    triggerMatchStruct struct_ele8_CaloIdL_TrkIdVL_vstar                          = MatchTriggerClass( els_p4().at(iLep), &ele8_CaloIdL_TrkIdVL_regexp                         );
+                    triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                  = MatchTriggerClass( els_p4().at(iLep), &ele8_CaloIdL_CaloIsoVL_Jet40_regexp                 );
+                    triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar       = MatchTriggerClass( els_p4().at(iLep), &ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp);
+                    triggerMatchStruct struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar = MatchTriggerClass( els_p4().at(iLep), &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
+
+                    ele8_vstar_                                             = struct_ele8_vstar.nHLTObjects_;
+                    ele8_CaloIdL_TrkIdVL_vstar_                             = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
+                    ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.nHLTObjects_;
+                    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_          = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.nHLTObjects_;
+                    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+
+                    ele8_version_                                           = struct_ele8_vstar.version_;
+                    ele8_CaloIdL_TrkIdVL_version_                           = struct_ele8_CaloIdL_TrkIdVL_vstar.version_; 
+                    ele8_CaloIdL_CaloIsoVL_Jet40_version_                   = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.version_;
+                    ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_        = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.version_;
+                    photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+
+                    dr_ele8_vstar_                                          = struct_ele8_vstar.dR_;
+                    dr_ele8_CaloIdL_TrkIdVL_vstar_                          = struct_ele8_CaloIdL_TrkIdVL_vstar.dR_;
+                    dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.dR_;
+                    dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.dR_;
+                    dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
+
+                    ///////////////////////  
+                    // end 2011 Triggers //
+                    ///////////////////////
 
                     //////////////
                     // Jets     //
@@ -1707,7 +1701,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
-//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
                         LorentzVector jp4cor = jp4 * jet_cor;
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
@@ -1737,7 +1730,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
-//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
                         LorentzVector jp4cor = jp4 * jet_cor;
                         if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74 ) continue;
@@ -1752,7 +1744,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     //////////////
                     // End Jets //
                     //////////////
-
 
 
                     ///////////////////
@@ -1796,12 +1787,12 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                 } // closes loop over electrons
             } // closes if statements about whether we want to fill electrons
 
-// Muons
 
+            // Muons
             if (eormu == -1 || eormu==13) {
                 for ( unsigned int iLep = 0; iLep < mus_p4().size(); iLep++) {
         
-                    // Apply a pt cut --- moved the cut to 10 GeV (Claudio, 10 Jul 2010)
+                    // Apply a pt cut
                     if ( mus_p4().at(iLep).pt() < 5.0) continue;
         
 ////////////////////////////////////////////////////////////////////////
@@ -1889,6 +1880,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 ////////////////////////////////////////////////////////////////////////
 // STORE SOME Z MASS VARIABLES //
 ////////////////////////////////////////////////////////////////////////
+//
                     mz_fo_ctf_  = -999.;
                     mz_ctf_iso_ = -999.;
                     mupsilon_fo_mu_ = -999.;
@@ -1921,9 +1913,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ///////////////////////////
 
                     // Load the electron and event quantities
-                    run_   = evt_run();
-                    ls_    = evt_lumiBlock();
-                    evt_   = evt_event();
+                    run_    = evt_run();
+                    ls_     = evt_lumiBlock();
+                    evt_    = evt_event();
                     weight_ = isData ? 1. : evt_scale1fb();
 
                     if(!isData){
@@ -1983,31 +1975,22 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     nt_pfiso03_   = muonIsoValuePF(iLep, 0, 0.3);
                     nt_pfiso04_   = muonIsoValuePF(iLep, 0, 0.4);
 
-                    // mc1id_ = ;
-                    // mc1pt_ = ;
-                    // mc1dr_ = ;
-                    if (!isData) {
+                    // mc information
+                    if (!isData) 
+                    {
+                        mcid_       = mus_mc_id().at(iLep);
+                        mcmotherid_ = mus_mc_motherid().at(iLep);
                         int status3_index = mc3idx_eormu(13, iLep);
                         if (status3_index >= 0) {
                             mc3id_ = cms2.genps_id().at(status3_index);
                             mc3pt_ = cms2.genps_p4().at(status3_index).pt();
+                            mc3p4_ = cms2.genps_p4().at(status3_index);
                         }
                         mc3dr_ = mc3dr_eormu(13, iLep);
                         leptonIsFromW_ = leptonIsFromW(iLep, -13*cms2.mus_charge().at(iLep), true);
                     }
 
                     mu_isCosmic_ = isCosmics(iLep);
-
-                    // Safety
-                    //Float_t x = muonIsoValueOriginal(iLep);
-                    //if( x != iso_ ){
-                        //cout << "Muons " << x << " != " << iso_ << endl;
-                    //}
-
-                    if (! isData) {
-                        mcid_       = mus_mc_id().at(iLep);
-                        mcmotherid_ = mus_mc_motherid().at(iLep);
-                    }
 
                     // W transverse mass
                     mt_   = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
@@ -2018,13 +2001,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ht_calo_L2L3_      = (float) sumPt (iLep, JETS_TYPE_CALO_CORR    , JETS_CLEAN_SINGLE_MU );
                     ht_pf_             = (float) sumPt (iLep, JETS_TYPE_PF_UNCORR    , JETS_CLEAN_SINGLE_MU );
                     ht_pf_L2L3_        = (float) sumPt (iLep, JETS_TYPE_PF_CORR      , JETS_CLEAN_SINGLE_MU );
-                    //ht_pf_L1FastL2L3_  = (float) sumPt (iLep, JETS_TYPE_PF_FAST_CORR , JETS_CLEAN_SINGLE_MU );
 
                     //////////////////////////// 
                     // End Lepton Information //
                     ////////////////////////////
-
-
 
                     //////////////////////////////////////////////////////
                     // Fake Rate Numerator & Denominator Selections     //
@@ -2033,6 +2013,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     //////////
                     // 2012 //
                     //////////
+
                     // SS
                     num_mu_ssV5_       = muonId(iLep, NominalSSv5);
                     num_mu_ssV5_noIso_ = muonIdNotIsolated(iLep, NominalSSv5);
@@ -2043,9 +2024,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     //////////
                     // 2011 //
                     //////////
+
                     // SS
-                    numNomSSv4_   = muonId(iLep, NominalSSv4          );
-                    fo_mussV4_04_ = muonId(iLep, muonSelectionFO_ssV4 );
+                    numNomSSv4_      = muonId(iLep, NominalSSv4          );
+                    fo_mussV4_04_    = muonId(iLep, muonSelectionFO_ssV4 );
                     numNomSSv4noIso_ = muonIdNotIsolated(iLep, NominalSSv4);
                     fo_mussV4_noIso_ = muonIdNotIsolated(iLep, muonSelectionFO_ssV4 );
 
@@ -2058,9 +2040,10 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     fo_mu_smurf_04_    = muonId(iLep, muonSelectionFO_mu_smurf_04       );
                     fo_mu_smurf_10_    = muonId(iLep, muonSelectionFO_mu_smurf_10       );
 
-
-    
-                    // 
+                    ////////////////////////////////////////////////////////////
+                    // Skip this muon if it fails the loosest denominator.    //
+                    // Ignore this OR if applyFOfilter is set to false.       //
+                    ////////////////////////////////////////////////////////////
                     if (applyFOfilter) {
                         if (
                             !fo_mussV4_04_   && !fo_mu_ssV5_     &&                    // SS
@@ -2111,11 +2094,9 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     dr_mu24_eta2p1_vstar_ = struct_mu24_eta2p1_vstar.dR_;
                     dr_mu30_eta2p1_vstar_ = struct_mu30_eta2p1_vstar.dR_;
 
-
                     ///////////////////////  
                     // End 2012 Triggers //
                     ///////////////////////
-
 
                     ///////////////////////  
                     // 2011 Triggers     //
@@ -2153,7 +2134,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     ///////////////////////  
                     // End 2011 Triggers //
                     ///////////////////////
-
 
                     //////////////
                     // Jets     //
@@ -2245,7 +2225,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                         // JetID
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
-//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
                         LorentzVector jp4cor = jp4 * jet_cor;
                         if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
@@ -2275,7 +2254,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
-//                        float jet_cor = jetCorrection(jp4, jet_pf_L1FastL2L3corrector);
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
                         LorentzVector jp4cor = jp4 * jet_cor;
                         if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74 ) continue;
@@ -2290,8 +2268,6 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
                     //////////////
                     // End Jets //
                     //////////////
-
-
 
                     ///////////////////
                     // B Tagging     //
@@ -2338,7 +2314,7 @@ void myBabyMaker::ScanChain( TChain* chain, const char *babyFilename, bool isDat
 
     }  // closes loop over files
 
-    std::cout << "   " << std::endl;
+    std::cout << "\t"<< std::endl;
     CloseBabyNtuple();
     return;
     

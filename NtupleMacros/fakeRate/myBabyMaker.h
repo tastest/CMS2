@@ -6,11 +6,9 @@
 // ROOT Includes
 #include "TFile.h"
 #include "TTree.h"
+#include "TChain.h"
 #include "TPRegexp.h"
 #include "Math/LorentzVector.h"
-
-// TAS includes
-//#include "CMS2.cc"
 
 // lorentz vector of floats 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
@@ -28,7 +26,7 @@ public:
     void InitBabyNtuple ();
     void FillBabyNtuple ();
     void CloseBabyNtuple ();
-    void ScanChain (TChain *chain, const char *babyFileName, bool isData, int eormu, bool applyFOfilter = true, std::string jetcorrPath="../CORE/jetcorr/data/");
+    void ScanChain (TChain *chain, const char *babyFileName, bool isData, int eormu, bool applyFOfilter = true, const std::string& jetcorrPath="../CORE/jetcorr/data/");
     void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
 
 private:
@@ -56,7 +54,7 @@ private:
     // Pileup - VertexMaker
     Int_t evt_nvtxs_;
   
-    // Pileup - VertexMaker
+    // Pileup - DAVertexMaker
     Int_t evt_ndavtxs_;
 
     // event level variables (number of additional objects besides the FO under consideration)
@@ -85,7 +83,7 @@ private:
     Float_t hoe_;
   
     // some useful lepton 4 vectors
-    LorentzVector lp4_; // 4-vector of the lepton
+    LorentzVector lp4_;     // 4-vector of the lepton
     LorentzVector foel_p4_; // 4-vector of the highest additional electron FO in the event
     Int_t foel_id_;
     LorentzVector fomu_p4_; // 4-vector of the highest additional muon FO in the event
@@ -108,23 +106,26 @@ private:
     Float_t ecal_iso_nps_;    // ECAL Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
     Float_t ecal_nt_iso_;     // ECAL Isolation ( not truncated )
     Float_t ecal_nt_iso_nps_; // ECAL Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t hcal_iso_;        // HCAL Isolation ( not truncated )
-    Float_t hcal_nt_iso_;     // HCAL Isolation ( truncated )
-    Float_t nt_pfiso03_;      // PF Isolation (not truncated) with a cone size of 0.3
-    Float_t nt_pfiso04_;      // PF Isolation (not truncated) with a cone size of 0.4
+    Float_t hcal_iso_;      // HCAL Isolation ( not truncated )
+    Float_t hcal_nt_iso_;   // HCAL Isolation ( truncated )
+    Float_t nt_pfiso03_;    // PF Isolation (not truncated) with a cone size of 0.3
+    Float_t ch_nt_pfiso03_; // TRK PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nh_nt_pfiso03_; // ECAL PF Isolation (not truncated) with a cone size of 0.3
+    Float_t em_nt_pfiso03_; // HCAL TRK PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nt_pfiso04_;    // PF Isolation (not truncated) with a cone size of 0.4
+    Float_t ch_nt_pfiso04_; // TRK PF Isolation (not truncated) with a cone size of 0.4
+    Float_t nh_nt_pfiso04_; // ECAL PF Isolation (not truncated) with a cone size of 0.4
+    Float_t em_nt_pfiso04_; // HCAL TRK PF Isolation (not truncated) with a cone size of 0.4
 
     // PV
     Float_t d0PV_wwV1_;       // electron_d0PV_wwV1(iEl)
     Float_t dzPV_wwV1_;       // electron_dzPV_wwV1(iEl)
 
-
     // Id
-    Bool_t closestMuon_;  // true if els_closestMuon().at(index) == -1
+    Bool_t closestMuon_;     // true if els_closestMuon().at(index) == -1
     Bool_t el_id_smurfV5_;
     Bool_t el_id_vbtf80_;
     Bool_t el_id_vbtf90_;
-    Float_t el_lh_;
-    Float_t el_mva_;
 
     // Z mass variables
     Float_t mz_fo_gsf_;
@@ -156,6 +157,7 @@ private:
     Int_t mc3id_;
     Float_t mc3pt_;
     Float_t mc3dr_;
+	LorentzVector mc3p4_;
     Int_t leptonIsFromW_;
 
     //////////////////////////
