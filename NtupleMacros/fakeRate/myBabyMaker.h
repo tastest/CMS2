@@ -301,6 +301,7 @@ private:
     Int_t mu15_eta2p1_vstar_;          // HLT_Mu15_eta2p1_v*
     Int_t mu24_eta2p1_vstar_;          // HLT_Mu24_eta2p1_v*
     Int_t mu30_eta2p1_vstar_;          // HLT_Mu30_eta2p1_v*
+    Int_t isoMu20_eta2p1_vstar_;       // HLT_IsoMu20_eta2p1_v*
     Int_t isoMu24_eta2p1_vstar_;       // HLT_IsoMu24_eta2p1_v*
     Int_t isoMu30_eta2p1_vstar_;       // HLT_IsoMu30_eta2p1_v*
 

@@ -1170,6 +1170,7 @@ myBabyMaker::myBabyMaker ()
     , mu24_eta2p1_regexp   ("HLT_Mu24_eta2p1_v(\\d+)"   , "o")     
     , mu30_eta2p1_regexp   ("HLT_Mu30_eta2p1_v(\\d+)"   , "o")     
     , mu8_Jet40_regexp     ("HLT_Mu8_Jet40_v(\\d+)"     , "o")
+    , isoMu20_eta2p1_regexp("HLT_IsoMu20_eta2p1_v(\\d+)", "o")
     , isoMu24_eta2p1_regexp("HLT_IsoMu24_eta2p1_v(\\d+)", "o")
     , isoMu30_eta2p1_regexp("HLT_IsoMu30_eta2p1_v(\\d+)", "o")
 {
@@ -2225,6 +2226,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     triggerMatchStruct struct_mu15_eta2p1_vstar    = MatchTriggerClass( mus_p4().at(iLep), &mu15_eta2p1_regexp   , 13);
                     triggerMatchStruct struct_mu24_eta2p1_vstar    = MatchTriggerClass( mus_p4().at(iLep), &mu24_eta2p1_regexp   , 13);
                     triggerMatchStruct struct_mu30_eta2p1_vstar    = MatchTriggerClass( mus_p4().at(iLep), &mu30_eta2p1_regexp   , 13);
+                    triggerMatchStruct struct_isoMu20_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &isoMu20_eta2p1_regexp, 13);
                     triggerMatchStruct struct_isoMu24_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &isoMu24_eta2p1_regexp, 13);
                     triggerMatchStruct struct_isoMu30_eta2p1_vstar = MatchTriggerClass( mus_p4().at(iLep), &isoMu30_eta2p1_regexp, 13);
 
@@ -2235,6 +2237,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     mu15_eta2p1_vstar_       = struct_mu15_eta2p1_vstar.nHLTObjects_;
                     mu24_eta2p1_vstar_       = struct_mu24_eta2p1_vstar.nHLTObjects_;
                     mu30_eta2p1_vstar_       = struct_mu30_eta2p1_vstar.nHLTObjects_;
+                    isoMu20_eta2p1_vstar_    = struct_isoMu20_eta2p1_vstar.nHLTObjects_;
                     isoMu24_eta2p1_vstar_    = struct_isoMu24_eta2p1_vstar.nHLTObjects_;
                     isoMu30_eta2p1_vstar_    = struct_isoMu30_eta2p1_vstar.nHLTObjects_;
 
@@ -2245,6 +2248,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     mu15_eta2p1_version_     = struct_mu15_eta2p1_vstar.version_;
                     mu24_eta2p1_version_     = struct_mu24_eta2p1_vstar.version_;
                     mu30_eta2p1_version_     = struct_mu30_eta2p1_vstar.version_;
+                    isoMu20_eta2p1_version_  = struct_isoMu20_eta2p1_vstar.version_;
                     isoMu24_eta2p1_version_  = struct_isoMu24_eta2p1_vstar.version_;
                     isoMu30_eta2p1_version_  = struct_isoMu30_eta2p1_vstar.version_;
 
@@ -2255,6 +2259,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     dr_mu15_eta2p1_vstar_    = struct_mu15_eta2p1_vstar.dR_;
                     dr_mu24_eta2p1_vstar_    = struct_mu24_eta2p1_vstar.dR_;
                     dr_mu30_eta2p1_vstar_    = struct_mu30_eta2p1_vstar.dR_;
+                    dr_isoMu20_eta2p1_vstar_ = struct_isoMu20_eta2p1_vstar.dR_;
                     dr_isoMu24_eta2p1_vstar_ = struct_isoMu24_eta2p1_vstar.dR_;
                     dr_isoMu30_eta2p1_vstar_ = struct_isoMu30_eta2p1_vstar.dR_;
 
@@ -2263,6 +2268,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     hltps_mu12_vstar_           = struct_mu12_vstar.hltps_;
                     hltps_mu17_vstar_           = struct_mu17_vstar.hltps_;
                     hltps_mu15_eta2p1_vstar_    = struct_mu15_eta2p1_vstar.hltps_;
+                    hltps_mu20_eta2p1_vstar_    = struct_mu20_eta2p1_vstar.hltps_;
                     hltps_mu24_eta2p1_vstar_    = struct_mu24_eta2p1_vstar.hltps_;
                     hltps_mu30_eta2p1_vstar_    = struct_mu30_eta2p1_vstar.hltps_;
                     hltps_isoMu24_eta2p1_vstar_ = struct_isoMu24_eta2p1_vstar.hltps_;
@@ -2275,6 +2281,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     l1ps_mu12_vstar_           = L1_prescale("L1_SingleMu7"         );
                     l1ps_mu17_vstar_           = L1_prescale("L1_SingleMu12"        );
                     l1ps_mu15_eta2p1_vstar_    = L1_prescale("L1_SingleMu7"         );
+                    l1ps_mu20_eta2p1_vstar_    = L1_prescale("L1_SingleMu16_Eta2p1" );
                     l1ps_mu24_eta2p1_vstar_    = L1_prescale("L1_SingleMu16_Eta2p1" );
                     l1ps_mu30_eta2p1_vstar_    = L1_prescale("L1_SingleMu16_Eta2p1" );
                     l1ps_isoMu24_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
