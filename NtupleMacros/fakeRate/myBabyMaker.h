@@ -301,9 +301,9 @@ private:
     Int_t mu15_eta2p1_vstar_;          // HLT_Mu15_eta2p1_v*
     Int_t mu24_eta2p1_vstar_;          // HLT_Mu24_eta2p1_v*
     Int_t mu30_eta2p1_vstar_;          // HLT_Mu30_eta2p1_v*
-    Int_t isoMu20_eta2p1_vstar_;       // HLT_IsoMu20_eta2p1_v*
-    Int_t isoMu24_eta2p1_vstar_;       // HLT_IsoMu24_eta2p1_v*
-    Int_t isoMu30_eta2p1_vstar_;       // HLT_IsoMu30_eta2p1_v*
+    Int_t isomu20_eta2p1_vstar_;       // HLT_IsoMu20_eta2p1_v*
+    Int_t isomu24_eta2p1_vstar_;       // HLT_IsoMu24_eta2p1_v*
+    Int_t isomu30_eta2p1_vstar_;       // HLT_IsoMu30_eta2p1_v*
 
     Int_t mu5_version_;                // HLT_Mu5_v*            // also in 2011
     Int_t mu8_version_;                // HLT_Mu8_v*            // also in 2011
@@ -312,9 +312,9 @@ private:
     Int_t mu15_eta2p1_version_;        // HLT_Mu15_eta2p1_v*
     Int_t mu24_eta2p1_version_;        // HLT_Mu24_eta2p1_v*
     Int_t mu30_eta2p1_version_;        // HLT_Mu30_eta2p1_v*
-    Int_t isoMu20_eta2p1_version_;     // HLT_IsoMu20_eta2p1_v*
-    Int_t isoMu24_eta2p1_version_;     // HLT_IsoMu24_eta2p1_v*
-    Int_t isoMu30_eta2p1_version_;     // HLT_IsoMu30_eta2p1_v*
+    Int_t isomu20_eta2p1_version_;     // HLT_IsoMu20_eta2p1_v*
+    Int_t isomu24_eta2p1_version_;     // HLT_IsoMu24_eta2p1_v*
+    Int_t isomu30_eta2p1_version_;     // HLT_IsoMu30_eta2p1_v*
 
     Float_t dr_mu5_vstar_;             // HLT_Mu5_v*            // also in 2011
     Float_t dr_mu8_vstar_;             // HLT_Mu8_v*            // also in 2011
@@ -323,9 +323,9 @@ private:
     Float_t dr_mu15_eta2p1_vstar_;     // HLT_Mu15_eta2p1_v*
     Float_t dr_mu24_eta2p1_vstar_;     // HLT_Mu24_eta2p1_v*
     Float_t dr_mu30_eta2p1_vstar_;     // HLT_Mu30_eta2p1_v*
-    Float_t dr_isoMu20_eta2p1_vstar_;  // HLT_IsoMu20_eta2p1_v*
-    Float_t dr_isoMu24_eta2p1_vstar_;  // HLT_IsoMu24_eta2p1_v*
-    Float_t dr_isoMu30_eta2p1_vstar_;  // HLT_IsoMu30_eta2p1_v*
+    Float_t dr_isomu20_eta2p1_vstar_;  // HLT_IsoMu20_eta2p1_v*
+    Float_t dr_isomu24_eta2p1_vstar_;  // HLT_IsoMu24_eta2p1_v*
+    Float_t dr_isomu30_eta2p1_vstar_;  // HLT_IsoMu30_eta2p1_v*
 
     Int_t hltps_mu5_vstar_;            // HLT_Mu5_v*            // also in 2011
     Int_t hltps_mu8_vstar_;            // HLT_Mu8_v*            // also in 2011
@@ -334,9 +334,9 @@ private:
     Int_t hltps_mu15_eta2p1_vstar_;    // HLT_Mu15_eta2p1_v*
     Int_t hltps_mu24_eta2p1_vstar_;    // HLT_Mu24_eta2p1_v*
     Int_t hltps_mu30_eta2p1_vstar_;    // HLT_Mu30_eta2p1_v*
-    Int_t hltps_isoMu20_eta2p1_vstar_; // HLT_IsoMu20_eta2p1_v*
-    Int_t hltps_isoMu24_eta2p1_vstar_; // HLT_IsoMu24_eta2p1_v*
-    Int_t hltps_isoMu30_eta2p1_vstar_; // HLT_IsoMu30_eta2p1_v*
+    Int_t hltps_isomu20_eta2p1_vstar_; // HLT_IsoMu20_eta2p1_v*
+    Int_t hltps_isomu24_eta2p1_vstar_; // HLT_IsoMu24_eta2p1_v*
+    Int_t hltps_isomu30_eta2p1_vstar_; // HLT_IsoMu30_eta2p1_v*
 
     Int_t l1ps_mu5_vstar_;             // HLT_Mu5_v*            // also in 2011
     Int_t l1ps_mu8_vstar_;             // HLT_Mu8_v*            // also in 2011
@@ -345,9 +345,9 @@ private:
     Int_t l1ps_mu15_eta2p1_vstar_;     // HLT_Mu15_eta2p1_v*
     Int_t l1ps_mu24_eta2p1_vstar_;     // HLT_Mu24_eta2p1_v*
     Int_t l1ps_mu30_eta2p1_vstar_;     // HLT_Mu30_eta2p1_v*
-    Int_t l1ps_isoMu20_eta2p1_vstar_;  // HLT_IsoMu20_eta2p1_v*
-    Int_t l1ps_isoMu24_eta2p1_vstar_;  // HLT_IsoMu24_eta2p1_v*
-    Int_t l1ps_isoMu30_eta2p1_vstar_;  // HLT_IsoMu30_eta2p1_v*
+    Int_t l1ps_isomu20_eta2p1_vstar_;  // HLT_IsoMu20_eta2p1_v*
+    Int_t l1ps_isomu24_eta2p1_vstar_;  // HLT_IsoMu24_eta2p1_v*
+    Int_t l1ps_isomu30_eta2p1_vstar_;  // HLT_IsoMu30_eta2p1_v*
 
     ///////////////////////  
     // End 2012 Triggers //
@@ -527,8 +527,9 @@ private:
     TPMERegexp mu24_eta2p1_regexp;     
     TPMERegexp mu30_eta2p1_regexp;     
     TPMERegexp mu8_Jet40_regexp;
-    TPMERegexp isoMu24_eta2p1_regexp;
-    TPMERegexp isoMu30_eta2p1_regexp;
+    TPMERegexp isomu20_eta2p1_regexp;
+    TPMERegexp isomu24_eta2p1_regexp;
+    TPMERegexp isomu30_eta2p1_regexp;
 
 
     // electron ID MVA
