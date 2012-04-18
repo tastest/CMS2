@@ -661,6 +661,9 @@ void myBabyMaker::InitBabyNtuple()
     mu15_eta2p1_vstar_ = 0; 
     mu24_eta2p1_vstar_ = 0; 
     mu30_eta2p1_vstar_ = 0; 
+    isomu20_eta2p1_vstar_ = 0; 
+    isomu24_eta2p1_vstar_ = 0; 
+    isomu30_eta2p1_vstar_ = 0; 
 
     mu5_version_         = -1; 
     mu8_version_         = -1;
@@ -669,6 +672,9 @@ void myBabyMaker::InitBabyNtuple()
     mu15_eta2p1_version_ = -1; 
     mu24_eta2p1_version_ = -1; 
     mu30_eta2p1_version_ = -1; 
+    isomu20_eta2p1_version_ = 0; 
+    isomu24_eta2p1_version_ = 0; 
+    isomu30_eta2p1_version_ = 0; 
 
     dr_mu8_vstar_         = 99.0;
     dr_mu5_vstar_         = 99.0; 
@@ -677,6 +683,9 @@ void myBabyMaker::InitBabyNtuple()
     dr_mu15_eta2p1_vstar_ = 99.0; 
     dr_mu24_eta2p1_vstar_ = 99.0; 
     dr_mu30_eta2p1_vstar_ = 99.0; 
+    dr_isomu20_eta2p1_vstar_ = 99.0; 
+    dr_isomu24_eta2p1_vstar_ = 99.0; 
+    dr_isomu30_eta2p1_vstar_ = 99.0; 
 
     hltps_mu8_vstar_         = -1;
     hltps_mu5_vstar_         = -1; 
@@ -685,6 +694,9 @@ void myBabyMaker::InitBabyNtuple()
     hltps_mu15_eta2p1_vstar_ = -1; 
     hltps_mu24_eta2p1_vstar_ = -1; 
     hltps_mu30_eta2p1_vstar_ = -1; 
+    hltps_isomu20_eta2p1_vstar_ = -1; 
+    hltps_isomu24_eta2p1_vstar_ = -1; 
+    hltps_isomu30_eta2p1_vstar_ = -1; 
 
     l1ps_mu8_vstar_         = -1;
     l1ps_mu5_vstar_         = -1; 
@@ -693,6 +705,10 @@ void myBabyMaker::InitBabyNtuple()
     l1ps_mu15_eta2p1_vstar_ = -1; 
     l1ps_mu24_eta2p1_vstar_ = -1; 
     l1ps_mu30_eta2p1_vstar_ = -1; 
+    l1ps_isomu20_eta2p1_vstar_ = -1; 
+    l1ps_isomu24_eta2p1_vstar_ = -1; 
+    l1ps_isomu30_eta2p1_vstar_ = -1; 
+
 
     ///////////////////////  
     // End 2012 Triggers //
@@ -1012,6 +1028,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu24_eta2p1_vstar", &mu24_eta2p1_vstar_);
     babyTree_->Branch("mu30_eta2p1_vstar", &mu30_eta2p1_vstar_);
     babyTree_->Branch("mu8_Jet40_vstar"  , &mu8_Jet40_vstar_  );
+    babyTree_->Branch("isomu20_eta2p1_vstar", &isomu20_eta2p1_vstar_);
+    babyTree_->Branch("isomu24_eta2p1_vstar", &isomu24_eta2p1_vstar_);
+    babyTree_->Branch("isomu30_eta2p1_vstar", &isomu30_eta2p1_vstar_);
 
     babyTree_->Branch("mu3_version"        , &mu3_version_        );
     babyTree_->Branch("mu5_version"        , &mu5_version_        );
@@ -1026,6 +1045,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mu24_eta2p1_version", &mu24_eta2p1_version_);
     babyTree_->Branch("mu30_eta2p1_version", &mu30_eta2p1_version_);
     babyTree_->Branch("mu8_Jet40_version"  , &mu8_Jet40_version_  );
+    babyTree_->Branch("isomu20_eta2p1_version", &isomu20_eta2p1_version_);
+    babyTree_->Branch("isomu24_eta2p1_version", &isomu24_eta2p1_version_);
+    babyTree_->Branch("isomu30_eta2p1_version", &isomu30_eta2p1_version_);
 
     babyTree_->Branch("dr_mu3_vstar"        , &dr_mu3_vstar_        );
     babyTree_->Branch("dr_mu5_vstar"        , &dr_mu5_vstar_        );
@@ -1040,6 +1062,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dr_mu24_eta2p1_vstar", &dr_mu24_eta2p1_vstar_);
     babyTree_->Branch("dr_mu30_eta2p1_vstar", &dr_mu30_eta2p1_vstar_);
     babyTree_->Branch("dr_mu8_Jet40_vstar"  , &dr_mu8_Jet40_vstar_  );
+    babyTree_->Branch("dr_isomu20_eta2p1_vstar", &dr_isomu20_eta2p1_vstar_);
+    babyTree_->Branch("dr_isomu24_eta2p1_vstar", &dr_isomu24_eta2p1_vstar_);
+    babyTree_->Branch("dr_isomu30_eta2p1_vstar", &dr_isomu30_eta2p1_vstar_);
 
     babyTree_->Branch("hltps_mu3_vstar"        , &hltps_mu3_vstar_        );
     babyTree_->Branch("hltps_mu5_vstar"        , &hltps_mu5_vstar_        );
@@ -1054,6 +1079,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hltps_mu24_eta2p1_vstar", &hltps_mu24_eta2p1_vstar_);
     babyTree_->Branch("hltps_mu30_eta2p1_vstar", &hltps_mu30_eta2p1_vstar_);
     babyTree_->Branch("hltps_mu8_Jet40_vstar"  , &hltps_mu8_Jet40_vstar_  );
+    babyTree_->Branch("hltps_isomu20_eta2p1_vstar", &hltps_isomu20_eta2p1_vstar_);
+    babyTree_->Branch("hltps_isomu24_eta2p1_vstar", &hltps_isomu24_eta2p1_vstar_);
+    babyTree_->Branch("hltps_isomu30_eta2p1_vstar", &hltps_isomu30_eta2p1_vstar_);
 
     //babyTree_->Branch("l1ps_mu3_vstar"        , &l1ps_mu3_vstar_        );
     babyTree_->Branch("l1ps_mu5_vstar"        , &l1ps_mu5_vstar_        );
@@ -1068,6 +1096,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("l1ps_mu24_eta2p1_vstar", &l1ps_mu24_eta2p1_vstar_);
     babyTree_->Branch("l1ps_mu30_eta2p1_vstar", &l1ps_mu30_eta2p1_vstar_);
     //babyTree_->Branch("l1ps_mu8_Jet40_vstar"  , &l1ps_mu8_Jet40_vstar_  );
+    babyTree_->Branch("l1ps_isomu20_eta2p1_vstar", &l1ps_isomu20_eta2p1_vstar_);
+    babyTree_->Branch("l1ps_isomu24_eta2p1_vstar", &l1ps_isomu24_eta2p1_vstar_);
+    babyTree_->Branch("l1ps_isomu30_eta2p1_vstar", &l1ps_isomu30_eta2p1_vstar_);
 
     ///////////////////////  
     // End 2011 Triggers //
