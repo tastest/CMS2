@@ -628,6 +628,8 @@ void myBabyMaker::InitBabyNtuple()
     ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_          = 0;  
     ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_    = 0;  
     ele8_CaloIdT_TrkIdVL_vstar_                             = 0;  
+    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = 0;
+    ele27_WP80_vstar_ = 0;
 
     ele17_CaloIdL_CaloIsoVL_version_                        = -1;  
     ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_       = -1;  
@@ -636,6 +638,8 @@ void myBabyMaker::InitBabyNtuple()
     ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_        = -1;  
     ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_  = -1;  
     ele8_CaloIdT_TrkIdVL_version_                           = -1;  
+    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_ = -1;
+    ele27_WP80_version_ = -1;
 
     dr_ele17_CaloIdL_CaloIsoVL_vstar_                        = 99.0;  
     dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = 99.0;  
@@ -644,6 +648,8 @@ void myBabyMaker::InitBabyNtuple()
     dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = 99.0;  
     dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_  = 99.0;  
     dr_ele8_CaloIdT_TrkIdVL_vstar_                           = 99.0;  
+    dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = 99.0;
+    dr_ele27_WP80_vstar_ = 99.0;
 
     hltps_ele17_CaloIdL_CaloIsoVL_vstar_                        = -1;  
     hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = -1;  
@@ -652,6 +658,8 @@ void myBabyMaker::InitBabyNtuple()
     hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = -1;  
     hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_  = -1;  
     hltps_ele8_CaloIdT_TrkIdVL_vstar_                           = -1;  
+    hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = -1;
+    hltps_ele27_WP80_vstar_ = -1;
 
     // Muons
     mu5_vstar_         = 0; 
@@ -975,6 +983,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"      , &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_      );
     babyTree_->Branch("ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar", &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_);
     babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar" , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ );
+    babyTree_->Branch("ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar" , &ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ );
+    babyTree_->Branch("ele27_WP80_vstar"                                    , &ele27_WP80_vstar_ );
 
     babyTree_->Branch("ele8_version"                                          , &ele8_version_                                          );
     babyTree_->Branch("ele8_CaloIdL_TrkIdVL_version"                          , &ele8_CaloIdL_TrkIdVL_version_                          );
@@ -988,6 +998,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version"      , &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_      );
     babyTree_->Branch("ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version", &ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_);
     babyTree_->Branch("photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version" , &photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_ );
+    babyTree_->Branch("ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version" , &ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_ );
+    babyTree_->Branch("ele27_WP80_version"                                    , &ele27_WP80_version_ );
 
     babyTree_->Branch("dr_ele8_vstar"                                          , &dr_ele8_vstar_                                          );
     babyTree_->Branch("dr_ele8_CaloIdL_TrkIdVL_vstar"                          , &dr_ele8_CaloIdL_TrkIdVL_vstar_                          );
@@ -1001,6 +1013,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"      , &dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_      );
     babyTree_->Branch("dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar", &dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_);
     babyTree_->Branch("dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar" , &dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ );
+    babyTree_->Branch("dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar" , &dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ );
+    babyTree_->Branch("dr_ele27_WP80_vstar"                                    , &dr_ele27_WP80_vstar_ );
 
     babyTree_->Branch("hltps_ele8_vstar"                                          , &hltps_ele8_vstar_                                          );
     babyTree_->Branch("hltps_ele8_CaloIdL_TrkIdVL_vstar"                          , &hltps_ele8_CaloIdL_TrkIdVL_vstar_                          );
@@ -1014,6 +1028,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"      , &hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_      );
     babyTree_->Branch("hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar", &hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_);
     babyTree_->Branch("hltps_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar" , &hltps_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ );
+    babyTree_->Branch("hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar" , &hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ );
+    babyTree_->Branch("hltps_ele27_WP80_vstar"                                    , &hltps_ele27_WP80_vstar_ );
 
     babyTree_->Branch("mu3_vstar"        , &mu3_vstar_        );
     babyTree_->Branch("mu5_vstar"        , &mu5_vstar_        );
