@@ -196,8 +196,10 @@ def getGoodRootFiles(datapath,outpath):
 def makeRootMacros(outpath):
     global goodRootFiles
     global totalNumEventsRun
-    #get the basic skeleton root script from my directory
-    commands.getoutput("cp ~kalavase/crabTools/skelPostProcessingMacro.C postProcessingMacro.C")
+    global CMSSWpath
+    #get the basic skeleton root script from NtupleTools
+    skelLocation = CMSSWpath+'/src/CMS2/NtupleMacros/NtupleTools/skelPostProcessingMacro.C'
+    commands.getoutput("cp %s postProcessingMacro.C"%skelLocation)
     outFile = open("postProcessingMacro.C", "a")
     text = "\n\n\nvoid postProcess(Float_t xsec, Float_t kFactor, Float_t filterEfficiency) {\n"
     outFile.write(text)
@@ -224,9 +226,27 @@ def makeRootMacros(outpath):
     commands.getoutput(cmd)
 
 
+###########################################################################
+## Compare total space used by ntuples to available space on post processing disk. don't post process if not enough space
+############################################################################
+def checkForSpace(outpath):
+    global goodCrabXMLFiles
+    totalFileSize=0
+    for i in goodCrabXMLFiles:
+        #no more resubmission dir. Use <LFN> tag, never assume ntuple file name.
+        #many lfn's, but first should always be right, and start with '/store/user'
+        doc = xml.dom.minidom.parse(i)
+        path = '/hadoop/cms'+doc.getElementsByTagName("LFN")[0].firstChild.data.strip().rstrip()
+        totalFileSize+=os.path.getsize(path)
 
-              
-    
+    outdisk = os.statvfs(outpath)
+    freeSpace = outdisk.f_bsize * outdisk.f_bavail
+    print '\nPostprocessing ' + str(totalFileSize) + ' bytes on ' + str(freeSpace) + ' bytes of available disk space.'
+    threshold = 3  #change this threshold if this is too conservative.
+    if( (freeSpace/totalFileSize) < threshold ):
+        print 'The threshold of %s times as much available disk space as ntuple size has not been met. Will not post process.' % str(threshold)
+        sys.exit();
+    print '\n'
 
 if( len(sys.argv)!=7 ):
     print 'Usage: postProcessing.py -c [name of crab directory]'
@@ -275,6 +295,12 @@ if( commands.getstatusoutput('ls ' + makefilepath)[0] == 256 or os.path.isfile('
     sys.exit()
 
 
+##get list of fjrs, then look through those for output files
+##sum the space used by root files, and compare that to the free space on the output disk
+goodCrabXMLFiles = []
+getGoodXMLFiles(crabpath)
+checkForSpace(outpath)
+
 #do some gymanstics depending on whether or not we're at ucsd
 #or FNAL
 if datapath.find("pnfs") != -1:
@@ -318,12 +344,12 @@ commands.getstatusoutput(cmd)
 cmd = 'make '
 commands.getstatusoutput(cmd)
 
-goodCrabXMLFiles = []
+
 goodRootFiles = []
 totalNumEventsRun = 0
 rootFilesToMerge = []
 
-getGoodXMLFiles(crabpath)
+
 getGoodRootFiles(datapath,outpath)        
 getNumEventsRun(crabpath)
 makeRootMacros(outpath)
