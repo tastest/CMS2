@@ -356,7 +356,8 @@ makeRootMacros(outpath)
 ##copy crab directory to output directory
 commands.getstatusoutput('mkdir ' + outpath + '/crab_logs')
 commands.getstatusoutput('cp -r ' + crabpath + '* ' + outpath + 'crab_logs')
-
+##copy hadoop copy script to output directory
+commands.getstatusoutput('cp ' + CMSSWpath + '/src/CMS2/NtupleMacros/NtupleTools/copyToHadoop.sh ' + outpath)
 
 print '+++++++++++++++++++++++++++++'
 print 'Total number of events that were run over to produce ntuples: ' + str(totalNumEventsRun)
