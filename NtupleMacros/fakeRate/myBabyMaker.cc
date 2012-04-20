@@ -19,6 +19,7 @@
 #include "TString.h"
 #include "TVector2.h"
 #include "TDatabasePDG.h"
+#include "TBenchmark.h"
 
 // TAS includes
 // for linking CORE and Tools as a standalone librabry (need to define __NON_ROOT_BUILD__ in your build script)
@@ -1188,7 +1189,8 @@ void myBabyMaker::CloseBabyNtuple()
 
 // constructor
 myBabyMaker::myBabyMaker () 
-    : ele8_regexp                                                 ("HLT_Ele8_v(\\d+)"                                                 , "o")
+    : nEvents_(-1)
+    , ele8_regexp                                                 ("HLT_Ele8_v(\\d+)"                                                 , "o")
     , ele8_CaloIdL_TrkIdVL_regexp                                 ("HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)"                                 , "o")
     , ele8_CaloIdL_CaloIsoVL_regexp                               ("HLT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)"                               , "o")
     , ele8_CaloIdL_CaloIsoVL_Jet40_regexp                         ("HLT_Ele8_CaloIdL_CaloIsoVL_Jet40_v(\\d+)"                         , "o")
@@ -1263,10 +1265,15 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     //--------------------------
     // File and Event Loop
     //---------------------------
+    
+    // benchmark
+    TBenchmark bmark;
+    bmark.Start("benchmark");
+    
     int i_permilleOld = 0;
     unsigned int nEventsTotal = 0;
     unsigned int nEventsChain = 0;
-    int nEvents = -1; 
+    int nEvents = nEvents_; 
     if (nEvents==-1){
         nEventsChain = chain->GetEntries();
     } else {
@@ -1276,12 +1283,18 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     TIter fileIter(listOfFiles);
     map<int,int> m_events;
 
-    while(TChainElement *currentFile = (TChainElement*)fileIter.Next() ) {
+    while(TChainElement *currentFile = (TChainElement*)fileIter.Next())
+    {
         TString filename = currentFile->GetTitle();
+        cout << filename << endl;
     
         TFile* f = TFile::Open(filename.Data());
         TTree *tree = (TTree*)f->Get("Events");
         cms2.Init(tree);
+
+        if (nEventsTotal >= nEventsChain)
+            continue;
+
         unsigned int nEntries = tree->GetEntries();
         unsigned int nGoodEvents(0);
         unsigned int nLoop = nEntries;
@@ -1290,17 +1303,20 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
         for( z = 0; z < nLoop; z++) { // Event Loop
             cms2.GetEntry(z);
 
+            if (nEventsTotal >= nEventsChain)
+                continue;
+
             if(isData){
                 // Good  Runs
                 if (goodrun_is_json) {
-                    if(!goodrun_json( evt_run(), evt_lumiBlock() )) continue;   
+                    if(!goodrun_json(evt_run(), evt_lumiBlock())) continue;   
                 }
                 else {
-                    if(!goodrun( evt_run(), evt_lumiBlock() )) continue;   
+                    if(!goodrun(evt_run(), evt_lumiBlock())) continue;   
                 }
 
                 // check for duplicated
-                DorkyEventIdentifier id = { evt_run(),evt_event(), evt_lumiBlock() };
+                DorkyEventIdentifier id = {evt_run(), evt_event(), evt_lumiBlock()};
                 if (is_duplicate(id) ) { 
                     cout << "\t! ERROR: found duplicate." << endl;
                     continue;
@@ -2561,7 +2577,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
 
     }  // closes loop over files
 
-    std::cout << "\t"<< std::endl;
+    bmark.Stop("benchmark");
+    cout << endl;
+    cout << nEventsTotal << " Events Processed" << endl;
+    //cout << "# of bad events filtered = " << bad_events << endl; 
+    //cout << "# of duplicates filtered = " << duplicates << endl; 
+    cout << "------------------------------" << endl;
+    cout << "CPU  Time:	" << Form("%.01f", bmark.GetCpuTime("benchmark" )) << endl;
+    cout << "Real Time:	" << Form("%.01f", bmark.GetRealTime("benchmark")) << endl;
+    cout << endl;
+    
     CloseBabyNtuple();
     return;
     

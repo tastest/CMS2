@@ -18,14 +18,16 @@ class myBabyMaker {
 public:
 
     myBabyMaker();
-    ~myBabyMaker() {
-        delete babyFile_;
-        delete babyTree_;
+    ~myBabyMaker()
+    {
+        if(!babyFile_) delete babyFile_;
+        if(!babyTree_) delete babyTree_;
     };
     void MakeBabyNtuple (const char *);
     void InitBabyNtuple ();
     void FillBabyNtuple ();
     void CloseBabyNtuple ();
+    void SetNumEvents(int nevt) {nEvents_ = nevt;}
     void ScanChain (TChain *chain, const char *babyFileName, bool isData, int eormu, bool applyFOfilter = true, const std::string& jetcorrPath="../CORE/jetcorr/data/");
     void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
 
@@ -34,6 +36,7 @@ private:
     // BABY NTUPLE VARIABLES
     TFile *babyFile_;
     TTree *babyTree_;
+    int nEvents_;
 
     // good run list
     Bool_t goodrun_is_json;
