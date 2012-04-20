@@ -1,3 +1,9 @@
+04-19-2012 - Ryan Kelley 
+	* tagged with FakeRates19April2012
+    * Added option for to run on a subset of the data (SetNumEvents) 
+    * Verified HLT and L1 prescale variables are working
+	* Added more printout
+
 04-17-2012 - Ryan Kelley 
     * Added more triggers
         - HLT_IsoMu24_eta2p1_v* 
