@@ -28,6 +28,7 @@ public:
     void FillBabyNtuple ();
     void CloseBabyNtuple ();
     void SetNumEvents(int nevt) {nEvents_ = nevt;}
+    void SetVerbose(bool verbose) {verbose_ = verbose;}
     void ScanChain (TChain *chain, const char *babyFileName, bool isData, int eormu, bool applyFOfilter = true, const std::string& jetcorrPath="../CORE/jetcorr/data/");
     void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
 
@@ -37,6 +38,7 @@ private:
     TFile *babyFile_;
     TTree *babyTree_;
     int nEvents_;
+    bool verbose_;
 
     // good run list
     Bool_t goodrun_is_json;

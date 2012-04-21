@@ -22,7 +22,10 @@
 #include "TBenchmark.h"
 
 // TAS includes
-// for linking CORE and Tools as a standalone librabry (need to define __NON_ROOT_BUILD__ in your build script)
+// This is for those using a makefile 
+// for linking CORE and Tools as a standalone librabry 
+// you need to define __NON_ROOT_BUILD__ in your build script
+// (i.e. g++ ... -D__NON_ROOT_BUILD__ ... )
 #ifdef __NON_ROOT_BUILD__  
 #include "CMS2.h"
 #include "CORE/utilities.h"
@@ -40,6 +43,7 @@
 #include "CORE/ssSelections.h"
 #include "CORE/susySelections.h"
 // for compiling in ACLiC (.L myBabyMaker.c++ method)
+// since the source files are included
 #else
 #include "CMS2.cc"  
 #ifndef __CINT__
@@ -784,7 +788,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyFile_ = TFile::Open(Form("%s", babyFilename), "RECREATE");
     babyFile_->cd();
     babyTree_ = new TTree("tree", "A Baby Ntuple");
-    babyTree_->SetDirectory(0);
+    // babyTree_->SetDirectory(0);
 
     /////////////////////////// 
     // Event Information     //
@@ -1233,6 +1237,7 @@ myBabyMaker::myBabyMaker ()
 //-----------------------------------
 void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData, int eormu, bool applyFOfilter, const std::string& jetcorrPath)
 {
+
     already_seen.clear();
 
     // Make a baby ntuple
@@ -1242,20 +1247,24 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
     if (isData) {        
         string data_pf_l2 = jetcorrPath;
-        data_pf_l2.append("GR_R_42_V14_AK5PF_L2Relative.txt");
+        data_pf_l2.append("/GR_R_42_V14_AK5PF_L2Relative.txt");
         string data_pf_l3 = jetcorrPath;
-        data_pf_l3.append("GR_R_42_V14_AK5PF_L3Absolute.txt");
+        data_pf_l3.append("/GR_R_42_V14_AK5PF_L3Absolute.txt");
         jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
         jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
     }
     else {
         string mc_pf_l2 = jetcorrPath;
-        mc_pf_l2.append("START41_V0_AK5PF_L2Relative.txt");
+        mc_pf_l2.append("/START41_V0_AK5PF_L2Relative.txt");
         string mc_pf_l3 = jetcorrPath;
-        mc_pf_l3.append("START41_V0_AK5PF_L3Absolute.txt");
+        mc_pf_l3.append("/START41_V0_AK5PF_L3Absolute.txt");
         jetcorr_pf_L2L3_filenames.push_back(mc_pf_l2.c_str());
         jetcorr_pf_L2L3_filenames.push_back(mc_pf_l3.c_str());
-    }
+    }    
+
+    std::cout << "making jet corrector with the following files: " << std::endl;
+    for (unsigned int idx = 0; idx < jetcorr_pf_L2L3_filenames.size(); idx++)
+        std::cout << jetcorr_pf_L2L3_filenames.at(idx) << std::endl;
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
 
     // The deltaR requirement between objects and jets to remove the jet trigger dependence
@@ -1282,18 +1291,25 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
     map<int,int> m_events;
+    bool finish_looping = false;
+
+    std::cout << "looping on " << nEventsChain << " out of " << chain->GetEntries() << " events..." << std::endl;
 
     while(TChainElement *currentFile = (TChainElement*)fileIter.Next())
     {
+        if (finish_looping) {
+            break;
+        }
+
         TString filename = currentFile->GetTitle();
-        cout << filename << endl;
+        if (verbose_)
+        {
+            cout << filename << endl;
+        }
     
         TFile* f = TFile::Open(filename.Data());
         TTree *tree = (TTree*)f->Get("Events");
         cms2.Init(tree);
-
-        if (nEventsTotal >= nEventsChain)
-            continue;
 
         unsigned int nEntries = tree->GetEntries();
         unsigned int nGoodEvents(0);
@@ -1303,8 +1319,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
         for( z = 0; z < nLoop; z++) { // Event Loop
             cms2.GetEntry(z);
 
-            if (nEventsTotal >= nEventsChain)
-                continue;
+            if (nEventsTotal >= nEventsChain) {
+                finish_looping = true;
+                break;
+            }
 
             if(isData){
                 // Good  Runs
@@ -1990,7 +2008,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
             // Muons
             if (eormu == -1 || eormu==13) {
                 for ( unsigned int iLep = 0; iLep < mus_p4().size(); iLep++) {
-        
+
                     // Apply a pt cut
                     if ( mus_p4().at(iLep).pt() < 5.0) continue;
         
