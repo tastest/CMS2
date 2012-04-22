@@ -117,10 +117,18 @@ private:
     Float_t ch_nt_pfiso03_;   // TRK PF Isolation (not truncated) with a cone size of 0.3
     Float_t nh_nt_pfiso03_;   // ECAL PF Isolation (not truncated) with a cone size of 0.3
     Float_t em_nt_pfiso03_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nt_pfiso03_bv_;      // PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t ch_nt_pfiso03_bv_;   // TRK PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t nh_nt_pfiso03_bv_;   // ECAL PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t em_nt_pfiso03_bv_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
     Float_t nt_pfiso04_;      // PF Isolation (not truncated) with a cone size of 0.4
     Float_t ch_nt_pfiso04_;   // TRK PF Isolation (not truncated) with a cone size of 0.4
     Float_t nh_nt_pfiso04_;   // ECAL PF Isolation (not truncated) with a cone size of 0.4
     Float_t em_nt_pfiso04_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.4
+    Float_t nt_pfiso04_bv_;      // PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t ch_nt_pfiso04_bv_;   // TRK PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t nh_nt_pfiso04_bv_;   // ECAL PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t em_nt_pfiso04_bv_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
 
     // PV
     Float_t d0PV_wwV1_;       // electron_d0PV_wwV1(iEl)

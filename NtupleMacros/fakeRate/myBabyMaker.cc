@@ -411,26 +411,33 @@ void myBabyMaker::InitBabyNtuple()
     foel_mass_ = -999.0;
     fomu_mass_ = -999.0;
 
-    iso_             = -999.;
-    iso_nps_         = -999.;
-    nt_iso_          = -999.;
-    nt_iso_nps_      = -999.;
-    trck_iso_        = -999.;
-    trck_nt_iso_     = -999.;
-    ecal_iso_        = -999.;
-    ecal_iso_nps_    = -999.;
-    ecal_nt_iso_     = -999.;
-    ecal_nt_iso_nps_ = -999.;
-    hcal_iso_        = -999.;
-    hcal_nt_iso_     = -999.;
-    nt_pfiso03_      = -999.;
-    ch_nt_pfiso03_   = -999.;
-    nh_nt_pfiso03_   = -999.;
-    em_nt_pfiso03_   = -999.;
-    nt_pfiso04_      = -999.;
-    ch_nt_pfiso04_   = -999.;
-    nh_nt_pfiso04_   = -999.;
-    em_nt_pfiso04_   = -999.;
+    iso_              = -999.;
+    iso_nps_          = -999.;
+    nt_iso_           = -999.;
+    nt_iso_nps_       = -999.;
+    trck_iso_         = -999.;
+    trck_nt_iso_      = -999.;
+    ecal_iso_         = -999.;
+    ecal_iso_nps_     = -999.;
+    ecal_nt_iso_      = -999.;
+    ecal_nt_iso_nps_  = -999.;
+    hcal_iso_         = -999.;
+    hcal_nt_iso_      = -999.;
+    nt_pfiso03_       = -999.;
+    ch_nt_pfiso03_    = -999.;
+    nh_nt_pfiso03_    = -999.;
+    em_nt_pfiso03_    = -999.;
+    nt_pfiso03_bv_    = -999.;
+    ch_nt_pfiso03_bv_ = -999.;
+    nh_nt_pfiso03_bv_ = -999.;
+    nt_pfiso04_       = -999.;
+    ch_nt_pfiso04_    = -999.;
+    nh_nt_pfiso04_    = -999.;
+    em_nt_pfiso04_    = -999.;
+    nt_pfiso04_bv_    = -999.;
+    ch_nt_pfiso04_bv_ = -999.;
+    nh_nt_pfiso04_bv_ = -999.;
+    em_nt_pfiso04_bv_ = -999.;
 
     closestMuon_      = false;
     el_id_smurfV5_    = false;
@@ -851,10 +858,18 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ch_nt_pfiso03"       , &ch_nt_pfiso03_       );
     babyTree_->Branch("nh_nt_pfiso03"       , &nh_nt_pfiso03_       );
     babyTree_->Branch("em_nt_pfiso03"       , &em_nt_pfiso03_       );
+    babyTree_->Branch("nt_pfiso03_bv"       , &nt_pfiso03_bv_       );
+    babyTree_->Branch("ch_nt_pfiso03_bv"    , &ch_nt_pfiso03_bv_    );
+    babyTree_->Branch("nh_nt_pfiso03_bv"    , &nh_nt_pfiso03_bv_    );
+    babyTree_->Branch("em_nt_pfiso03_bv"    , &em_nt_pfiso03_bv_    );
     babyTree_->Branch("nt_pfiso04"          , &nt_pfiso04_          );
     babyTree_->Branch("ch_nt_pfiso04"       , &ch_nt_pfiso04_       );
     babyTree_->Branch("nh_nt_pfiso04"       , &nh_nt_pfiso04_       );
     babyTree_->Branch("em_nt_pfiso04"       , &em_nt_pfiso04_       );
+    babyTree_->Branch("nt_pfiso04_bv"       , &nt_pfiso04_bv_       );
+    babyTree_->Branch("ch_nt_pfiso04_bv"    , &ch_nt_pfiso04_bv_    );
+    babyTree_->Branch("nh_nt_pfiso04_bv"    , &nh_nt_pfiso04_bv_    );
+    babyTree_->Branch("em_nt_pfiso04_bv"    , &em_nt_pfiso04_bv_    );
     babyTree_->Branch("id"                  , &id_                  );
     babyTree_->Branch("closestMuon"         , &closestMuon_         );
     babyTree_->Branch("el_id_smurfV5"       , &el_id_smurfV5_       );
@@ -1194,6 +1209,7 @@ void myBabyMaker::CloseBabyNtuple()
 // constructor
 myBabyMaker::myBabyMaker () 
     : nEvents_(-1)
+    , verbose_(false)
     , ele8_regexp                                                 ("HLT_Ele8_v(\\d+)"                                                 , "o")
     , ele8_CaloIdL_TrkIdVL_regexp                                 ("HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)"                                 , "o")
     , ele8_CaloIdL_CaloIsoVL_regexp                               ("HLT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)"                               , "o")
@@ -1290,7 +1306,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     }
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
-    map<int,int> m_events;
+    //map<int,int> m_events;
     bool finish_looping = false;
 
     std::cout << "looping on " << nEventsChain << " out of " << chain->GetEntries() << " events..." << std::endl;
@@ -1316,7 +1332,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
         unsigned int nLoop = nEntries;
         unsigned int z;
 
-        for( z = 0; z < nLoop; z++) { // Event Loop
+        // Event Loop
+        for( z = 0; z < nLoop; z++)
+        { 
             cms2.GetEntry(z);
 
             if (nEventsTotal >= nEventsChain) {
@@ -1661,6 +1679,12 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     nt_pfiso03_ = (ch_nt_pfiso03_ + em_nt_pfiso03_ + nh_nt_pfiso03_)/els_p4().at(iLep).pt(); 
                     electronIsoValuePF2012(ch_nt_pfiso04_, em_nt_pfiso04_, nh_nt_pfiso04_, 0.4, iLep, first_good_vertex_index);
                     nt_pfiso04_ = (ch_nt_pfiso04_ + em_nt_pfiso04_ + nh_nt_pfiso04_)/els_p4().at(iLep).pt(); 
+
+                    // PF Isolation
+                    electronIsoValuePF2012(ch_nt_pfiso03_bv_, em_nt_pfiso03_bv_, nh_nt_pfiso03_bv_, 0.3, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
+                    nt_pfiso03_bv_ = (ch_nt_pfiso03_bv_ + em_nt_pfiso03_bv_ + nh_nt_pfiso03_bv_)/els_p4().at(iLep).pt(); 
+                    electronIsoValuePF2012(ch_nt_pfiso04_bv_, em_nt_pfiso04_bv_, nh_nt_pfiso04_bv_, 0.4, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
+                    nt_pfiso04_bv_ = (ch_nt_pfiso04_bv_ + em_nt_pfiso04_bv_ + nh_nt_pfiso04_bv_)/els_p4().at(iLep).pt(); 
 
                     // mc information
                     if (!isData) {
@@ -2194,8 +2218,6 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     ecal_nt_iso_  = muonIsoValue_ECAL(iLep, false);
                     hcal_iso_     = muonIsoValue_HCAL(iLep);
                     hcal_nt_iso_  = muonIsoValue_HCAL(iLep, false);
-                    nt_pfiso03_   = muonIsoValuePF(iLep, 0, 0.3);
-                    nt_pfiso04_   = muonIsoValuePF(iLep, 0, 0.4);
 
                     // PF Isolation 03
                     ch_nt_pfiso03_ = mus_isoR03_pf_ChargedHadronPt().at(iLep);
