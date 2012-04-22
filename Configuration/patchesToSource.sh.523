@@ -1,7 +1,0 @@
-
-# MVA JetId 
-cvs co -r V00-00-03 -d CMGTools/External UserCode/CMG/CMGTools/External
-
-echo;echo checkingdeps;echo
-
-checkdeps -a
