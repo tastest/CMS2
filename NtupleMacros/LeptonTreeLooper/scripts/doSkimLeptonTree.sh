@@ -1,8 +1,14 @@
 #!/bin/bash
-root -b -q skimLeptonTree.C+\(\"../runlists/DCSOnly_2012A_160412.jmu\",\"/smurf/dlevans/LeptonTree/V00-01-02/DoubleElectronRun2012APromptV1/merged.root\",\"/smurf/dlevans/LeptonTree/V00-01-02/DoubleElectronRun2012APromptV1/merged_dcs.root\"\)
-root -b -q skimLeptonTree.C+\(\"../runlists/DCSOnly_2012A_160412.jmu\",\"/smurf/dlevans/LeptonTree/V00-01-02/DoubleElectronRun2012APromptV1_egammaMVAFix/merged.root\",\"/smurf/dlevans/LeptonTree/V00-01-02/DoubleElectronRun2012APromptV1_egammaMVAFix/merged_dcs.root\"\)
 
-root -b -q skimLeptonTree.C+\(\"../runlists/DCSOnly_2012A_160412.jmu\",\"/smurf/dlevans/LeptonTree/V00-01-02/SingleElectronRun2012APromptV1/merged.root\",\"/smurf/dlevans/LeptonTree/V00-01-02/SingleElectronRun2012APromptV1/merged_dcs.root\"\)
+###
+CERT="../runlists/Cert_190456-191276_8TeV_PromptReco_Collisions12_JSON.jmu"
+TAG="V00-01-05"
+root -b -q skimLeptonTree.C+\(\"${CERT}\",\"/smurf/dlevans/LeptonTree/${TAG}/SingleMuRun2012APromptV1/\",\"merged_Cert_190456-191276.root\"\)
+root -b -q skimLeptonTree.C+\(\"${CERT}\",\"/smurf/dlevans/LeptonTree/${TAG}/SingleElectronRun2012APromptV1/\",\"merged_Cert_190456-191276.root\"\)
 
-root -b -q skimLeptonTree.C+\(\"../runlists/DCSOnly_2012A_160412.jmu\",\"/smurf/dlevans/LeptonTree/V00-01-02/SingleMuRun2012APromptV1/merged.root\",\"/smurf/dlevans/LeptonTree/V00-01-02/SingleMuRun2012APromptV1/merged_dcs.root\"\)
+##
+CERT="../runlists/DCSOnly_2012A_230412.jmu"
+TAG="V00-01-05"
+root -b -q skimLeptonTree.C+\(\"${CERT}\",\"/smurf/dlevans/LeptonTree/${TAG}/SingleMuRun2012APromptV1/\",\"merged_DCSOnly_2012A_230412.root\"\)
+root -b -q skimLeptonTree.C+\(\"${CERT}\",\"/smurf/dlevans/LeptonTree/${TAG}/SingleElectronRun2012APromptV1/\",\"merged_DCSOnly_2012A_230412.root\"\)
 
