@@ -1616,15 +1616,20 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     }
 
                     // Pileup - VertexMaker
+                    bool first_good_vertex_found         = false;
                     unsigned int first_good_vertex_index = 0;
-                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
+					{
                         if (!isGoodVertex(vidx))
                         {
-                            first_good_vertex_index = vidx;
                             continue;
                         }
-
-                        ++evt_nvtxs_;
+						if (!first_good_vertex_found)
+						{
+							first_good_vertex_found = true;
+							first_good_vertex_index = vidx;
+						}
+                       	++evt_nvtxs_;
                     }
     
                     // Pileup - VertexMaker
@@ -2168,15 +2173,20 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     } 
 
                     // Pileup - VertexMaker
+                    bool first_good_vertex_found         = false;
                     unsigned int first_good_vertex_index = 0;
-                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
+                    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
+					{
                         if (!isGoodVertex(vidx))
                         {
-                            first_good_vertex_index = vidx;
                             continue;
                         }
-
-                        ++evt_nvtxs_;
+						if (!first_good_vertex_found)
+						{
+							first_good_vertex_found = true;
+							first_good_vertex_index = vidx;
+						}
+                       	++evt_nvtxs_;
                     }
     
                     // Pileup - VertexMaker
