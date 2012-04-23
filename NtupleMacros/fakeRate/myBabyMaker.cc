@@ -1306,7 +1306,6 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     }
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
-    //map<int,int> m_events;
     bool finish_looping = false;
 
     std::cout << "looping on " << nEventsChain << " out of " << chain->GetEntries() << " events..." << std::endl;
@@ -1482,10 +1481,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
 
                     // SS
                     num_el_ssV7_       = pass_electronSelection(iLep, electronSelection_ssV7       );
-                    num_el_ssV7_noIso_ = pass_electronSelection(iLep, electronSelectionFOV7_v3     );
-                    v1_el_ssV7_        = pass_electronSelection(iLep, electronSelection_ssV7_noIso );
-                    v2_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v1     );
-                    v3_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v2     );
+                    num_el_ssV7_noIso_ = pass_electronSelection(iLep, electronSelection_ssV7_noIso );
+                    v1_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v1     );
+                    v2_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v2     );
+                    v3_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v3     );
 
                     //////////
                     // 2011 //
