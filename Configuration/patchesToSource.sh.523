@@ -4,7 +4,7 @@
 ####################
 
 cvs co -r lhx_14APR2012_v1 RecoMET/METFilters
-
+touch RecoMET/METFilters/data/dummy.txt
 
 #############
 # MVA JetId #
