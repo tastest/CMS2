@@ -1,0 +1,89 @@
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\			
+\\	   Do NOT use ROOT from CMSSW under CMSSW environment. 	\\
+\\ 	   This can cause a seg fault (refer to issue i) below)	\\
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\				
+
+
+1) CMSSW CVS: 
+---------------------------------------------------------------------------------------------------------
+
+	- http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/UserCode/pharris/MVAMet/
+	- code is basically copied from CVS with modification of header file paths and type definitions
+	
+
+2) Structure :  
+---------------------------------------------------------------------------------------------------------
+
+	- CORE/mvaMet.cc/.h 		: contains function that returns MVAMet in the event
+							      You can think this as a wrapper for MVAMet.cc 
+	- Tools/MVAMET
+		MVAMet.cc/.h			: calculates MVAMet 
+		MetUtilities.cc/.h 		: contains various functions used for MVAMet calculation. 
+		GBRForest.cc/.h 		: wrapper of GBRTree. This sums responses from trees.
+		GBRTree.cc/.h  			: wrapper of weight file. This returns response from a tree. 
+		gbrmet_52.root			: regression weight file for U in 52X
+		gbrmetphi_52.root 		: regression weight file for Phi in 52X
+		PHMetAnalysisLinkDef.h 	: dictionary entries for GBR wrappers
+		Makefile				: complies directory making libCMS2NtupleMacrosMVAMet.so
+
+
+3) How to get mvaMet in my looper
+---------------------------------------------------------------------------------------------------------
+
+	i) Make sure that you have mvaMet.cc/.h under CORE. Once you have checked them, compile the directories. Do
+	
+		$ cd Tools/MVAMET
+		$ make b 
+		$ cd ../../CORE 
+		$ make 
+	 
+	  Then shard objects will be generated, Tools/MVAMET/libCMS2NtupleMacrosMVAMet.so and 
+	  CORE/libCMS2NtupleMacrosCORE.so. If you do not want to compile the whole CORE, you can select 
+	  files that you want to compile. Just don't forget to compile mvaMet.cc. 
+	  If you do not like to pre-compile CORE but like to compile when running, I think you can just 
+	  load Tools/MVAMET/libCMS2NtupleMacrosMVAMet.so and do what you want. 
+
+	ii) Go to the directory where your looper is. In the looper( for example, ScanChain ), do the following. 
+
+		// include these files 
+		#include "../CORE/mvaMet.h" 
+		#include "../Tools/MVAMET/MVAMet.h"
+		#include "../Tools/MVAMET/MetUtilities.h"
+		...
+
+		// at the begining of ScanChain
+		MVAMet* mvaMet = 0; 
+		
+		... 
+		
+		// initialization
+		// 0.2 is dZ for PFCandidates 
+		mvaMet  = new MVAMet(0.2); 
+		// Two ROOT files are regression weights for U and Phi. 
+		mvaMet->Initialize( "../Tools/MVAMET/gbrmet_52.root", "../Tools/MVAMET/gbrmetphi_52.root", MVAMet::kBaseline ); 
+	
+		... 
+		// in the event looper 
+      	float mvamet_ =  mvaMET(0, 0.2, mvaMet, jet_corrector_pfL1FastJetL2L3);
+		
+
+	iii) Load the library. For example in a ROOT macro,
+
+	    gSystem->Load("../Tools/MVAMET/libCMS2NtupleMacrosMVAMet.so");	
+
+
+	iv) Run your looper
+
+
+4) Issues 
+---------------------------------------------------------------------------------------------------------
+
+	i) There is an issue of conflicting with CMSSW libraries IF you are in CMSSW environment. 
+	   The issue is that there are some files under CORE/jetcorr which were taken directly from 
+	   CMSSW. So, when running a looper, seg fault occurs because code tries to find 
+	   files in CMSSW which do not exist.  
+	   
+	   
+	   
+	
+
