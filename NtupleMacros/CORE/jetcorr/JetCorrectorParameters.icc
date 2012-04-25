@@ -1,6 +1,6 @@
 //
 // Original Author:  Fedor Ratnikov Nov 9, 2007
-// $Id: JetCorrectorParameters.icc,v 1.3 2011/06/12 21:50:39 dmytro Exp $
+// $Id: JetCorrectorParameters.icc,v 1.4 2012/04/25 19:01:42 dbarge Exp $
 //
 // Generic parameters for Jet corrections
 //
@@ -373,17 +373,9 @@ JetCorrectorParametersCollection::l7PartonArray_[JetCorrectorParametersCollectio
   };
 
 
-std::vector<std::string>
-JetCorrectorParametersCollection::labels_(labelsArray_, 
-					  labelsArray_ + sizeof(labelsArray_)/sizeof(*labelsArray_) );
-
-std::vector<std::string>
-JetCorrectorParametersCollection::l5Flavors_(l5FlavorArray_, 
-					     l5FlavorArray_ + sizeof(l5FlavorArray_)/sizeof(*l5FlavorArray_) );
-
-std::vector<std::string>
-JetCorrectorParametersCollection::l7Partons_(l7PartonArray_, 
-					     l7PartonArray_ + sizeof(l7PartonArray_)/sizeof(*l7PartonArray_) );
+std::vector<std::string> JetCorrectorParametersCollection::labels_    = std::vector<std::string>( labelsArray_  , labelsArray_   + sizeof(labelsArray_  )/sizeof(*labelsArray_  ) );
+std::vector<std::string> JetCorrectorParametersCollection::l5Flavors_ = std::vector<std::string>( l5FlavorArray_, l5FlavorArray_ + sizeof(l5FlavorArray_)/sizeof(*l5FlavorArray_) );
+std::vector<std::string> JetCorrectorParametersCollection::l7Partons_ = std::vector<std::string>( l7PartonArray_, l7PartonArray_ + sizeof(l7PartonArray_)/sizeof(*l7PartonArray_) );
 
 
 void JetCorrectorParametersCollection::getSections( std::string inputFile,
