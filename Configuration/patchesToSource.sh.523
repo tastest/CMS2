@@ -5,13 +5,14 @@
 
 cvs co -r lhx_14APR2012_v1 RecoMET/METFilters
 touch RecoMET/METFilters/data/dummy.txt
+sed '3 s/EDFilter/EDProducer/' <$CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py >blah
+mv blah $CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py
 
 #############
 # MVA JetId #
 #############
  
 cvs co -r V00-00-03 -d CMGTools/External UserCode/CMG/CMGTools/External
-
 
 #
 echo;echo checkingdeps;echo
