@@ -563,6 +563,123 @@ void myBabyMaker::InitBabyNtuple()
     // End Fake Rate Numerator & Denominator Selections //
     //////////////////////////////////////////////////////
 
+    ///////////////////////  
+    // 2012 Triggers     //
+    ///////////////////////
+
+    // Electrons
+    ele17_CaloIdL_CaloIsoVL_vstar_                          = 0;  
+    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_         = 0;  
+    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_   = 0;  
+    ele8_CaloIdL_CaloIsoVL_vstar_                           = 0;  
+    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_          = 0;  
+    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_    = 0;  
+    ele8_CaloIdT_TrkIdVL_vstar_                             = 0;  
+    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = 0;
+    ele27_WP80_vstar_ = 0;
+
+    ele17_CaloIdL_CaloIsoVL_version_                        = -1;  
+    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_       = -1;  
+    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_ = -1;  
+    ele8_CaloIdL_CaloIsoVL_version_                         = -1;  
+    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_        = -1;  
+    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_  = -1;  
+    ele8_CaloIdT_TrkIdVL_version_                           = -1;  
+    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_ = -1;
+    ele27_WP80_version_ = -1;
+
+    dr_ele17_CaloIdL_CaloIsoVL_vstar_                        = 99.0;  
+    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = 99.0;  
+    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_ = 99.0;  
+    dr_ele8_CaloIdL_CaloIsoVL_vstar_                         = 99.0;  
+    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = 99.0;  
+    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_  = 99.0;  
+    dr_ele8_CaloIdT_TrkIdVL_vstar_                           = 99.0;  
+    dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = 99.0;
+    dr_ele27_WP80_vstar_ = 99.0;
+
+    hltps_ele17_CaloIdL_CaloIsoVL_vstar_                        = -1;  
+    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = -1;  
+    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_ = -1;  
+    hltps_ele8_CaloIdL_CaloIsoVL_vstar_                         = -1;  
+    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = -1;  
+    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_  = -1;  
+    hltps_ele8_CaloIdT_TrkIdVL_vstar_                           = -1;  
+    hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = -1;
+    hltps_ele27_WP80_vstar_ = -1;
+
+    l1ps_ele17_CaloIdL_CaloIsoVL_vstar_                        = -1;  
+    l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = -1;  
+    l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_ = -1;  
+    l1ps_ele8_CaloIdL_CaloIsoVL_vstar_                         = -1;  
+    l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = -1;  
+    l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_  = -1;  
+    l1ps_ele8_CaloIdT_TrkIdVL_vstar_                           = -1;  
+    l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = -1;
+    l1ps_ele27_WP80_vstar_ = -1;
+
+    // Muons
+    mu5_vstar_         = 0; 
+    mu8_vstar_         = 0;
+    mu12_vstar_        = 0; 
+    mu17_vstar_        = 0; 
+    mu15_eta2p1_vstar_ = 0; 
+    mu24_eta2p1_vstar_ = 0; 
+    mu30_eta2p1_vstar_ = 0; 
+    isomu20_eta2p1_vstar_ = 0; 
+    isomu24_eta2p1_vstar_ = 0; 
+    isomu30_eta2p1_vstar_ = 0; 
+
+    mu5_version_         = -1; 
+    mu8_version_         = -1;
+    mu12_version_        = -1; 
+    mu17_version_        = -1; 
+    mu15_eta2p1_version_ = -1; 
+    mu24_eta2p1_version_ = -1; 
+    mu30_eta2p1_version_ = -1; 
+    isomu20_eta2p1_version_ = 0; 
+    isomu24_eta2p1_version_ = 0; 
+    isomu30_eta2p1_version_ = 0; 
+
+    dr_mu8_vstar_         = 99.0;
+    dr_mu5_vstar_         = 99.0; 
+    dr_mu12_vstar_        = 99.0; 
+    dr_mu17_vstar_        = 99.0; 
+    dr_mu15_eta2p1_vstar_ = 99.0; 
+    dr_mu24_eta2p1_vstar_ = 99.0; 
+    dr_mu30_eta2p1_vstar_ = 99.0; 
+    dr_isomu20_eta2p1_vstar_ = 99.0; 
+    dr_isomu24_eta2p1_vstar_ = 99.0; 
+    dr_isomu30_eta2p1_vstar_ = 99.0; 
+
+    hltps_mu8_vstar_         = -1;
+    hltps_mu5_vstar_         = -1; 
+    hltps_mu12_vstar_        = -1; 
+    hltps_mu17_vstar_        = -1; 
+    hltps_mu15_eta2p1_vstar_ = -1; 
+    hltps_mu24_eta2p1_vstar_ = -1; 
+    hltps_mu30_eta2p1_vstar_ = -1; 
+    hltps_isomu20_eta2p1_vstar_ = -1; 
+    hltps_isomu24_eta2p1_vstar_ = -1; 
+    hltps_isomu30_eta2p1_vstar_ = -1; 
+
+    l1ps_mu8_vstar_         = -1;
+    l1ps_mu5_vstar_         = -1; 
+    l1ps_mu12_vstar_        = -1; 
+    l1ps_mu17_vstar_        = -1; 
+    l1ps_mu15_eta2p1_vstar_ = -1; 
+    l1ps_mu24_eta2p1_vstar_ = -1; 
+    l1ps_mu30_eta2p1_vstar_ = -1; 
+    l1ps_isomu20_eta2p1_vstar_ = -1; 
+    l1ps_isomu24_eta2p1_vstar_ = -1; 
+    l1ps_isomu30_eta2p1_vstar_ = -1; 
+
+
+    ///////////////////////  
+    // End 2012 Triggers //
+    ///////////////////////
+
+
    
   
     ///////////////////////  
@@ -628,113 +745,6 @@ void myBabyMaker::InitBabyNtuple()
     ///////////////////////
 
   
-    ///////////////////////  
-    // 2012 Triggers     //
-    ///////////////////////
-
-    // Electrons
-    ele17_CaloIdL_CaloIsoVL_vstar_                          = 0;  
-    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_         = 0;  
-    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_   = 0;  
-    ele8_CaloIdL_CaloIsoVL_vstar_                           = 0;  
-    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_          = 0;  
-    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_    = 0;  
-    ele8_CaloIdT_TrkIdVL_vstar_                             = 0;  
-    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = 0;
-    ele27_WP80_vstar_ = 0;
-
-    ele17_CaloIdL_CaloIsoVL_version_                        = -1;  
-    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_       = -1;  
-    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_ = -1;  
-    ele8_CaloIdL_CaloIsoVL_version_                         = -1;  
-    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_        = -1;  
-    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_  = -1;  
-    ele8_CaloIdT_TrkIdVL_version_                           = -1;  
-    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_ = -1;
-    ele27_WP80_version_ = -1;
-
-    dr_ele17_CaloIdL_CaloIsoVL_vstar_                        = 99.0;  
-    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = 99.0;  
-    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_ = 99.0;  
-    dr_ele8_CaloIdL_CaloIsoVL_vstar_                         = 99.0;  
-    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = 99.0;  
-    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_  = 99.0;  
-    dr_ele8_CaloIdT_TrkIdVL_vstar_                           = 99.0;  
-    dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = 99.0;
-    dr_ele27_WP80_vstar_ = 99.0;
-
-    hltps_ele17_CaloIdL_CaloIsoVL_vstar_                        = -1;  
-    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_       = -1;  
-    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_ = -1;  
-    hltps_ele8_CaloIdL_CaloIsoVL_vstar_                         = -1;  
-    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_        = -1;  
-    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_  = -1;  
-    hltps_ele8_CaloIdT_TrkIdVL_vstar_                           = -1;  
-    hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = -1;
-    hltps_ele27_WP80_vstar_ = -1;
-
-    // Muons
-    mu5_vstar_         = 0; 
-    mu8_vstar_         = 0;
-    mu12_vstar_        = 0; 
-    mu17_vstar_        = 0; 
-    mu15_eta2p1_vstar_ = 0; 
-    mu24_eta2p1_vstar_ = 0; 
-    mu30_eta2p1_vstar_ = 0; 
-    isomu20_eta2p1_vstar_ = 0; 
-    isomu24_eta2p1_vstar_ = 0; 
-    isomu30_eta2p1_vstar_ = 0; 
-
-    mu5_version_         = -1; 
-    mu8_version_         = -1;
-    mu12_version_        = -1; 
-    mu17_version_        = -1; 
-    mu15_eta2p1_version_ = -1; 
-    mu24_eta2p1_version_ = -1; 
-    mu30_eta2p1_version_ = -1; 
-    isomu20_eta2p1_version_ = 0; 
-    isomu24_eta2p1_version_ = 0; 
-    isomu30_eta2p1_version_ = 0; 
-
-    dr_mu8_vstar_         = 99.0;
-    dr_mu5_vstar_         = 99.0; 
-    dr_mu12_vstar_        = 99.0; 
-    dr_mu17_vstar_        = 99.0; 
-    dr_mu15_eta2p1_vstar_ = 99.0; 
-    dr_mu24_eta2p1_vstar_ = 99.0; 
-    dr_mu30_eta2p1_vstar_ = 99.0; 
-    dr_isomu20_eta2p1_vstar_ = 99.0; 
-    dr_isomu24_eta2p1_vstar_ = 99.0; 
-    dr_isomu30_eta2p1_vstar_ = 99.0; 
-
-    hltps_mu8_vstar_         = -1;
-    hltps_mu5_vstar_         = -1; 
-    hltps_mu12_vstar_        = -1; 
-    hltps_mu17_vstar_        = -1; 
-    hltps_mu15_eta2p1_vstar_ = -1; 
-    hltps_mu24_eta2p1_vstar_ = -1; 
-    hltps_mu30_eta2p1_vstar_ = -1; 
-    hltps_isomu20_eta2p1_vstar_ = -1; 
-    hltps_isomu24_eta2p1_vstar_ = -1; 
-    hltps_isomu30_eta2p1_vstar_ = -1; 
-
-    l1ps_mu8_vstar_         = -1;
-    l1ps_mu5_vstar_         = -1; 
-    l1ps_mu12_vstar_        = -1; 
-    l1ps_mu17_vstar_        = -1; 
-    l1ps_mu15_eta2p1_vstar_ = -1; 
-    l1ps_mu24_eta2p1_vstar_ = -1; 
-    l1ps_mu30_eta2p1_vstar_ = -1; 
-    l1ps_isomu20_eta2p1_vstar_ = -1; 
-    l1ps_isomu24_eta2p1_vstar_ = -1; 
-    l1ps_isomu30_eta2p1_vstar_ = -1; 
-
-
-    ///////////////////////  
-    // End 2012 Triggers //
-    ///////////////////////
-
-
     //////////////
     // Jets     //
     //////////////
@@ -1051,6 +1061,16 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar" , &hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ ); 
     babyTree_->Branch("hltps_ele27_WP80_vstar"                                            , &hltps_ele27_WP80_vstar_                                            ); 
 
+    babyTree_->Branch("l1ps_ele8_CaloIdL_CaloIsoVL_vstar"                                 , &l1ps_ele8_CaloIdL_CaloIsoVL_vstar_                                ); 
+    babyTree_->Branch("l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"                , &l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_               ); 
+    babyTree_->Branch("l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar"          , &l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         ); 
+    babyTree_->Branch("l1ps_ele8_CaloIdT_TrkIdVL_vstar"                                   , &l1ps_ele8_CaloIdT_TrkIdVL_vstar_                                  ); 
+    babyTree_->Branch("l1ps_ele17_CaloIdL_CaloIsoVL_vstar"                                , &l1ps_ele17_CaloIdL_CaloIsoVL_vstar_                               ); 
+    babyTree_->Branch("l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"               , &l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_              ); 
+    babyTree_->Branch("l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar"         , &l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_        ); 
+    babyTree_->Branch("l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar"  , &l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ ); 
+    babyTree_->Branch("l1ps_ele27_WP80_vstar"                                             , &l1ps_ele27_WP80_vstar_                                            ); 
+
     babyTree_->Branch("mu3_vstar"                                                         , &mu3_vstar_                                                         ); 
     babyTree_->Branch("mu5_vstar"                                                         , &mu5_vstar_                                                         ); 
     babyTree_->Branch("mu8_vstar"                                                         , &mu8_vstar_                                                         ); 
@@ -1117,24 +1137,18 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hltps_mu8_Jet40_vstar"                                             , &hltps_mu8_Jet40_vstar_                                             ); 
     babyTree_->Branch("hltps_isomu20_eta2p1_vstar"                                        , &hltps_isomu20_eta2p1_vstar_                                        ); 
     babyTree_->Branch("hltps_isomu24_eta2p1_vstar"                                        , &hltps_isomu24_eta2p1_vstar_                                        ); 
-    babyTree_->Branch("hltps_isomu30_eta2p1_vstar", &hltps_isomu30_eta2p1_vstar_);
+    babyTree_->Branch("hltps_isomu30_eta2p1_vstar"                                        , &hltps_isomu30_eta2p1_vstar_                                        );
 
-    //babyTree_->Branch("l1ps_mu3_vstar"        , &l1ps_mu3_vstar_        );
-    babyTree_->Branch("l1ps_mu5_vstar"        , &l1ps_mu5_vstar_        );
-    babyTree_->Branch("l1ps_mu8_vstar"        , &l1ps_mu8_vstar_        );
-    babyTree_->Branch("l1ps_mu12_vstar"       , &l1ps_mu12_vstar_       );
-    //babyTree_->Branch("l1ps_mu15_vstar"       , &l1ps_mu15_vstar_       );
-    babyTree_->Branch("l1ps_mu17_vstar"       , &l1ps_mu17_vstar_       );
-    //babyTree_->Branch("l1ps_mu20_vstar"       , &l1ps_mu20_vstar_       );
-    //babyTree_->Branch("l1ps_mu24_vstar"       , &l1ps_mu24_vstar_       );
-    //babyTree_->Branch("l1ps_mu30_vstar"       , &l1ps_mu30_vstar_       );
-    babyTree_->Branch("l1ps_mu15_eta2p1_vstar", &l1ps_mu15_eta2p1_vstar_);
-    babyTree_->Branch("l1ps_mu24_eta2p1_vstar", &l1ps_mu24_eta2p1_vstar_);
-    babyTree_->Branch("l1ps_mu30_eta2p1_vstar", &l1ps_mu30_eta2p1_vstar_);
-    //babyTree_->Branch("l1ps_mu8_Jet40_vstar"  , &l1ps_mu8_Jet40_vstar_  );
-    babyTree_->Branch("l1ps_isomu20_eta2p1_vstar", &l1ps_isomu20_eta2p1_vstar_);
-    babyTree_->Branch("l1ps_isomu24_eta2p1_vstar", &l1ps_isomu24_eta2p1_vstar_);
-    babyTree_->Branch("l1ps_isomu30_eta2p1_vstar", &l1ps_isomu30_eta2p1_vstar_);
+    babyTree_->Branch("l1ps_mu5_vstar"                                                    , &l1ps_mu5_vstar_                                                    );
+    babyTree_->Branch("l1ps_mu8_vstar"                                                    , &l1ps_mu8_vstar_                                                    );
+    babyTree_->Branch("l1ps_mu12_vstar"                                                   , &l1ps_mu12_vstar_                                                   );
+    babyTree_->Branch("l1ps_mu17_vstar"                                                   , &l1ps_mu17_vstar_                                                   );
+    babyTree_->Branch("l1ps_mu15_eta2p1_vstar"                                            , &l1ps_mu15_eta2p1_vstar_                                            );
+    babyTree_->Branch("l1ps_mu24_eta2p1_vstar"                                            , &l1ps_mu24_eta2p1_vstar_                                            );
+    babyTree_->Branch("l1ps_mu30_eta2p1_vstar"                                            , &l1ps_mu30_eta2p1_vstar_                                            );
+    babyTree_->Branch("l1ps_isomu20_eta2p1_vstar"                                         , &l1ps_isomu20_eta2p1_vstar_                                         );
+    babyTree_->Branch("l1ps_isomu24_eta2p1_vstar"                                         , &l1ps_isomu24_eta2p1_vstar_                                         );
+    babyTree_->Branch("l1ps_isomu30_eta2p1_vstar"                                         , &l1ps_isomu30_eta2p1_vstar_                                         );
 
     ///////////////////////  
     // End 2011 Triggers //
@@ -1222,7 +1236,7 @@ myBabyMaker::myBabyMaker ()
     , ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_regexp        ("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"              , "o")
     , ele17_CaloIdL_CaloIsoVL_regexp                              ("HLT_Ele17_CaloIdL_CaloIsoVL_v(\\d+)"                              , "o")
     , ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp             ("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)"             , "o")
-    , ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp       ("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)"      , "o")
+    , ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp       ("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)"       , "o")
     , ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_rexexp("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v(\\d+)", "o")
     , ele27_WP80_rexexp                                           ("HLT_Ele27_WP80_v(\\d+)"                                           , "o")
     , photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp        ("HLT_Photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_v(\\d+)"        , "o")
@@ -1774,45 +1788,57 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     triggerMatchStruct struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar = MatchTriggerClass(els_p4().at(iLep), &ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_rexexp);
                     triggerMatchStruct struct_ele27_WP80_vstar                                            = MatchTriggerClass(els_p4().at(iLep), &ele27_WP80_rexexp                                           );
 
-                    ele8_CaloIdL_CaloIsoVL_vstar_                                   = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
-                    ele8_CaloIdT_TrkIdVL_vstar_                                     = struct_ele8_CaloIdT_TrkIdVL_vstar.nHLTObjects_;
-                    ele17_CaloIdL_CaloIsoVL_vstar_                                  = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                 = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_           = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
-                    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_    = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.nHLTObjects_;
-                    ele27_WP80_vstar_                                               = struct_ele27_WP80_vstar.nHLTObjects_;
+                    ele8_CaloIdL_CaloIsoVL_vstar_                                         = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                        = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_                  = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
+                    ele8_CaloIdT_TrkIdVL_vstar_                                           = struct_ele8_CaloIdT_TrkIdVL_vstar.nHLTObjects_;
+                    ele17_CaloIdL_CaloIsoVL_vstar_                                        = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                       = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_                 = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
+                    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_          = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.nHLTObjects_;
+                    ele27_WP80_vstar_                                                     = struct_ele27_WP80_vstar.nHLTObjects_;
 
-                    ele8_CaloIdL_CaloIsoVL_version_                                 = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
-                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_          = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
-                    ele8_CaloIdT_TrkIdVL_version_                                   = struct_ele8_CaloIdT_TrkIdVL_vstar.version_;
-                    ele17_CaloIdL_CaloIsoVL_version_                                = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_               = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
-                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_         = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
-                    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_  = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.version_;
-                    ele27_WP80_version_                                             = struct_ele27_WP80_vstar.version_;
+                    ele8_CaloIdL_CaloIsoVL_version_                                       = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                      = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
+                    ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_                = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
+                    ele8_CaloIdT_TrkIdVL_version_                                         = struct_ele8_CaloIdT_TrkIdVL_vstar.version_;
+                    ele17_CaloIdL_CaloIsoVL_version_                                      = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                     = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
+                    ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_               = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
+                    ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_        = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.version_;
+                    ele27_WP80_version_                                                   = struct_ele27_WP80_vstar.version_;
 
-                    dr_ele8_CaloIdL_CaloIsoVL_vstar_                                = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
-                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
-                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
-                    dr_ele8_CaloIdT_TrkIdVL_vstar_                                  = struct_ele8_CaloIdT_TrkIdVL_vstar.dR_;
-                    dr_ele17_CaloIdL_CaloIsoVL_vstar_                               = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
-                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
-                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_        = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
-                    dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.dR_;
-                    dr_ele27_WP80_vstar_                                            = struct_ele27_WP80_vstar.dR_;
+                    dr_ele8_CaloIdL_CaloIsoVL_vstar_                                      = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
+                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                     = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
+                    dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
+                    dr_ele8_CaloIdT_TrkIdVL_vstar_                                        = struct_ele8_CaloIdT_TrkIdVL_vstar.dR_;
+                    dr_ele17_CaloIdL_CaloIsoVL_vstar_                                     = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
+                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                    = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
+                    dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
+                    dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_       = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.dR_;
+                    dr_ele27_WP80_vstar_                                                  = struct_ele27_WP80_vstar.dR_;
 
-                    hltps_ele8_CaloIdL_CaloIsoVL_vstar_                                = struct_ele8_CaloIdL_CaloIsoVL_vstar.hltps_;
-                    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
-                    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
-                    hltps_ele8_CaloIdT_TrkIdVL_vstar_                                  = struct_ele8_CaloIdT_TrkIdVL_vstar.hltps_;
-                    hltps_ele17_CaloIdL_CaloIsoVL_vstar_                               = struct_ele17_CaloIdL_CaloIsoVL_vstar.hltps_;
-                    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
-                    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_        = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
-                    hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.hltps_;
-                    hltps_ele27_WP80_vstar_                                            = struct_ele27_WP80_vstar.hltps_;
+                    hltps_ele8_CaloIdL_CaloIsoVL_vstar_                                   = struct_ele8_CaloIdL_CaloIsoVL_vstar.hltps_;
+                    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
+                    hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
+                    hltps_ele8_CaloIdT_TrkIdVL_vstar_                                     = struct_ele8_CaloIdT_TrkIdVL_vstar.hltps_;
+                    hltps_ele17_CaloIdL_CaloIsoVL_vstar_                                  = struct_ele17_CaloIdL_CaloIsoVL_vstar.hltps_;
+                    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                 = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
+                    hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_           = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
+                    hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_    = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.hltps_;
+                    hltps_ele27_WP80_vstar_                                               = struct_ele27_WP80_vstar.hltps_;
+
+                    // These are hardcoded to the value in Dima's table:
+                    // http://dmytro.web.cern.ch/dmytro/trigger/triggerEvolution_all.html
+                    l1ps_ele8_CaloIdL_CaloIsoVL_vstar_                                    = L1_prescale("L1_SingleEG5");
+                    l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                   = L1_prescale("L1_SingleEG7");
+                    l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_             = L1_prescale("L1_SingleEG7");
+                    l1ps_ele8_CaloIdT_TrkIdVL_vstar_                                      = L1_prescale("L1_SingleEG5");
+                    l1ps_ele17_CaloIdL_CaloIsoVL_vstar_                                   = L1_prescale("L1_SingleEG12");
+                    l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = L1_prescale("L1_SingleEG12");
+                    l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = L1_prescale("L1_SingleEG12");
+                    l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_     = L1_prescale("L1_SingleEG20");
+                    l1ps_ele27_WP80_vstar_                                                = L1_prescale("L1_SingleEG20");
 
                     ///////////////////////  
                     // end 2012 Triggers //

@@ -1,6 +1,8 @@
-04-22-2012 - Ryan Kelley 
-	* tagged with FakeRates23April2012
-	* fixed bug with the first_good_vertex_index 
+04-25-2012 - Ryan Kelley 
+	* tagged with FakeRates25April2012
+	* fixed bug with  HLT_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v
+	regulare expression
+	* added L1 prescale for 2012 Electron triggers
 
 04-22-2012 - Ryan Kelley 
 	* tagged with FakeRates22April2012
