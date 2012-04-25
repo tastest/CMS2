@@ -470,3 +470,31 @@ int numberOfGoodVertices(void) {
   return ngv;
 }
 
+
+//
+int chargedHadronVertex( const unsigned int ipf ){
+
+    double  dzmin = 10000;
+    bool    found = false;
+    int     iVertex = -1;
+
+    // loop on vertices
+    for (unsigned int index = 0; index < cms2.vtxs_position().size(); ++index) {
+
+        // find the dz
+        const unsigned int itrk = cms2.pfcands_trkidx()[ipf];
+        double dz = fabs(cms2.trks_vertex_p4()[itrk].z() - cms2.vtxs_position()[index].z());
+
+        // find the closest dz
+        if (dz < dzmin) {
+            dzmin = dz;
+            iVertex = index;
+            found = true;
+        }
+    }
+
+    if (found) return iVertex;
+    return -1;
+
+} //
+

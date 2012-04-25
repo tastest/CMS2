@@ -131,3 +131,5 @@ bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut = 1.0);
 /*****************************************************************************************/
 int numberOfGoodVertices(void);
 
+//
+int chargedHadronVertex( const unsigned int );
