@@ -19,9 +19,8 @@ cvs co -r V00-00-09 -d CMGTools/External UserCode/CMG/CMGTools/External
 # do stuff with PF candidates
 #############
 
-addpkg CommonTools/ParticleFlow V00-03-08
+addpkg CommonTools/ParticleFlow V00-03-11
 addpkg RecoParticleFlow/PFProducer V15-01-06
-patch CommonTools/ParticleFlow/interface/PFPileUpAlgo.h CMS2/Configuration/PFPileUpAlgo.patch 
 
 #
 echo;echo checkingdeps;echo
