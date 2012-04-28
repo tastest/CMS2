@@ -47,12 +47,14 @@ void hypo_monitor::count(CMS2& cms2, HypothesisType type, const char* name, doub
     entry->nevt_weighted[ALL]+=weight;
     entry->seen[type] = true;
     entry->lastEvent = id;
-  } else {
-    if ( !entry->seen[type] ){
-      entry->nevt[type]++;
-      entry->nevt_weighted[type]+=weight;
-      entry->seen[type] = true;
-    }
+//   } else {
+//     if ( !entry->seen[type] ){
+//       entry->nevt[type]++;
+//       entry->nevt[ALL]++;
+//       entry->nevt_weighted[type]+=weight;
+//       entry->nevt_weighted[ALL]+=weight;
+//       entry->seen[type] = true;
+//     }
   }
 }
 

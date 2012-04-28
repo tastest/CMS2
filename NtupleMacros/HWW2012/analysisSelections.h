@@ -21,7 +21,7 @@
 //
 
 bool   ww_elBase(unsigned int i);
-bool   ww_elId(unsigned int i, bool useLHeleId, bool useMVAeleId, ElectronIDMVA *mva);
+bool   ww_elId(unsigned int i, bool useLHeleId, int useMVAeleId, ElectronIDMVA *mva);
 bool   ww_eld0(unsigned int i);
 bool   ww_eld0PV(unsigned int i);
 bool   ww_eldZPV(unsigned int i);
@@ -29,9 +29,9 @@ bool   ww_elIso(unsigned int i);
 double ww_elIsoVal(unsigned int i);
 
 // combined analysis selectors
-bool goodElectronTMVA(ElectronIDMVA *mva, unsigned int i);
-bool goodElectronWithoutIsolation(unsigned int i, bool useLHeleId, bool useMVAeleId, ElectronIDMVA *mva);
-bool goodElectronIsolated(unsigned int i, bool useLHeleId, bool useMVAeleId, ElectronIDMVA *mva, bool lockToCoreSelectors);
+bool goodElectronTMVA(ElectronIDMVA *mva, int useMVAeleId, unsigned int i);
+bool goodElectronWithoutIsolation(unsigned int i, bool useLHeleId, int useMVAeleId, ElectronIDMVA *mva);
+bool goodElectronIsolated(unsigned int i, bool useLHeleId, int useMVAeleId, ElectronIDMVA *mva, bool lockToCoreSelectors);
 bool fakableElectron(unsigned int i,EleFOTypes);
 
 //
@@ -39,7 +39,7 @@ bool fakableElectron(unsigned int i,EleFOTypes);
 //
 
 bool   ww_muBase(unsigned int i);
-bool   ww_muId(unsigned int i);
+bool   ww_muId(unsigned int i, bool useMVAmuId, MuonIDMVA *mva);
 bool   ww_muIso(unsigned int i);
 double ww_muIsoVal(unsigned int i);
 bool   ww_mud0(unsigned int i);
@@ -47,8 +47,9 @@ bool   ww_mud0PV(unsigned int i);
 bool   ww_mudZPV(unsigned int i, float cut=0.1);
 
 // combined analysis selectors
-bool goodMuonWithoutIsolation(unsigned int i);
-bool goodMuonIsolated(unsigned int i, bool lockToCoreSelectors);
+bool goodMuonTMVA(MuonIDMVA *mva, unsigned int i);
+bool goodMuonWithoutIsolation(unsigned int i, bool useMVAmuId, MuonIDMVA *mva);
+bool goodMuonIsolated(unsigned int i, bool lockToCoreSelectors, bool useMVAmuId, MuonIDMVA *mva);
 bool fakableMuon(unsigned int i, MuFOTypes);
 
 //
@@ -59,8 +60,8 @@ bool fakableMuon(unsigned int i, MuFOTypes);
 // leptons
 //
 
-std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleId, bool useMVAeleId, ElectronIDMVA *mva);
-unsigned int numberOfExtraLeptons(int i_hyp, double minPt, bool useLHeleId, bool useMVAeleId, ElectronIDMVA *mva);
+std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleId, int useMVAeleId, ElectronIDMVA *mva, bool useMVAmuId, MuonIDMVA *mumva);
+unsigned int numberOfExtraLeptons(int i_hyp, double minPt, bool useLHeleId, int useMVAeleId, ElectronIDMVA *elmva, bool useMVAmuId, MuonIDMVA *mumva);
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
                    const std::vector<JetPair>& = std::vector<JetPair>());
 

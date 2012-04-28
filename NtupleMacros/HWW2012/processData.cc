@@ -21,7 +21,7 @@ int main()
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
-  bool runTest   = 0;
+  bool runTest   = 1;
   bool runWW     = 0;
   bool runWWmcnlo= 0;
   bool runWWup   = 0;
@@ -41,7 +41,7 @@ int main()
   bool runDYtt   = 0;
   bool runttbar  = 0;
   bool runttbarmg= 0;
-  bool runtW     = 1;
+  bool runtW     = 0;
   bool runtWds   = 0;
   bool runEmb    = 0;
   bool runData   = 0;
@@ -67,14 +67,14 @@ int main()
 
   if (runTest){
     std::vector<string> samples;
-    samples.push_back(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
-    ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1);
-    //samples.push_back("/home/users/cerati/UpdateCMS2ForLeptonMVA/CMSSW_4_2_7_patch1_V04-02-36/src/CMS2/NtupleMaker/test/ntuple.root");
-    //ProcessSample(samples, SmurfTree::data, 3.1, -1, -1, false, true, cms2_json_file);
+    //samples.push_back(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
+    //ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1);
+    samples.push_back("/nfs-6/userdata/jaehyeok/WW_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START50_V15-v1/V05-01-01/nofilter/postprocessing_forsync/*.root");
+    ProcessSample(samples, SmurfTree::qqww, integratedLumi, -1, -1);
   }
 
   if (runWW)
-    ProcessSample(dataset+"/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v1/V04-02-36/DiLeptonFilter/*.root", 
+    ProcessSample(dataset+"/WWJetsTo2L2Nu_TuneZ2_7TeV-madgraph-tauola_Fall11-PU_S6_START42_V14B-v1/V04-02-38/vvfilter/*.root", 
 		  SmurfTree::qqww, integratedLumi, -1, -1, true);
 
   if (runWWmcnlo)
@@ -314,6 +314,7 @@ int main()
  
   // RealData
   TString cms2_json_file = "./files/hww.Full2011.txt";
+  cms2_json_file = "";
 
   std::vector<string> embSamples;
   embSamples.push_back("/nfs-7a/userdata/cerati/DoubleMu_StoreResults-DoubleMu_2011A_May10thRR_v1_embedded_trans1_tau123_pttau1_18tau2_8_v1-f456bdbb960236e5c696adfe9b04eaae/V04-02-36/vvfilter/*.root");
@@ -322,6 +323,7 @@ int main()
     ProcessSample(embSamples, SmurfTree::dyttDataDriven, 3.1, -1, -1, false, true, cms2_json_file);
 
   std::vector<string> dataSamples;
+  /*
   dataSamples.push_back(dataset+"/DoubleElectron_Run2011A-May10ReReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/DoubleMu_Run2011A-May10ReReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/MuEG_Run2011A-May10ReReco-v1/V04-02-36/vvfilter/*.root");
@@ -351,6 +353,13 @@ int main()
   dataSamples.push_back(dataset+"/SingleElectron_Run2011B-PromptReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/SingleMu_Run2011B-PromptReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/DoubleMu_Run2011B-PromptReco-v1/V04-02-36/vvfilter/*.root");
+  */
+
+  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/*.root");
+  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/*.root");
+  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/MuEG_Run2012A-PromptReco-v1_AOD/merged/*.root");
+  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/SingleElectron_Run2012A-PromptReco-v1_AOD/merged/*.root");
+  dataSamples.push_back("/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/SingleMu_Run2012A-PromptReco-v1_AOD/merged/*.root");
 
   if (runData)
     ProcessSample(dataSamples, SmurfTree::data, 3.1, -1, -1, false, true, cms2_json_file);

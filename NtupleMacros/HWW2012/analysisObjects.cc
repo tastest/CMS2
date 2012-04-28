@@ -71,7 +71,7 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
                 double jec = 1.0;
                 // cout << cms2.evt_event() << " \traw pt: " << cms2.pfjets_p4().at(i).pt() << endl;
                 if(applyJEC){
-                    jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho_vor());
+		  jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho());//fixme
                     jet_corrector_pfL1FastJetL2L3->setJetA(cms2.pfjets_area().at(i));
                     jet_corrector_pfL1FastJetL2L3->setJetPt(cms2.pfjets_p4()[i].pt());
                     jet_corrector_pfL1FastJetL2L3->setJetEta(cms2.pfjets_p4()[i].eta());

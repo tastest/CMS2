@@ -1,4 +1,4 @@
-const char* config_info = "SmurfV6 selection (Baseline;Tight+Loose;MET20); 42X"; //Skim1
+const char* config_info = "SmurfV8 selection (Baseline;Tight+Loose;MET20); 42X"; //Skim1
 //now make the source file
 #include "doAnalysis.h"
 #include <algorithm>
@@ -51,16 +51,17 @@ using namespace std;
 wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requirement
 
 //wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_ZVETO | PASSED_MET | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_TopControlSample;
-// wwcuts_t pass_all = PASSED_BaseLine;
+//wwcuts_t pass_all = PASSED_BaseLine;
 
 // wwcuts_t pass_all = PASSED_BaseLine | PASSED_Charge | PASSED_LT_FINAL | PASSED_LL_FINAL | PASSED_ZControlSampleTight;
 
 bool applyJEC = true;
 bool lockToCoreSelectors = false;
 bool applyFastJetCorrection = false;
-bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
+bool selectBestCandidate = false; // select only one hypothesis per event with the two most energetic leptons
 bool useLHeleId = false;
-bool useMVAeleId = true;
+int useMVAeleId = 2;//zero means off, otherwise it's the mva version
+bool useMVAmuId = false;
 bool doDYNNLOw = false;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
 
@@ -88,35 +89,17 @@ bool hypoSync(int i_hyp, double weight, bool realData)
   if (nGoodVertex()<1) return false;
   
   monitor.count(cms2,type,"basic selection",weight);
-  
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-    int index = cms2.hyp_lt_index()[i_hyp];
-    if (useLHeleId) {
-      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
-      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
-    }
-    if (useMVAeleId){
-      if (!goodElectronTMVA(electronIdMVA, index)) return false;
-    } else {
-      if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
-    }
-  } 
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-    int index = cms2.hyp_ll_index()[i_hyp];
-    if (useLHeleId) {
-      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
-      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
-    }
-    if (useMVAeleId){
-      if (!goodElectronTMVA(electronIdMVA, index)) return false;
-    } else {
-      if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
-    }
-  } 
 
-  monitor.count(cms2,type,"lepton id",weight);
+  if (cms2.hyp_lt_id()[i_hyp]*cms2.hyp_ll_id()[i_hyp]>0) return false;
+  if ( std::min(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<10 ) return false;
+  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
+  
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && std::fabs(cms2.mus_p4().at(cms2.hyp_ll_index()[i_hyp]).eta()) >= 2.4) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && std::fabs(cms2.mus_p4().at(cms2.hyp_lt_index()[i_hyp]).eta()) >= 2.4) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && std::fabs(cms2.els_p4().at(cms2.hyp_ll_index()[i_hyp]).eta()) >= 2.5) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && std::fabs(cms2.els_p4().at(cms2.hyp_lt_index()[i_hyp]).eta()) >= 2.5) return false;
+
+  monitor.count(cms2,type,"charge + pt 20/10 + eta",weight);
 
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
@@ -124,7 +107,7 @@ bool hypoSync(int i_hyp, double weight, bool realData)
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
 
   monitor.count(cms2,type,"iso",weight);
-  
+
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
       cms2.els_exp_innerlayers().at(cms2.hyp_lt_index()[i_hyp]) != 0) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
@@ -132,11 +115,9 @@ bool hypoSync(int i_hyp, double weight, bool realData)
 
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
       isFromConversionMIT(cms2.hyp_lt_index()[i_hyp]))
-      // ! pass_electronSelection(cms2.hyp_lt_index()[i_hyp], (1ll<<ELENOTCONV_MIT), false, false) )
     return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
       isFromConversionMIT(cms2.hyp_ll_index()[i_hyp]))
-      // ! pass_electronSelection(cms2.hyp_ll_index()[i_hyp], (1ll<<ELENOTCONV_MIT), false, false) )
     return false;
   
   monitor.count(cms2,type,"conv rejection",weight);
@@ -147,7 +128,7 @@ bool hypoSync(int i_hyp, double weight, bool realData)
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
   
   monitor.count(cms2,type,"d0",weight);
-  
+
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
@@ -155,27 +136,49 @@ bool hypoSync(int i_hyp, double weight, bool realData)
   
   monitor.count(cms2,type,"dZ",weight);
 
-//   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-//       (fabs(cms2.els_conv_dist().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 &&
-//        fabs(cms2.els_conv_dcot().at(cms2.hyp_lt_index()[i_hyp])) < 0.02 )) return false;
-//   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-//       (fabs(cms2.els_conv_dist().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 &&
-//        fabs(cms2.els_conv_dcot().at(cms2.hyp_ll_index()[i_hyp])) < 0.02 )) return false;
-  
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp], lockToCoreSelectors) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp], lockToCoreSelectors) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp],useMVAmuId,muonIdMVA) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp],useMVAmuId,muonIdMVA) ) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
+    int index = cms2.hyp_lt_index()[i_hyp];
+    if (useLHeleId) {
+      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+    }
+    if (useMVAeleId>0){
+      if (!goodElectronTMVA(electronIdMVA, useMVAeleId, index)) return false;
+    } else {
+      if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+    }
+  } 
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
+    int index = cms2.hyp_ll_index()[i_hyp];
+    if (useLHeleId) {
+      if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
+      if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
+    }
+    if (useMVAeleId>0){
+      if (!goodElectronTMVA(electronIdMVA, useMVAeleId, index)) return false;
+    } else {
+      if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
+    }
+  } 
+
+  monitor.count(cms2,type,"lepton id",weight);
+
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp], lockToCoreSelectors, useMVAmuId, muonIdMVA) ) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp], lockToCoreSelectors, useMVAmuId, muonIdMVA) ) return false;
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], useLHeleId, useMVAeleId, electronIdMVA, lockToCoreSelectors) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], useLHeleId, useMVAeleId, electronIdMVA, lockToCoreSelectors) ) return false;
-  
-  monitor.count(cms2,type,"lepton id/iso",weight);
-  // if ( std::min(metValue(),double(trackerMET(i_hyp,0.2).met))<20 ) return false;
+
+  monitor.count(cms2,type,"lepton id/iso pt20/10",weight);
+
   if ( metValue()<20 ) return false;
   monitor.count(cms2,type,"met>20",weight);
   
-  if ( std::max(cms2.hyp_lt_p4().at(i_hyp).pt(),cms2.hyp_ll_p4().at(i_hyp).pt())<20 ) return false;
   if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
       cms2.hyp_p4()[i_hyp].mass() < 12) return false;
-  monitor.count(cms2,type,"tight_pt>20 && mll>12",weight);
+  if ( (type == EE || type == MM) && cms2.hyp_p4()[i_hyp].mass() < 20) return false;
+  monitor.count(cms2,type,"mll>12(20)",weight);
   
   if ( type == EE || type == MM) {
     if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
@@ -185,23 +188,43 @@ bool hypoSync(int i_hyp, double weight, bool realData)
   if (!passedMetRequirements(i_hyp)) return false;
   monitor.count(cms2,type,"Full MET cuts",weight);
 
-  if ( numberOfJets(i_hyp, applyJEC, jet_corrector_pfL1FastJetL2L3)>0 ) return false;
-  monitor.count(cms2,type,"JetVeto cuts",weight);
-
+  int njets = numberOfJets(i_hyp, applyJEC, jet_corrector_pfL1FastJetL2L3);
   std::vector<JetPair> sortedJets = getJets(jetType(), i_hyp, 15.0, 5.0, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false);
   if (cms2.hyp_type().at(i_hyp)!=1 && cms2.hyp_type().at(i_hyp)!=2 && sortedJets.size()>0) {
-    if (fabs(ROOT::Math::VectorUtil::DeltaPhi(sortedJets[0].first,cms2.hyp_p4().at(i_hyp)))>=165.*TMath::Pi()/180.) return false;
+    if (njets<2 && fabs(ROOT::Math::VectorUtil::DeltaPhi(sortedJets[0].first,cms2.hyp_p4().at(i_hyp)))>=165.*TMath::Pi()/180.) return false;
+    else if (njets>= 2 && fabs(ROOT::Math::VectorUtil::DeltaPhi(sortedJets[0].first+sortedJets[1].first,cms2.hyp_p4().at(i_hyp)))>=165.*TMath::Pi()/180.) return false;
   }
   monitor.count(cms2,type,"Jet DPhi",weight);
 
   if (numberOfSoftMuons(i_hyp,true)>0) return false;
   monitor.count(cms2,type,"soft muon veto",weight);
 
-  if (numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, electronIdMVA)>0) return false;
+  if (numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, electronIdMVA, useMVAmuId, muonIdMVA)>0) return false;
   monitor.count(cms2,type,"extra lepton veto",weight);
 
-  if ( toptag(jetType(),i_hyp,10/*,vetojets*/) )  return false;//newcuts, was 7
+  if ( toptag(jetType(),i_hyp,10) )  return false;
   monitor.count(cms2,type,"top tag",weight);
+  
+  if ( cms2.hyp_p4().at(i_hyp).pt() < 45 ) return false;
+  if ( (type==EE || type==MM) && cms2.hyp_lt_p4().at(i_hyp).pt() < 15 ) return false;
+  if ( (type==EE || type==MM) && cms2.hyp_ll_p4().at(i_hyp).pt() < 15 ) return false;
+  monitor.count(cms2,type,"dilep.pt()>45 && lep2.pt()>15",weight);
+
+  if ( njets==0 )
+    monitor.count(cms2,type,"0 jet bin",weight);
+
+  if ( njets==1 )
+    monitor.count(cms2,type,"1 jet bin",weight);
+
+  if ( njets==2 || njets==3 ) {
+    if (fabs(sortedJets[0].first.eta())>=4.5 || fabs(sortedJets[1].first.eta())>=4.5) return false;
+    if (njets==3 && sortedJets[2].first.pt()>30 && ((sortedJets[0].first.eta()-sortedJets[2].first.eta() > 0 && sortedJets[1].first.eta()-sortedJets[2].first.eta() < 0) ||
+					(sortedJets[1].first.eta()-sortedJets[2].first.eta() > 0 && sortedJets[0].first.eta()-sortedJets[2].first.eta() < 0)) ) return false;
+    monitor.count(cms2,type,"2 jet bin",weight);
+  }
+
+  if ( njets!=0 ) return false;
+  monitor.count(cms2,type,"JetVeto cuts",weight);
 
   if ( TMath::Max(cms2.hyp_ll_p4().at(i_hyp).pt(),cms2.hyp_lt_p4().at(i_hyp).pt())<=30. )  return false;
   monitor.count(cms2,type,"ptMax",weight);
@@ -217,11 +240,7 @@ bool hypoSync(int i_hyp, double weight, bool realData)
 
   if ( fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),cms2.hyp_lt_p4().at(i_hyp)))>=60.*TMath::Pi()/180. )  return false;
   monitor.count(cms2,type,"dphill",weight);
-  
-  if ( cms2.hyp_p4().at(i_hyp).pt() < 45 ) return false;
-  if ( (type==EE || type==MM) && cms2.hyp_lt_p4().at(i_hyp).pt() < 15 ) return false;
-  if ( (type==EE || type==MM) && cms2.hyp_ll_p4().at(i_hyp).pt() < 15 ) return false;
-  monitor.count(cms2,type,"dilep.pt()>45 && lep2.pt()>15",weight);
+
   return true;
 } // end of Synchronization info
 
@@ -239,6 +258,7 @@ bool hypo (int i_hyp, double weight, bool realData)
       nGenLeptons++;
   if ( nGenLeptons < 2 ) return;
   */
+
   // if (cms2.evt_event()!=101838) return;
   HypothesisType type = getHypothesisTypeNew(i_hyp);
 
@@ -246,7 +266,7 @@ bool hypo (int i_hyp, double weight, bool realData)
   // float weight = cms2.evt_scale1fb() * kFactor;
 
   if (!realData) monitor.nEvtProcessed = cms2.evt_nEvts();
-  // monitor.count(cms2, type, "Total number before cuts");
+  monitor.count(cms2, type, "Total number before cuts");
   
   // if ( cms2.hyp_FVFit_prob()[i_hyp] < 0.005 ) return;
   // monitor.count(cms2, type, "after vertex cut");
@@ -299,18 +319,18 @@ bool hypo (int i_hyp, double weight, bool realData)
 
   // == MET
   if ( passedMetRequirements(i_hyp) ) cuts_passed |= PASSED_MET;
-  
+
   // == letpon ID and Isolation
   // Muon quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
-    if ( goodMuonIsolated(index, lockToCoreSelectors) )   cuts_passed |= PASSED_LT_FINAL;
+    if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA) )   cuts_passed |= PASSED_LT_FINAL;
     if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LT_FO_MU1;
     if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LT_FO_MU2;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
-    if ( goodMuonIsolated(index, lockToCoreSelectors) )   cuts_passed |= PASSED_LL_FINAL;
+    if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA) )   cuts_passed |= PASSED_LL_FINAL;
     if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LL_FO_MU1;
     if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LL_FO_MU2;
   } 
@@ -353,7 +373,7 @@ bool hypo (int i_hyp, double weight, bool realData)
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true,vetojets);
   if ( countmus == 0)        cuts_passed |=   PASSED_SOFTMUVETO;
   if ( nExtraVetoMuons == 0) cuts_passed |=   PASSED_SOFTMUVETO_NotInJets;
-  if ( numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, electronIdMVA) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
+  if ( numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, electronIdMVA, useMVAmuId, muonIdMVA) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
   if ( ! toptag(jetType(),i_hyp,10,vetojets) ) cuts_passed |= PASSED_TOPVETO_NotInJets;//newcuts, was 7
   if ( ! toptag(jetType(),i_hyp,10) )          cuts_passed |= PASSED_TOPVETO;//newcuts, was 7
 
@@ -387,7 +407,7 @@ bool hypo (int i_hyp, double weight, bool realData)
 	 CheckCuts( PASSED_LL_FINAL | PASSED_LT_FO_ELEV4, cuts_passed ) )
       cuts_passed |= PASSED_Skim3;
   }
-  
+
   monitor.count(cms2,type,"all cuts (including soft and extra lepton veto)",weight);
   return true;
 
@@ -395,6 +415,7 @@ bool hypo (int i_hyp, double weight, bool realData)
 
 void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, 
 		     double weight, enum SmurfTree::DataType sample, wwcuts_t cuts_passed){
+
   tree.InitVariables();
   tree.run_         = cms2.evt_run();
   tree.event_       = cms2.evt_event();
@@ -426,7 +447,24 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
-  const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 5.0, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false); //GC apply sorting
+
+  if (ltIsFirst) {
+    tree.lmva1_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? 
+      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0):-999.) : 
+      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0)    :-999.) ;
+    tree.lmva2_ = abs(cms2.hyp_ll_id().at(i_hyp))==11 ? 
+      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0):-999.) : 
+      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0)    :-999.) ;
+  } else {
+    tree.lmva1_ = abs(cms2.hyp_ll_id().at(i_hyp))==11 ? 
+      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0):-999.) : 
+      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0)    :-999.) ;
+    tree.lmva2_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? 
+      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0):-999.) : 
+      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0)    :-999.) ;
+  }
+
+  const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 5.0, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false);
   if (jets.size()>0){
     tree.jet1_ = jets.at(0).first;
     tree.jet1Btag_ = BTag(jetType(),jets.at(0).second);
@@ -573,7 +611,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
       tree.jetLowBtag_ = BTag(jetType(),jets.at(i).second);
 
   // third lepton
-  const std::vector<LeptonPair>& leptons(getExtraLeptons(i_hyp,0, useLHeleId, useMVAeleId, electronIdMVA));
+  const std::vector<LeptonPair>& leptons(getExtraLeptons(i_hyp,0, useLHeleId, useMVAeleId, electronIdMVA, useMVAmuId, muonIdMVA));
   for (std::vector<LeptonPair>::const_iterator lep=leptons.begin();
        lep!=leptons.end(); ++lep){
     if (lep->first){
@@ -701,14 +739,14 @@ void ScanChain( TChain* chain,
   try { 
     jetcorr_filenames_pfL1FastJetL2L3.clear();
     if (realData) {
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L1FastJet.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L2Relative.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V14_AK5PF_L3Absolute.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_42_V19_AK5PF_L2L3Residual.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L1FastJet_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L2Relative_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L3Absolute_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L2L3Residual_AK5PF.txt");
     } else {
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START42_V13_AK5PF_L1FastJet.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START42_V13_AK5PF_L2Relative.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START42_V13_AK5PF_L3Absolute.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START50_V15_L1FastJet_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START50_V15_L2Relative_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START50_V15_L3Absolute_AK5PF.txt");
     }
     jet_corrector_pfL1FastJetL2L3= makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
   } catch (...){
@@ -773,8 +811,8 @@ void ScanChain( TChain* chain,
 	double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
 	weight = integratedLumi * mcweight * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()*cms2.evt_filt_eff()) /
 	     (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
-	 }       
-	 ++nEventsTotal;
+      }       
+      ++nEventsTotal;
 
 	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
 	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
@@ -837,7 +875,7 @@ void ScanChain( TChain* chain,
     delete tree;
     delete f;
   }
-  //monitor.print();
+  monitor.print();
   //monitor.makeHistograms(prefix.c_str());
   // monitor.printEvents(3);
   if ( nEventsChain != nEventsTotal ) {
@@ -850,7 +888,6 @@ void ScanChain( TChain* chain,
 	   nFilteredOut, nFilteredOut*100.0/(nEventsChain+1e-5));
 
   fSmurf->cd(); 
-std::cout << smurfTree.tree_->GetEntries() << std::endl;
   smurfTree.tree_->Write();
   smurfTree.info_.SetTitle(config_info);
   smurfTree.info_.Write();
@@ -931,30 +968,41 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    bool realData,
 		    TString cms2_json_file)
 {
-  electronIdMVA = new ElectronIDMVA();
-  electronIdMVA->Initialize("BDTG method", 2,
-			   "./files/Subdet0LowPt_WithIPInfo_BDTG.weights.xml",
-			   "./files/Subdet1LowPt_WithIPInfo_BDTG.weights.xml",
-			   "./files/Subdet2LowPt_WithIPInfo_BDTG.weights.xml",
-			   "./files/Subdet0HighPt_WithIPInfo_BDTG.weights.xml",
-			   "./files/Subdet1HighPt_WithIPInfo_BDTG.weights.xml",
-			   "./files/Subdet2HighPt_WithIPInfo_BDTG.weights.xml");
-//   electronIdMVA->Initialize("BDTG method", 3,
-// 			   "./files/Subdet0LowPt_IDIsoCombined_BDTG.weights.xml",
-// 			   "./files/Subdet1LowPt_IDIsoCombined_BDTG.weights.xml",
-// 			   "./files/Subdet2LowPt_IDIsoCombined_BDTG.weights.xml",
-// 			   "./files/Subdet0HighPt_IDIsoCombined_BDTG.weights.xml",
-// 			   "./files/Subdet1HighPt_IDIsoCombined_BDTG.weights.xml",
-// 			   "./files/Subdet2HighPt_IDIsoCombined_BDTG.weights.xml");
 
-//   muonIdMVA = new MuonIDMVA();
-//   muonIdMVA->Initialize("BDTG method", 1,
-// 			"./files/BarrelPtBin0_IDIsoCombined_BDTG.weights.xml",
-// 			"./files/EndcapPtBin0_IDIsoCombined_BDTG.weights.xml",
-// 			"./files/BarrelPtBin1_IDIsoCombined_BDTG.weights.xml",
-// 			"./files/EndcapPtBin1_IDIsoCombined_BDTG.weights.xml",
-// 			"./files/BarrelPtBin2_IDIsoCombined_BDTG.weights.xml",
-// 			"./files/EndcapPtBin2_IDIsoCombined_BDTG.weights.xml");
+  if (useMVAeleId>0) {
+    electronIdMVA = new ElectronIDMVA();
+    if (useMVAeleId==2) {
+      electronIdMVA->Initialize("BDTG method", 2,
+				"./files/Subdet0LowPt_WithIPInfo_BDTG.weights.xml",
+				"./files/Subdet1LowPt_WithIPInfo_BDTG.weights.xml",
+				"./files/Subdet2LowPt_WithIPInfo_BDTG.weights.xml",
+				"./files/Subdet0HighPt_WithIPInfo_BDTG.weights.xml",
+				"./files/Subdet1HighPt_WithIPInfo_BDTG.weights.xml",
+				"./files/Subdet2HighPt_WithIPInfo_BDTG.weights.xml");
+    } else if (useMVAeleId==3){
+      electronIdMVA->Initialize("BDTG method", 3,
+				"./files/Subdet0LowPt_IDIsoCombined_BDTG.weights.xml",
+				"./files/Subdet1LowPt_IDIsoCombined_BDTG.weights.xml",
+				"./files/Subdet2LowPt_IDIsoCombined_BDTG.weights.xml",
+				"./files/Subdet0HighPt_IDIsoCombined_BDTG.weights.xml",
+				"./files/Subdet1HighPt_IDIsoCombined_BDTG.weights.xml",
+				"./files/Subdet2HighPt_IDIsoCombined_BDTG.weights.xml");
+    } else {
+      cout << "error: electron id mva version not supported" << endl;
+      return;
+    }
+  }
+
+  if (useMVAmuId) {
+    muonIdMVA = new MuonIDMVA();
+    muonIdMVA->Initialize("BDTG method", 1,
+			  "./files/BarrelPtBin0_IDIsoCombined_BDTG.weights.xml",
+			  "./files/EndcapPtBin0_IDIsoCombined_BDTG.weights.xml",
+			  "./files/BarrelPtBin1_IDIsoCombined_BDTG.weights.xml",
+			  "./files/EndcapPtBin1_IDIsoCombined_BDTG.weights.xml",
+			  "./files/BarrelPtBin2_IDIsoCombined_BDTG.weights.xml",
+			  "./files/EndcapPtBin2_IDIsoCombined_BDTG.weights.xml");
+  }
 
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
@@ -964,8 +1012,8 @@ void ProcessSample( std::vector<std::string> file_patterns,
   std::cout << "Processing " << SmurfTree::name(sample) << ".." << std::endl;
   ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file);
 
-  delete electronIdMVA;
-//   delete muonIdMVA;
+  if (useMVAeleId>0) delete electronIdMVA;
+  if (useMVAmuId)    delete muonIdMVA;
   delete tchain;
 }
 
