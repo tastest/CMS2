@@ -743,8 +743,7 @@ void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, cons
         // charged hadrons closest vertex
         // should be the primary vertex
         if (particleId == 211 || particleId == 321 || particleId == 2212 || particleId == 999211) {
-            int pfVertexIndex = chargedHadronVertex(ipf);
-            if (pfVertexIndex != ivtx) continue;
+            if (cms2.pfcands_vtxidx().at(ipf) != ivtx) continue;
             if (dR < 0.0001)
                 continue;
         }
