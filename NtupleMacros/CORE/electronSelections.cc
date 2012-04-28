@@ -787,8 +787,8 @@ electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_t
     if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[det])     mask |= wp2012::SIGMAIETAIETA;
     if (cms2.els_hOverE()[index] < hoeThresholds[det])                      mask |= wp2012::HOE;
     if (ooemoop < ooemoopThresholds[det])                                   mask |= wp2012::OOEMOOP;
-    if (d0vtx < d0VtxThresholds[det])                                       mask |= wp2012::D0VTX;
-    if (dzvtx < d0VtxThresholds[det])                                       mask |= wp2012::DZVTX;
+    if (fabs(d0vtx) < d0VtxThresholds[det])                                 mask |= wp2012::D0VTX;
+    if (fabs(dzvtx) < dzVtxThresholds[det])                                 mask |= wp2012::DZVTX;
     if (!vtxFitThresholds[det] || !vtxFitConversion)                        mask |= wp2012::VTXFIT;
     if (cms2.els_exp_innerlayers()[index] <= mHitsThresholds[det])          mask |= wp2012::MHITS;
     if (pt >= 20.0 && pfiso < isoHiThresholds[det])                         mask |= wp2012::ISO;
