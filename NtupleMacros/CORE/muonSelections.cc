@@ -1,6 +1,6 @@
 // Header
 #include "muonSelections.h"
-//#include "electronSelections.h"
+#include "eventSelections.h"
 
 // C++ includes
 #include <iostream>
@@ -745,6 +745,14 @@ void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, cons
         if (particleId == 211 || particleId == 321 || particleId == 2212 || particleId == 999211) {
             int pfVertexIndex = chargedHadronVertex(ipf);
             if (pfVertexIndex != ivtx) continue;
+            if (dR < 0.0001)
+                continue;
+        }
+        if (particleId == 22 || particleId == 130 || particleId == 111 || particleId == 310 || particleId == 2112) {
+            if (cms2.pfcands_p4().at(ipf).pt() < 0.5)
+                continue;
+            if (dR < 0.01)
+                continue;
         }
 
         // add to isolation sum
@@ -754,7 +762,7 @@ void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, cons
     }
 }
 
-float muonIsoValuePF2012_FastJetEffArea(int index, float conesize, int ivtx)
+float muonIsoValuePF2012_FastJetEffArea(int index, float conesize, float effective_area, int ivtx)
 {
     float pt     = cms2.mus_p4()[index].pt();
 
@@ -766,9 +774,8 @@ float muonIsoValuePF2012_FastJetEffArea(int index, float conesize, int ivtx)
     muonIsoValuePF2012(pfiso_ch, pfiso_em, pfiso_nh, conesize, index, ivtx);
 
     // rho
-    float AEff = TMath::Pi() * pow(conesize, 2); // this is wrong, but leave for now until i figure out what the correct thing to do is
     float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * effective_area, float(0.0));
     float pfiso = (pfiso_ch + pfiso_n) / pt;   
 
     return pfiso;    
