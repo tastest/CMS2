@@ -779,3 +779,81 @@ float muonIsoValuePF2012_FastJetEffArea(int index, float conesize, float effecti
 
     return pfiso;    
 }
+
+double muonRadialIsolation (unsigned int imu, double &chiso, double &nhiso, double &emiso, double neutral_et_threshold, double cone_size, bool verbose)
+{
+    double radial_iso = 0.;
+    chiso = 0.;
+    nhiso = 0.;
+    emiso = 0.;
+
+    int ivtx = firstGoodVertex();
+
+    LorentzVector p4 = (cms2.mus_trk_p4().at(imu).pt() > 0.01) ? cms2.mus_trk_p4().at(imu) : cms2.mus_sta_p4().at(imu);
+    if (p4.pt() < 0.01)
+        return -9999.;
+
+    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ipf++) {
+
+        // skip electrons and muons
+        const int particleId = abs(cms2.pfcands_particleId().at(ipf));
+        if (particleId == 11) {
+            if (verbose)
+                std::cout << "Skipping electron with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;
+            continue;
+        }
+        if (particleId == 13) {
+            if (verbose)
+                std::cout << "Skipping muon with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;
+            continue;
+        }
+
+        // in the event that the muon is not a PF muon, need to remove any other PF cand reconstructed using the same track as the muon
+        if (!cms2.mus_pid_PFMuon().at(imu) && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
+            if (verbose)
+                std::cout << "Skipping PF cand with same track as muon with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;
+            continue;
+        }
+
+        const float dr = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4().at(ipf), cms2.mus_p4().at(imu));
+        if (dr > cone_size) {
+            if (verbose)
+                std::cout << "Skipping PF candidate outside of cone with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;            
+            continue;
+        }
+        if (dr < 0.01) {
+            if (verbose)
+                std::cout << "Skipping PF candidate in veto cone with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;            
+            continue;
+        }
+
+        // deal with charged
+        if (cms2.pfcands_charge().at(ipf) != 0) {
+            if (cms2.pfcands_vtxidx().at(ipf) != ivtx) {
+                if (verbose)
+                    std::cout << "Skipping PF candidate from other vertex  with id, pt, eta, ivtx = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " 
+                              << cms2.pfcands_p4().at(ipf).eta() << ", " << cms2.pfcands_vtxidx().at(ipf) << std::endl;
+                continue;
+            }
+            radial_iso += cms2.pfcands_p4().at(ipf).pt() * (1 - 3*dr) / cms2.mus_p4().at(imu).pt();
+            chiso += cms2.pfcands_p4().at(ipf).pt() * (1 - 3*dr) / cms2.mus_p4().at(imu).pt();
+            if (verbose)
+                std::cout << "Summing CH with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;            
+        }
+        else if (cms2.pfcands_p4().at(ipf).pt() > neutral_et_threshold) {
+            radial_iso += cms2.pfcands_p4().at(ipf).pt() * (1 - 3*dr) / cms2.mus_p4().at(imu).pt();
+            if (particleId == 22) {
+                emiso += cms2.pfcands_p4().at(ipf).pt() * (1 - 3*dr) / cms2.mus_p4().at(imu).pt();
+                if (verbose)
+                    std::cout << "Summing EM with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;            
+            }
+            else {
+                nhiso += cms2.pfcands_p4().at(ipf).pt() * (1 - 3*dr) / cms2.mus_p4().at(imu).pt();
+                if (verbose)
+                    std::cout << "Summing NH with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;            
+            }
+        }
+    } // loop over pfcands
+
+    return radial_iso;
+}

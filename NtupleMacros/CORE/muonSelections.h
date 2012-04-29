@@ -90,6 +90,7 @@ double muonIsoValuePF        ( unsigned int imu, unsigned int idavtx, float cone
 void muonIsoValuePF2012  (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int imu, const int ivtx);
 float muonIsoValuePF2012_FastJetEffArea( int index , float conesize, float effective_area, int ivtx);
 double muonCorIsoValue (unsigned int , bool = true);
+double muonRadialIsolation (unsigned int imu, double &chiso, double &nhiso, double &emiso, double neutral_et_threshold = 1.0, double cone_size = 0.3, bool verbose = false); 
 
 ///////////////////////
 // Cosmics Rejection //
