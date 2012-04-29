@@ -406,7 +406,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         // if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
         if (trkidx < 0)                                                          return false; // require a matching track
-        if (cms2.trks_nlayers().at(trkidx) < 9)                                  return false; // require at least 8 tracker layers with hits
+        if (cms2.trks_nlayers().at(trkidx) < 6)                                  return false; // require at least 6 tracker layers with hits
         if (cms2.trks_valid_pixelhits().at(trkidx) == 0)                         return false; // require at least 1 valid pixel hit
 
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
@@ -434,7 +434,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         // if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
         if (trkidx < 0)                                                          return false; // require a matching track
-        if (cms2.trks_nlayers().at(trkidx) < 9)                                  return false; // require at least 8 tracker layers with hits
+        if (cms2.trks_nlayers().at(trkidx) < 6)                                  return false; // require at least 6 tracker layers with hits
         if (cms2.trks_valid_pixelhits().at(trkidx) == 0)                         return false; // require at least 1 valid pixel hit
 
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
