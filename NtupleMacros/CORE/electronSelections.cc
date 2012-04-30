@@ -1514,4 +1514,51 @@ void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, c
 
 }
 
+float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold, float cone_size, bool barrelVetoes, bool verbose)
+{
 
+    // isolation sums
+    chiso = 0.0;
+    emiso = 0.0; 
+    nhiso = 0.0;
+       
+    int ivtx = firstGoodVertex();
+
+    // loop on pfcandidates
+    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
+            
+        // skip electrons and muons
+        const int particleId = abs(cms2.pfcands_particleId()[ipf]);
+        if (particleId == 11)    continue;
+        if (particleId == 13)    continue;
+    
+        // deltaR between electron and cadidate
+        const float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4()[ipf], cms2.els_p4()[index]);
+        if (dR > cone_size)              continue;
+
+        // charged hadrons closest vertex
+        // should be the primary vertex
+        if (particleId == 211) {
+            if (cms2.pfcands_vtxidx().at(ipf) != ivtx)
+                continue;
+        }
+
+        // endcap region
+        if (!(cms2.els_fiduciality()[index] & (1<<ISEB))) {
+            if (particleId == 211 && dR <= 0.015)   continue;
+            if (particleId == 22  && dR <= 0.08)    continue;
+        } else if (barrelVetoes && cms2.els_mva()[index] < -0.1) {
+            if (particleId == 211 && dR <= 0.015)   continue;
+            if (particleId == 22  && dR <= 0.08)    continue;            
+        }
+
+        // add to isolation sum
+        if (particleId == 211)      chiso += cms2.pfcands_p4()[ipf].pt() * (1 - 3*dR) / cms2.els_p4().at(index).pt();
+        if (cms2.pfcands_p4().at(ipf).pt() > neutral_et_threshold) {
+            if (particleId == 22)       emiso += cms2.pfcands_p4()[ipf].pt() * (1 - 3*dR) / cms2.els_p4().at(index).pt();
+            if (particleId == 130)      nhiso += cms2.pfcands_p4()[ipf].pt() * (1 - 3*dR) / cms2.els_p4().at(index).pt();
+        }
+    }
+
+    return (chiso+nhiso+emiso);
+}
