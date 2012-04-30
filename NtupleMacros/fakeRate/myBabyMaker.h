@@ -101,34 +101,42 @@ private:
     Float_t pfmetphi_;
   
     // isolation
-    Float_t iso_;             // Isolation ( truncated )
-    Float_t iso_nps_;         // Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t nt_iso_;          // Isolation ( not truncated )
-    Float_t nt_iso_nps_;      // Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t trck_iso_;        // TRK Isolation (truncated )
-    Float_t trck_nt_iso_;     // TRK Isolation ( not truncated )
-    Float_t ecal_iso_;        // ECAL Isolation ( truncated )
-    Float_t ecal_iso_nps_;    // ECAL Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t ecal_nt_iso_;     // ECAL Isolation ( not truncated )
-    Float_t ecal_nt_iso_nps_; // ECAL Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t hcal_iso_;        // HCAL Isolation ( not truncated )
-    Float_t hcal_nt_iso_;     // HCAL Isolation ( truncated )
-    Float_t nt_pfiso03_;      // PF Isolation (not truncated) with a cone size of 0.3
-    Float_t ch_nt_pfiso03_;   // TRK PF Isolation (not truncated) with a cone size of 0.3
-    Float_t nh_nt_pfiso03_;   // ECAL PF Isolation (not truncated) with a cone size of 0.3
-    Float_t em_nt_pfiso03_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.3
+    Float_t iso_;                // Isolation ( truncated )
+    Float_t iso_nps_;            // Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
+    Float_t nt_iso_;             // Isolation ( not truncated )
+    Float_t nt_iso_nps_;         // Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
+    Float_t trck_iso_;           // TRK Isolation (truncated )
+    Float_t trck_nt_iso_;        // TRK Isolation ( not truncated )
+    Float_t ecal_iso_;           // ECAL Isolation ( truncated )
+    Float_t ecal_iso_nps_;       // ECAL Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
+    Float_t ecal_nt_iso_;        // ECAL Isolation ( not truncated )
+    Float_t ecal_nt_iso_nps_;    // ECAL Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
+    Float_t hcal_iso_;           // HCAL Isolation ( not truncated )
+    Float_t hcal_nt_iso_;        // HCAL Isolation ( truncated )
+    Float_t nt_pfiso03_;         // PF Isolation (not truncated) with a cone size of 0.3
+    Float_t ch_nt_pfiso03_;      // Charged Hadron PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nh_nt_pfiso03_;      // Neutral Hadron PF Isolation (not truncated) with a cone size of 0.3
+    Float_t em_nt_pfiso03_;      // E&M PF Isolation (not truncated) with a cone size of 0.3
     Float_t nt_pfiso03_bv_;      // PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t ch_nt_pfiso03_bv_;   // TRK PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t nh_nt_pfiso03_bv_;   // ECAL PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t em_nt_pfiso03_bv_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t nt_pfiso04_;      // PF Isolation (not truncated) with a cone size of 0.4
-    Float_t ch_nt_pfiso04_;   // TRK PF Isolation (not truncated) with a cone size of 0.4
-    Float_t nh_nt_pfiso04_;   // ECAL PF Isolation (not truncated) with a cone size of 0.4
-    Float_t em_nt_pfiso04_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.4
+    Float_t ch_nt_pfiso03_bv_;   // Charged Hadron PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t nh_nt_pfiso03_bv_;   // Neutral Hadron PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t em_nt_pfiso03_bv_;   // E&M PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t nt_pfiso04_;         // PF Isolation (not truncated) with a cone size of 0.4
+    Float_t ch_nt_pfiso04_;      // Charged Hadron PF Isolation (not truncated) with a cone size of 0.4
+    Float_t nh_nt_pfiso04_;      // Neutral Hadron  PF Isolation (not truncated) with a cone size of 0.4
+    Float_t em_nt_pfiso04_;      // E&M PF Isolation (not truncated) with a cone size of 0.4
     Float_t nt_pfiso04_bv_;      // PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
-    Float_t ch_nt_pfiso04_bv_;   // TRK PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
-    Float_t nh_nt_pfiso04_bv_;   // ECAL PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
-    Float_t em_nt_pfiso04_bv_;   // HCAL TRK PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t ch_nt_pfiso04_bv_;   // Charged Hadron PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t nh_nt_pfiso04_bv_;   // Neutral Hadron  PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t em_nt_pfiso04_bv_;   // E&M PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t nt_radiso_et1p0_;    // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t ch_nt_radiso_et1p0_; // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t nh_nt_radiso_et1p0_; // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t em_nt_radiso_et1p0_; // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t nt_radiso_et0p5_;    // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
+    Float_t ch_nt_radiso_et0p5_; // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
+    Float_t nh_nt_radiso_et0p5_; // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
+    Float_t em_nt_radiso_et0p5_; // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
 
     // PV
     Float_t d0PV_wwV1_;       // electron_d0PV_wwV1(iEl)

@@ -411,33 +411,41 @@ void myBabyMaker::InitBabyNtuple()
     foel_mass_ = -999.0;
     fomu_mass_ = -999.0;
 
-    iso_              = -999.;
-    iso_nps_          = -999.;
-    nt_iso_           = -999.;
-    nt_iso_nps_       = -999.;
-    trck_iso_         = -999.;
-    trck_nt_iso_      = -999.;
-    ecal_iso_         = -999.;
-    ecal_iso_nps_     = -999.;
-    ecal_nt_iso_      = -999.;
-    ecal_nt_iso_nps_  = -999.;
-    hcal_iso_         = -999.;
-    hcal_nt_iso_      = -999.;
-    nt_pfiso03_       = -999.;
-    ch_nt_pfiso03_    = -999.;
-    nh_nt_pfiso03_    = -999.;
-    em_nt_pfiso03_    = -999.;
-    nt_pfiso03_bv_    = -999.;
-    ch_nt_pfiso03_bv_ = -999.;
-    nh_nt_pfiso03_bv_ = -999.;
-    nt_pfiso04_       = -999.;
-    ch_nt_pfiso04_    = -999.;
-    nh_nt_pfiso04_    = -999.;
-    em_nt_pfiso04_    = -999.;
-    nt_pfiso04_bv_    = -999.;
-    ch_nt_pfiso04_bv_ = -999.;
-    nh_nt_pfiso04_bv_ = -999.;
-    em_nt_pfiso04_bv_ = -999.;
+    iso_                = -999.;
+    iso_nps_            = -999.;
+    nt_iso_             = -999.;
+    nt_iso_nps_         = -999.;
+    trck_iso_           = -999.;
+    trck_nt_iso_        = -999.;
+    ecal_iso_           = -999.;
+    ecal_iso_nps_       = -999.;
+    ecal_nt_iso_        = -999.;
+    ecal_nt_iso_nps_    = -999.;
+    hcal_iso_           = -999.;
+    hcal_nt_iso_        = -999.;
+    nt_pfiso03_         = -999.;
+    ch_nt_pfiso03_      = -999.;
+    nh_nt_pfiso03_      = -999.;
+    em_nt_pfiso03_      = -999.;
+    nt_pfiso03_bv_      = -999.;
+    ch_nt_pfiso03_bv_   = -999.;
+    nh_nt_pfiso03_bv_   = -999.;
+    nt_pfiso04_         = -999.;
+    ch_nt_pfiso04_      = -999.;
+    nh_nt_pfiso04_      = -999.;
+    em_nt_pfiso04_      = -999.;
+    nt_pfiso04_bv_      = -999.;
+    ch_nt_pfiso04_bv_   = -999.;
+    nh_nt_pfiso04_bv_   = -999.;
+    em_nt_pfiso04_bv_   = -999.;
+    nt_radiso_et1p0_    = -999.;
+    ch_nt_radiso_et1p0_ = -999.;
+    nh_nt_radiso_et1p0_ = -999.;
+    em_nt_radiso_et1p0_ = -999.;
+    nt_radiso_et0p5_    = -999.;
+    ch_nt_radiso_et0p5_ = -999.;
+    nh_nt_radiso_et0p5_ = -999.;
+    em_nt_radiso_et0p5_ = -999.;
 
     closestMuon_      = false;
     el_id_smurfV5_    = false;
@@ -880,6 +888,14 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ch_nt_pfiso04_bv"    , &ch_nt_pfiso04_bv_    );
     babyTree_->Branch("nh_nt_pfiso04_bv"    , &nh_nt_pfiso04_bv_    );
     babyTree_->Branch("em_nt_pfiso04_bv"    , &em_nt_pfiso04_bv_    );
+    babyTree_->Branch("nt_radiso_et1p0"     , &nt_radiso_et1p0_     );
+    babyTree_->Branch("ch_nt_radiso_et1p0"  , &ch_nt_radiso_et1p0_  );
+    babyTree_->Branch("nh_nt_radiso_et1p0"  , &nh_nt_radiso_et1p0_  );
+    babyTree_->Branch("em_nt_radiso_et1p0"  , &em_nt_radiso_et1p0_  );
+    babyTree_->Branch("nt_radiso_et0p5"     , &nt_radiso_et0p5_     );
+    babyTree_->Branch("ch_nt_radiso_et0p5"  , &ch_nt_radiso_et0p5_  );
+    babyTree_->Branch("nh_nt_radiso_et0p5"  , &nh_nt_radiso_et0p5_  );
+    babyTree_->Branch("em_nt_radiso_et0p5"  , &em_nt_radiso_et0p5_  );
     babyTree_->Branch("id"                  , &id_                  );
     babyTree_->Branch("closestMuon"         , &closestMuon_         );
     babyTree_->Branch("el_id_smurfV5"       , &el_id_smurfV5_       );
@@ -2265,10 +2281,14 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     nh_nt_pfiso04_ = mus_isoR04_pf_NeutralHadronEt().at(iLep);
                     em_nt_pfiso04_ = mus_isoR04_pf_PhotonEt().at(iLep);
                     nt_pfiso04_    = (ch_nt_pfiso04_ + em_nt_pfiso04_ + nh_nt_pfiso04_)/mus_p4().at(iLep).pt(); 
-                    
+
                     // This isn't working yet but we want to use this method for older releases
                     //muonIsoValuePF2012(ch_nt_pfiso03_, em_nt_pfiso03_, nh_nt_pfiso03_, 0.3, iLep, first_good_vertex_index);
                     //muonIsoValuePF2012(ch_nt_pfiso04_, em_nt_pfiso04_, nh_nt_pfiso04_, 0.4, iLep, first_good_vertex_index);
+                   
+                    // Radial Isolation 03
+                    nt_radiso_et1p0_ = muonRadialIsolation(iLep, ch_nt_radiso_et1p0_, nh_nt_radiso_et1p0_, em_nt_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*verbose=*/false); 
+                    nt_radiso_et0p5_ = muonRadialIsolation(iLep, ch_nt_radiso_et0p5_, nh_nt_radiso_et0p5_, em_nt_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*verbose=*/false); 
 
                     // mc information
                     if (!isData) 
