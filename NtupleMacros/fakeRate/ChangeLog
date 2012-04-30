@@ -1,7 +1,10 @@
+04-29-2012 - Ryan Kelley 
+	* tagged with FakeRates29April2012v2
+	* added branches for radial isolation (both muons and electrons) 
+
 04-25-2012 - Ryan Kelley 
 	* tagged with FakeRates25April2012
-	* fixed bug with  HLT_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v
-	regulare expression
+	* fixed bug with  HLT_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v* regulare expression
 	* added L1 prescale for 2012 Electron triggers
 
 04-22-2012 - Ryan Kelley 
