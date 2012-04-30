@@ -780,9 +780,9 @@ float muonIsoValuePF2012_FastJetEffArea(int index, float conesize, float effecti
     return pfiso;    
 }
 
-double muonRadialIsolation (unsigned int imu, double &chiso, double &nhiso, double &emiso, double neutral_et_threshold, double cone_size, bool verbose)
+float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold, float cone_size, bool verbose)
 {
-    double radial_iso = 0.;
+    float radial_iso = 0.;
     chiso = 0.;
     nhiso = 0.;
     emiso = 0.;
