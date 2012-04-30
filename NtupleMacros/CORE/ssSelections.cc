@@ -25,19 +25,19 @@ struct jet_pt_gt {
 
 using namespace samesign;
 
-/****************************************************************
- ***                                                           ***
- ***                                                           ***
- ***                                                           ***
- ***          2011 Selections                                  ***
- ***                                                           ***
- ***                                                           ***
- ***                                                           ***
- ****************************************************************/
+/////////////////////////////////////////////////////////////////
+ ///                                                           ///
+ ///                                                           ///
+ ///                                                           ///
+ ///          2011 Selections                                  ///
+ ///                                                           ///
+ ///                                                           ///
+ ///                                                           ///
+ /////////////////////////////////////////////////////////////////
 
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 // 2011 good lepton
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isGoodLepton(int id, int idx)
 {
     // electrons
@@ -52,9 +52,9 @@ bool samesign::isGoodLepton(int id, int idx)
 }
 
 
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 // 2011 isolated lepton
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isIsolatedLepton(int id, int idx, enum IsolationType iso_type)
 {
     // electrons
@@ -80,18 +80,18 @@ bool samesign::isIsolatedLepton(int id, int idx, enum IsolationType iso_type)
     return false;
 }
 
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 // 2011 numerator lepton
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isNumeratorLepton(int id, int idx, enum IsolationType iso_type)
 {
     return (isGoodLepton(id, idx) && isIsolatedLepton(id, idx, iso_type));
 }
 
 
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 // 2011 numerator hypothesis
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isNumeratorHypothesis(int idx, enum IsolationType iso_type)
 {
     if (!isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), iso_type))
@@ -103,9 +103,9 @@ bool samesign::isNumeratorHypothesis(int idx, enum IsolationType iso_type)
 }
 
 
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 // 2011 denominator lepton
-/******************************************************************************************/     
+////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isDenominatorLepton(int id, int idx, enum IsolationType iso_type)
 {
     // electrons
@@ -128,9 +128,9 @@ bool samesign::isDenominatorLepton(int id, int idx, enum IsolationType iso_type)
 }
 
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // extra Z veto
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 bool samesign::overlapsOtherNNHypInZ(int idx, enum IsolationType iso_type){
     bool result = false;
     int nHyps = cms2.hyp_lt_p4().size();
@@ -146,9 +146,9 @@ bool samesign::overlapsOtherNNHypInZ(int idx, enum IsolationType iso_type){
     return result;
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // require electron GSF, CTF and SC charges agree
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 bool samesign::passThreeChargeRequirement(int elIdx)
 {
     int trk_idx = cms2.els_trkidx()[elIdx];
@@ -162,9 +162,9 @@ bool samesign::passThreeChargeRequirement(int elIdx)
     return false;
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<LorentzVector> tmp_jets = getJets(idx, true, type, JETS_CLEAN_HYP_E_MU, deltaR, 0., max_eta, rescale);
@@ -218,9 +218,9 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, double 
     return final_jets;    
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get jets and apply an on-the-fly JEC
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<LorentzVector> tmp_jets = samesign::getJets(idx, type, deltaR, 0., max_eta, mu_minpt, ele_minpt, iso_type);
@@ -243,9 +243,9 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
 }
 
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 std::vector<bool> samesign::getJetFlags(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<bool> tmp_jet_flags = getJetFlags((unsigned int)idx, type, JETS_CLEAN_HYP_E_MU, deltaR, 0., max_eta, rescale);
@@ -311,10 +311,10 @@ std::vector<bool> samesign::getJetFlags(int idx, enum JetType type, double delta
     return final_jets;    
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get jets and apply an on-the-fly JEC and perform overlap removal with numerator
 // e/mu with pt > x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<bool> tmp_jet_flags     = samesign::getJetFlags(idx, type, deltaR, 0., max_eta, mu_minpt, ele_minpt, iso_type);
@@ -344,9 +344,9 @@ std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_cor
 }
 
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 float samesign::sumJetPt(int idx_arg, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
     std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type, rescale);
     unsigned int nJets = good_jets.size();
@@ -358,9 +358,9 @@ float samesign::sumJetPt(int idx_arg, enum JetType type, double deltaR, double m
     return sumpt;
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // same as above, but allowing use of on-the-fly JEC corrections
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 float samesign::sumJetPt(int idx_arg, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
     std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type, rescale);
     unsigned int nJets = good_jets.size();
@@ -372,18 +372,18 @@ float samesign::sumJetPt(int idx_arg, FactorizedJetCorrector* jet_corrector, enu
     return sumpt;
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 int samesign::nJets(int idx, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
     
     std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type, rescale);
     return good_jets.size();
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // same as above, but allowing use of on-the-fly JEC corrections
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type, rescale);
@@ -391,9 +391,9 @@ int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType
 }
 
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // passes dilepton trigger
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 bool samesign::passesTrigger(bool is_data, int hyp_type, bool is_high_pt) {
     
     //----------------------------------------
@@ -483,9 +483,9 @@ bool samesign::passesTrigger(bool is_data, int hyp_type, bool is_high_pt) {
     return false;
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<LorentzVector> tmp_jets = getBtaggedJets(idx, true, type, JETS_CLEAN_HYP_E_MU, btag_type, deltaR, 0., max_eta, rescale);
@@ -539,10 +539,10 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, 
     return final_jets;        
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get jets and apply an on-the-fly JEC and perform overlap removal with numerator
 // e/mu with pt > x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<LorentzVector> tmp_jets = samesign::getBtaggedJets(idx, type, btag_type, deltaR, 0., max_eta, mu_minpt, ele_minpt, iso_type);
@@ -566,27 +566,27 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
 }
 
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 int samesign::nBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<LorentzVector> good_jets = samesign::getBtaggedJets(idx, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type, rescale);
     return good_jets.size();
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // same as above, but allowing use of on-the-fly JEC corrections
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double mu_minpt, double ele_minpt, enum IsolationType iso_type, double rescale) {
 
     std::vector<LorentzVector> good_jets = samesign::getBtaggedJets(idx, jet_corrector, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, iso_type, rescale);
     return good_jets.size();    
 }
 
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 // extra Z veto for b-tagged same sign analysis
-/*****************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////
 bool samesign::makesExtraZ(int idx, enum IsolationType iso_type, bool apply_id_iso) {
 
     std::vector<unsigned int> ele_idx;
