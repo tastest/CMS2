@@ -442,15 +442,23 @@ bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut) {
     int lt_idx = cms2.hyp_lt_index()[hypIdx];
     int ll_idx = cms2.hyp_ll_index()[hypIdx];
 
-    if (abs(cms2.hyp_lt_id().at(hypIdx)) == 11)
-        lt_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(lt_idx), vtxidx, false).first;
-    else if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13)
+    if (abs(cms2.hyp_lt_id().at(hypIdx)) == 11) {
+        if (cms2.els_gsftrkidx().at(lt_idx) < 0) return false;
+        lt_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(lt_idx), vtxidx, false).first;        
+    }
+    else if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13) {
+        if (cms2.mus_trkidx().at(lt_idx) < 0) return false;
         lt_dz = trks_dz_pv (cms2.mus_trkidx().at(lt_idx), vtxidx, false).first;
+    }
 
-    if (abs(cms2.hyp_ll_id().at(hypIdx)) == 11)
+    if (abs(cms2.hyp_ll_id().at(hypIdx)) == 11) {
+        if (cms2.els_gsftrkidx().at(ll_idx) < 0) return false;
         ll_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(ll_idx), vtxidx, false).first;
-    else if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13)
+    }
+    else if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13) {
+        if (cms2.mus_trkidx().at(ll_idx) < 0) return false;
         ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, false).first;
+    }
 
     if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)
         return true;    
