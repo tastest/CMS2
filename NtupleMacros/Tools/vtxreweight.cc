@@ -34,17 +34,24 @@
 // WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
 //------------------------------------------------------------------------------
 
-// $Id: vtxreweight.cc,v 1.5 2012/02/06 23:11:16 warren Exp $
+// $Id: vtxreweight.cc,v 1.6 2012/05/01 21:44:24 kelley Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
 
 #ifndef __CINT__
-
 #include <iostream>
+#include <iomanip>
+#include "CORE/CMS2.h"
+#include "CORE/eventSelections.h"
+#include "CORE/trackSelections.h"
+#include "TH1.h"
+#include "TFile.h"
 
-#include "../CORE/CMS2.h"
-#include "../CORE/eventSelections.h"
+
+TH1F* vtxreweight_hist;
+TH1F* vtxreweight_hist_alt;
+//note: this hist should have the first bin be 1 vertex so that getnbinsx corresponds exactly to nvertices
 
 bool loaded_vtxreweight_hist = false;
 bool loaded_vtxreweight_hist_alt = false;
@@ -55,12 +62,12 @@ float vtxweight_n( const int nvertices , const bool isData , const bool usealt )
 
   if( (!usealt && !loaded_vtxreweight_hist) || 
 	  (usealt && !loaded_vtxreweight_hist_alt) ){
-    cout << "vtxreweight.cc: You need to do"                              << endl;
-    cout << "set_vtxreweight_rootfile( filename )"                        << endl;
-    cout << "before calling vtxweight()"                                  << endl;
-    cout << "a sample vtxreweight file can be found at"                   << endl;
-    cout << "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root" << endl;
-    cout << "now, quitting"                                               << endl;
+    std::cout << "vtxreweight.cc: You need to do"                              << std::endl;
+    std::cout << "set_vtxreweight_rootfile( filename )"                        << std::endl;
+    std::cout << "before calling vtxweight()"                                  << std::endl;
+    std::cout << "a sample vtxreweight file can be found at"                   << std::endl;
+    std::cout << "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root" << std::endl;
+    std::cout << "now, quitting"                                               << std::endl;
     exit(2);
   }
 
@@ -87,12 +94,12 @@ float vtxweight( const bool isData , const bool useDAVertices , const bool useal
 
   if( (!usealt && !loaded_vtxreweight_hist) || 
 	  (usealt && !loaded_vtxreweight_hist_alt) ){
-    cout << "vtxreweight.cc: You need to do"                              << endl;
-    cout << "set_vtxreweight_rootfile( filename )"                        << endl;
-    cout << "before calling vtxweight()"                                  << endl;
-    cout << "a sample vtxreweight file can be found at"                   << endl;
-    cout << "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root" << endl;
-    cout << "now, quitting"                                               << endl;
+    std::cout << "vtxreweight.cc: You need to do"                              << std::endl;
+    std::cout << "set_vtxreweight_rootfile( filename )"                        << std::endl;
+    std::cout << "before calling vtxweight()"                                  << std::endl;
+    std::cout << "a sample vtxreweight file can be found at"                   << std::endl;
+    std::cout << "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root" << std::endl;
+    std::cout << "now, quitting"                                               << std::endl;
     exit(2);
   }
 
@@ -153,13 +160,13 @@ void set_vtxreweight_rootfile ( const char* filename , const bool verbose , cons
   if( verbose ){
     cout << "Opened vtx reweighting file " << filename << endl;
     
-    cout << "|" << setw(10) << "nvtx"   << setw(4) 
-		 << "|" << setw(10) << "weight" << setw(4) << "|" << endl;
+    cout << "|" << std::setw(10) << "nvtx"   << std::setw(4) 
+		 << "|" << std::setw(10) << "weight" << std::setw(4) << "|" << endl;
 
     for(unsigned int ibin = 1 ; ibin <= (unsigned int)hist->GetNbinsX() ; ++ibin ){
 
-      cout << "|" << setw(10) << ibin << setw(4) 
-		   << "|" << setw(10) << hist->GetBinContent(ibin) << setw(4) << "|" << endl;
+      cout << "|" << std::setw(10) << ibin << std::setw(4) 
+		   << "|" << std::setw(10) << hist->GetBinContent(ibin) << std::setw(4) << "|" << endl;
 
     }
   }
