@@ -720,7 +720,7 @@ bool isPFMuon( int index , bool requireSamePt , float dpt_max ){
 
 }
 
-void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int imu, const int ivtx)
+void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int imu, const int ivtx, float neutral_et_threshold)
 {
 
     // isolation sums
@@ -743,12 +743,14 @@ void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, cons
         // charged hadrons closest vertex
         // should be the primary vertex
         if (particleId == 211 || particleId == 321 || particleId == 2212 || particleId == 999211) {
-            if (cms2.pfcands_vtxidx().at(ipf) != ivtx) continue;
+            int pfVertexIndex = chargedHadronVertex(ipf);
+            if (pfVertexIndex != ivtx) continue;
+            // if (cms2.pfcands_vtxidx().at(ipf) != ivtx) continue;
             if (dR < 0.0001)
                 continue;
         }
         if (particleId == 22 || particleId == 130 || particleId == 111 || particleId == 310 || particleId == 2112) {
-            if (cms2.pfcands_p4().at(ipf).pt() < 0.5)
+            if (cms2.pfcands_p4().at(ipf).pt() < neutral_et_threshold)
                 continue;
             if (dR < 0.01)
                 continue;
@@ -809,7 +811,9 @@ float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &
         }
 
         // in the event that the muon is not a PF muon, need to remove any other PF cand reconstructed using the same track as the muon
-        if (!cms2.mus_pid_PFMuon().at(imu) && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
+
+//        if (!cms2.mus_pid_PFMuon().at(imu) && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
+        if (cms2.mus_pfmusidx.at(imu) < 0 && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
             if (verbose)
                 std::cout << "Skipping PF cand with same track as muon with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;
             continue;
@@ -829,7 +833,9 @@ float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &
 
         // deal with charged
         if (cms2.pfcands_charge().at(ipf) != 0) {
-            if (cms2.pfcands_vtxidx().at(ipf) != ivtx) {
+            int pfVertexIndex = chargedHadronVertex(ipf);
+            if (pfVertexIndex != ivtx) {
+            // if (cms2.pfcands_vtxidx().at(ipf) != ivtx) {
                 if (verbose)
                     std::cout << "Skipping PF candidate from other vertex  with id, pt, eta, ivtx = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " 
                               << cms2.pfcands_p4().at(ipf).eta() << ", " << cms2.pfcands_vtxidx().at(ipf) << std::endl;
