@@ -813,7 +813,7 @@ float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &
         // in the event that the muon is not a PF muon, need to remove any other PF cand reconstructed using the same track as the muon
 
 //        if (!cms2.mus_pid_PFMuon().at(imu) && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
-        if (cms2.mus_pfmusidx.at(imu) < 0 && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
+        if (cms2.mus_pfmusidx().at(imu) < 0 && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
             if (verbose)
                 std::cout << "Skipping PF cand with same track as muon with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;
             continue;
