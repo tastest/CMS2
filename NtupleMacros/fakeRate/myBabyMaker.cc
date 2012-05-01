@@ -72,8 +72,8 @@ using namespace tas;
 bool header1 = false;
 bool header2 = false;
 
-void PrintTriggerDebugHeader(string outfileName){
-
+void PrintTriggerDebugHeader(string outfileName)
+{
     int width  = 7;
     ofstream outfile( Form("triggerStudy/%s", outfileName.c_str() ), ios::app );
     outfile  
@@ -93,18 +93,18 @@ void PrintTriggerDebugHeader(string outfileName){
 }
 
 void PrintTriggerDebugLine
-    (
-        int itrg, 
-        int id, 
-        bool match, 
-        bool matchId, 
-        double dr, 
-        const LorentzVector& lepton_p4, 
-        const LorentzVector& p4tr, 
-        const string& trigString, 
-        int nTrig, 
-        const string& outfileName
-    )
+(
+    int itrg, 
+    int id, 
+    bool match, 
+    bool matchId, 
+    double dr, 
+    const LorentzVector& lepton_p4, 
+    const LorentzVector& p4tr, 
+    const string& trigString, 
+    int nTrig, 
+    const string& outfileName
+)
 {
     ofstream outfile( Form("triggerStudy/%s", outfileName.c_str() ), ios::app );
 
@@ -354,6 +354,183 @@ void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson)
     goodrun_is_json = goodRunIsJson;
 }
 
+// lepton effecitve area
+Float_t EffectiveArea(float eta, float cone_size, int eormu, bool use_tight)
+{
+    float etaAbs = fabs(eta);
+    float eff_area = 0.0;
+
+    if (abs(eormu) == 11)
+    {
+        if (etaAbs <= 1.0) eff_area = 0.18;
+        else if (etaAbs > 1.0   && etaAbs <= 1.479) eff_area = 0.19;
+        else if (etaAbs > 1.479 && etaAbs <= 2.0  ) eff_area = 0.21;
+        else if (etaAbs > 2.0   && etaAbs <= 2.2  ) eff_area = 0.38;
+        else if (etaAbs > 2.2   && etaAbs <= 2.3  ) eff_area = 0.61;
+        else if (etaAbs > 2.3   && etaAbs <= 2.4  ) eff_area = 0.73;
+        else if (etaAbs > 2.4) eff_area = 0.78;
+
+        float ratio = cone_size / 0.3;
+        eff_area *= pow(ratio, 2);
+    }
+    else if (abs(eormu) == 13)
+    {
+        if (abs(cone_size - 0.3) < 0.01)
+        {
+            if (use_tight)
+            {
+                if (etaAbs < 1.0)      eff_area = 0.207;
+                else if (etaAbs < 1.5) eff_area = 0.183;
+                else if (etaAbs < 2.0) eff_area = 0.177;
+                else if (etaAbs < 2.2) eff_area = 0.271;
+                else if (etaAbs < 2.3) eff_area = 0.348;
+                else if (etaAbs < 2.4) eff_area = 0.246;
+            }
+            else
+            {
+                if (etaAbs < 1.0)      eff_area = 0.382;
+                else if (etaAbs < 1.5) eff_area = 0.317;
+                else if (etaAbs < 2.0) eff_area = 0.242;
+                else if (etaAbs < 2.2) eff_area = 0.326;
+                else if (etaAbs < 2.3) eff_area = 0.462;
+                else if (etaAbs < 2.4) eff_area = 0.372;
+            }
+        }
+        else if (abs(cone_size - 0.4) < 0.01)
+        {
+            if (use_tight)
+            {
+                if (etaAbs < 1.0)      eff_area = 0.340;
+                else if (etaAbs < 1.5) eff_area = 0.310;
+                else if (etaAbs < 2.0) eff_area = 0.315;
+                else if (etaAbs < 2.2) eff_area = 0.415;
+                else if (etaAbs < 2.3) eff_area = 0.658;
+                else if (etaAbs < 2.4) eff_area = 0.405;
+            }
+            else
+            {
+                if (etaAbs < 1.0)      eff_area = 0.674;
+                else if (etaAbs < 1.5) eff_area = 0.565;
+                else if (etaAbs < 2.0) eff_area = 0.442;
+                else if (etaAbs < 2.2) eff_area = 0.515;
+                else if (etaAbs < 2.3) eff_area = 0.821;
+                else if (etaAbs < 2.4) eff_area = 0.660;
+            }
+        }
+
+    }
+
+    // done
+    return eff_area;
+}
+
+Float_t EffectiveArea_nh(float eta, float cone_size, bool use_tight)
+{
+    float etaAbs = fabs(eta);
+    float eff_area = 0.0;
+
+    if (abs(cone_size - 0.3) < 0.01)
+    {
+        if (use_tight)
+        {
+            if (etaAbs < 1.0)      eff_area = 0.093;
+            else if (etaAbs < 1.5) eff_area = 0.116;
+            else if (etaAbs < 2.0) eff_area = 0.144;
+            else if (etaAbs < 2.2) eff_area = 0.101;
+            else if (etaAbs < 2.3) eff_area = 0.105;
+            else if (etaAbs < 2.4) eff_area = 0.178;
+        }
+
+        else
+        {
+            if (etaAbs < 1.0)      eff_area = 0.107;
+            else if (etaAbs < 1.5) eff_area = 0.141;
+            else if (etaAbs < 2.0) eff_area = 0.159;
+            else if (etaAbs < 2.2) eff_area = 0.102;
+            else if (etaAbs < 2.3) eff_area = 0.096;
+            else if (etaAbs < 2.4) eff_area = 0.104;
+        }
+    }
+    else if (abs(cone_size - 0.4) < 0.01)
+    {
+        if (use_tight)
+        {
+            if (etaAbs < 1.0)      eff_area = 0.140;
+            else if (etaAbs < 1.5) eff_area = 0.204;
+            else if (etaAbs < 2.0) eff_area = 0.224;
+            else if (etaAbs < 2.2) eff_area = 0.229;
+            else if (etaAbs < 2.3) eff_area = 0.322;
+            else if (etaAbs < 2.4) eff_area = 0.178;
+        }
+        else
+        {
+            if (etaAbs < 1.0)      eff_area = 0.166;
+            else if (etaAbs < 1.5) eff_area = 0.259;
+            else if (etaAbs < 2.0) eff_area = 0.247;
+            else if (etaAbs < 2.2) eff_area = 0.220;
+            else if (etaAbs < 2.3) eff_area = 0.340;
+            else if (etaAbs < 2.4) eff_area = 0.216;
+        }
+    }
+
+    // done
+    return eff_area;
+}
+
+Float_t EffectiveArea_em(float eta, float cone_size, bool use_tight)
+{
+    float etaAbs = fabs(eta);
+    float eff_area = 0.0;
+
+    if (abs(cone_size - 0.3) < 0.01)
+    {
+        if (use_tight)
+        {
+            if (etaAbs < 1.0)      eff_area = 0.118;
+            else if (etaAbs < 1.5) eff_area = 0.053;
+            else if (etaAbs < 2.0) eff_area = 0.015;
+            else if (etaAbs < 2.2) eff_area = 0.112;
+            else if (etaAbs < 2.3) eff_area = 0.302;
+            else if (etaAbs < 2.4) eff_area = 0.251;
+        }
+        else
+        {
+            if (etaAbs < 1.0)      eff_area = 0.274;
+            else if (etaAbs < 1.5) eff_area = 0.161;
+            else if (etaAbs < 2.0) eff_area = 0.079;
+            else if (etaAbs < 2.2) eff_area = 0.168;
+            else if (etaAbs < 2.3) eff_area = 0.359;
+            else if (etaAbs < 2.4) eff_area = 0.294;
+        }
+    }
+    else if (abs(cone_size - 0.4) < 0.01)
+    {
+        if (use_tight)
+        {
+            if (etaAbs < 1.0)      eff_area = 0.200;
+            else if (etaAbs < 1.5) eff_area = 0.109;
+            else if (etaAbs < 2.0) eff_area = 0.087;
+            else if (etaAbs < 2.2) eff_area = 0.184;
+            else if (etaAbs < 2.3) eff_area = 0.425;
+            else if (etaAbs < 2.4) eff_area = 0.350;
+        }
+        else
+        {
+            if (etaAbs < 1.0)      eff_area = 0.504;
+            else if (etaAbs < 1.5) eff_area = 0.306;
+            else if (etaAbs < 2.0) eff_area = 0.198;
+            else if (etaAbs < 2.2) eff_area = 0.287;
+            else if (etaAbs < 2.3) eff_area = 0.525;
+            else if (etaAbs < 2.4) eff_area = 0.488;
+        }
+    }
+
+    // done
+    return eff_area;
+}
+
+
+
 //------------------------------------------
 // Initialize baby ntuple variables
 //------------------------------------------
@@ -411,58 +588,68 @@ void myBabyMaker::InitBabyNtuple()
     foel_mass_ = -999.0;
     fomu_mass_ = -999.0;
 
-    iso_                   = -999.;
-    iso_nps_               = -999.;
-    nt_iso_                = -999.;
-    nt_iso_nps_            = -999.;
-    trck_iso_              = -999.;
-    trck_nt_iso_           = -999.;
-    ecal_iso_              = -999.;
-    ecal_iso_nps_          = -999.;
-    ecal_nt_iso_           = -999.;
-    ecal_nt_iso_nps_       = -999.;
-    hcal_iso_              = -999.;
-    hcal_nt_iso_           = -999.;
-    nt_pfiso03_            = -999.;
-    ch_nt_pfiso03_         = -999.;
-    nh_nt_pfiso03_         = -999.;
-    em_nt_pfiso03_         = -999.;
-    nt_pfiso03_bv_         = -999.;
-    ch_nt_pfiso03_bv_      = -999.;
-    nh_nt_pfiso03_bv_      = -999.;
-    nt_pfiso04_            = -999.;
-    ch_nt_pfiso04_         = -999.;
-    nh_nt_pfiso04_         = -999.;
-    em_nt_pfiso04_         = -999.;
-    nt_pfiso04_bv_         = -999.;
-    ch_nt_pfiso04_bv_      = -999.;
-    nh_nt_pfiso04_bv_      = -999.;
-    em_nt_pfiso04_bv_      = -999.;
-    nt_radiso_et1p0_       = -999.;
-    ch_nt_radiso_et1p0_    = -999.;
-    nh_nt_radiso_et1p0_    = -999.;
-    em_nt_radiso_et1p0_    = -999.;
-    nt_radiso_et0p5_       = -999.;
-    ch_nt_radiso_et0p5_    = -999.;
-    nh_nt_radiso_et0p5_    = -999.;
-    em_nt_radiso_et0p5_    = -999.;
-    nt_radiso_et1p0_bv_    = -999.;
-    ch_nt_radiso_et1p0_bv_ = -999.;
-    nh_nt_radiso_et1p0_bv_ = -999.;
-    em_nt_radiso_et1p0_bv_ = -999.;
-    nt_radiso_et0p5_bv_    = -999.;
-    ch_nt_radiso_et0p5_bv_ = -999.;
-    nh_nt_radiso_et0p5_bv_ = -999.;
-    em_nt_radiso_et0p5_bv_ = -999.;
+    iso_                = -999.;
+    iso_nps_            = -999.;
+    trck_iso_           = -999.;
+    ecal_iso_           = -999.;
+    ecal_iso_nps_       = -999.;
+    hcal_iso_           = -999.;
+    pfiso03_            = -999.;
+    ch_pfiso03_         = -999.;
+    nh_pfiso03_         = -999.;
+    em_pfiso03_         = -999.;
+    pfiso03_bv_         = -999.;
+    ch_pfiso03_bv_      = -999.;
+    nh_pfiso03_bv_      = -999.;
+    pfiso04_            = -999.;
+    ch_pfiso04_         = -999.;
+    nh_pfiso04_         = -999.;
+    em_pfiso04_         = -999.;
+    pfiso04_bv_         = -999.;
+    ch_pfiso04_bv_      = -999.;
+    nh_pfiso04_bv_      = -999.;
+    em_pfiso04_bv_      = -999.;
+    radiso_et1p0_       = -999.;
+    ch_radiso_et1p0_    = -999.;
+    nh_radiso_et1p0_    = -999.;
+    em_radiso_et1p0_    = -999.;
+    radiso_et0p5_       = -999.;
+    ch_radiso_et0p5_    = -999.;
+    nh_radiso_et0p5_    = -999.;
+    em_radiso_et0p5_    = -999.;
+    radiso_et1p0_bv_    = -999.;
+    ch_radiso_et1p0_bv_ = -999.;
+    nh_radiso_et1p0_bv_ = -999.;
+    em_radiso_et1p0_bv_ = -999.;
+    radiso_et0p5_bv_    = -999.;
+    ch_radiso_et0p5_bv_ = -999.;
+    nh_radiso_et0p5_bv_ = -999.;
+    em_radiso_et0p5_bv_ = -999.;
+    pfpupt03_           = -999.;
+    pfpupt04_           = -999.;
 
     closestMuon_      = false;
     el_id_smurfV5_    = false;
     el_id_vbtf80_     = false;
     el_id_vbtf90_     = false;
-    el_id_effarea_    = -999.0;
     convHitPattern_   = false;
     convPartnerTrack_ = false;
     convMIT_          = false;
+
+    el_effarea_            = -999.;
+    mu_effarea03_          = -999.;
+    mu_nh_effarea03_       = -999.;
+    mu_em_effarea03_       = -999.;
+    mu_effarea03_tight_    = -999.;
+    mu_nh_effarea03_tight_ = -999.;
+    mu_em_effarea03_tight_ = -999.;
+    mu_effarea04_          = -999.;
+    mu_nh_effarea04_       = -999.;
+    mu_em_effarea04_       = -999.;
+    mu_effarea04_tight_    = -999.;
+    mu_nh_effarea04_tight_ = -999.;
+    mu_em_effarea04_tight_ = -999.;
+
 
     // Z mass variables
     mz_fo_gsf_       = -999.;
@@ -870,54 +1057,62 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfmetphi"              , &pfmetphi_              ); 
     babyTree_->Branch("iso"                   , &iso_                   ); 
     babyTree_->Branch("iso_nps"               , &iso_nps_               ); 
-    babyTree_->Branch("nt_iso"                , &nt_iso_                ); 
-    babyTree_->Branch("nt_iso_nps"            , &nt_iso_nps_            ); 
     babyTree_->Branch("trck_iso"              , &trck_iso_              ); 
-    babyTree_->Branch("trck_nt_iso"           , &trck_nt_iso_           ); 
     babyTree_->Branch("ecal_iso"              , &ecal_iso_              ); 
     babyTree_->Branch("ecal_iso_nps"          , &ecal_iso_nps_          ); 
-    babyTree_->Branch("ecal_nt_iso"           , &ecal_nt_iso_           ); 
-    babyTree_->Branch("ecal_nt_iso_nps"       , &ecal_nt_iso_nps_       ); 
     babyTree_->Branch("hcal_iso"              , &hcal_iso_              ); 
-    babyTree_->Branch("hcal_nt_iso"           , &hcal_nt_iso_           ); 
-    babyTree_->Branch("nt_pfiso03"            , &nt_pfiso03_            ); 
-    babyTree_->Branch("ch_nt_pfiso03"         , &ch_nt_pfiso03_         ); 
-    babyTree_->Branch("nh_nt_pfiso03"         , &nh_nt_pfiso03_         ); 
-    babyTree_->Branch("em_nt_pfiso03"         , &em_nt_pfiso03_         ); 
-    babyTree_->Branch("nt_pfiso03_bv"         , &nt_pfiso03_bv_         ); 
-    babyTree_->Branch("ch_nt_pfiso03_bv"      , &ch_nt_pfiso03_bv_      ); 
-    babyTree_->Branch("nh_nt_pfiso03_bv"      , &nh_nt_pfiso03_bv_      ); 
-    babyTree_->Branch("em_nt_pfiso03_bv"      , &em_nt_pfiso03_bv_      ); 
-    babyTree_->Branch("nt_pfiso04"            , &nt_pfiso04_            ); 
-    babyTree_->Branch("ch_nt_pfiso04"         , &ch_nt_pfiso04_         ); 
-    babyTree_->Branch("nh_nt_pfiso04"         , &nh_nt_pfiso04_         ); 
-    babyTree_->Branch("em_nt_pfiso04"         , &em_nt_pfiso04_         ); 
-    babyTree_->Branch("nt_pfiso04_bv"         , &nt_pfiso04_bv_         ); 
-    babyTree_->Branch("ch_nt_pfiso04_bv"      , &ch_nt_pfiso04_bv_      ); 
-    babyTree_->Branch("nh_nt_pfiso04_bv"      , &nh_nt_pfiso04_bv_      ); 
-    babyTree_->Branch("em_nt_pfiso04_bv"      , &em_nt_pfiso04_bv_      ); 
-    babyTree_->Branch("nt_radiso_et1p0"       , &nt_radiso_et1p0_       ); 
-    babyTree_->Branch("ch_nt_radiso_et1p0"    , &ch_nt_radiso_et1p0_    ); 
-    babyTree_->Branch("nh_nt_radiso_et1p0"    , &nh_nt_radiso_et1p0_    ); 
-    babyTree_->Branch("em_nt_radiso_et1p0"    , &em_nt_radiso_et1p0_    ); 
-    babyTree_->Branch("nt_radiso_et0p5"       , &nt_radiso_et0p5_       ); 
-    babyTree_->Branch("ch_nt_radiso_et0p5"    , &ch_nt_radiso_et0p5_    ); 
-    babyTree_->Branch("nh_nt_radiso_et0p5"    , &nh_nt_radiso_et0p5_    ); 
-    babyTree_->Branch("em_nt_radiso_et0p5"    , &em_nt_radiso_et0p5_    ); 
-    babyTree_->Branch("nt_radiso_et1p0_bv"    , &nt_radiso_et1p0_bv_    ); 
-    babyTree_->Branch("ch_nt_radiso_et1p0_bv" , &ch_nt_radiso_et1p0_bv_ ); 
-    babyTree_->Branch("nh_nt_radiso_et1p0_bv" , &nh_nt_radiso_et1p0_bv_ ); 
-    babyTree_->Branch("em_nt_radiso_et1p0_bv" , &em_nt_radiso_et1p0_bv_ ); 
-    babyTree_->Branch("nt_radiso_et0p5_bv"    , &nt_radiso_et0p5_bv_    ); 
-    babyTree_->Branch("ch_nt_radiso_et0p5_bv" , &ch_nt_radiso_et0p5_bv_ ); 
-    babyTree_->Branch("nh_nt_radiso_et0p5_bv" , &nh_nt_radiso_et0p5_bv_ ); 
-    babyTree_->Branch("em_nt_radiso_et0p5_bv" , &em_nt_radiso_et0p5_bv_ ); 
+    babyTree_->Branch("pfiso03"               , &pfiso03_               ); 
+    babyTree_->Branch("ch_pfiso03"            , &ch_pfiso03_            ); 
+    babyTree_->Branch("nh_pfiso03"            , &nh_pfiso03_            ); 
+    babyTree_->Branch("em_pfiso03"            , &em_pfiso03_            ); 
+    babyTree_->Branch("pfiso03_bv"            , &pfiso03_bv_            ); 
+    babyTree_->Branch("ch_pfiso03_bv"         , &ch_pfiso03_bv_         ); 
+    babyTree_->Branch("nh_pfiso03_bv"         , &nh_pfiso03_bv_         ); 
+    babyTree_->Branch("em_pfiso03_bv"         , &em_pfiso03_bv_         ); 
+    babyTree_->Branch("pfiso04"               , &pfiso04_               ); 
+    babyTree_->Branch("ch_pfiso04"            , &ch_pfiso04_            ); 
+    babyTree_->Branch("nh_pfiso04"            , &nh_pfiso04_            ); 
+    babyTree_->Branch("em_pfiso04"            , &em_pfiso04_            ); 
+    babyTree_->Branch("pfiso04_bv"            , &pfiso04_bv_            ); 
+    babyTree_->Branch("ch_pfiso04_bv"         , &ch_pfiso04_bv_         ); 
+    babyTree_->Branch("nh_pfiso04_bv"         , &nh_pfiso04_bv_         ); 
+    babyTree_->Branch("em_pfiso04_bv"         , &em_pfiso04_bv_         ); 
+    babyTree_->Branch("radiso_et1p0"          , &radiso_et1p0_          ); 
+    babyTree_->Branch("ch_radiso_et1p0"       , &ch_radiso_et1p0_       ); 
+    babyTree_->Branch("nh_radiso_et1p0"       , &nh_radiso_et1p0_       ); 
+    babyTree_->Branch("em_radiso_et1p0"       , &em_radiso_et1p0_       ); 
+    babyTree_->Branch("radiso_et0p5"          , &radiso_et0p5_          ); 
+    babyTree_->Branch("ch_radiso_et0p5"       , &ch_radiso_et0p5_       ); 
+    babyTree_->Branch("nh_radiso_et0p5"       , &nh_radiso_et0p5_       ); 
+    babyTree_->Branch("em_radiso_et0p5"       , &em_radiso_et0p5_       ); 
+    babyTree_->Branch("radiso_et1p0_bv"       , &radiso_et1p0_bv_       ); 
+    babyTree_->Branch("ch_radiso_et1p0_bv"    , &ch_radiso_et1p0_bv_    ); 
+    babyTree_->Branch("nh_radiso_et1p0_bv"    , &nh_radiso_et1p0_bv_    ); 
+    babyTree_->Branch("em_radiso_et1p0_bv"    , &em_radiso_et1p0_bv_    ); 
+    babyTree_->Branch("radiso_et0p5_bv"       , &radiso_et0p5_bv_       ); 
+    babyTree_->Branch("ch_radiso_et0p5_bv"    , &ch_radiso_et0p5_bv_    ); 
+    babyTree_->Branch("nh_radiso_et0p5_bv"    , &nh_radiso_et0p5_bv_    ); 
+    babyTree_->Branch("em_radiso_et0p5_bv"    , &em_radiso_et0p5_bv_    ); 
+    babyTree_->Branch("pfpupt03"              , &pfpupt03_              ); 
+    babyTree_->Branch("pfpupt04"              , &pfpupt04_              ); 
     babyTree_->Branch("id"                    , &id_                    ); 
     babyTree_->Branch("closestMuon"           , &closestMuon_           ); 
     babyTree_->Branch("el_id_smurfV5"         , &el_id_smurfV5_         ); 
     babyTree_->Branch("el_id_vbtf80"          , &el_id_vbtf80_          ); 
     babyTree_->Branch("el_id_vbtf90"          , &el_id_vbtf90_          ); 
-    babyTree_->Branch("el_id_effarea"         , &el_id_effarea_         ); 
+    babyTree_->Branch("el_effarea"            , &el_effarea_            ); 
+    babyTree_->Branch("mu_effarea03"          , &mu_effarea03_          ); 
+    babyTree_->Branch("mu_nh_effarea03"       , &mu_nh_effarea03_       ); 
+    babyTree_->Branch("mu_em_effarea03"       , &mu_em_effarea03_       ); 
+    babyTree_->Branch("mu_effarea03_tight"    , &mu_effarea03_tight_    ); 
+    babyTree_->Branch("mu_nh_effarea03_tight" , &mu_nh_effarea03_tight_ ); 
+    babyTree_->Branch("mu_em_effarea03_tight" , &mu_em_effarea03_tight_ ); 
+    babyTree_->Branch("mu_effarea04"          , &mu_effarea04_          ); 
+    babyTree_->Branch("mu_nh_effarea04"       , &mu_nh_effarea04_       ); 
+    babyTree_->Branch("mu_em_effarea04"       , &mu_em_effarea04_       ); 
+    babyTree_->Branch("mu_effarea04_tight"    , &mu_effarea04_tight_    ); 
+    babyTree_->Branch("mu_nh_effarea04_tight" , &mu_nh_effarea04_tight_ ); 
+    babyTree_->Branch("mu_em_effarea04_tight" , &mu_em_effarea04_tight_ ); 
     babyTree_->Branch("conv0MissHits"         , &conv0MissHits_         ); 
     babyTree_->Branch("convHitPattern"        , &convHitPattern_        ); 
     babyTree_->Branch("convPartnerTrack"      , &convPartnerTrack_      ); 
@@ -1711,38 +1906,32 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
 
                     // Isolation
-                    iso_             = electronIsolation_rel         (iLep, true );
-                    iso_nps_         = electronIsolation_rel         (iLep, true );  // wrong
-                    nt_iso_          = electronIsolation_rel_v1      (iLep, true );
-                    nt_iso_nps_      = electronIsolation_rel_v1      (iLep, true );
-                    trck_iso_        = electronIsolation_rel         (iLep, false);
-                    trck_nt_iso_     = electronIsolation_rel_v1      (iLep, false);
-                    ecal_iso_        = electronIsolation_ECAL_rel    (iLep       );
-                    ecal_iso_nps_    = electronIsolation_ECAL_rel    (iLep       );  // wrong
-                    ecal_nt_iso_     = electronIsolation_ECAL_rel_v1 (iLep, true );
-                    ecal_nt_iso_nps_ = electronIsolation_ECAL_rel_v1 (iLep, false);
-                    hcal_iso_        = electronIsolation_HCAL_rel    (iLep       );
-                    hcal_nt_iso_     = electronIsolation_HCAL_rel_v1 (iLep       );
+                    iso_          = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/true ); 
+                    iso_nps_      = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/true ); 
+                    trck_iso_     = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/false) * els_p4().at(iLep).pt(); 
+                    ecal_iso_     = electronIsolation_ECAL_rel_v1 (iLep, /*use EBps=*/true     ) * els_p4().at(iLep).pt(); 
+                    ecal_iso_nps_ = electronIsolation_ECAL_rel_v1 (iLep, /*use EBps=*/false    ) * els_p4().at(iLep).pt(); 
+                    hcal_iso_     = electronIsolation_HCAL_rel    (iLep                        ) * els_p4().at(iLep).pt(); 
 
                     // PF Isolation
-                    electronIsoValuePF2012(ch_nt_pfiso03_, em_nt_pfiso03_, nh_nt_pfiso03_, 0.3, iLep, first_good_vertex_index);
-                    nt_pfiso03_ = (ch_nt_pfiso03_ + em_nt_pfiso03_ + nh_nt_pfiso03_)/els_p4().at(iLep).pt(); 
-                    electronIsoValuePF2012(ch_nt_pfiso04_, em_nt_pfiso04_, nh_nt_pfiso04_, 0.4, iLep, first_good_vertex_index);
-                    nt_pfiso04_ = (ch_nt_pfiso04_ + em_nt_pfiso04_ + nh_nt_pfiso04_)/els_p4().at(iLep).pt(); 
+                    electronIsoValuePF2012(ch_pfiso03_, em_pfiso03_, nh_pfiso03_, 0.3, iLep, first_good_vertex_index);
+                    pfiso03_ = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/els_p4().at(iLep).pt(); 
+                    electronIsoValuePF2012(ch_pfiso04_, em_pfiso04_, nh_pfiso04_, 0.4, iLep, first_good_vertex_index);
+                    pfiso04_ = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/els_p4().at(iLep).pt(); 
 
                     // PF Isolation
-                    electronIsoValuePF2012(ch_nt_pfiso03_bv_, em_nt_pfiso03_bv_, nh_nt_pfiso03_bv_, 0.3, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
-                    nt_pfiso03_bv_ = (ch_nt_pfiso03_bv_ + em_nt_pfiso03_bv_ + nh_nt_pfiso03_bv_)/els_p4().at(iLep).pt(); 
-                    electronIsoValuePF2012(ch_nt_pfiso04_bv_, em_nt_pfiso04_bv_, nh_nt_pfiso04_bv_, 0.4, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
-                    nt_pfiso04_bv_ = (ch_nt_pfiso04_bv_ + em_nt_pfiso04_bv_ + nh_nt_pfiso04_bv_)/els_p4().at(iLep).pt(); 
+                    electronIsoValuePF2012(ch_pfiso03_bv_, em_pfiso03_bv_, nh_pfiso03_bv_, 0.3, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
+                    pfiso03_bv_ = (ch_pfiso03_bv_ + em_pfiso03_bv_ + nh_pfiso03_bv_)/els_p4().at(iLep).pt(); 
+                    electronIsoValuePF2012(ch_pfiso04_bv_, em_pfiso04_bv_, nh_pfiso04_bv_, 0.4, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
+                    pfiso04_bv_ = (ch_pfiso04_bv_ + em_pfiso04_bv_ + nh_pfiso04_bv_)/els_p4().at(iLep).pt(); 
 
                     // Radial Isolation
-                    nt_radiso_et1p0_ = electronRadialIsolation(iLep, ch_nt_radiso_et1p0_, nh_nt_radiso_et1p0_, em_nt_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
-                    nt_radiso_et0p5_ = electronRadialIsolation(iLep, ch_nt_radiso_et0p5_, nh_nt_radiso_et0p5_, em_nt_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
+                    radiso_et1p0_ = electronRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
+                    radiso_et0p5_ = electronRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
 
                     // Radial Isolation with Barrel Veto
-                    nt_radiso_et1p0_bv_ = electronRadialIsolation(iLep, ch_nt_radiso_et1p0_bv_, nh_nt_radiso_et1p0_bv_, em_nt_radiso_et1p0_bv_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
-                    nt_radiso_et0p5_bv_ = electronRadialIsolation(iLep, ch_nt_radiso_et0p5_bv_, nh_nt_radiso_et0p5_bv_, em_nt_radiso_et0p5_bv_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
+                    radiso_et1p0_bv_ = electronRadialIsolation(iLep, ch_radiso_et1p0_bv_, nh_radiso_et1p0_bv_, em_radiso_et1p0_bv_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
+                    radiso_et0p5_bv_ = electronRadialIsolation(iLep, ch_radiso_et0p5_bv_, nh_radiso_et0p5_bv_, em_radiso_et0p5_bv_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
 
                     // mc information
                     if (!isData) {
@@ -1767,14 +1956,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         closestMuon_ = true;
 
                     // electron ID effective area
-                    // 2012 working point effective id (taken From electronSelections.h -- electronId_WP2012()) 
-                    el_id_effarea_ = 0.18;
-                    if (fabs(eta_ ) > 1.0   && fabs(eta_) <= 1.479 ) { el_id_effarea_ = 0.19; }
-                    if (fabs(eta_ ) > 1.479 && fabs(eta_) <= 2.0   ) { el_id_effarea_ = 0.21; }
-                    if (fabs(eta_ ) > 2.0   && fabs(eta_) <= 2.2   ) { el_id_effarea_ = 0.38; }
-                    if (fabs(eta_ ) > 2.2   && fabs(eta_) <= 2.3   ) { el_id_effarea_ = 0.61; }
-                    if (fabs(eta_ ) > 2.3   && fabs(eta_) <= 2.4   ) { el_id_effarea_ = 0.73; }
-                    if (fabs(eta_) > 2.4)                            { el_id_effarea_ = 0.78; }
+                    el_effarea_ = EffectiveArea(eta_, /*cone=*/0.3, /*eormu=*/11, /*use_tight=*/false);
                     
                     // PV
                     d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
@@ -2285,34 +2467,60 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
 
                     // Isolation
-                    iso_          = muonIsoValue(iLep);
-                    nt_iso_       = muonIsoValue(iLep, false);
-                    trck_iso_     = muonIsoValue_TRK(iLep);
-                    trck_nt_iso_  = muonIsoValue_TRK(iLep, false);
-                    ecal_iso_     = muonIsoValue_ECAL(iLep);
-                    ecal_nt_iso_  = muonIsoValue_ECAL(iLep, false);
-                    hcal_iso_     = muonIsoValue_HCAL(iLep);
-                    hcal_nt_iso_  = muonIsoValue_HCAL(iLep, false);
+                    iso_      = muonIsoValue     (iLep, /*truncated=*/false);
+                    trck_iso_ = muonIsoValue_TRK (iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
+                    ecal_iso_ = muonIsoValue_ECAL(iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
+                    hcal_iso_ = muonIsoValue_HCAL(iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
 
                     // PF Isolation 03
-                    ch_nt_pfiso03_ = mus_isoR03_pf_ChargedHadronPt().at(iLep);
-                    nh_nt_pfiso03_ = mus_isoR03_pf_NeutralHadronEt().at(iLep);
-                    em_nt_pfiso03_ = mus_isoR03_pf_PhotonEt().at(iLep);
-                    nt_pfiso03_    = (ch_nt_pfiso03_ + em_nt_pfiso03_ + nh_nt_pfiso03_)/mus_p4().at(iLep).pt(); 
+                    ch_pfiso03_ = mus_isoR03_pf_ChargedHadronPt().at(iLep);
+                    nh_pfiso03_ = mus_isoR03_pf_NeutralHadronEt().at(iLep);
+                    em_pfiso03_ = mus_isoR03_pf_PhotonEt().at(iLep);
+                    pfiso03_    = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/mus_p4().at(iLep).pt(); 
 
                     // PF Isolation 04
-                    ch_nt_pfiso04_ = mus_isoR04_pf_ChargedHadronPt().at(iLep);
-                    nh_nt_pfiso04_ = mus_isoR04_pf_NeutralHadronEt().at(iLep);
-                    em_nt_pfiso04_ = mus_isoR04_pf_PhotonEt().at(iLep);
-                    nt_pfiso04_    = (ch_nt_pfiso04_ + em_nt_pfiso04_ + nh_nt_pfiso04_)/mus_p4().at(iLep).pt(); 
+                    ch_pfiso04_ = mus_isoR04_pf_ChargedHadronPt().at(iLep);
+                    nh_pfiso04_ = mus_isoR04_pf_NeutralHadronEt().at(iLep);
+                    em_pfiso04_ = mus_isoR04_pf_PhotonEt().at(iLep);
+                    pfiso04_    = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/mus_p4().at(iLep).pt(); 
 
-                    // This isn't working yet but we want to use this method for older releases
-                    //muonIsoValuePF2012(ch_nt_pfiso03_, em_nt_pfiso03_, nh_nt_pfiso03_, 0.3, iLep, first_good_vertex_index);
-                    //muonIsoValuePF2012(ch_nt_pfiso04_, em_nt_pfiso04_, nh_nt_pfiso04_, 0.4, iLep, first_good_vertex_index);
-                   
                     // Radial Isolation 03
-                    nt_radiso_et1p0_ = muonRadialIsolation(iLep, ch_nt_radiso_et1p0_, nh_nt_radiso_et1p0_, em_nt_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, verbose_); 
-                    nt_radiso_et0p5_ = muonRadialIsolation(iLep, ch_nt_radiso_et0p5_, nh_nt_radiso_et0p5_, em_nt_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, verbose_); 
+                    radiso_et1p0_ = muonRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, verbose_); 
+                    radiso_et0p5_ = muonRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, verbose_); 
+
+                    // PF Pile UP Sim pT
+                    pfpupt03_ = mus_isoR03_pf_PUPt().at(iLep);
+                    pfpupt04_ = mus_isoR04_pf_PUPt().at(iLep);
+
+                    // mc information
+                    if (!isData) {
+                        mcid_       = els_mc_id().at(iLep);
+                        mcmotherid_ = els_mc_motherid().at(iLep);
+                        int status3_index = mc3idx_eormu(11, iLep);
+                        if (status3_index >= 0)
+                        {
+                            mc3id_ = cms2.genps_id().at(status3_index);
+                            mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
+                            mc3p4_ = cms2.genps_p4().at(status3_index);                            
+                        }
+                        mc3dr_ = mc3dr_eormu(11, iLep);            
+                        leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
+                    }
+
+                    // muon effective area
+                    // 2012 working point effective id (take from https://indico.cern.ch/getFile.py/access?contribId=1&resId=0&materialId=slides&confId=188494)
+                    mu_effarea03_          = EffectiveArea   (eta_, /*cone=*/0.3, /*eormu=*/13, /*use_tight=*/false);
+                    mu_nh_effarea03_       = EffectiveArea_nh(eta_, /*cone=*/0.3, /*use_tight=*/false);
+                    mu_em_effarea03_       = EffectiveArea_em(eta_, /*cone=*/0.3, /*use_tight=*/false);
+                    mu_effarea03_tight_    = EffectiveArea   (eta_, /*cone=*/0.3, /*eormu=*/13, /*use_tight=*/true);
+                    mu_nh_effarea03_tight_ = EffectiveArea_nh(eta_, /*cone=*/0.3, /*use_tight=*/true);
+                    mu_em_effarea03_tight_ = EffectiveArea_em(eta_, /*cone=*/0.3, /*use_tight=*/true);
+                    mu_effarea04_          = EffectiveArea   (eta_, /*cone=*/0.4, /*eormu=*/13, /*use_tight=*/false);
+                    mu_nh_effarea04_       = EffectiveArea_nh(eta_, /*cone=*/0.4, /*use_tight=*/false);
+                    mu_em_effarea04_       = EffectiveArea_em(eta_, /*cone=*/0.4, /*use_tight=*/false);
+                    mu_effarea04_tight_    = EffectiveArea   (eta_, /*cone=*/0.4, /*eormu=*/13, /*use_tight=*/true);
+                    mu_nh_effarea04_tight_ = EffectiveArea_nh(eta_, /*cone=*/0.4, /*use_tight=*/true);
+                    mu_em_effarea04_tight_ = EffectiveArea_em(eta_, /*cone=*/0.4, /*use_tight=*/true);
 
                     // mc information
                     if (!isData) 
@@ -2358,7 +2566,6 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     num_mu_ssV5_noIso_ = muonIdNotIsolated(iLep, NominalSSv5);
                     fo_mu_ssV5_        = muonId(iLep, muonSelectionFO_ssV5);
                     fo_mu_ssV5_noIso_  = muonIdNotIsolated(iLep, muonSelectionFO_ssV5);
-
 
                     //////////
                     // 2011 //

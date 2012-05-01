@@ -1,3 +1,9 @@
+05-01-2012 - Ryan Kelley 
+	* tagged with FakeRates01May2012
+	* cleaned up isolation branches to remove truncated isolation (all variables are now not truncated)
+	* removed nt_ prefix from pfiso and radiso branchses
+	* added effective area for muons
+
 04-29-2012 - Ryan Kelley 
 	* tagged with FakeRates29April2012v2
 	* added branches for radial isolation (both muons and electrons) 

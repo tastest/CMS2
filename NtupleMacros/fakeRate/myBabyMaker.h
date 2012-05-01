@@ -101,50 +101,46 @@ private:
     Float_t pfmetphi_;
   
     // isolation
-    Float_t iso_;                   // Isolation ( truncated )
-    Float_t iso_nps_;               // Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t nt_iso_;                // Isolation ( not truncated )
-    Float_t nt_iso_nps_;            // Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t trck_iso_;              // TRK Isolation (truncated )
-    Float_t trck_nt_iso_;           // TRK Isolation ( not truncated )
-    Float_t ecal_iso_;              // ECAL Isolation ( truncated )
-    Float_t ecal_iso_nps_;          // ECAL Isolation ( truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t ecal_nt_iso_;           // ECAL Isolation ( not truncated )
-    Float_t ecal_nt_iso_nps_;       // ECAL Isolation ( not truncated with 1 GeV pedestal subtraction in ecal barrel )
-    Float_t hcal_iso_;              // HCAL Isolation ( not truncated )
-    Float_t hcal_nt_iso_;           // HCAL Isolation ( truncated )
-    Float_t nt_pfiso03_;            // PF Isolation (not truncated) with a cone size of 0.3
-    Float_t ch_nt_pfiso03_;         // Charged Hadron PF Isolation (not truncated) with a cone size of 0.3
-    Float_t nh_nt_pfiso03_;         // Neutral Hadron PF Isolation (not truncated) with a cone size of 0.3
-    Float_t em_nt_pfiso03_;         // E&M PF Isolation (not truncated) with a cone size of 0.3
-    Float_t nt_pfiso03_bv_;         // PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t ch_nt_pfiso03_bv_;      // Charged Hadron PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t nh_nt_pfiso03_bv_;      // Neutral Hadron PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t em_nt_pfiso03_bv_;      // E&M PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
-    Float_t nt_pfiso04_;            // PF Isolation (not truncated) with a cone size of 0.4
-    Float_t ch_nt_pfiso04_;         // Charged Hadron PF Isolation (not truncated) with a cone size of 0.4
-    Float_t nh_nt_pfiso04_;         // Neutral Hadron  PF Isolation (not truncated) with a cone size of 0.4
-    Float_t em_nt_pfiso04_;         // E&M PF Isolation (not truncated) with a cone size of 0.4
-    Float_t nt_pfiso04_bv_;         // PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
-    Float_t ch_nt_pfiso04_bv_;      // Charged Hadron PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
-    Float_t nh_nt_pfiso04_bv_;      // Neutral Hadron  PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
-    Float_t em_nt_pfiso04_bv_;      // E&M PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
-    Float_t nt_radiso_et1p0_;       // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
-    Float_t ch_nt_radiso_et1p0_;    // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
-    Float_t nh_nt_radiso_et1p0_;    // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
-    Float_t em_nt_radiso_et1p0_;    // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
-    Float_t nt_radiso_et1p0_bv_;    // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
-    Float_t ch_nt_radiso_et1p0_bv_; // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
-    Float_t nh_nt_radiso_et1p0_bv_; // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
-    Float_t em_nt_radiso_et1p0_bv_; // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
-    Float_t nt_radiso_et0p5_;       // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
-    Float_t ch_nt_radiso_et0p5_;    // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
-    Float_t nh_nt_radiso_et0p5_;    // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
-    Float_t em_nt_radiso_et0p5_;    // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
-    Float_t nt_radiso_et0p5_bv_;    // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
-    Float_t ch_nt_radiso_et0p5_bv_; // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
-    Float_t nh_nt_radiso_et0p5_bv_; // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
-    Float_t em_nt_radiso_et0p5_bv_; // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
+    Float_t iso_;                // Relative Isolation
+    Float_t iso_nps_;            // Relative Isolation ( 1 GeV pedestal subtraction in ecal barrel )
+    Float_t trck_iso_;           // TRK Isolation (not relative)
+    Float_t ecal_iso_;           // ECAL Isolation ( not relative)
+    Float_t ecal_iso_nps_;       // ECAL Isolation ( not relaive, 1 GeV pedestal subtraction in ecal barrel )
+    Float_t hcal_iso_;           // HCAL Isolation ( not relative )
+    Float_t pfiso03_;            // PF Isolation (not truncated) with a cone size of 0.3
+    Float_t ch_pfiso03_;         // Charged Hadron PF Isolation (not truncated) with a cone size of 0.3
+    Float_t nh_pfiso03_;         // Neutral Hadron PF Isolation (not truncated) with a cone size of 0.3
+    Float_t em_pfiso03_;         // E&M PF Isolation (not truncated) with a cone size of 0.3
+    Float_t pfiso03_bv_;         // PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t ch_pfiso03_bv_;      // Charged Hadron PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t nh_pfiso03_bv_;      // Neutral Hadron PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t em_pfiso03_bv_;      // E&M PF Isolation (not truncated) with a cone size of 0.3 (barrel veto)
+    Float_t pfiso04_;            // PF Isolation (not truncated) with a cone size of 0.4
+    Float_t ch_pfiso04_;         // Charged Hadron PF Isolation (not truncated) with a cone size of 0.4
+    Float_t nh_pfiso04_;         // Neutral Hadron  PF Isolation (not truncated) with a cone size of 0.4
+    Float_t em_pfiso04_;         // E&M PF Isolation (not truncated) with a cone size of 0.4
+    Float_t pfiso04_bv_;         // PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t ch_pfiso04_bv_;      // Charged Hadron PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t nh_pfiso04_bv_;      // Neutral Hadron  PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t em_pfiso04_bv_;      // E&M PF Isolation (not truncated) with a cone size of 0.4 (barrel veto)
+    Float_t radiso_et1p0_;       // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t ch_radiso_et1p0_;    // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t nh_radiso_et1p0_;    // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t em_radiso_et1p0_;    // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0
+    Float_t radiso_et1p0_bv_;    // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
+    Float_t ch_radiso_et1p0_bv_; // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
+    Float_t nh_radiso_et1p0_bv_; // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
+    Float_t em_radiso_et1p0_bv_; // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 1.0 (barrel veto)
+    Float_t radiso_et0p5_;       // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
+    Float_t ch_radiso_et0p5_;    // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
+    Float_t nh_radiso_et0p5_;    // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
+    Float_t em_radiso_et0p5_;    // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5
+    Float_t radiso_et0p5_bv_;    // Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
+    Float_t ch_radiso_et0p5_bv_; // Charged Hadron Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
+    Float_t nh_radiso_et0p5_bv_; // Neutral Hadron  Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
+    Float_t em_radiso_et0p5_bv_; // E&M Radial Isolation (not truncated) with a cone size of 0.3, neutral ET threashold of 0.5 (barrel veto)
+    Float_t pfpupt03_;              // PF Pile Up sum pT (cone 0.3)
+    Float_t pfpupt04_;              // PF Pile Up sum pT (cone 0.4)
 
     // PV
     Float_t d0PV_wwV1_;       // electron_d0PV_wwV1(iEl)
@@ -155,7 +151,21 @@ private:
     Bool_t  el_id_smurfV5_;
     Bool_t  el_id_vbtf80_;
     Bool_t  el_id_vbtf90_;
-    Float_t el_id_effarea_;  // 2012 working point effective area
+
+    // effective area
+    Float_t el_effarea_;            // 2012 working point effective area (cone = 0.3)
+    Float_t mu_effarea03_;          // 2012 working point effective area (combined       , cone = 0.3 , loose)
+    Float_t mu_nh_effarea03_;       // 2012 working point effective area (neutral hadron , cone = 0.3 , loose)
+    Float_t mu_em_effarea03_;       // 2012 working point effective area (E&M            , cone = 0.3 , loose)
+    Float_t mu_effarea03_tight_;    // 2012 working point effective area (combined       , cone = 0.3 , tight)
+    Float_t mu_nh_effarea03_tight_; // 2012 working point effective area (neutral hadron , cone = 0.3 , tight)
+    Float_t mu_em_effarea03_tight_; // 2012 working point effective area (E&M            , cone = 0.3 , tight)
+    Float_t mu_effarea04_;          // 2012 working point effective area (combined       , cone = 0.4 , loose)
+    Float_t mu_nh_effarea04_;       // 2012 working point effective area (neutral hadron , cone = 0.4 , loose)
+    Float_t mu_em_effarea04_;       // 2012 working point effective area (E&M            , cone = 0.4 , loose)
+    Float_t mu_effarea04_tight_;    // 2012 working point effective area (combined       , cone = 0.4 , tight)
+    Float_t mu_nh_effarea04_tight_; // 2012 working point effective area (neutral hadron , cone = 0.4 , tight)
+    Float_t mu_em_effarea04_tight_; // 2012 working point effective area (E&M            , cone = 0.4 , tight)
 
     // Z mass variables
     Float_t mz_fo_gsf_;
