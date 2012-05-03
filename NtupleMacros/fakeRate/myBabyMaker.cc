@@ -629,6 +629,9 @@ void myBabyMaker::InitBabyNtuple()
     pfpupt04_           = -999.;
 
     closestMuon_      = false;
+    el_id_sieie_   	  = -999.;
+    el_id_detain_  	  = -999.;
+    el_id_dphiin_  	  = -999.;
     el_id_smurfV5_    = false;
     el_id_vbtf80_     = false;
     el_id_vbtf90_     = false;
@@ -1112,6 +1115,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfpupt04"              , &pfpupt04_              ); 
     babyTree_->Branch("id"                    , &id_                    ); 
     babyTree_->Branch("closestMuon"           , &closestMuon_           ); 
+   	babyTree_->Branch("el_id_sieie" 		  , &el_id_sieie_ 			);
+   	babyTree_->Branch("el_id_detain" 		  , &el_id_detain_			);
+   	babyTree_->Branch("el_id_dphiin" 		  , &el_id_dphiin_			);
     babyTree_->Branch("el_id_smurfV5"         , &el_id_smurfV5_         ); 
     babyTree_->Branch("el_id_vbtf80"          , &el_id_vbtf80_          ); 
     babyTree_->Branch("el_id_vbtf90"          , &el_id_vbtf90_          ); 
@@ -1983,6 +1989,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     }
 
                     // ID
+                	el_id_sieie_   = cms2.els_sigmaIEtaIEta().at(iLep);
+                	el_id_detain_  = cms2.els_dEtaIn().at(iLep);
+                	el_id_dphiin_  = cms2.els_dPhiIn().at(iLep);
                     el_id_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5_id );
                     el_id_vbtf80_  = electronId_VBTF(iLep, VBTF_35X_80, false, false);
                     el_id_vbtf90_  = electronId_VBTF(iLep, VBTF_35X_90, false, false);

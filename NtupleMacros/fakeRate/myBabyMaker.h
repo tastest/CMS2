@@ -50,7 +50,7 @@ private:
     // Basic Event Information
     Int_t   run_;
     Int_t   ls_;
-    UInt_t   evt_;
+    UInt_t  evt_;
     Float_t weight_;
 
     // Pileup - PUSummaryInfoMaker
@@ -147,7 +147,10 @@ private:
     Float_t dzPV_wwV1_;       // electron_dzPV_wwV1(iEl)
 
     // Id
-    Bool_t  closestMuon_;     // true if els_closestMuon().at(index) == -1
+    Bool_t  closestMuon_;      // true if els_closestMuon().at(index) == -1
+	Float_t el_id_sieie_;
+	Float_t el_id_detain_;
+	Float_t el_id_dphiin_;
     Bool_t  el_id_smurfV5_;
     Bool_t  el_id_vbtf80_;
     Bool_t  el_id_vbtf90_;
