@@ -73,11 +73,11 @@ bool muonId(unsigned int index, SelectionType type){
   
     case NominalSSv5:
         if (!muonIdNotIsolated(index, type)) return false;
-        return (muonIsoValue(index, false) < 0.15);
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.1);
         break;
     case muonSelectionFO_ssV5:
         if (!muonIdNotIsolated(index, type)) return false;
-        return (muonIsoValue(index, false) < 0.40);
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.4);
         break;
 
         ///////////////
@@ -402,8 +402,8 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
         if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        // if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
+        if (cms2.mus_pid_PFMuon().at(index) == 0)                                return false; // pf muon
+        if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
         if (trkidx < 0)                                                          return false; // require a matching track
         if (cms2.trks_nlayers().at(trkidx) < 6)                                  return false; // require at least 6 tracker layers with hits
@@ -417,12 +417,16 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (vtxidx < 0 || trkidx < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.02)
                 return false;
+            if (fabs(cms2.mus_z0corr().at(index)) > 0.1)
+                return false;
         }
         else if (vtxidx >= 0) {
             if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.02)
-                return false;            
+                return false;
+            if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.1)
+                return false;
         }
-        else return false;
+        else return false;     
         return true;
         break;
         //baseline FO selector for 2012 SS analysis
@@ -430,8 +434,8 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false; // glb fit chisq
         if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-        if (((cms2.mus_type().at(index)) & (1<<2)) == 0)                         return false; // tracker muon
-        // if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
+        if (cms2.mus_pid_PFMuon().at(index) == 0)                                return false; // pf muon
+        if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
         if (trkidx < 0)                                                          return false; // require a matching track
         if (cms2.trks_nlayers().at(trkidx) < 6)                                  return false; // require at least 6 tracker layers with hits
@@ -443,10 +447,14 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (vtxidx < 0 || trkidx < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
                 return false;
+            if (fabs(cms2.mus_z0corr().at(index)) > 0.1)
+                return false;
         }
         else if (vtxidx >= 0) {
             if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx).first) > 0.2)
                 return false;            
+            if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.1)
+                return false;
         }
         else return false;
         return true;
@@ -743,9 +751,7 @@ void muonIsoValuePF2012 (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, cons
         // charged hadrons closest vertex
         // should be the primary vertex
         if (particleId == 211 || particleId == 321 || particleId == 2212 || particleId == 999211) {
-            int pfVertexIndex = chargedHadronVertex(ipf);
-            if (pfVertexIndex != ivtx) continue;
-            // if (cms2.pfcands_vtxidx().at(ipf) != ivtx) continue;
+            if (cms2.pfcands_vtxidx().at(ipf) != ivtx) continue;
             if (dR < 0.0001)
                 continue;
         }
@@ -811,9 +817,7 @@ float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &
         }
 
         // in the event that the muon is not a PF muon, need to remove any other PF cand reconstructed using the same track as the muon
-
-//        if (!cms2.mus_pid_PFMuon().at(imu) && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
-        if (cms2.mus_pfmusidx().at(imu) < 0 && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
+        if (!cms2.mus_pid_PFMuon().at(imu) && cms2.mus_trkidx().at(imu) >= 0 && cms2.mus_trkidx().at(imu) == cms2.pfcands_trkidx().at(ipf)) {
             if (verbose)
                 std::cout << "Skipping PF cand with same track as muon with id, pt, eta = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " << cms2.pfcands_p4().at(ipf).eta() << std::endl;
             continue;
@@ -833,9 +837,7 @@ float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &
 
         // deal with charged
         if (cms2.pfcands_charge().at(ipf) != 0) {
-            int pfVertexIndex = chargedHadronVertex(ipf);
-            if (pfVertexIndex != ivtx) {
-            // if (cms2.pfcands_vtxidx().at(ipf) != ivtx) {
+            if (cms2.pfcands_vtxidx().at(ipf) != ivtx) {
                 if (verbose)
                     std::cout << "Skipping PF candidate from other vertex  with id, pt, eta, ivtx = " << cms2.pfcands_particleId().at(ipf) << ", " << cms2.pfcands_p4().at(ipf).pt() << ", " 
                               << cms2.pfcands_p4().at(ipf).eta() << ", " << cms2.pfcands_vtxidx().at(ipf) << std::endl;
@@ -862,4 +864,16 @@ float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &
     } // loop over pfcands
 
     return radial_iso;
+}
+
+float muonIsoValuePF2012_deltaBeta(unsigned int imu)
+{
+    float chiso = cms2.mus_isoR03_pf_ChargedHadronPt().at(imu);
+    float nhiso = cms2.mus_isoR03_pf_NeutralHadronEt().at(imu);
+    float emiso = cms2.mus_isoR03_pf_PhotonEt().at(imu);
+    float deltaBeta = cms2.mus_isoR03_pf_PUPt().at(imu);
+    float pt = cms2.mus_p4().at(imu).pt();
+
+    float absiso = chiso + max(0.0, nhiso + emiso - 0.5 * deltaBeta);
+    return (absiso / pt);
 }
