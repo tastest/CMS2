@@ -17,6 +17,9 @@ dbs_url = ''
 dbs_url_pub = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
 global_tag_flag = '';
+sParms = [];
+
+fastSim = False;
 
 
 def makeCrabConfig():
@@ -114,6 +117,18 @@ def makeCMSSWConfig(cmsswSkelFile):
     if foundcmsPath == True:
       outFile.write('process.eventMaker.datasetName                   = cms.string(\"' + dataSet+'\")\n')
       outFile.write('process.eventMaker.CMS2tag                       = cms.string(\"' + tag+'\")\n')
+      
+    if len(sParms) > 0:
+        outFile.write('process.sParmMaker.vsparms = cms.untracked.vstring(\n')
+        for sParm in sParms:
+            if sParm != sParms[-1]:  #assumes the list is unique
+                sParm = '\"%s\",'%sParm
+            else:
+                sParm = '\"%s\"'%sParm
+            outFile.write('%s\n'%sParm)
+        outFile.write(')\n')
+        outFile.write('process.cms2WithEverything.replace( process.eventmakers, process.eventmakerswsparm )')
+
 
     outFile.close()
 
@@ -137,6 +152,8 @@ if len(sys.argv) < 5 :
     print '\t-dbs\t\tdbs url'
     print '\t-re\t\tMessage Logger modulus for error reporting. Default is 1000'
     print '\t-gtag\t\tglobal tag. Default is MC_31X_V3::All'
+    print '\t-sParms\t\tComma seperated, ordered list of Susy Parameter names.'
+    print '\t-fastSim\t\tUse a subset of the sequence that is compatible with FastSim. Default is to not use it.'
     sys.exit()
 
 
@@ -163,6 +180,10 @@ for i in range(0, len(sys.argv)):
         report_every = str(sys.argv[i+1])
     if sys.argv[i] == '-gtag':
         global_tag_flag = str(sys.argv[i+1])
+    if sys.argv[i] == '-sParms':
+        sParms = str(sys.argv[i+1]).split(',')
+    if sys.argv[i] == '-fastSim':
+        fastSim = True
 
 if os.path.exists(cmsswSkelFile) == False:
     print 'CMSSW skeleton file does not exist. Exiting'
@@ -173,6 +194,8 @@ if os.path.exists(cmsswSkelFile) == False:
 if( global_tag_flag != '' ):
 	print '\nUsing \'' + global_tag_flag + '\' specified by -gtag flag.\n'
 	global_tag = global_tag_flag
+        if sParms > 0:
+            print 'Including sParmMaker with parameters %s.\n'%sParms
 	makeCMSSWConfig(cmsswSkelFile)
 	makeCrabConfig()
 else :
@@ -201,6 +224,8 @@ else :
             if answer == 'n':
                 print 'Enter alternative Global Tag:'
                 global_tag = raw_input('new global tag:')
+            if sParms > 0:
+                print 'Including sParmMaker with parameters %s.\n'%sParms
             makeCMSSWConfig(cmsswSkelFile)
             makeCrabConfig()
     else: 
