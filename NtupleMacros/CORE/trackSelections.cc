@@ -290,7 +290,7 @@ float ctfIsoValuePF(const unsigned int itrk, unsigned int ivtx, float coner, flo
         }
         else {
             int pftkid = cms2.pfcands_trkidx().at(ipf);
-            if (itrk >= 0 && pftkid >= 0 && itrk == pftkid)
+            if (pftkid >= 0 && static_cast<int>(itrk) == pftkid)
                 continue;
 
             if (pftkid >= 0) {
