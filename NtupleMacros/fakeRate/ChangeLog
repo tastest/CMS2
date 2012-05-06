@@ -1,3 +1,8 @@
+05-06-2012 - Ryan Kelley 
+	* tagged with FakeRates06May2012
+	* updated effective area for electrons
+	* added branches for correcte pfiso
+
 05-01-2012 - Ryan Kelley 
 	* tagged with FakeRates01May2012
 	* cleaned up isolation branches to remove truncated isolation (all variables are now not truncated)
