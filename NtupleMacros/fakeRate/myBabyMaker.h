@@ -142,6 +142,10 @@ private:
     Float_t pfpupt03_;           // PF Pile Up sum pT (cone 0.3) (a.k.a. DeltaBeta)
     Float_t pfpupt04_;           // PF Pile Up sum pT (cone 0.4) (a.k.a. DeltaBeta)
 
+    // Corrected Isolation
+    Float_t cpfiso03_rho_;       // PF Isolation with a cone size of 0.3 (corrected using rho*area_eff -- only filled for electrons)
+    Float_t cpfiso03_db_;        // PF Isolation with a cone size of 0.3 (corrected using #DeltaBeta -- only filled for muons)
+
     // PV
     Float_t d0PV_wwV1_;       // electron_d0PV_wwV1(iEl)
     Float_t dzPV_wwV1_;       // electron_dzPV_wwV1(iEl)

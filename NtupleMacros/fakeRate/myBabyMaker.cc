@@ -28,20 +28,20 @@
 // (i.e. g++ ... -D__NON_ROOT_BUILD__ ... )
 #ifdef __NON_ROOT_BUILD__  
 #include "CMS2.h"
-#include "CORE/utilities.h"
-#include "CORE/electronSelections.h"
-#include "CORE/electronSelectionsParameters.h"
-#include "CORE/eventSelections.h"
-#include "CORE/jetSelections.h"
-#include "CORE/metSelections.h"
-#include "CORE/MITConversionUtilities.h"
-#include "CORE/muonSelections.h"
-#include "CORE/trackSelections.h"
-#include "CORE/triggerUtils.h"
-#include "Tools/goodrun.h"
-#include "CORE/mcSelections.h"
-#include "CORE/ssSelections.h"
-#include "CORE/susySelections.h"
+#include "utilities.h"
+#include "electronSelections.h"
+#include "electronSelectionsParameters.h"
+#include "eventSelections.h"
+#include "jetSelections.h"
+#include "metSelections.h"
+#include "MITConversionUtilities.h"
+#include "muonSelections.h"
+#include "trackSelections.h"
+#include "triggerUtils.h"
+#include "goodrun.h"
+#include "mcSelections.h"
+#include "ssSelections.h"
+#include "susySelections.h"
 // for compiling in ACLiC (.L myBabyMaker.c++ method)
 // since the source files are included
 #else
@@ -362,14 +362,13 @@ Float_t EffectiveArea(float eta, float cone_size, int eormu, bool use_tight)
 
     if (abs(eormu) == 11)
     {
-        if (etaAbs <= 1.0) eff_area = 0.18;
-        else if (etaAbs > 1.0   && etaAbs <= 1.479) eff_area = 0.19;
-        else if (etaAbs > 1.479 && etaAbs <= 2.0  ) eff_area = 0.21;
-        else if (etaAbs > 2.0   && etaAbs <= 2.2  ) eff_area = 0.38;
-        else if (etaAbs > 2.2   && etaAbs <= 2.3  ) eff_area = 0.61;
-        else if (etaAbs > 2.3   && etaAbs <= 2.4  ) eff_area = 0.73;
-        else if (etaAbs > 2.4) eff_area = 0.78;
-
+        if (etaAbs <= 1.0) eff_area = 0.10;
+        else if (etaAbs > 1.0   && etaAbs <= 1.479) eff_area = 0.12;
+        else if (etaAbs > 1.479 && etaAbs <= 2.0  ) eff_area = 0.085;
+        else if (etaAbs > 2.0   && etaAbs <= 2.2  ) eff_area = 0.11;
+        else if (etaAbs > 2.2   && etaAbs <= 2.3  ) eff_area = 0.12;
+        else if (etaAbs > 2.3   && etaAbs <= 2.4  ) eff_area = 0.12;
+        else if (etaAbs > 2.4) eff_area = 0.13;
         float ratio = cone_size / 0.3;
         eff_area *= pow(ratio, 2);
     }
@@ -627,6 +626,8 @@ void myBabyMaker::InitBabyNtuple()
     em_radiso_et0p5_bv_ = -999.;
     pfpupt03_           = -999.;
     pfpupt04_           = -999.;
+    cpfiso03_rho_       = -999.;
+    cpfiso03_db_        = -999.;
 
     closestMuon_      = false;
     el_id_sieie_   	  = -999.;
@@ -1113,6 +1114,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("em_radiso_et0p5_bv"    , &em_radiso_et0p5_bv_    ); 
     babyTree_->Branch("pfpupt03"              , &pfpupt03_              ); 
     babyTree_->Branch("pfpupt04"              , &pfpupt04_              ); 
+    babyTree_->Branch("cpfiso03_rho"          , &cpfiso03_rho_          ); 
+    babyTree_->Branch("cpfiso03_db"           , &cpfiso03_db_           ); 
     babyTree_->Branch("id"                    , &id_                    ); 
     babyTree_->Branch("closestMuon"           , &closestMuon_           ); 
    	babyTree_->Branch("el_id_sieie" 		  , &el_id_sieie_ 			);
@@ -1709,7 +1712,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if (pass_electronSelection(iel, electronSelectionFOV6_ssVBTF80_v3, false, false))
                             ++ngsfs_;
 
-                        if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::DET_ISO)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -1717,7 +1720,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                             }
                             continue;
                         }
-                        if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::COR_DET_ISO)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -1738,7 +1741,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if (muonIdNotIsolated(imu, NominalSSv4))
                             ++nmus_;
 
-                        if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::DET_ISO)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
@@ -1746,7 +1749,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                             }
                             continue;
                         }
-                        if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::COR_DET_ISO)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
@@ -1972,6 +1975,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     // Radial Isolation with Barrel Veto
                     radiso_et1p0_bv_ = electronRadialIsolation(iLep, ch_radiso_et1p0_bv_, nh_radiso_et1p0_bv_, em_radiso_et1p0_bv_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
                     radiso_et0p5_bv_ = electronRadialIsolation(iLep, ch_radiso_et0p5_bv_, nh_radiso_et0p5_bv_, em_radiso_et0p5_bv_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
+
+                    // correct isolaion (for SS2012)
+                    cpfiso03_rho_ = samesign::electronIsolationPF2012(iLep);
 
                     // mc information
                     if (!isData) {
@@ -2370,7 +2376,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if (pass_electronSelection(iel, electronSelectionFOV6_ssVBTF80_v3, false, false))
                             ++ngsfs_;
 
-                        if (samesign::isDenominatorLepton(11, iel, samesign::DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::DET_ISO)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -2378,7 +2384,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                             }
                             continue;
                         }
-                        if (samesign::isDenominatorLepton(11, iel, samesign::COR_DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::COR_DET_ISO)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -2401,7 +2407,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if (muonIdNotIsolated(imu, NominalSSv4))
                             ++nmus_;
 
-                        if (samesign::isDenominatorLepton(13, imu, samesign::DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::DET_ISO)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
@@ -2409,7 +2415,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                             }
                             continue;
                         }
-                        if (samesign::isDenominatorLepton(13, imu, samesign::COR_DET_ISO)) {
+                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::COR_DET_ISO)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
@@ -2540,6 +2546,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     // PF Pile UP Sim pT
                     pfpupt03_ = mus_isoR03_pf_PUPt().at(iLep);
                     pfpupt04_ = mus_isoR04_pf_PUPt().at(iLep);
+
+                    // correct isolaion (for SS2012)
+                    cpfiso03_db_ = muonIsoValuePF2012_deltaBeta(iLep); 
 
                     // mc information
                     if (!isData) {
@@ -2961,6 +2970,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
 
         }// closes loop over events
         //printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
+
+        f->Close();
+        delete f;
 
     }  // closes loop over files
 
