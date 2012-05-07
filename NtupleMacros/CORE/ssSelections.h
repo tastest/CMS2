@@ -70,6 +70,54 @@ namespace samesign {
 ///////////////////////////////////////////////////////////////////////////////////////////
     bool makesExtraZ(int idx, bool apply_id_iso = true); 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getJets(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
+// e/mu with pt > x (defaults are 10/5 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<bool> getJetFlags(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
+// e/mu with pt > x (defaults are 10/5 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<bool> getJetFlags(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+    
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    float sumJetPt(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// same as above, but allowing use of on-the-fly JEC corrections
+///////////////////////////////////////////////////////////////////////////////////////////
+    float sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    int nJets(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// same as above, but allowing use of on-the-fly JEC corrections
+///////////////////////////////////////////////////////////////////////////////////////////
+    int nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
+
 }
 
 
