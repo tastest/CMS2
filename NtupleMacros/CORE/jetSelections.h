@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.16 2012/02/08 21:03:53 fgolf Exp $
+// $Id: jetSelections.h,v 1.17 2012/05/07 15:25:45 fgolf Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -39,10 +39,13 @@ enum BtagType {
     JETS_BTAG_TCHPM,
     JETS_BTAG_TCHPT,
     JETS_BTAG_SSVHEM,
-    JETS_BTAG_SSVHPT
+    JETS_BTAG_SSVHPT,
+    JETS_BTAG_CSVL,
+    JETS_BTAG_CSVM,
+    JETS_BTAG_CSVT
 };
 
-static const float BtagWP[] = {-999999., 1.7, 3.3, 1.93, 3.41, 1.74, 2.00};
+static const float BtagWP[] = {-999999., 1.7, 3.3, 1.93, 3.41, 1.74, 2.00, 0.244, 0.679, 0.898};
 
 #define JET_DEFAULT_TYPE 	JETS_TYPE_JPT
 #define JET_DEFAULT_CLEANING 	JETS_CLEAN_HYP_E_MU

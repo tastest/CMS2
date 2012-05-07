@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.27 2012/03/29 11:55:11 benhoob Exp $
+// $Id: jetSelections.cc,v 1.28 2012/05/07 15:25:45 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -488,6 +488,21 @@ vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetTy
             assert(false);
         }
         break;
+    case JETS_BTAG_CSVL: case JETS_BTAG_CSVM: case JETS_BTAG_CSVT:
+        switch (type) {
+        case JETS_TYPE_JPT:
+            btags = &cms2.jpts_combinedSecondaryVertexBJetTag();
+            break;
+        case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+            btags = &cms2.jets_combinedSecondaryVertexBJetTag();
+            break;
+        case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+            btags = &cms2.pfjets_combinedSecondaryVertexBJetTag();
+            break;
+        default:
+            assert(false);
+        }
+        break;
     default:
         assert(false);
     }
@@ -572,6 +587,21 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enu
             break;
         case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
             btags = &cms2.pfjets_simpleSecondaryVertexHighPurBJetTags();
+            break;
+        default:
+            assert(false);
+        }
+        break;
+    case JETS_BTAG_CSVL: case JETS_BTAG_CSVM: case JETS_BTAG_CSVT:
+        switch (type) {
+        case JETS_TYPE_JPT:
+            btags = &cms2.jpts_combinedSecondaryVertexBJetTag();
+            break;
+        case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
+            btags = &cms2.jets_combinedSecondaryVertexBJetTag();
+            break;
+        case JETS_TYPE_PF_UNCORR: case JETS_TYPE_PF_CORR: case JETS_TYPE_PF_FAST_CORR:
+            btags = &cms2.pfjets_combinedSecondaryVertexBJetTag();
             break;
         default:
             assert(false);
