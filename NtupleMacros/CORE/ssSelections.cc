@@ -26,14 +26,14 @@ struct jet_pt_gt {
 };
 
 /////////////////////////////////////////////////////////////////
- ///                                                           ///
- ///                                                           ///
- ///                                                           ///
- ///          2012 Selections                                  ///
- ///                                                           ///
- ///                                                           ///
- ///                                                           ///
- /////////////////////////////////////////////////////////////////
+///                                                           ///
+///                                                           ///
+///                                                           ///
+///          2012 Selections                                  ///
+///                                                           ///
+///                                                           ///
+///                                                           ///
+/////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 good lepton
@@ -135,31 +135,31 @@ bool samesign::passThreeChargeRequirement(int elIdx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 float samesign::electronIsolationPF2012(int idx)
 {
-        float etaAbs = fabs(cms2.els_etaSC()[idx]);
-        float pt     = cms2.els_p4()[idx].pt();
+    float etaAbs = fabs(cms2.els_etaSC()[idx]);
+    float pt     = cms2.els_p4()[idx].pt();
 
-        // get effective area
-        float AEff = 0.;
-        if (etaAbs <= 1.0) AEff = 0.10;
-        else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
-        else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
-        else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
-        else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
-        else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
-        else if (etaAbs > 2.4) AEff = 0.13;
+    // get effective area
+    float AEff = 0.;
+    if (etaAbs <= 1.0) AEff = 0.10;
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
+    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
+    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
+    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
+    else if (etaAbs > 2.4) AEff = 0.13;
 
-        // pf iso
-        // calculate from the ntuple for now...
-        float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
-        float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
-        float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
+    // pf iso
+    // calculate from the ntuple for now...
+    float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
+    float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
+    float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
 
-        // rho
-        float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
-        float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
-        float pfiso = (pfiso_ch + pfiso_n) / pt;
+    // rho
+    float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
+    float pfiso = (pfiso_ch + pfiso_n) / pt;
 
-        return pfiso;
+    return pfiso;
 }
 
 
@@ -179,9 +179,9 @@ bool samesign::passesTrigger(bool is_data, int hyp_type)
     // triggers for dilepton datasets
     //---------------------------------
     //mm
-    if (hyp_type == 0)
+    if (hyp_type == 0) {
         if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
-
+    }
     //em
     else if (hyp_type == 1 || hyp_type == 2) {
         if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )   return true;
@@ -189,9 +189,10 @@ bool samesign::passesTrigger(bool is_data, int hyp_type)
     }
     
     //ee
-    else if (hyp_type == 3)
+    else if (hyp_type == 3) {
         if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
-  
+    }
+
     return false;
 }
 
@@ -552,14 +553,14 @@ int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType
 
 
 /////////////////////////////////////////////////////////////////
- ///                                                           ///
- ///                                                           ///
- ///                                                           ///
- ///          2011 Selections                                  ///
- ///                                                           ///
- ///                                                           ///
- ///                                                           ///
- /////////////////////////////////////////////////////////////////
+///                                                           ///
+///                                                           ///
+///                                                           ///
+///          2011 Selections                                  ///
+///                                                           ///
+///                                                           ///
+///                                                           ///
+/////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2011 good lepton
