@@ -48,7 +48,6 @@ private:
     // ----------member data ---------------------------
     edm::InputTag sparm_inputTag;
     std::string aliasprefix_;
-  std::vector<std::string> vsparms_;
 };
 
 
