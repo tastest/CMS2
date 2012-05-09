@@ -28,6 +28,13 @@ addpkg RecoParticleFlow/PFProducer V15-01-06
 
 cvs co -r V00-00-06 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools
 
+
+########################
+# Type-I Corrected MET #
+########################
+
+V04-05-08      JetMETCorrections/Type1MET 
+
 #
 echo;echo checkingdeps;echo
 checkdeps -a
