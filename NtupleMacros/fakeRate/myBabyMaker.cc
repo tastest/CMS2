@@ -1027,7 +1027,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyFile_ = TFile::Open(Form("%s", babyFilename), "RECREATE");
     babyFile_->cd();
     babyTree_ = new TTree("tree", "A Baby Ntuple");
-    // babyTree_->SetDirectory(0);
 
     /////////////////////////// 
     // Event Information     //
@@ -1059,9 +1058,11 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Lepton Information     //
     ////////////////////////////
 
-    babyTree_->Branch("lp4"                   , &lp4_                   ); 
-    babyTree_->Branch("foel_p4"               , &foel_p4_               ); 
-    babyTree_->Branch("fomu_p4"               , &fomu_p4_               ); 
+    babyTree_->Branch("lp4"    , "LorentzVector", &lp4_    ); 
+    babyTree_->Branch("mc3p4"  , "LorentzVector", &mc3p4_  ); 
+    babyTree_->Branch("foel_p4", "LorentzVector", &foel_p4_); 
+    babyTree_->Branch("fomu_p4", "LorentzVector", &fomu_p4_); 
+
     babyTree_->Branch("foel_id"               , &foel_id_               ); 
     babyTree_->Branch("fomu_id"               , &fomu_id_               ); 
     babyTree_->Branch("foel_mass"             , &foel_mass_             ); 
@@ -1084,34 +1085,34 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ch_pfiso03"            , &ch_pfiso03_            ); 
     babyTree_->Branch("nh_pfiso03"            , &nh_pfiso03_            ); 
     babyTree_->Branch("em_pfiso03"            , &em_pfiso03_            ); 
-    babyTree_->Branch("pfiso03_bv"            , &pfiso03_bv_            ); 
-    babyTree_->Branch("ch_pfiso03_bv"         , &ch_pfiso03_bv_         ); 
-    babyTree_->Branch("nh_pfiso03_bv"         , &nh_pfiso03_bv_         ); 
-    babyTree_->Branch("em_pfiso03_bv"         , &em_pfiso03_bv_         ); 
+    //babyTree_->Branch("pfiso03_bv"            , &pfiso03_bv_            ); 
+    //babyTree_->Branch("ch_pfiso03_bv"         , &ch_pfiso03_bv_         ); 
+    //babyTree_->Branch("nh_pfiso03_bv"         , &nh_pfiso03_bv_         ); 
+    //babyTree_->Branch("em_pfiso03_bv"         , &em_pfiso03_bv_         ); 
     babyTree_->Branch("pfiso04"               , &pfiso04_               ); 
     babyTree_->Branch("ch_pfiso04"            , &ch_pfiso04_            ); 
     babyTree_->Branch("nh_pfiso04"            , &nh_pfiso04_            ); 
     babyTree_->Branch("em_pfiso04"            , &em_pfiso04_            ); 
-    babyTree_->Branch("pfiso04_bv"            , &pfiso04_bv_            ); 
-    babyTree_->Branch("ch_pfiso04_bv"         , &ch_pfiso04_bv_         ); 
-    babyTree_->Branch("nh_pfiso04_bv"         , &nh_pfiso04_bv_         ); 
-    babyTree_->Branch("em_pfiso04_bv"         , &em_pfiso04_bv_         ); 
-    babyTree_->Branch("radiso_et1p0"          , &radiso_et1p0_          ); 
-    babyTree_->Branch("ch_radiso_et1p0"       , &ch_radiso_et1p0_       ); 
-    babyTree_->Branch("nh_radiso_et1p0"       , &nh_radiso_et1p0_       ); 
-    babyTree_->Branch("em_radiso_et1p0"       , &em_radiso_et1p0_       ); 
-    babyTree_->Branch("radiso_et0p5"          , &radiso_et0p5_          ); 
-    babyTree_->Branch("ch_radiso_et0p5"       , &ch_radiso_et0p5_       ); 
-    babyTree_->Branch("nh_radiso_et0p5"       , &nh_radiso_et0p5_       ); 
-    babyTree_->Branch("em_radiso_et0p5"       , &em_radiso_et0p5_       ); 
-    babyTree_->Branch("radiso_et1p0_bv"       , &radiso_et1p0_bv_       ); 
-    babyTree_->Branch("ch_radiso_et1p0_bv"    , &ch_radiso_et1p0_bv_    ); 
-    babyTree_->Branch("nh_radiso_et1p0_bv"    , &nh_radiso_et1p0_bv_    ); 
-    babyTree_->Branch("em_radiso_et1p0_bv"    , &em_radiso_et1p0_bv_    ); 
-    babyTree_->Branch("radiso_et0p5_bv"       , &radiso_et0p5_bv_       ); 
-    babyTree_->Branch("ch_radiso_et0p5_bv"    , &ch_radiso_et0p5_bv_    ); 
-    babyTree_->Branch("nh_radiso_et0p5_bv"    , &nh_radiso_et0p5_bv_    ); 
-    babyTree_->Branch("em_radiso_et0p5_bv"    , &em_radiso_et0p5_bv_    ); 
+    //babyTree_->Branch("pfiso04_bv"            , &pfiso04_bv_            ); 
+    //babyTree_->Branch("ch_pfiso04_bv"         , &ch_pfiso04_bv_         ); 
+    //babyTree_->Branch("nh_pfiso04_bv"         , &nh_pfiso04_bv_         ); 
+    //babyTree_->Branch("em_pfiso04_bv"         , &em_pfiso04_bv_         ); 
+    //babyTree_->Branch("radiso_et1p0"          , &radiso_et1p0_          ); 
+    //babyTree_->Branch("ch_radiso_et1p0"       , &ch_radiso_et1p0_       ); 
+    //babyTree_->Branch("nh_radiso_et1p0"       , &nh_radiso_et1p0_       ); 
+    //babyTree_->Branch("em_radiso_et1p0"       , &em_radiso_et1p0_       ); 
+    //babyTree_->Branch("radiso_et0p5"          , &radiso_et0p5_          ); 
+    //babyTree_->Branch("ch_radiso_et0p5"       , &ch_radiso_et0p5_       ); 
+    //babyTree_->Branch("nh_radiso_et0p5"       , &nh_radiso_et0p5_       ); 
+    //babyTree_->Branch("em_radiso_et0p5"       , &em_radiso_et0p5_       ); 
+    //babyTree_->Branch("radiso_et1p0_bv"       , &radiso_et1p0_bv_       ); 
+    //babyTree_->Branch("ch_radiso_et1p0_bv"    , &ch_radiso_et1p0_bv_    ); 
+    //babyTree_->Branch("nh_radiso_et1p0_bv"    , &nh_radiso_et1p0_bv_    ); 
+    //babyTree_->Branch("em_radiso_et1p0_bv"    , &em_radiso_et1p0_bv_    ); 
+    //babyTree_->Branch("radiso_et0p5_bv"       , &radiso_et0p5_bv_       ); 
+    //babyTree_->Branch("ch_radiso_et0p5_bv"    , &ch_radiso_et0p5_bv_    ); 
+    //babyTree_->Branch("nh_radiso_et0p5_bv"    , &nh_radiso_et0p5_bv_    ); 
+    //babyTree_->Branch("em_radiso_et0p5_bv"    , &em_radiso_et0p5_bv_    ); 
     babyTree_->Branch("pfpupt03"              , &pfpupt03_              ); 
     babyTree_->Branch("pfpupt04"              , &pfpupt04_              ); 
     babyTree_->Branch("cpfiso03_rho"          , &cpfiso03_rho_          ); 
@@ -1156,7 +1157,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mcmotherid"            , &mcmotherid_            ); 
     babyTree_->Branch("mc3id"                 , &mc3id_                 ); 
     babyTree_->Branch("mc3pt"                 , &mc3pt_                 ); 
-    babyTree_->Branch("mc3p4"                 , &mc3p4_                 ); 
     babyTree_->Branch("mc3dr"                 , &mc3dr_                 ); 
     babyTree_->Branch("leptonIsFromW"         , &leptonIsFromW_         ); 
     babyTree_->Branch("mu_isCosmic"           , &mu_isCosmic_           ); 
@@ -1957,24 +1957,29 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     hcal_iso_     = electronIsolation_HCAL_rel    (iLep                        ) * els_p4().at(iLep).pt(); 
 
                     // PF Isolation
-                    electronIsoValuePF2012(ch_pfiso03_, em_pfiso03_, nh_pfiso03_, 0.3, iLep, first_good_vertex_index);
+                    ch_pfiso03_ = els_iso03_pf_ch().at(iLep);
+                    nh_pfiso03_ = els_iso03_pf_nhad05().at(iLep);
+                    em_pfiso03_ = els_iso03_pf_gamma05().at(iLep);
                     pfiso03_ = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/els_p4().at(iLep).pt(); 
-                    electronIsoValuePF2012(ch_pfiso04_, em_pfiso04_, nh_pfiso04_, 0.4, iLep, first_good_vertex_index);
+
+                    ch_pfiso04_ = els_iso04_pf_ch().at(iLep);
+                    nh_pfiso04_ = els_iso04_pf_nhad05().at(iLep);
+                    em_pfiso04_ = els_iso04_pf_gamma05().at(iLep);
                     pfiso04_ = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/els_p4().at(iLep).pt(); 
 
                     // PF Isolation
-                    electronIsoValuePF2012(ch_pfiso03_bv_, em_pfiso03_bv_, nh_pfiso03_bv_, 0.3, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
-                    pfiso03_bv_ = (ch_pfiso03_bv_ + em_pfiso03_bv_ + nh_pfiso03_bv_)/els_p4().at(iLep).pt(); 
-                    electronIsoValuePF2012(ch_pfiso04_bv_, em_pfiso04_bv_, nh_pfiso04_bv_, 0.4, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
-                    pfiso04_bv_ = (ch_pfiso04_bv_ + em_pfiso04_bv_ + nh_pfiso04_bv_)/els_p4().at(iLep).pt(); 
+                    //electronIsoValuePF2012(ch_pfiso03_bv_, em_pfiso03_bv_, nh_pfiso03_bv_, 0.3, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
+                    //pfiso03_bv_ = (ch_pfiso03_bv_ + em_pfiso03_bv_ + nh_pfiso03_bv_)/els_p4().at(iLep).pt(); 
+                    //electronIsoValuePF2012(ch_pfiso04_bv_, em_pfiso04_bv_, nh_pfiso04_bv_, 0.4, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
+                    //pfiso04_bv_ = (ch_pfiso04_bv_ + em_pfiso04_bv_ + nh_pfiso04_bv_)/els_p4().at(iLep).pt(); 
 
                     // Radial Isolation
-                    radiso_et1p0_ = electronRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
-                    radiso_et0p5_ = electronRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
+                    //radiso_et1p0_ = electronRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
+                    //radiso_et0p5_ = electronRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
 
                     // Radial Isolation with Barrel Veto
-                    radiso_et1p0_bv_ = electronRadialIsolation(iLep, ch_radiso_et1p0_bv_, nh_radiso_et1p0_bv_, em_radiso_et1p0_bv_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
-                    radiso_et0p5_bv_ = electronRadialIsolation(iLep, ch_radiso_et0p5_bv_, nh_radiso_et0p5_bv_, em_radiso_et0p5_bv_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
+                    //radiso_et1p0_bv_ = electronRadialIsolation(iLep, ch_radiso_et1p0_bv_, nh_radiso_et1p0_bv_, em_radiso_et1p0_bv_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
+                    //radiso_et0p5_bv_ = electronRadialIsolation(iLep, ch_radiso_et0p5_bv_, nh_radiso_et0p5_bv_, em_radiso_et0p5_bv_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
 
                     // correct isolaion (for SS2012)
                     cpfiso03_rho_ = samesign::electronIsolationPF2012(iLep);
@@ -2540,8 +2545,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     pfiso04_    = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/mus_p4().at(iLep).pt(); 
 
                     // Radial Isolation 03
-                    radiso_et1p0_ = muonRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, verbose_); 
-                    radiso_et0p5_ = muonRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, verbose_); 
+                    //radiso_et1p0_ = muonRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, verbose_); 
+                    //radiso_et0p5_ = muonRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, verbose_); 
 
                     // PF Pile UP Sim pT
                     pfpupt03_ = mus_isoR03_pf_PUPt().at(iLep);
@@ -2971,8 +2976,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
         }// closes loop over events
         //printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
 
-        f->Close();
-        delete f;
+        //f->Close();
+        //delete f;
 
     }  // closes loop over files
 

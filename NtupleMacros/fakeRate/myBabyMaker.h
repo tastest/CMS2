@@ -20,8 +20,7 @@ public:
     myBabyMaker();
     ~myBabyMaker()
     {
-        if(!babyFile_) delete babyFile_;
-        if(!babyTree_) delete babyTree_;
+        if(babyFile_) delete babyFile_;
     };
     void MakeBabyNtuple (const char *);
     void InitBabyNtuple ();
