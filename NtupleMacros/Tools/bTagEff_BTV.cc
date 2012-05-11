@@ -997,6 +997,12 @@ float getBTagEff(const string algo, const float x, const bool isgen){
 	else
 	  return  3.90732786802e-06*x*x*x*x +  -0.000239934437355*x*x*x +  0.00664986827287*x*x +  -0.112578996016*x +  1.00775721404;
   }
+  if(algo == "CSV"){
+	if( !isgen )
+	  return -6.41591823466*x*x*x*x +  11.5812173893*x*x*x +  -6.94406444589*x*x +  1.13278339944*x +  0.889359753365;
+	else
+	  return  -1.73338329789*x*x*x*x +  1.26161794785*x*x*x +  0.784721653518*x*x +  -1.03328577451*x +  1.04305075822;
+  }
   std::cout << "Error in getBTagEff: unsupported algo " << algo << endl;
   return -1.0;
 }
@@ -1009,6 +1015,30 @@ float getBTagEff_Err(const string algo, const float x, const bool isgen){
 	const float eff = 3.03337430722e-06*x*x*x*x + -0.000171604835897*x*x*x + 0.00474711667943*x*x + -0.0929933040514*x + 0.978347619293;
 	return eff - getBTagEff(algo, x, isgen);
   }
+  if(algo == "CSV"){
+	const float eff = 0.00534302322474*x*x*x*x + -0.0244344541087*x*x*x + -0.0713621208038*x*x + 0.204715260085*x + 0.612116989996;
+	return eff - getBTagEff(algo, x, isgen);
+  }
   std::cout << "Error in getBTagEff_Err: unsupported algo " << algo << endl;
   return 0.0;
 }
+
+float getCTagEff(const string algo, const float x, const bool isgen){
+  
+  if(algo == "TCHE"){
+	if( !isgen )
+	  return (0.343760640168*exp(-0.00315525164823*x*x*x + 0.0805427315196*x*x + -0.867625139194*x + 1.44815935164 ))*getBTagSF(algo, x);
+	else
+	  return 0.343760640168*exp(-0.00315525164823*x*x*x + 0.0805427315196*x*x + -0.867625139194*x + 1.44815935164 );
+  }
+  if(algo == "CSV"){
+	if( !isgen )
+	  return (-1.5734604211*x*x*x*x +  1.52798999269*x*x*x +  0.866697059943*x*x +  -1.66657942274*x +  0.780639301724)*getBTagSF(algo, x);
+	else
+	  return -1.5734604211*x*x*x*x +  1.52798999269*x*x*x +  0.866697059943*x*x +  -1.66657942274*x +  0.780639301724;
+  }
+  std::cout << "Error in getBTagEff: unsupported algo " << algo << endl;
+  return -1.0;
+}
+
+//SFc = SFb with twice the quoted uncertainty
