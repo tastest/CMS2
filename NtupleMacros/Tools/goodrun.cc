@@ -1,10 +1,11 @@
-// $Id: goodrun.cc,v 1.10 2011/03/30 22:20:27 warren Exp $
+// $Id: goodrun.cc,v 1.11 2012/05/11 16:32:21 kelley Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "goodrun.h"
 
 #ifndef __CINT__
 
+#define NDEBUG
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
