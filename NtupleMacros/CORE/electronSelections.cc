@@ -1514,6 +1514,48 @@ void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, c
 
 }
 
+void electronIsoValuePF2012reco(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, float neutral_threshold)
+{
+
+    // isolation sums
+    pfiso_ch = 0.0;
+    pfiso_em = 0.0; 
+    pfiso_nh = 0.0;
+       
+    // loop on pfcandidates
+    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
+            
+        // skip electrons and muons
+        const int particleId = abs(cms2.pfcands_particleId()[ipf]);
+        if (particleId == 11)    continue;
+        if (particleId == 13)    continue;
+    
+        // deltaR between electron and cadidate
+        const float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4()[ipf], cms2.els_p4()[iel]);
+        if (dR > R)              continue;
+
+        // charged hadrons closest vertex
+        // should be the primary vertex
+        if (particleId == 211) {
+            int pfVertexIndex = chargedHadronVertex(ipf);
+            if (pfVertexIndex != ivtx) continue;
+        }
+
+        // apply threshold to neutrals
+        if (particleId == 22 || particleId == 130) {
+            if (cms2.pfcands_p4()[ipf].pt() < neutral_threshold)
+                continue;
+        }
+
+        // add to isolation sum
+        if (particleId == 211)      pfiso_ch += cms2.pfcands_p4()[ipf].pt();
+        if (particleId == 22)       pfiso_em += cms2.pfcands_p4()[ipf].pt();
+        if (particleId == 130)      pfiso_nh += cms2.pfcands_p4()[ipf].pt();
+
+    }
+
+}
+
 float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold, float cone_size, bool barrelVetoes, bool verbose)
 {
 
