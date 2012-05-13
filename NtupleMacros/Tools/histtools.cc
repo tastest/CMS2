@@ -1,5 +1,5 @@
-
 #include "histtools.h"
+#include <cmath>
 
 typedef TH1F H;
 

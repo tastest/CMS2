@@ -6,8 +6,9 @@
 #include "TKey.h"
 #include "TLegend.h"
 #include "TRegexp.h"
-
+#include "TClass.h"
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
