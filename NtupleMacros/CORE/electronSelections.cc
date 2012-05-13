@@ -11,24 +11,22 @@
 #include "MITConversionUtilities.h"
 #include "muonSelections.h"
 #include "trackSelections.h"
-//#include "ssSelections.h"
 
 using namespace tas;
-using namespace wp2012;
 
 bool pass_electronSelectionCompareMask( const cuts_t cuts_passed, const cuts_t selectionType ) {
     if ((cuts_passed & selectionType) == selectionType) return true;
     return false;
 }
 
-bool pass_electronSelection( const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack) {
+bool pass_electronSelection( const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index ) {
   checkElectronSelections();
-  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, useGsfTrack);
+  cuts_t cuts_passed = electronSelection(index, applyAlignmentCorrection, removedEtaCutInEndcap, vertex_index);
   if ( (cuts_passed & selectionType) == selectionType ) return true;
   return false;
 }
 
-cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack) {
+cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrection, bool removedEtaCutInEndcap, bool useGsfTrack, int vertex_index ) {
 
     // keep track of which cuts passed
     cuts_t cuts_passed = 0;
@@ -47,7 +45,6 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (electronIsolation_ECAL_rel_v1(index, false) < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_RELNT020_NPS); // ECAL Relative Isolation, no ped sub in EB
     if( electronIsolation_ECAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_ECAL_REL020);    // ECAL    Relative Isolation (truncated)
     if( electronIsolation_HCAL_rel(index)      < 0.20) cuts_passed |= (1ll<<ELEISO_HCAL_REL020);    // HCAL    Relative Isolation (truncated)
-    if (electronIsolation_cor_rel_v1(index, true) < 0.10) cuts_passed |= (1ll<<ELEISO_COR_RELNT010);
 
     //relative isolation truncated
     if (electronIsolation_rel_FastJet(index, true) < 0.05) cuts_passed |= (1ll<<ELEISO_FASTJET_REL005); // ADDED
@@ -84,19 +81,35 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (fabs(electron_dzPV_smurfV3(index)) < 0.1 ) cuts_passed |= (1ll<<ELEIP_PV_DZ_1MM);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.04 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2);
     if (fabs(electron_d0PV_smurfV3(index)) < 0.20 && fabs(electron_dzPV_smurfV3(index)) < 1.0 ) cuts_passed |= (1ll<<ELEIP_PV_OSV2_FO);
-    int vtxidx = firstGoodVertex();
-    if (vtxidx >= 0) {
+    if (vertex_index < 0) {
+        int vtxidx = firstGoodDAvertex();
+        if (vtxidx >= 0) {
+            if (useGsfTrack) {
+                if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, true).first) < 0.02)
+                    cuts_passed |= (1ll<<ELEIP_SS200);
+            }
+            else if (cms2.els_trkidx()[index] >= 0) {            
+                if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, true).first) < 0.02)
+                    cuts_passed |= (1ll<<ELEIP_SS200);  
+            }
+        }
+        else if (fabs(cms2.els_d0corr()[index]) < 0.02)
+            cuts_passed |= (1ll<<ELEIP_SS200);  
+    }
+    else {
         if (useGsfTrack) {
-            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, false).first) < 0.02)
+            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vertex_index, true).first) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
-        else if (cms2.els_trkidx()[index] >= 0) {            
-            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, false).first) < 0.02)
-                cuts_passed |= (1ll<<ELEIP_SS200);  
+        else if (cms2.els_trkidx()[index] < 0) {
+            if (fabs(cms2.els_d0corr()[index]) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
+        }
+        else {
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vertex_index, true).first) < 0.02)
+                cuts_passed |= (1ll<<ELEIP_SS200);
         }
     }
-    else if (fabs(cms2.els_d0corr()[index]) < 0.02)
-        cuts_passed |= (1ll<<ELEIP_SS200);  
 
     ////////////////////
     // Identification //
@@ -108,11 +121,6 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (electronId_smurf_v3(index)) cuts_passed |= (1ll<<ELEID_SMURFV3_EXTRA);
     if (electronId_smurf_v1ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV1SS_EXTRA);
     if (electronId_smurf_v2ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV2SS_EXTRA);
-
-    // 2012 ID
-    electronIdComponent_t answer_med_2012 = electronId_WP2012(index, MEDIUM);
-    if ((answer_med_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO);
-    if ((answer_med_2012 & PassWP2012CutsNoIsoNoIP) == PassWP2012CutsNoIsoNoIP) cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP);
 
     // VBTF ID
     electronIdComponent_t answer_vbtf = 0;
@@ -146,10 +154,6 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     // VBTF90 with H/E and dPhiIn tuned to match HLT (CaloIdT+TrkIdVL)
     answer_vbtf = electronId_VBTF(index, VBTF_90_HLT_CALOIDT_TRKIDVL, applyAlignmentCorrection, removedEtaCutInEndcap);
     if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL);
-    // VBTF95 no H/E in endcap
-    answer_vbtf = electronId_VBTF(index, VBTF_95_NOHOEEND, applyAlignmentCorrection, removedEtaCutInEndcap);
-    if ((answer_vbtf & (1ll<<ELEID_ID)) == (1ll<<ELEID_ID)) cuts_passed |= (1ll<<ELEID_VBTF_95_NOHOEEND);
-
     // CIC ID  
     // MEDIUM (V03 optimisation)
     electronIdComponent_t answer_cic = electronId_CIC(index, 3, CIC_MEDIUM, applyAlignmentCorrection, removedEtaCutInEndcap);
@@ -159,7 +163,6 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     // Conversion Rejection //
     //////////////////////////
     if (!isFromConversionPartnerTrack(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002);
-    if (!isFromConversionPartnerTrack_v2(index)) cuts_passed |= (1ll<<ELENOTCONV_DISTDCOT002_OLD);
     if (!isFromConversionHitPattern(index)) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN);
     if (cms2.els_exp_innerlayers().at(index) == 0) cuts_passed |= (1ll<<ELENOTCONV_HITPATTERN_0MHITS);
     if(!isFromConversionMIT(index)) cuts_passed |= (1ll<<ELENOTCONV_MIT);
@@ -720,114 +723,6 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
   return accept;
 }
 
-// WP2012
-electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_tightness tightness)
-{
-
-    // set return value
-    unsigned int mask = 0;
-
-    // cut values
-    std::vector<double> dEtaInThresholds;
-    std::vector<double> dPhiInThresholds;
-    std::vector<double> sigmaIEtaIEtaThresholds;
-    std::vector<double> hoeThresholds;
-    std::vector<double> ooemoopThresholds;
-    std::vector<double> d0VtxThresholds;
-    std::vector<double> dzVtxThresholds;
-    std::vector<bool> vtxFitThresholds;
-    std::vector<int> mHitsThresholds;
-    std::vector<double> isoHiThresholds;
-    std::vector<double> isoLoThresholds;
-
-    // set cut values
-    eidGetWP2012(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, sigmaIEtaIEtaThresholds, 
-                    ooemoopThresholds, d0VtxThresholds, dzVtxThresholds, vtxFitThresholds, mHitsThresholds, 
-                    isoHiThresholds, isoLoThresholds);
-
-    // useful kinematic variables
-    unsigned int det = ((cms2.els_fiduciality()[index] & (1<<ISEB)) == (1<<ISEB)) ? 0 : 1;
-    float etaAbs = fabs(cms2.els_etaSC()[index]);
-    float pt     = cms2.els_p4()[index].pt();
-
-    // get effective area
-    float AEff = 0.18;
-    if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.19;
-    if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.21;
-    if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.38;
-    if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.61;
-    if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.73;
-    if (etaAbs > 2.4) AEff = 0.78;
-
-    // pf iso
-    // calculate from the ntuple for now...
-    float pfiso_ch = 0.0;
-    float pfiso_em = 0.0;
-    float pfiso_nh = 0.0;
-    electronIsoValuePF2012(pfiso_ch, pfiso_em, pfiso_nh, 0.3, index, 0);
-
-    // rho
-    float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
-    float pfiso = (pfiso_ch + pfiso_n) / pt;   
-
-    // |1/E - 1/p|
-    float ooemoop = fabs( (1.0/cms2.els_ecalEnergy()[index]) - (cms2.els_eOverPIn()[index]/cms2.els_ecalEnergy()[index]) );
-
-    // MIT conversion vtx fit
-    bool vtxFitConversion = isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
-
-    // d0
-    float d0vtx = electron_d0PV_smurfV3(index);
-    float dzvtx = electron_dzPV_smurfV3(index);
- 
-    // test cuts
-    if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[det])             mask |= wp2012::DETAIN;
-    if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[det])             mask |= wp2012::DPHIIN;
-    if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[det])     mask |= wp2012::SIGMAIETAIETA;
-    if (cms2.els_hOverE()[index] < hoeThresholds[det])                      mask |= wp2012::HOE;
-    if (ooemoop < ooemoopThresholds[det])                                   mask |= wp2012::OOEMOOP;
-    if (fabs(d0vtx) < d0VtxThresholds[det])                                 mask |= wp2012::D0VTX;
-    if (fabs(dzvtx) < dzVtxThresholds[det])                                 mask |= wp2012::DZVTX;
-    if (!vtxFitThresholds[det] || !vtxFitConversion)                        mask |= wp2012::VTXFIT;
-    if (cms2.els_exp_innerlayers()[index] <= mHitsThresholds[det])          mask |= wp2012::MHITS;
-    if (pt >= 20.0 && pfiso < isoHiThresholds[det])                         mask |= wp2012::ISO;
-    if (pt < 20.0 && pfiso < isoLoThresholds[det])                          mask |= wp2012::ISO;
-
-    // return the mask
-    return mask;
-
-}
-
-float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int ivtx ){
-
-    float etaAbs = fabs(cms2.els_etaSC()[index]);
-    float pt     = cms2.els_p4()[index].pt();
-
-    // get effective area
-    float AEff = 0.18;
-    if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.19;
-    if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.21;
-    if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.38;
-    if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.61;
-    if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.73;
-    if (etaAbs > 2.4) AEff = 0.78;
-
-    // pf iso
-    // calculate from the ntuple for now...
-    float pfiso_ch = 0.0;
-    float pfiso_em = 0.0;
-    float pfiso_nh = 0.0;
-    electronIsoValuePF2012(pfiso_ch, pfiso_em, pfiso_nh, conesize, index, 0);
-
-    // rho
-    float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
-    float pfiso = (pfiso_ch + pfiso_n) / pt;   
-
-    return pfiso;
-}
-
 // VBTF stuff
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness, bool applyAlignementCorrection, bool removedEtaCutInEndcap)
 {
@@ -880,7 +775,6 @@ electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tight
     return answer;
 
 }
-
 electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint) {
   unsigned int answer = 0;
   float etaSC = cms2.els_etaSC().at(index);
@@ -939,35 +833,6 @@ electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int wo
     cout << "Error! Likelihood WP not supported: " << workingPoint << ". Please choose 70, 80, 85, 90, 95" << endl;
   }
   return answer;
-}
-
-bool passLikelihoodId_v2(unsigned int index, float lhValue, int workingPoint)
-{
-
-    float etaSC = cms2.els_etaSC().at(index);
-    float pt = cms2.els_p4().at(index).Pt();
-    unsigned int nbrem = cms2.els_nSeed().at(index);
-
-    if ( workingPoint == 0 ) {
-
-        if (pt > 20.0) {
-            if ( ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > 3.5 ) ||
-                 ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > 4.0 ) ||
-                 ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > 4.0 ) ||
-                 ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > 4.0 )) return true;
-        } else if (pt > 10.0 && pt <= 20.0) {
-            if ( ( fabs(etaSC) < 1.479 && nbrem == 0 && lhValue > 4.0 ) ||
-                 ( fabs(etaSC) < 1.479 && nbrem >= 1 && lhValue > 4.5 ) ||
-                 ( fabs(etaSC) > 1.479 && nbrem == 0 && lhValue > 4.0 ) ||
-                 ( fabs(etaSC) > 1.479 && nbrem >= 1 && lhValue > 4.0 )) return true;
-            }
-
-        } else {
-        cout << "Error! Likelihood WP not supported: " 
-             << workingPoint << ". Please choose 0 for Emanuele 8th September" << endl;
-    }
-
-    return false;
 }
  
 /*
@@ -1068,15 +933,6 @@ float electronIsolation_rel_v1( const unsigned int index, bool use_calo_iso ) {
     return sum_over_pt;
 }
 
-// corrected, relative isolation, non-truncated
-float electronIsolation_cor_rel_v1(const unsigned int index, bool use_calo_iso) {
-  float ntiso = electronIsolation_rel_v1(index, use_calo_iso);
-  float pt = cms2.els_p4().at(index).pt();
-  int nvtxs = numberOfGoodVertices();
-  float coriso = ntiso - ((TMath::Log(pt)*nvtxs)/(30*pt));
-  return coriso;
-}
-
 // Relative Isolation, Non-Truncated, FastJet-corrected
 float electronIsolation_rel_v1_FastJet( const unsigned int index, bool use_calo_iso ){
     float pt               = cms2.els_p4().at(index).pt();          // Electron Pt
@@ -1148,7 +1004,7 @@ float electronIsolation_rel_ww( const unsigned int index, bool use_calo_iso ) {
 }
 
 #ifdef PFISOFROMNTUPLE
-float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
+float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
   if (fabs(coner-0.3)<0.0001) {
     if (cms2.els_iso03_pf().at(iel)<-99.) return 9999.;
     return cms2.els_iso03_pf().at(iel)/cms2.els_p4().at(iel).pt();
@@ -1161,7 +1017,7 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
   }
 }
 #else
-float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
+float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto ) {
 
   int elgsftkid = cms2.els_gsftrkidx().at(iel);
   int eltkid = cms2.els_trkidx().at(iel);
@@ -1184,9 +1040,6 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
     float pfeta = cms2.pfcands_p4().at(ipf).eta();    
     float deta = fabs(pfeta - eleta);
     int pfid = abs(cms2.pfcands_particleId().at(ipf));
-
-    if (filterId!=0 && filterId!=pfid) continue;
-
     if (cms2.pfcands_charge().at(ipf)==0) {
       //neutrals
       if (pfpt>minptn) {
@@ -1243,12 +1096,6 @@ bool isFromConversionPartnerTrack(const unsigned int index) {
     if( fabs(cms2.els_conv_dist().at(index)) < 0.02 && fabs(cms2.els_conv_dcot().at(index)) < 0.02 ) return true;
     return false;
 }
-
-bool isFromConversionPartnerTrack_v2(const unsigned int index) {
-    if (fabs(cms2.els_conv_old_dist().at(index)) < 0.02 && fabs(cms2.els_conv_old_dcot().at(index)) < 0.02 ) return true;
-    return false;
-}
-
 bool isFromConversionMIT(const unsigned int index){
   return isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
 }
@@ -1465,142 +1312,3 @@ double electron_d0PV_mindz(unsigned int index){
     return dxyPV;
 }
 
-//
-// 2012 PF Isolation
-//
-
-void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, bool barrelVetoes)
-{
-
-    // isolation sums
-    pfiso_ch = 0.0;
-    pfiso_em = 0.0; 
-    pfiso_nh = 0.0;
-       
-    // loop on pfcandidates
-    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
-            
-        // skip electrons and muons
-        const int particleId = abs(cms2.pfcands_particleId()[ipf]);
-        if (particleId == 11)    continue;
-        if (particleId == 13)    continue;
-    
-        // deltaR between electron and cadidate
-        const float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4()[ipf], cms2.els_p4()[iel]);
-        if (dR > R)              continue;
-
-        // charged hadrons closest vertex
-        // should be the primary vertex
-        if (particleId == 211) {
-            int pfVertexIndex = chargedHadronVertex(ipf);
-            if (pfVertexIndex != ivtx) continue;
-        }
-
-        // endcap region
-        if (!(cms2.els_fiduciality()[iel] & (1<<ISEB))) {
-            if (particleId == 211 && dR <= 0.015)   continue;
-            if (particleId == 22  && dR <= 0.08)    continue;
-        } else if (barrelVetoes && cms2.els_mva()[iel] < -0.1) {
-            if (particleId == 211 && dR <= 0.015)   continue;
-            if (particleId == 22  && dR <= 0.08)    continue;            
-        }
-
-        // add to isolation sum
-        if (particleId == 211)      pfiso_ch += cms2.pfcands_p4()[ipf].pt();
-        if (particleId == 22)       pfiso_em += cms2.pfcands_p4()[ipf].pt();
-        if (particleId == 130)      pfiso_nh += cms2.pfcands_p4()[ipf].pt();
-
-    }
-
-}
-
-void electronIsoValuePF2012reco(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, float neutral_threshold)
-{
-
-    // isolation sums
-    pfiso_ch = 0.0;
-    pfiso_em = 0.0; 
-    pfiso_nh = 0.0;
-       
-    // loop on pfcandidates
-    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
-            
-        // skip electrons and muons
-        const int particleId = abs(cms2.pfcands_particleId()[ipf]);
-        if (particleId == 11)    continue;
-        if (particleId == 13)    continue;
-    
-        // deltaR between electron and cadidate
-        const float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4()[ipf], cms2.els_p4()[iel]);
-        if (dR > R)              continue;
-
-        // charged hadrons closest vertex
-        // should be the primary vertex
-        if (particleId == 211) {
-            int pfVertexIndex = chargedHadronVertex(ipf);
-            if (pfVertexIndex != ivtx) continue;
-        }
-
-        // apply threshold to neutrals
-        if (particleId == 22 || particleId == 130) {
-            if (cms2.pfcands_p4()[ipf].pt() < neutral_threshold)
-                continue;
-        }
-
-        // add to isolation sum
-        if (particleId == 211)      pfiso_ch += cms2.pfcands_p4()[ipf].pt();
-        if (particleId == 22)       pfiso_em += cms2.pfcands_p4()[ipf].pt();
-        if (particleId == 130)      pfiso_nh += cms2.pfcands_p4()[ipf].pt();
-
-    }
-
-}
-
-float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold, float cone_size, bool barrelVetoes, bool verbose)
-{
-
-    // isolation sums
-    chiso = 0.0;
-    emiso = 0.0; 
-    nhiso = 0.0;
-       
-    int ivtx = firstGoodVertex();
-
-    // loop on pfcandidates
-    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
-            
-        // skip electrons and muons
-        const int particleId = abs(cms2.pfcands_particleId()[ipf]);
-        if (particleId == 11)    continue;
-        if (particleId == 13)    continue;
-    
-        // deltaR between electron and cadidate
-        const float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4()[ipf], cms2.els_p4()[index]);
-        if (dR > cone_size)              continue;
-
-        // charged hadrons closest vertex
-        // should be the primary vertex
-        if (particleId == 211) {
-            if (cms2.pfcands_vtxidx().at(ipf) != ivtx)
-                continue;
-        }
-
-        // endcap region
-        if (!(cms2.els_fiduciality()[index] & (1<<ISEB))) {
-            if (particleId == 211 && dR <= 0.015)   continue;
-            if (particleId == 22  && dR <= 0.08)    continue;
-        } else if (barrelVetoes && cms2.els_mva()[index] < -0.1) {
-            if (particleId == 211 && dR <= 0.015)   continue;
-            if (particleId == 22  && dR <= 0.08)    continue;            
-        }
-
-        // add to isolation sum
-        if (particleId == 211)      chiso += cms2.pfcands_p4()[ipf].pt() * (1 - 3*dR) / cms2.els_p4().at(index).pt();
-        if (cms2.pfcands_p4().at(ipf).pt() > neutral_et_threshold) {
-            if (particleId == 22)       emiso += cms2.pfcands_p4()[ipf].pt() * (1 - 3*dR) / cms2.els_p4().at(index).pt();
-            if (particleId == 130)      nhiso += cms2.pfcands_p4()[ipf].pt() * (1 - 3*dR) / cms2.els_p4().at(index).pt();
-        }
-    }
-
-    return (chiso+nhiso+emiso);
-}

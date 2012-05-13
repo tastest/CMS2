@@ -27,17 +27,11 @@ bool cleaning_standardOctober2010();
 bool cleaning_standardApril2011();
 
 //----------------------------------------------------------------
-// 04 November 2011
-// standard event cleaning used for SS analysis
+// 5 August 2010
+// standard event cleaning
+// for low pt dilepton / fake rate data studies
 //----------------------------------------------------------------
-bool cleaning_standardNovember2011();
-
-////----------------------------------------------------------------
-//// 5 August 2010
-//// standard event cleaning
-//// for low pt dilepton / fake rate data studies
-////----------------------------------------------------------------
-//bool cleaning_standardAugust2010(bool isdata);
+bool cleaning_standardAugust2010(bool isdata);
 
 //----------------------------------------------------------------
 // standard event cleaning
@@ -102,9 +96,8 @@ bool hypsFromSameVtx(size_t hypIdx);
 //----------------------------------------------------------------
 int hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool useDAvtxs = false, bool requireClosest = false);
 
-// find first good DA vertex or vertex
+// find first good DA veratex
 int firstGoodDAvertex ();
-int firstGoodVertex ();
 
 //----------------------------------------------------------------
 // checks whether the leptons of a given
@@ -114,22 +107,5 @@ int firstGoodVertex ();
 //----------------------------------------------------------------
 bool hypsFromFirstGoodDAvertx(size_t hypIdx, float dz_cut = 1.0);
 
-//----------------------------------------------------------------
-// checks whether the leptons of a given
-// hypothesis come from the same good vertex
-// by checking if both leptons are within dz
-// of 1cm of the same PV
-//----------------------------------------------------------------
-bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut = 1.0);
-
 #endif
 
-
-
-/*****************************************************************************************/
-// number of good vertices in the event
-/*****************************************************************************************/
-int numberOfGoodVertices(void);
-
-//
-int chargedHadronVertex( const unsigned int );

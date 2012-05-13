@@ -11,10 +11,9 @@
 #ifndef MT2_H
 #define MT2_H
 
-#include "MT2Utility.h"
+#include "MT2Utility.cc"
 #include "Math/LorentzVector.h"
 #include "TMath.h"
-#include <vector>
 
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
@@ -40,7 +39,7 @@ double MT2J(
   const float,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
   const ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,
-  const std::vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
+  const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > >,
   float = 0.0,
   enum_mt2_method = BISECT,
   bool = false
@@ -66,7 +65,7 @@ class TMt2 {
     ~TMt2   (void);
 
     float GetMt2  ( const float , const float , const LorentzVector , const LorentzVector ,                               const float = 0.0, bool = false );
-    //float GetMt2j ( const float , const float , const LorentzVector , const LorentzVector , const vector<LorentzVector> , const float = 0.0, bool = false );
+    float GetMt2j ( const float , const float , const LorentzVector , const LorentzVector , const vector<LorentzVector> , const float = 0.0, bool = false );
 
     inline float         Mt2   (void) { return mt2_;    }
     inline LorentzVector Nu1p4 (void) { return p4_nu1_; }
