@@ -78,7 +78,7 @@ namespace hist {
    //want to stack, to "hist" to display histograms without errors, to "histe"
    //to display histograms with errors, etc.
 
-   void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor = kFALSE, Option_t* drawOption);
+   void stack(const char* stackHistName, const char* patORpfx, Bool_t addColor, Option_t* drawOption);
 
    //Set the x-axis title of all histograms whose names match the given regular
    //expression pattern or begin with the given prefix.
@@ -114,4 +114,4 @@ TH1F* eff_bg(TH1F* h1, TH1F* h2, TH1F* h3, TH1F* h4, const char* name);
 void deleteHistos();
 void histio();
 void saveHist(const char* filename, const char* pat);
-void loadHist(const char* filename, const char* pfx, const char* pat, Bool_t doAdd=kFALSE);
+void loadHist(const char* filename, const char* pfx, const char* pat, Bool_t doAdd);
