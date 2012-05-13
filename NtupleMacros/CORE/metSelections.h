@@ -6,6 +6,8 @@
 //typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 typedef std::vector<LorentzVector> VofP4;
 
+class FactorizedJetCorrector;
+
 //
 // met selections
 //
@@ -99,6 +101,22 @@ std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2,
 // function to scale the hadronic component of the MET
 //-----------------------------------------------------
 std::pair<float, float> scaleMET(std::pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0);
+
+
+class MetCorrector
+{
+public:
+    MetCorrector (std::vector<std::string> &list_of_files);
+    ~MetCorrector ();
+    std::pair<float, float> getCorrectedMET(std::pair<float, float> &uncorr_met);
+    std::pair<float, float> getCorrectedMET();
+
+private:
+    std::pair<float, float> correctMETforJES(std::pair<float, float>);
+
+    FactorizedJetCorrector *offset_corrector;
+    FactorizedJetCorrector *full_corrector;
+};
 
 #endif
 

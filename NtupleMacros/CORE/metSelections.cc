@@ -10,9 +10,15 @@
 #include "CMS2.h"
 #include "trackSelections.h"
 #include "metSelections.h"
-//#include "electronSelections.h"
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
+
+#include "jetcorr/FactorizedJetCorrector.h"
+#include "jetSelections.h"
+#include "eventSelections.h"
+#include <string>
+#include "Math/PtEtaPhiE4D.h"
+#include "Math/LorentzVector.h"
 
 //---------------------------------------------
 // function to calculate latest tcMET
@@ -20,10 +26,21 @@
 #include "tcmet/getTcmetFromCaloMet.icc"
 #include "tcmet/getResponseFunction_fit.icc"
 
+typedef ROOT::Math::LorentzVector<ROOT::Math::PtEtaPhiE4D<float> > LorentzVector2;
+
 //----------------------------------------------------------
 //this function takes met, and performs a type1 correction
 //using the given jet collection and L2L3-corrections
 //----------------------------------------------------------
+
+struct mu_jet_dr {
+    bool operator () (const std::pair<int, int> &v1, const std::pair<int, int>  &v2) 
+    {
+        float dr1  = ROOT::Math::VectorUtil::DeltaR(cms2.pfjets_p4().at(v1.first), cms2.mus_p4().at(v1.second));
+        float dr2  = ROOT::Math::VectorUtil::DeltaR(cms2.pfjets_p4().at(v2.first), cms2.mus_p4().at(v2.second));
+        return dr1 < dr2;
+    }
+};
 
 metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , vector<float> cors )
 {
@@ -481,4 +498,150 @@ std::pair<float, float> scaleMET(std::pair<float, float> p_met, LorentzVector p4
     float metNewPhi = atan2(metNewy, metNewx);
 
     return ( std::make_pair(sqrt(metNewx * metNewx + metNewy * metNewy), metNewPhi) );
+}
+
+MetCorrector::MetCorrector(std::vector<std::string> &list_of_files)
+{
+    //
+    // expect a vector of strings in the following format:
+    // 
+    // for MC, expect three strings
+    //
+    // L1Fast
+    // L2
+    // L3
+    //
+    // for Data, expect four strings
+    //
+    // L1Fast
+    // L2
+    // L3
+    // L2L3residual
+    //
+    size_t number_of_files = list_of_files.size();
+    if (number_of_files < 3 || number_of_files > 4) {
+        std::cout << "Invalid list of files.  Expect three files for MC, four for data." << std::endl;
+        std::cout << "Note: The order of the files is important."                        << std::endl;
+        std::cout << "For MC, please provide, in order: L1Fast, L2, L3."                 << std::endl;
+        std::cout << "For data, please provide, in order: L1Fast, L2, L3, L2L3residual." << std::endl;
+        return;
+    }
+
+    std::vector<std::string> offset_corrector_filenames;
+    offset_corrector_filenames.push_back(list_of_files.at(0));
+
+    std::vector<std::string> full_corrector_filenames;
+    full_corrector_filenames = list_of_files;
+
+    offset_corrector = makeJetCorrector(offset_corrector_filenames);
+    full_corrector   = makeJetCorrector(full_corrector_filenames);
+}
+
+MetCorrector::~MetCorrector ()
+{
+    delete offset_corrector;
+    delete full_corrector;
+}
+
+std::pair<float, float> MetCorrector::getCorrectedMET(std::pair<float, float> &uncorr_met)
+{
+    return correctMETforJES(uncorr_met);
+}
+
+std::pair<float, float> MetCorrector::getCorrectedMET()
+{
+    std::pair<float, float> uncorr_met = make_pair(cms2.evt_pfmet(), cms2.evt_pfmetPhi());
+    return correctMETforJES(uncorr_met);
+}
+
+std::pair<float, float> MetCorrector::correctMETforJES(std::pair<float, float> uncorr_met)
+{
+    float met    = uncorr_met.first;
+    float metPhi = uncorr_met.second;
+    float metx   = met * cos(metPhi);
+    float mety   = met * sin(metPhi);
+
+    for (unsigned int idx = 0; idx < cms2.pfjets_p4().size(); idx++) {
+        
+        LorentzVector jetp4 = cms2.pfjets_p4().at(idx);
+
+        //
+        // veto events with EM fraction > 0.9
+        float emfrac = (cms2.pfjets_chargedEmE().at(idx) + cms2.pfjets_neutralEmE().at(idx)) / cms2.pfjets_p4().at(idx).E();
+        if (emfrac > 0.9) continue;
+
+        LorentzVector2 tmpjetp4 = LorentzVector2(jetp4);
+        if (tmpjetp4.eta() > 4.7) tmpjetp4.SetEta(4.7);
+        if (tmpjetp4.eta() < -4.7) tmpjetp4.SetEta(-4.7);   
+
+        offset_corrector->setRho(cms2.evt_ww_rho_vor());
+        offset_corrector->setJetA(cms2.pfjets_area().at(idx));
+        offset_corrector->setJetEta(tmpjetp4.eta());
+        offset_corrector->setJetPt(tmpjetp4.pt());
+        float offset_corr = offset_corrector->getCorrection();        
+
+        full_corrector->setRho(cms2.evt_ww_rho_vor());
+        full_corrector->setJetA(cms2.pfjets_area().at(idx));
+        full_corrector->setJetEta(tmpjetp4.eta());
+        full_corrector->setJetPt(tmpjetp4.pt());
+        float full_corr = full_corrector->getCorrection();
+
+        for (unsigned int ipfc = 0; ipfc < cms2.pfjets_pfcandIndicies().at(idx).size(); ipfc++) {
+
+            int index = cms2.pfjets_pfcandIndicies().at(idx).at(ipfc);
+            if (index < 0) {
+                std::cout << "Found a PF candidate in a PF jet with bad index..." << std::endl;
+                continue;
+            }
+
+            //
+            // remove SA or global muons from jets before correcting
+            //
+            if (abs(cms2.pfcands_particleId().at(index)) == 13) {
+
+                int pfmusidx = cms2.pfcands_pfmusidx().at(index);
+                if (pfmusidx < 0) {
+                    std::cout << "Found a PF candidate with |id| == 13 with a bad pfmus index..." << std::endl;
+                    continue;
+                }
+            
+                int musidx = cms2.pfmus_musidx().at(pfmusidx);
+                if (musidx < 0) {
+                    std::cout << "Found a PF muon with a bad reco muon index..." << std::endl;
+                    continue;
+                }
+
+                bool is_global     = !(((cms2.mus_type().at(musidx)) & (1<<1)) == 0);
+                bool is_standalone = !(((cms2.mus_type().at(musidx)) & (1<<3)) == 0);            
+                if (!is_global && !is_standalone) continue;
+                jetp4 -= cms2.pfcands_p4().at(index);
+            }
+            else {
+                //
+                // now we need to look for pf cands that aren't IDed as muons but have non-null muonrefs, sigh...
+                //
+                int trkidx = cms2.pfcands_trkidx().at(index);
+                for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                    if (cms2.mus_trkidx().at(imu) != trkidx) continue;
+                    bool is_global     = !(((cms2.mus_type().at(imu)) & (1<<1)) == 0);
+                    bool is_standalone = !(((cms2.mus_type().at(imu)) & (1<<3)) == 0);
+                    if (!is_global && !is_standalone) continue;
+                    jetp4 -= cms2.pfcands_p4().at(index);
+                }
+            }
+        } // end loop over jet constituents
+
+        //
+        // only correct MET for jets with corrected pt > 10 GeV
+        //
+        if (full_corr * jetp4.pt() < 10.) continue;
+
+        metx += jetp4.px() * (offset_corr -full_corr);
+        mety += jetp4.py() * (offset_corr - full_corr);
+    }
+
+    met    = sqrt(pow(metx, 2) + pow(mety, 2));
+    metPhi = atan2(mety, metx);
+
+    return make_pair(met, metPhi);    
 }
