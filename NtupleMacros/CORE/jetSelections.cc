@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.28 2012/05/07 15:25:45 fgolf Exp $
+// $Id: jetSelections.cc,v 1.29 2012/05/14 05:39:33 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -327,7 +327,7 @@ bool passesPFJetID(unsigned int pfJetIdx) {
     float pfjet_cef_  = cms2.pfjets_chargedEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
     float pfjet_nef_  = cms2.pfjets_neutralEmE()[pfJetIdx] / cms2.pfjets_p4()[pfJetIdx].energy();
     int   pfjet_cm_   = cms2.pfjets_chargedMultiplicity()[pfJetIdx];
-    int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx] + cms2.pfjets_muonMultiplicity()[pfJetIdx];
+    int   pfjet_mult_ = pfjet_cm_ + cms2.pfjets_neutralMultiplicity()[pfJetIdx];
 
     if (pfjet_nef_ >= 0.99)
         return false;
