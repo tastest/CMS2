@@ -246,9 +246,9 @@ Double_t MuonIDMVA::MVAValue(const unsigned int mu, const unsigned int vertex) {
   fMVAVar_MuD0                   = mud0PV_smurfV3(mu);
 
   const double mud0sign   = ( (trks_d0_pv(cms2.mus_trkidx().at(mu),0).first)   >=0 ) ? 1. : -1.;
-  fMVAVar_MuIP3d =                   cms2.mus_ubIp3d()[mu]*mud0sign; 
-  if (cms2.mus_ubIp3derr()[mu] == 0.0) fMVAVar_MuIP3dSig = 0.0;
-  else fMVAVar_MuIP3dSig =           cms2.mus_ubIp3d()[mu]*mud0sign / cms2.mus_ubIp3derr()[mu]; 
+  fMVAVar_MuIP3d =                   cms2.mus_ip3d()[mu]*mud0sign; 
+  if (cms2.mus_ip3derr()[mu] == 0.0) fMVAVar_MuIP3dSig = 0.0;
+  else fMVAVar_MuIP3dSig =           cms2.mus_ip3d()[mu]*mud0sign / cms2.mus_ip3derr()[mu]; 
   fMVAVar_MuTrkKink              = cms2.mus_trkKink().at(mu);
   fMVAVar_MuSegmentCompatibility = cms2.mus_segmCompatibility()[mu];
   fMVAVar_MuCaloCompatibility    = cms2.mus_caloCompatibility()[mu];

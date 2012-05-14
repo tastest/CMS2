@@ -776,7 +776,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu1_trkpt_        = cms2.mus_trk_p4()[index1].pt();
                     if (cms2.mus_pfmusidx()[index1] > -1) mu1_isPFmuon_ = 1;
                     int trkidx1 = cms2.mus_trkidx()[index1];
-                    int vtxidx = firstGoodDAvertex();
+                    int vtxidx = firstGoodVertex();
                     if (trkidx1 >= 0 && vtxidx >=0)
                         d0vtx1_ = trks_d0_pv(trkidx1, vtxidx, true).first;
                     trkIso1_ = cms2.mus_iso03_sumPt()[index1];
@@ -841,7 +841,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e1_gsfCharge_  = cms2.els_trk_charge()[index1];
                     e1_ctfCharge_  = cms2.els_trkidx()[index1] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index1]] : -999999;
                     int trkidx1 = cms2.els_gsftrkidx()[index1];
-                    int vtxidx = firstGoodDAvertex();
+                    int vtxidx = firstGoodVertex();
                     if (trkidx1 >= 0 && vtxidx >= 0)
                         d0vtx1_ = gsftrks_d0_pv(trkidx1, vtxidx, true).first;
                     e1_fbrem_ = cms2.els_fbrem()[index1];
@@ -898,7 +898,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     mu2_trkpt_        = cms2.mus_trk_p4()[index2].pt();
                     if (cms2.mus_pfmusidx()[index2] > -1) mu2_isPFmuon_ = 1;
                     int trkidx2 = cms2.mus_trkidx()[index2];
-                    int vtxidx = firstGoodDAvertex();
+                    int vtxidx = firstGoodVertex();
                     if (trkidx2 >= 0 && vtxidx >= 0)
                         d0vtx2_ = trks_d0_pv(trkidx2, vtxidx, true).first;
                     trkIso2_ = cms2.mus_iso03_sumPt()[index2];
@@ -963,7 +963,7 @@ void dilepbabymaker::ScanChain (const char *inputFilename, const char *babyFilen
                     e2_gsfCharge_   = cms2.els_trk_charge()[index2]; 
                     e2_ctfCharge_   = cms2.els_trkidx()[index2] > -1 ? cms2.trks_charge()[cms2.els_trkidx()[index2]] : -999999;
                     int trkidx2 = cms2.els_gsftrkidx()[index2];
-                    int vtxidx = firstGoodDAvertex();
+                    int vtxidx = firstGoodVertex();
                     if (trkidx2 >= 0 && vtxidx >= 0)
                         d0vtx2_ = gsftrks_d0_pv(trkidx2, vtxidx, true).first;
                     e2_fbrem_ = cms2.els_fbrem()[index2];
@@ -1737,10 +1737,10 @@ void dilepbabymaker::SetEventLevelInfo ()
     evt_clean042011_ = cleaning_standardApril2011();
 
     nvtx_ = 0;
-    for (unsigned int i=0; i<cms2.davtxs_isFake().size(); i++) {
+    for (unsigned int i=0; i<cms2.vtxs_isFake().size(); i++) {
         // isGoodVertex is defined in CORE/eventSelections.cc
         // !isFake, ndof >= 4, rho <= 2, Z <= 24.
-        if (isGoodDAVertex(i))
+        if (isGoodVertex(i))
             ++nvtx_;
     }
 

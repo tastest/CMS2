@@ -57,9 +57,6 @@ private:
   
     // Pileup - VertexMaker
     Int_t evt_nvtxs_;
-  
-    // Pileup - DAVertexMaker
-    Int_t evt_ndavtxs_;
 
     // event level variables (number of additional objects besides the FO under consideration)
     Int_t nFOels_;

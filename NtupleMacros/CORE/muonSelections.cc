@@ -368,7 +368,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt() > 0.1)       return false; // dpt/pt < 0.1
         if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
         if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6
-        // cut on d0, dz using first good DA vertex
+        // cut on d0, dz using first good vertex
         // if there isn't a good vertex, use the beamSpot
         if (vtxidx < 0 || cms2.mus_trkidx().at(index) < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.02)
@@ -389,7 +389,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_validHits().at(index) < 11)                                 return false; // # of tracker hits
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
         if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt() > 0.1)       return false; // dpt/pt < 0.1
-        // cut on d0, dz using first good DA vertex
+        // cut on d0, dz using first good vertex
         // if there isn't a good vertex, use the beamSpot
         if (vtxidx < 0 || cms2.mus_trkidx().at(index) < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
@@ -458,7 +458,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
         if (cms2.mus_iso_ecalvetoDep().at(index) > 4)                            return false; // ECalE < 4 
         if (cms2.mus_iso_hcalvetoDep().at(index) > 6)                            return false; // HCalE < 6
-        // cut on d0, dz using first good DA vertex
+        // cut on d0, dz using first good vertex
         // if there isn't a good vertex, use the beamSpot
         if (vtxidx < 0 || trkidx < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.02)
@@ -488,7 +488,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.trks_valid_pixelhits().at(trkidx) == 0)                         return false; // require at least 1 valid pixel hit
 
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-        // cut on d0, dz using first good DA vertex
+        // cut on d0, dz using first good vertex
         // if there isn't a good vertex, use the beamSpot
         if (vtxidx < 0 || trkidx < 0) {
             if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
@@ -588,7 +588,7 @@ double muonCorIsoValue (unsigned int index, bool truncated) {
 }
 
 #ifdef PFISOFROMNTUPLE
-double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut, int filterId){
+double muonIsoValuePF( unsigned int imu, unsigned int ivtx, float coner, float minptn, float dzcut, int filterId){
     if (fabs(coner-0.3)<0.0001) {
         if (cms2.mus_iso03_pf().at(imu)<-99.) return 9999.;
         return cms2.mus_iso03_pf().at(imu)/cms2.mus_p4().at(imu).pt();
@@ -601,11 +601,11 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
     }
 }
 #else
-double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float minptn, float dzcut, int filterId){
+double muonIsoValuePF( unsigned int imu, unsigned int ivtx, float coner, float minptn, float dzcut, int filterId){
     float pfciso = 0;
     float pfniso = 0;
     int mutkid = cms2.mus_trkidx().at(imu);
-    float mudz = mutkid>=0 ? trks_dz_dapv(mutkid,idavtx).first : cms2.mus_sta_z0corr().at(imu);
+    float mudz = mutkid>=0 ? trks_dz_pv(mutkid,ivtx).first : cms2.mus_sta_z0corr().at(imu);
     for (unsigned int ipf=0; ipf<cms2.pfcands_p4().size(); ++ipf){
         float dR = ROOT::Math::VectorUtil::DeltaR( pfcands_p4().at(ipf), mus_p4().at(imu) );
         if (dR>coner) continue;
@@ -624,7 +624,7 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
             if (abs(cms2.pfcands_particleId().at(ipf))==11 && cms2.pfcands_pfelsidx().at(ipf)>=0 && cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))>=0) {
                 int gsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
                 if (gsfid>=0) { 
-                    if(fabs(gsftrks_dz_dapv( gsfid,idavtx ).first - mudz )<dzcut) {//dz cut
+                    if(fabs(gsftrks_dz_pv( gsfid,ivtx ).first - mudz )<dzcut) {//dz cut
                         pfciso+=pfpt;
                     }   
                     continue;//and avoid double counting
@@ -632,7 +632,7 @@ double muonIsoValuePF( unsigned int imu, unsigned int idavtx, float coner, float
             }
             //then check anything that has a ctf track
             if (cms2.pfcands_trkidx().at(ipf)>=0) {//charged (with a ctf track)
-                if(fabs( trks_dz_dapv(cms2.pfcands_trkidx().at(ipf),idavtx).first - mudz )<dzcut) {//dz cut
+                if(fabs( trks_dz_pv(cms2.pfcands_trkidx().at(ipf),ivtx).first - mudz )<dzcut) {//dz cut
                     pfciso+=pfpt;
                 }
             } 
@@ -703,8 +703,8 @@ double mud0PV_wwV1(unsigned int index){
 double mud0PV_smurfV3(unsigned int index){
     int vtxIndex = 0;
     double dxyPV = cms2.mus_d0()[index]-
-        cms2.davtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
-        cms2.davtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
+        cms2.vtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
+        cms2.vtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
     return dxyPV;
 }
 
@@ -714,7 +714,7 @@ double dzPV_mu(const LorentzVector& vtx, const LorentzVector& p4, const LorentzV
 
 double mudzPV_smurfV3(unsigned int index){
     int vtxIndex = 0;
-    double dzpv = dzPV_mu(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+    double dzpv = dzPV_mu(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[vtxIndex]);
     return dzpv;
 }
 

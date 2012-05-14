@@ -527,7 +527,7 @@ bool comparePt(LorentzVector lv1, LorentzVector lv2) {
 
 unsigned int nGoodVertex() {
   unsigned int nVtx = 0;
-  for ( unsigned int i = 0; i < cms2.davtxs_sumpt().size(); ++i ){
+  for ( unsigned int i = 0; i < cms2.vtxs_sumpt().size(); ++i ){
     // if (cms2.vtxs_isFake()[i]) continue;
     if (!isGoodVertex(i)) continue;
     nVtx++;
@@ -568,8 +568,8 @@ double ww_mud0ValuePV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return 9999;
   double dxyPV = cms2.mus_d0()[index]-
-    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
-    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
+    cms2.vtxs_position()[vtxIndex].x()*sin(cms2.mus_trk_p4()[index].phi())+
+    cms2.vtxs_position()[vtxIndex].y()*cos(cms2.mus_trk_p4()[index].phi());
   return fabs(dxyPV);
 }
 
@@ -582,7 +582,7 @@ bool ww_mudZPV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return false;
   //double dzpv = cms2.mus_z0corr()[index]-cms2.vtxs_position()[iMax].z();
-  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[vtxIndex]);
   return fabs(dzpv)<0.1;
 }
 
@@ -681,8 +681,8 @@ bool ww_eld0PV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return false;
   double dxyPV = cms2.els_d0()[index]-
-    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
-    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
+    cms2.vtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.vtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
   return fabs(dxyPV) < 0.02;
 }
 
@@ -690,7 +690,7 @@ bool ww_eldZPV(unsigned int index){
   int vtxIndex = primaryVertex();
   if (vtxIndex<0) return false;
   // double dzPV = cms2.els_z0corr()[index]-cms2.vtxs_position()[iMax].z();
-  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[vtxIndex]);
   return fabs(dzpv)<0.1;
 }
 

@@ -18,15 +18,10 @@ enum TrackAlgorithm { undefAlgorithm=0, ctf=1, rs=2, cosmics=3, iter0=4,
 
 enum TrackQuality { undefQuality=-1, loose=0, tight=1, highPurity=2, confirmed=3, goodIterative=4, qualitySize=5};
 
-std::pair<double , double> trks_d0_pv      (int itrk, int ipv, bool useDAvtxs = false);
-std::pair<double , double> trks_dz_pv      (int itrk, int ipv, bool useDAvtxs = false);
-std::pair<double , double> gsftrks_dz_pv   (int itrk, int ipv, bool useDAvtxs = false);
-std::pair<double , double> gsftrks_d0_pv   (int itrk, int ipv, bool useDAvtxs = false);
-
-// these are now obsolete, but keeping them around for backwards compatibility
-std::pair<double , double> trks_d0_dapv    (int itrk, int ipv);
-std::pair<double , double> trks_dz_dapv    (int itrk, int ipv);
-std::pair<double , double> gsftrks_dz_dapv (int itrk, int ipv);
+std::pair<double , double> trks_d0_pv      (int itrk, int ipv);
+std::pair<double , double> trks_dz_pv      (int itrk, int ipv);
+std::pair<double , double> gsftrks_dz_pv   (int itrk, int ipv);
+std::pair<double , double> gsftrks_d0_pv   (int itrk, int ipv);
 
 bool isTrackQuality( int index, int cuts );
 

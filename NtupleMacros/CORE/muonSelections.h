@@ -86,7 +86,7 @@ double muonIsoValue_HCAL     ( unsigned int , bool = true );
 double muonIsoValue_FastJet  ( unsigned int , bool = true );
 double mu_fastjet_rel_offset ( unsigned int , bool = true );
 
-double muonIsoValuePF        ( unsigned int imu, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, int filterId = 0);
+double muonIsoValuePF        ( unsigned int imu, unsigned int ivtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, int filterId = 0);
 void muonIsoValuePF2012  (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int imu, const int ivtx, float neutral_et_threshold = 0.5);
 float muonIsoValuePF2012_FastJetEffArea( int index , float conesize, float effective_area, int ivtx);
 double muonCorIsoValue (unsigned int , bool = true);

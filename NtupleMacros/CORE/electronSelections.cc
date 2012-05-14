@@ -87,11 +87,11 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     int vtxidx = firstGoodVertex();
     if (vtxidx >= 0) {
         if (useGsfTrack) {
-            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx, false).first) < 0.02)
+            if (fabs(gsftrks_d0_pv(cms2.els_gsftrkidx()[index], vtxidx).first) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);
         }
         else if (cms2.els_trkidx()[index] >= 0) {            
-            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx, false).first) < 0.02)
+            if (fabs(trks_d0_pv(cms2.els_trkidx()[index], vtxidx).first) < 0.02)
                 cuts_passed |= (1ll<<ELEIP_SS200);  
         }
     }
@@ -1148,7 +1148,7 @@ float electronIsolation_rel_ww( const unsigned int index, bool use_calo_iso ) {
 }
 
 #ifdef PFISOFROMNTUPLE
-float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
+float electronIsoValuePF( const unsigned int iel, unsigned int ivtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
   if (fabs(coner-0.3)<0.0001) {
     if (cms2.els_iso03_pf().at(iel)<-99.) return 9999.;
     return cms2.els_iso03_pf().at(iel)/cms2.els_p4().at(iel).pt();
@@ -1161,12 +1161,12 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
   }
 }
 #else
-float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
+float electronIsoValuePF( const unsigned int iel, unsigned int ivtx, float coner, float minptn, float dzcut, float footprintdr, float gammastripveto, float elestripveto, int filterId ) {
 
   int elgsftkid = cms2.els_gsftrkidx().at(iel);
   int eltkid = cms2.els_trkidx().at(iel);
   //take dz from gsf, and if it does not exist (should always exist) take it from ctf track
-  float eldz = elgsftkid>=0 ? gsftrks_dz_dapv( elgsftkid,idavtx ).first : trks_dz_dapv(eltkid,idavtx).first;
+  float eldz = elgsftkid>=0 ? gsftrks_dz_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
   float eleta = cms2.els_p4().at(iel).eta();
 
   float pfciso = 0.;
@@ -1208,7 +1208,7 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
       if (pfid==11 && cms2.pfcands_pfelsidx().at(ipf)>=0 && cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))>=0) {
 	int gsfid = cms2.els_gsftrkidx().at(cms2.pfels_elsidx().at(cms2.pfcands_pfelsidx().at(ipf))); 
 	if (gsfid>=0) { 
-	  if(fabs(gsftrks_dz_dapv( gsfid,idavtx ).first - eldz )<dzcut) {//dz cut
+	  if(fabs(gsftrks_dz_pv( gsfid,ivtx ).first - eldz )<dzcut) {//dz cut
 	    pfciso+=pfpt;
 	    if (deta<elestripveto && pfid==11) pfjurvetoq+=pfpt;
 	  }   
@@ -1217,7 +1217,7 @@ float electronIsoValuePF( const unsigned int iel, unsigned int idavtx, float con
       }      
       //then check anything that has a ctf track
       if (pftkid>=0) {//charged (with a ctf track)
-	if(fabs( trks_dz_dapv(cms2.pfcands_trkidx().at(ipf),idavtx).first - eldz )<dzcut) {//dz cut
+	if(fabs( trks_dz_pv(cms2.pfcands_trkidx().at(ipf),ivtx).first - eldz )<dzcut) {//dz cut
 	  pfciso+=pfpt;
 	  if (deta<elestripveto && pfid==11) pfjurvetoq+=pfpt;
 	}
@@ -1385,8 +1385,8 @@ double electron_d0PV(unsigned int index){
 double electron_d0PV_smurfV3(unsigned int index){
   int vtxIndex = 0;
   double dxyPV = cms2.els_d0()[index]-
-    cms2.davtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
-    cms2.davtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
+    cms2.vtxs_position()[vtxIndex].x()*sin(cms2.els_trk_p4()[index].phi())+
+    cms2.vtxs_position()[vtxIndex].y()*cos(cms2.els_trk_p4()[index].phi());
   return dxyPV;
 }
 
@@ -1395,7 +1395,7 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
 }
 double electron_dzPV_smurfV3(unsigned int index){
   int vtxIndex = 0;
-  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.davtxs_position()[vtxIndex]);
+  double dzpv = dzPV(cms2.els_vertex_p4()[index], cms2.els_trk_p4()[index], cms2.vtxs_position()[vtxIndex]);
   return dzpv;
 }
 

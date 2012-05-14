@@ -70,9 +70,9 @@ bool cleaning_goodVertexAugust2010();
 
 // ----------------------------------------------------------------
 // 26 April 2011
-// at least 1 good DA vertex
+// at least 1 good vertex
 // ----------------------------------------------------------------
-bool cleaning_goodDAVertexApril2011();
+bool cleaning_goodVertexApril2011();
 
 //----------------------------------------------------------------
 // if >= 10 tracks, require at least 25% high purity
@@ -83,7 +83,6 @@ bool cleaning_goodTracks();
 // checks whether a vertex is good or not
 //----------------------------------------------------------------
 bool isGoodVertex(size_t ivtx);
-bool isGoodDAVertex(size_t ivtx);
 
 //----------------------------------------------------------------
 // checks whether the leptons of a given
@@ -100,19 +99,10 @@ bool hypsFromSameVtx(size_t hypIdx);
 // of 0.2 cm of the same PV and if that PV is
 // the closest vertex to each lepton
 //----------------------------------------------------------------
-int hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool useDAvtxs = false, bool requireClosest = false);
+int hypsFromSameVtx2011(size_t hypIdx, float dz = 0.2, bool requireClosest = false);
 
-// find first good DA vertex or vertex
-int firstGoodDAvertex ();
+// find first good vertex
 int firstGoodVertex ();
-
-//----------------------------------------------------------------
-// checks whether the leptons of a given
-// hypothesis come from the same good vertex
-// by checking if both leptons are within dz
-// of 1cm of the same PV
-//----------------------------------------------------------------
-bool hypsFromFirstGoodDAvertx(size_t hypIdx, float dz_cut = 1.0);
 
 //----------------------------------------------------------------
 // checks whether the leptons of a given

@@ -31,10 +31,10 @@
 // 
 // PLEASE NOTE: ALWAYS CHECK THAT THE WEIGHTING HAS BEEN DONE PROPERLY
 // BY COMPARING THE DATA NVTX DIST WITH THE WEIGHTED MC NVTX DISTRIBUTION,
-// WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
+// WHERE NVTX IS THE NUMBER OF VERTICES PASSING isGoodVertex()
 //------------------------------------------------------------------------------
 
-// $Id: vtxreweight.cc,v 1.6 2012/05/01 21:44:24 kelley Exp $
+// $Id: vtxreweight.cc,v 1.7 2012/05/14 17:26:05 cerati Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
@@ -88,7 +88,7 @@ float vtxweight_n( const int nvertices , const bool isData , const bool usealt )
 
 //this is the original version--it used to count vertices and then get the weight
 //move the weight to the above (new) version
-float vtxweight( const bool isData , const bool useDAVertices , const bool usealt ){
+float vtxweight( const bool isData , const bool usealt ){
 
   if( isData ) return 1;
 
@@ -105,26 +105,9 @@ float vtxweight( const bool isData , const bool useDAVertices , const bool useal
 
   int nvtx = 0;
   
-  //---------------------
-  // count DA vertices
-  //---------------------
-
-  if( useDAVertices ){
-    //cout << "Counting DA vertices" << endl;
-    for (size_t v = 0; v < cms2.davtxs_position().size(); ++v){
-      if(isGoodDAVertex(v)) ++nvtx;
-    }
-  }
-
-  //---------------------
-  // count DA vertices
-  //---------------------
-
-  else{
-    //cout << "Counting standard vertices" << endl;
-    for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
-      if(isGoodVertex(v)) ++nvtx;
-    }
+  //cout << "Counting standard vertices" << endl;
+  for (size_t v = 0; v < cms2.vtxs_position().size(); ++v){
+    if(isGoodVertex(v)) ++nvtx;
   }
 
   if( nvtx == 0 ){

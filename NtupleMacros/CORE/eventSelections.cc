@@ -60,7 +60,7 @@ bool cleaning_standardOctober2010()
 //
 bool cleaning_standardApril2011()
 {
-    if (!cleaning_goodDAVertexApril2011()) return false;
+    if (!cleaning_goodVertexApril2011()) return false;
     if (!cleaning_goodTracks())            return false;
     
     return true;
@@ -151,18 +151,18 @@ bool cleaning_goodVertexAugust2010()
 
 //
 // 26 April 2011
-// at least 1 good DA vertex
+// at least 1 good vertex
 // 
-bool cleaning_goodDAVertexApril2011()
+bool cleaning_goodVertexApril2011()
 {             
-    int nGoodDAVertex = 0;
-    for (size_t v = 0; v < cms2.davtxs_position().size(); ++v) 
+    int nGoodVertex = 0;
+    for (size_t v = 0; v < cms2.vtxs_position().size(); ++v) 
     {
 
-      if(isGoodDAVertex(v))
-        nGoodDAVertex ++;
+      if(isGoodVertex(v))
+        nGoodVertex ++;
     }
-    if (nGoodDAVertex == 0) return false;
+    if (nGoodVertex == 0) return false;
     return true;
 }
 
@@ -191,18 +191,6 @@ bool isGoodVertex(size_t ivtx) {
   if (cms2.vtxs_ndof()[ivtx] <= 4.) return false;
   if (cms2.vtxs_position()[ivtx].Rho() > 2.0) return false;
   if (fabs(cms2.vtxs_position()[ivtx].Z()) > 24.0) return false;
-  return true;
-
-}
-
-// function to select a good vertex
-// 
-bool isGoodDAVertex(size_t ivtx) {
-
-  if (cms2.davtxs_isFake()[ivtx]) return false;
-  if (cms2.davtxs_ndof()[ivtx] <= 4.) return false;
-  if (cms2.davtxs_position()[ivtx].Rho() > 2.0) return false;
-  if (fabs(cms2.davtxs_position()[ivtx].Z()) > 24.0) return false;
   return true;
 
 }
@@ -252,7 +240,7 @@ bool hypsFromSameVtx(size_t hypIdx) {
 // of 0.2 cm of the same PV and if that PV is
 // the closest vertex to each lepton
 //----------------------------------------------------------------
-int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClosest)
+int hypsFromSameVtx2011(size_t hypIdx, float dz, bool requireClosest)
 {
     int lt_trkidx = -1;
     int ll_trkidx = -1;
@@ -276,28 +264,28 @@ int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClo
         return -1;
 
     // figure out which vertex collection to use
-    std::vector<LorentzVector> vtxP4s = useDAvtxs ? cms2.davtxs_position() : cms2.vtxs_position();
+    std::vector<LorentzVector> vtxP4s = cms2.vtxs_position();
 
     if (!requireClosest) {
         for (size_t v = 0; v < vtxP4s.size(); ++v)  {
 
-            bool vertexIsGood = useDAvtxs ? isGoodDAVertex(v) : isGoodVertex(v);
+            bool vertexIsGood = isGoodVertex(v);
             if (!vertexIsGood)
                 continue;
             if (lt_isGsf) {
-                if (fabs(gsftrks_dz_pv(lt_trkidx, v, useDAvtxs).first) > dz)
+                if (fabs(gsftrks_dz_pv(lt_trkidx, v).first) > dz)
                     continue;
             }
             else {
-                if (fabs(trks_dz_pv(lt_trkidx, v, useDAvtxs).first) > dz)
+                if (fabs(trks_dz_pv(lt_trkidx, v).first) > dz)
                     continue;
             }
             if (ll_isGsf) {
-                if (fabs(gsftrks_dz_pv(ll_trkidx, v, useDAvtxs).first) > dz)
+                if (fabs(gsftrks_dz_pv(ll_trkidx, v).first) > dz)
                     continue;
             }
             else {
-                if (fabs(trks_dz_pv(ll_trkidx, v, useDAvtxs).first) > dz)
+                if (fabs(trks_dz_pv(ll_trkidx, v).first) > dz)
                     continue;
             }
             //if we've gotten here, then the vertex is good
@@ -315,34 +303,34 @@ int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClo
 
     for (unsigned int vtxi = 0; vtxi < vtxP4s.size(); vtxi++) {
         
-        bool vertexIsGood = useDAvtxs ? isGoodDAVertex(vtxi) : isGoodVertex(vtxi);
+        bool vertexIsGood = isGoodVertex(vtxi);
         if (!vertexIsGood)
             continue;
 
         // first take care of lt
         if (lt_isGsf) {
-            if (fabs(gsftrks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first) < lt_dz) {
-                lt_dz = fabs(gsftrks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first);
+            if (fabs(gsftrks_dz_pv(lt_trkidx, vtxi).first) < lt_dz) {
+                lt_dz = fabs(gsftrks_dz_pv(lt_trkidx, vtxi).first);
                 lt_vidx = vtxi;
             }            
         }
         else {
-            if (fabs(trks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first) < lt_dz) {
-                lt_dz = fabs(trks_dz_pv(lt_trkidx, vtxi, useDAvtxs).first);
+            if (fabs(trks_dz_pv(lt_trkidx, vtxi).first) < lt_dz) {
+                lt_dz = fabs(trks_dz_pv(lt_trkidx, vtxi).first);
                 lt_vidx = vtxi;
             }
         }
 
         // now same thing for ll
         if (ll_isGsf) {
-            if (fabs(gsftrks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first) < ll_dz) {
-                ll_dz = fabs(gsftrks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first);
+            if (fabs(gsftrks_dz_pv(ll_trkidx, vtxi).first) < ll_dz) {
+                ll_dz = fabs(gsftrks_dz_pv(ll_trkidx, vtxi).first);
                 ll_vidx = vtxi;
             }            
         }
         else {
-            if (fabs(trks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first) < ll_dz) {
-                ll_dz = fabs(trks_dz_pv(ll_trkidx, vtxi, useDAvtxs).first);
+            if (fabs(trks_dz_pv(ll_trkidx, vtxi).first) < ll_dz) {
+                ll_dz = fabs(trks_dz_pv(ll_trkidx, vtxi).first);
                 ll_vidx = vtxi;
             }
         }
@@ -362,20 +350,6 @@ int hypsFromSameVtx2011(size_t hypIdx, float dz, bool useDAvtxs, bool requireClo
 
 //---------------------------------------------------------
 //
-// Find first good DA vertex
-//
-//---------------------------------------------------------
-int firstGoodDAvertex () {
-    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
-        if (isGoodDAVertex(vidx))
-            return vidx;
-    }
-
-    return -1;
-}
-
-//---------------------------------------------------------
-//
 // Find first good vertex
 //
 //---------------------------------------------------------
@@ -386,41 +360,6 @@ int firstGoodVertex () {
     }
 
     return -1;
-}
-
-//----------------------------------------------------------------
-// checks whether the leptons of a given
-// hypothesis come from the same good vertex
-// by checking if both leptons are within dz
-// of 1cm of the same PV
-//----------------------------------------------------------------
-bool hypsFromFirstGoodDAvertx(size_t hypIdx, float dz_cut) {
-
-    int vtxidx = firstGoodDAvertex ();
-
-    if (vtxidx < 0)
-        return false;
-
-    float lt_dz = -999.;
-    float ll_dz = -999.;
-    
-    int lt_idx = cms2.hyp_lt_index()[hypIdx];
-    int ll_idx = cms2.hyp_ll_index()[hypIdx];
-
-    if (abs(cms2.hyp_lt_id().at(hypIdx)) == 11)
-        lt_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(lt_idx), vtxidx, true).first;
-    else if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13)
-        lt_dz = trks_dz_pv (cms2.mus_trkidx().at(lt_idx), vtxidx, true).first;
-
-    if (abs(cms2.hyp_ll_id().at(hypIdx)) == 11)
-        ll_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(ll_idx), vtxidx, true).first;
-    else if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13)
-        ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, true).first;
-
-    if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)
-        return true;    
-    
-    return false;
 }
 
 //----------------------------------------------------------------
@@ -444,20 +383,20 @@ bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut) {
 
     if (abs(cms2.hyp_lt_id().at(hypIdx)) == 11) {
         if (cms2.els_gsftrkidx().at(lt_idx) < 0) return false;
-        lt_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(lt_idx), vtxidx, false).first;        
+        lt_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(lt_idx), vtxidx).first;        
     }
     else if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13) {
         if (cms2.mus_trkidx().at(lt_idx) < 0) return false;
-        lt_dz = trks_dz_pv (cms2.mus_trkidx().at(lt_idx), vtxidx, false).first;
+        lt_dz = trks_dz_pv (cms2.mus_trkidx().at(lt_idx), vtxidx).first;
     }
 
     if (abs(cms2.hyp_ll_id().at(hypIdx)) == 11) {
         if (cms2.els_gsftrkidx().at(ll_idx) < 0) return false;
-        ll_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(ll_idx), vtxidx, false).first;
+        ll_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(ll_idx), vtxidx).first;
     }
     else if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13) {
         if (cms2.mus_trkidx().at(ll_idx) < 0) return false;
-        ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, false).first;
+        ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx).first;
     }
 
     if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)

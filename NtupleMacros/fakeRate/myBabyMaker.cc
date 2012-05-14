@@ -550,9 +550,6 @@ void myBabyMaker::InitBabyNtuple()
   
     // Pileup - VertexMaker
     evt_nvtxs_ = -1;
-  
-    // Pileup - VertexMaker
-    evt_ndavtxs_ = -1;
 
     // event level variables
     nFOels_ = 0;
@@ -1040,7 +1037,6 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Pileup
     babyTree_->Branch("pu_nPUvertices" , &pu_nPUvertices_ );
     babyTree_->Branch("evt_nvtxs"      , &evt_nvtxs_      );
-    babyTree_->Branch("evt_ndavtxs"    , &evt_ndavtxs_    );
 
     // event level variables
     babyTree_->Branch("nFOels"         , &nFOels_         );
@@ -1916,14 +1912,6 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                        	++evt_nvtxs_;
                     }
     
-                    // Pileup - VertexMaker
-                    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
-                        if (!isGoodDAVertex(vidx))
-                            continue;
-                            
-                        ++evt_ndavtxs_;
-                    }
-
                     /////////////////////////// 
                     // End Event Information //
                     ///////////////////////////
@@ -2497,14 +2485,6 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                        	++evt_nvtxs_;
                     }
     
-                    // Pileup - VertexMaker
-                    for (unsigned int vidx = 0; vidx < cms2.davtxs_position().size(); vidx++) {
-                        if (!isGoodDAVertex(vidx))
-                            continue;
-
-                        ++evt_ndavtxs_;
-                    }
-
                     /////////////////////////// 
                     // End Event Information //
                     ///////////////////////////

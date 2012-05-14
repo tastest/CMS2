@@ -60,10 +60,10 @@ enum EleSelectionType {
   ELEIP_400,         // d0 corrected for beamspot < 0.04
   ELEIP_PV_200,      // d0 corrected for primary vertex < 0.02
   ELEIP_PV_wwV1,     // d0 (PV) < 0.02 and dz (PV) < 1.0
-  ELEIP_PV_SMURFV3,  // d0 (PV) < 0.02 and dz (PV) < 0.2, using first DA PV
-  ELEIP_PV_DZ_1MM,   // dz (PV) < 0.1, using first DA PV
-  ELEIP_PV_OSV2,     // d0 (PV) < 0.04 and dz (PV) < 1, using first DA PV
-  ELEIP_PV_OSV2_FO,  // d0 (PV) < 0.2 and dz (PV) < 1, using first DA PV
+  ELEIP_PV_SMURFV3,  // d0 (PV) < 0.02 and dz (PV) < 0.2, using first PV
+  ELEIP_PV_DZ_1MM,   // dz (PV) < 0.1, using first PV
+  ELEIP_PV_OSV2,     // d0 (PV) < 0.04 and dz (PV) < 1, using first PV
+  ELEIP_PV_OSV2_FO,  // d0 (PV) < 0.2 and dz (PV) < 1, using first PV
   ELEIP_SS200,       // 2011 SS numerator d0 cut
 
 
@@ -1070,7 +1070,7 @@ float electronIsolation_rel_FastJet(const unsigned int, bool);
 float electronIsolation_rel_v1_FastJet(const unsigned int, bool);
 float el_fastjet_rel_offset(const unsigned int);
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);  // the difference from above is that the pedestal sub is applied on both EB/EE
-float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, 
+float electronIsoValuePF(const unsigned int iel, unsigned int ivtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, 
 			 float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=-999., int filterId = 0);
 float electronIsolation_cor_rel_v1(const unsigned int, bool);
 

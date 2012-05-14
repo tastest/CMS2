@@ -324,7 +324,7 @@ metStruct correctTCMETforHypMuons (int hyp_index, float met_x, float met_y, floa
 metStruct trackerMET( int hyp_index, double deltaZCut,
         const std::vector<LorentzVector>* jets )
 {
-    if ( cms2.davtxs_sumpt().empty() ) return metStruct();
+    if ( cms2.vtxs_sumpt().empty() ) return metStruct();
     double pX(0), pY(0);
     pX -= cms2.hyp_lt_p4().at(hyp_index).px();
     pY -= cms2.hyp_lt_p4().at(hyp_index).py();
@@ -344,7 +344,7 @@ metStruct trackerMET( int hyp_index, double deltaZCut,
 
         int trkIndex = cms2.pfcands_trkidx().at(i);
         if (trkIndex<0) continue;
-        double dzpv = dzPV(cms2.trks_vertex_p4()[trkIndex], cms2.trks_trk_p4()[trkIndex], cms2.davtxs_position().front());
+        double dzpv = dzPV(cms2.trks_vertex_p4()[trkIndex], cms2.trks_trk_p4()[trkIndex], cms2.vtxs_position().front());
 
         if ( fabs(dzpv) > deltaZCut) continue;
 
