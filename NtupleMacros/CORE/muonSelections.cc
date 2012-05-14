@@ -67,6 +67,11 @@ bool muonId(unsigned int index, SelectionType type){
         return (muonIsoValue(index, false) < 0.40);
         break;
 
+    case ZMet2012_v1:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.15);
+        break;
+
         ////////////////////
         // Same Sign 2012 //
         ////////////////////
@@ -394,6 +399,47 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
             if (fabs(trks_d0_pv(cms2.mus_trkidx().at(index), vtxidx).first) > 0.2)
                 return false;            
         }
+        return true;
+        break;
+        // muon POG tight muon requirements
+	// see: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
+	// 2 minor differences to be updated: numberOfMatchedStations and pid_PFMuon
+
+    case ZMet2012_v1:
+        if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
+        if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
+
+	// unavailable in current ntuples: require PFMuon with dR < 0.1, dpT < 1 GeV --> TO BE UPDATED
+        //if (cms2.mus_pid_PFMuon().at(index) == 0)                                return false; // pf muon
+        if (!isPFMuon(index,true,1.0))                                           return false; // require muon is pfmuon with same pt
+
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
+        if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
+
+        // unavailable in current ntuples: use nmatches for now --> TO BE UPDATED
+	//if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
+        if (cms2.mus_nmatches().at(index)<2) return false;
+
+        // cut on d0, dz using first good DA vertex
+        // if there isn't a good vertex, use the beamSpot
+        if (trkidx < 0)                                                          return false; // require a matching track
+        if (vtxidx < 0 || trkidx < 0) {
+            if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
+                return false;
+            if (fabs(cms2.mus_z0corr().at(index)) > 0.5)
+                return false;
+        }
+        else if (vtxidx >= 0) {
+            if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.2)
+                return false;
+            if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.5)
+                return false;
+        }
+        else return false;     
+
+        if (cms2.trks_valid_pixelhits().at(trkidx) == 0)                         return false; // require at least 1 valid pixel hit
+        if (cms2.trks_nlayers().at(trkidx) < 6)                                  return false; // require at least 6 tracker layers with hits
+
         return true;
         break;
 
