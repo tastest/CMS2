@@ -12,7 +12,8 @@ enum PhotonSelectionType {
 // declarations
 bool photonId( const unsigned int, PhotonSelectionType = Yuri );
 bool isSpikePhoton( const unsigned int );
-int isGoodEMObject( const unsigned int index );
+int  isGoodEMObject( const unsigned int index );
+bool isGoodEMObject2012( const unsigned int index );
 
 #endif
 
