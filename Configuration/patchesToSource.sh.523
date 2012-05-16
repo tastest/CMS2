@@ -33,7 +33,7 @@ cvs co -r V00-00-06 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysis
 # Type-I Corrected MET #
 ########################
 
-V04-05-08      JetMETCorrections/Type1MET 
+cvs co -r V04-05-08      JetMETCorrections/Type1MET 
 
 #
 echo;echo checkingdeps;echo
