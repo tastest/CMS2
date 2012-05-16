@@ -4,7 +4,7 @@
 # MET Filters 2012 #
 ####################
 
-cvs co -r lhx_14APR2012_v1 RecoMET/METFilters
+cvs co -r V00-00-01 RecoMET/METFilters
 touch RecoMET/METFilters/data/dummy.txt
 sed '3 s/EDFilter/EDProducer/' <$CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py >blah
 mv blah $CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py
