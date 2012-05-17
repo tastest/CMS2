@@ -34,7 +34,7 @@
 // WHERE NVTX IS THE NUMBER OF VERTICES PASSING isGoodVertex()
 //------------------------------------------------------------------------------
 
-// $Id: vtxreweight.cc,v 1.7 2012/05/14 17:26:05 cerati Exp $
+// $Id: vtxreweight.cc,v 1.8 2012/05/17 10:33:26 benhoob Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
@@ -42,9 +42,9 @@
 #ifndef __CINT__
 #include <iostream>
 #include <iomanip>
-#include "CORE/CMS2.h"
-#include "CORE/eventSelections.h"
-#include "CORE/trackSelections.h"
+#include "../CORE/CMS2.h"
+#include "../CORE/eventSelections.h"
+#include "../CORE/trackSelections.h"
 #include "TH1.h"
 #include "TFile.h"
 
