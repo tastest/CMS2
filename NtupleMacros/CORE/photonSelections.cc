@@ -168,3 +168,38 @@ bool isGoodEMObject2012( const unsigned int index ){
 
     return true;
 }
+
+// https://twiki.cern.ch/twiki/bin/view/CMS/Vgamma2011PhotonID
+bool photon_VGamma_2011(const int index){
+
+  if ( cms2.photons_haspixelSeed().at(index)           )  return false;     // has pixel seed
+  if ( cms2.photons_hOverE().at(index) > 0.05          )  return false;     // H/E < 0.05
+
+  float rho = cms2.evt_kt6pf_foregiso_rho();
+  float ET  = cms2.photons_p4().at(index).pt();
+
+  // barrel
+  if( fabs( cms2.photons_p4().at(index).eta() ) < 1.479 ){
+    if( cms2.photons_sigmaIEtaIEta().at(index) > 0.011 )                            return false; // sigma ieta ieta
+    if( cms2.photons_tkIsoHollow04().at(index) > 2.0 + 0.0010 * ET + 0.0167 * rho ) return false; // trk iso
+    if( cms2.photons_ecalIso04().at(index)     > 4.2 + 0.0060 * ET + 0.1830 * rho ) return false; // ecal iso
+    if( cms2.photons_hcalIso04().at(index)     > 2.2 + 0.0025 * ET + 0.0620 * rho ) return false; // hcal iso
+
+    // spike killing
+    int scIndex = photons_scindex().at(index);
+    if( scIndex < 0 ) return false; // no matched SC found
+
+    if( cms2.photons_sigmaIEtaIEta().at(index) < 0.001 )                            return false; // spike cleaning: ietaieta
+    if( scs_sigmaIPhiIPhi().at(scIndex)        < 0.001 )                            return false; // spike cleaning: iphiiphi
+  }
+
+  // endcap
+  else{
+    if( cms2.photons_sigmaIEtaIEta().at(index) > 0.03  )                            return false; // sigma ieta ieta
+    if( cms2.photons_tkIsoHollow04().at(index) > 2.0 + 0.0010 * ET + 0.0320 * rho ) return false; // trk iso
+    if( cms2.photons_ecalIso04().at(index)     > 4.2 + 0.0060 * ET + 0.0900 * rho ) return false; // ecal iso
+    if( cms2.photons_hcalIso04().at(index)     > 2.2 + 0.0025 * ET + 0.1800 * rho ) return false; // hcal iso
+  }
+
+  return true;
+}

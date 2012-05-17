@@ -14,6 +14,7 @@ bool photonId( const unsigned int, PhotonSelectionType = Yuri );
 bool isSpikePhoton( const unsigned int );
 int  isGoodEMObject( const unsigned int index );
 bool isGoodEMObject2012( const unsigned int index );
+bool photon_VGamma_2011(const int index);
 
 #endif
 
