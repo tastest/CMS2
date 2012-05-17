@@ -401,24 +401,17 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         }
         return true;
         break;
+
         // muon POG tight muon requirements
 	// see: https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId
-	// 2 minor differences to be updated: numberOfMatchedStations and pid_PFMuon
 
     case ZMet2012_v1:
         if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false; // eta cut
         if (((cms2.mus_type().at(index)) & (1<<1)) == 0)                         return false; // global muon
-
-	// unavailable in current ntuples: require PFMuon with dR < 0.1, dpT < 1 GeV --> TO BE UPDATED
-        //if (cms2.mus_pid_PFMuon().at(index) == 0)                                return false; // pf muon
-        if (!isPFMuon(index,true,1.0))                                           return false; // require muon is pfmuon with same pt
-
+        if (cms2.mus_pid_PFMuon().at(index) == 0)                                return false; // pf muon
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false; // glb fit chisq
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
-
-        // unavailable in current ntuples: use nmatches for now --> TO BE UPDATED
-	//if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
-        if (cms2.mus_nmatches().at(index)<2) return false;
+	if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
         // cut on d0, dz using first good DA vertex
         // if there isn't a good vertex, use the beamSpot
