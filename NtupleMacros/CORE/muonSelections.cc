@@ -413,20 +413,19 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_gfit_validSTAHits().at(index) == 0)                         return false; // Glb fit must have hits in mu chambers
 	if (cms2.mus_numberOfMatchedStations().at(index) < 2)                    return false; // require muon segements in at least two muon stations
 
-        // cut on d0, dz using first good DA vertex
+        // cut on d0, dz using first good vertex
         // if there isn't a good vertex, use the beamSpot
         if (trkidx < 0)                                                          return false; // require a matching track
         if (vtxidx < 0 || trkidx < 0) {
-            if (fabs(cms2.mus_d0corr().at(index)) > 0.2)
-                return false;
-            if (fabs(cms2.mus_z0corr().at(index)) > 0.5)
-                return false;
+	  cout << __FILE__ <<< " " << __LINE__ << endl;
+	  cout << "WARNING: didn't find any good vertices, should never get here" << endl;
+
+            if (fabs(cms2.mus_d0corr().at(index)) > 0.2)  return false;
+            if (fabs(cms2.mus_z0corr().at(index)) > 0.5)  return false;
         }
         else if (vtxidx >= 0) {
-            if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.2)
-                return false;
-            if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.5)
-                return false;
+            if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.2)  return false;
+            if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.5)  return false;
         }
         else return false;     
 
