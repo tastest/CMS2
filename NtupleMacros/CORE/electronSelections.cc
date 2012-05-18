@@ -1604,3 +1604,45 @@ float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emis
 
     return (chiso+nhiso+emiso);
 }
+
+float electronIsoValuePF2012_FastJetEffArea_HWW( int index ){
+
+    float etaAbs = fabs(cms2.els_etaSC()[index]);
+    float pt     = cms2.els_p4()[index].pt();
+
+    // get effective area
+    float AEff = 0.19;
+    if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.25;
+    if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.12;
+    if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.21;
+    if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.27;
+    if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.44;
+    if (etaAbs > 2.4) AEff = 0.52;
+
+    // pf iso
+    // calculate from the ntuple for now...
+    float pfiso_ch = cms2.els_iso04_pf2012_ch().at(index);
+    float pfiso_em = cms2.els_iso04_pf2012_em().at(index);
+    float pfiso_nh = cms2.els_iso04_pf2012_nh().at(index);
+
+    // rho
+    float rhoPrime = std::max(cms2.evt_ww_rho(), float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));  
+    float pfiso = (pfiso_ch + pfiso_n) / pt;   
+
+	// debug
+	if(0) {
+	cout << "AEff : " << AEff << " "
+		 << "rho : " << rhoPrime << " "
+		 << "pfiso_ch : " << pfiso_ch << " "
+		 << "pfiso_em : " << pfiso_em << " "
+		 << "pfiso_nh : " << pfiso_nh << " "
+		 << "pfiso_n : " << pfiso_n << " "
+		 << "pfiso : " << pfiso << " "
+		 << "pt : " << pt << " "
+		 << "etaAbs : " << etaAbs 
+		 << endl; 
+	}
+
+    return pfiso;
+}

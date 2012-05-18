@@ -1117,6 +1117,8 @@ void electronIsoValuePF2012reco(float &pfiso_ch, float &pfiso_em, float &pfiso_n
 float electronIsoValuePF2012_FastJetEffArea( int index , float conesize = 0.3 , int ivtx = 0);
 float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold = 1.0, float cone_size = 0.3, bool barrelVetoes = false, bool verbose = false);
 
+float electronIsoValuePF2012_FastJetEffArea_HWW( int index );
+
 //
 // 2012 cut based ID
 //
