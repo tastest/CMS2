@@ -1,4 +1,5 @@
 #include "analysisObjects.h"
+#include "analysisSelections.h"
 #include "../CORE/trackSelections.h"
 #include "../CORE/electronSelections.h"
 
@@ -59,7 +60,7 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
             for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
                 double jec = 1.0;
                 if ( cms2.jpts_p4()[i].pt() * jec < etThreshold ) continue;
-                if ( btag && !defaultBTag(type,i) ) continue;
+                if ( btag && !defaultBTag(type,i, jec) ) continue;
                 if ( TMath::Abs(cms2.jpts_p4()[i].eta()) > etaMax ) continue;
                 if ( (lt.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(lt, cms2.jpts_p4()[i])) < vetoCone) ||
                         (ll.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ll, cms2.jpts_p4()[i])) < vetoCone) ) continue;
@@ -71,7 +72,7 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
                 double jec = 1.0;
                 // cout << cms2.evt_event() << " \traw pt: " << cms2.pfjets_p4().at(i).pt() << endl;
                 if(applyJEC){
-		  jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho());//fixme
+		  			jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho());
                     jet_corrector_pfL1FastJetL2L3->setJetA(cms2.pfjets_area().at(i));
                     jet_corrector_pfL1FastJetL2L3->setJetPt(cms2.pfjets_p4()[i].pt());
                     jet_corrector_pfL1FastJetL2L3->setJetEta(cms2.pfjets_p4()[i].eta());
@@ -89,11 +90,13 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
                 //    " \t" << cms2.evt_rho() << " \t" << cms2.pfjets_area().at(i) << endl;
                 //       }
                 if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
-                if ( btag && !defaultBTag(type,i) ) continue;
+                if ( btag && !defaultBTag(type,i, jec) ) continue;
                 if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
-                if (btag && cms2.pfjets_p4()[i].pt() * jec < 30. && fabs(jetDz(i,0))>2.) continue;//newcuts
+                //if (btag && cms2.pfjets_p4()[i].pt() * jec < 30. && fabs(jetDz(i,0))>2.) continue;//newcuts
                 if ( (lt.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(lt, cms2.pfjets_p4()[i])) < vetoCone) ||
                         (ll.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ll, cms2.pfjets_p4()[i])) < vetoCone) ) continue;
+				
+				if ( !passMVAJetId( cms2.pfjets_p4()[i].pt() * jec, cms2.pfjets_p4()[i].eta(), cms2.pfjets_mvavalue()[i], 2) ) continue;
 
                 // cout << " \tpassed all cuts" << endl;
                 jets.push_back(JetPair(cms2.pfjets_p4()[i] * jec,i));
@@ -124,7 +127,7 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
             for ( unsigned int i=0; i < cms2.trkjets_p4().size(); ++i) {
                 double jec = 1.0;
                 if ( cms2.trkjets_p4()[i].pt() < etThreshold ) continue;
-                if ( btag && !defaultBTag(type,i) ) continue;
+                if ( btag && !defaultBTag(type,i, jec) ) continue;
                 if ( TMath::Abs(cms2.trkjets_p4()[i].eta()) > etaMax ) continue;
                 if ( (lt.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(lt, cms2.genjets_p4()[i])) < vetoCone) ||
                         (ll.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ll, cms2.genjets_p4()[i])) < vetoCone) ) continue;
@@ -140,7 +143,7 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
 }
 
 std::vector<JetPair> getDefaultJets(unsigned int i_hyp, bool applyJEC, FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3, bool btagged){
-    return getJets(jetType(), i_hyp, 30, 5.0, applyJEC, jet_corrector_pfL1FastJetL2L3, false, btagged); // V1
+    return getJets(jetType(), i_hyp, 30, 4.7, applyJEC, jet_corrector_pfL1FastJetL2L3, false, btagged); // V1 // new cut
 }
 
 unsigned int numberOfJets(unsigned int i_hyp, bool applyJEC, FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3){
@@ -186,7 +189,35 @@ double BTag(WWJetType type, unsigned int iJet){
     return 0;
 }
 
-bool defaultBTag(WWJetType type, unsigned int iJet){
-    return BTag(type,iJet)>2.1;
+double BTag(WWJetType type, unsigned int iJet, float corjetpt){
+    switch ( type ) {
+        case jptJet:
+            return BTag(cms2.jpts_p4().at(iJet));
+            break;
+        case CaloJet:
+            return cms2.jets_trackCountingHighEffBJetTag()[iJet];
+            break;
+        case pfJet:
+            return corjetpt<30 ? cms2.pfjets_trackCountingHighEffBJetTag()[iJet] : cms2.pfjets_jetBProbabilityBJetTag()[iJet];
+            break;
+        default:
+            std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
+            assert(0);
+    }
+    return 0;
+}
+
+bool defaultBTag(WWJetType type, unsigned int iJet, float jec) {
+    
+	switch ( type ) {
+        case pfJet:
+			if ( cms2.pfjets_p4()[iJet].pt() * jec < 30 && cms2.pfjets_trackCountingHighEffBJetTag()[iJet] > 2.1) return true;
+			if ( cms2.pfjets_p4()[iJet].pt() * jec > 30 && cms2.pfjets_jetBProbabilityBJetTag()[iJet] > 1.05) return true; 
+            break;
+        default:
+            std::cout << "ERROR: Please use PFJets : " << type << " FixIt!" << std::endl;
+            assert(0);
+    }
+    return 0;
 }
 

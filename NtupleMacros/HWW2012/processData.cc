@@ -69,7 +69,8 @@ int main()
     std::vector<string> samples;
     //samples.push_back(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
     //ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1);
-    samples.push_back("/nfs-6/userdata/jaehyeok/WW_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START50_V15-v1/V05-01-01/nofilter/postprocessing_forsync/*.root");
+    //samples.push_back("/nfs-6/userdata/jaehyeok/WW_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START50_V15-v1/V05-01-01/nofilter/postprocessing_forsync/*.root");
+    samples.push_back("/tas/jaehyeok/home/HWW/MakeCMS2ntuple/CMSSW_5_2_3_patch4/src/post_ntuple_A6DE4085-8191-E111-BF4E-001E67396D5B.root");
     ProcessSample(samples, SmurfTree::qqww, integratedLumi, -1, -1);
   }
 

@@ -6,6 +6,7 @@
 #include "TDatabasePDG.h"
 #include "Math/VectorUtil.h"
 #include "TROOT.h"
+#include "DYMVA.h"
 
 using namespace std;
 
@@ -15,12 +16,13 @@ using namespace std;
 #include "CORE/muonSelections.h"
 #include "CORE/jetSelections.h"
 #include "CORE/metSelections.h"
+#include "../Tools/MuonEffectiveArea.h"
 #endif
 
 //
 // Electron ID
 //
-
+/*
 bool goodElectronTMVA(ElectronIDMVA *mva, int useMVAeleId, unsigned int i) {
   //cout << "electronIdMVA.MVAValue=" << electronIdMVA->MVAValue(i, 0) << endl;
   
@@ -52,11 +54,13 @@ bool goodElectronTMVA(ElectronIDMVA *mva, int useMVAeleId, unsigned int i) {
     if (pt<20){
       if (fabs(etaSC)<1. && mva->MVAValue(i, 0)>0.139) return 1;
       else if (fabs(etaSC)>=1. && fabs(etaSC)<1.479 && mva->MVAValue(i, 0)>0.525) return 1;
-      else if (fabs(etaSC)>=1.479 && /*fabs(etaSC)<2.5 &&*/ mva->MVAValue(i, 0)>0.543) return 1;
+      //else if (fabs(etaSC)>=1.479 && fabs(etaSC)<2.5 && mva->MVAValue(i, 0)>0.543) return 1;
+      else if (fabs(etaSC)>=1.479 && mva->MVAValue(i, 0)>0.543) return 1;
     } else {
       if (fabs(etaSC)<1. && mva->MVAValue(i, 0)>0.947) return 1;
       else if (fabs(etaSC)>=1. && fabs(etaSC)<1.479 && mva->MVAValue(i, 0)>0.950) return 1;
-      else if (fabs(etaSC)>=1.479 && /*fabs(etaSC)<2.5 &&*/ mva->MVAValue(i, 0)>0.884) return 1;
+      //else if (fabs(etaSC)>=1.479 && fabs(etaSC)<2.5 && mva->MVAValue(i, 0)>0.884) return 1;
+      else if (fabs(etaSC)>=1.479 && mva->MVAValue(i, 0)>0.884) return 1;
     }
     return 0;
 
@@ -132,15 +136,16 @@ bool goodElectronTMVA(ElectronIDMVA *mva, int useMVAeleId, unsigned int i) {
     return false;
   }
 }
+*/
 
-bool goodElectronWithoutIsolation(unsigned int i,  bool useLHeleId, int useMVAeleId, ElectronIDMVA *mva){
-    return ww_elBase(i) && ww_elId(i, useLHeleId, useMVAeleId, mva) && ww_eld0PV(i) && ww_eldZPV(i);
+bool goodElectronWithoutIsolation(unsigned int i,  bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator){
+    return ww_elBase(i) && ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) && ww_eld0PV(i) && ww_eldZPV(i);
 }
 
-bool goodElectronIsolated(unsigned int i,  bool useLHeleId, int useMVAeleId, ElectronIDMVA *mva, bool lockToCoreSelectors){
+bool goodElectronIsolated(unsigned int i,  bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool lockToCoreSelectors){
     bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
     bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV6);
-    bool internal = ww_elBase(i) && ww_elId(i, useLHeleId, useMVAeleId, mva) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
+    bool internal = ww_elBase(i) && ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
     assert(!lockToCoreSelectors || core==internal);
     return internal;
 }
@@ -230,10 +235,11 @@ bool goodMuonWithoutIsolation(unsigned int i, bool useMVAmuId, MuonIDMVA *mva){
   return ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i, useMVAmuId, mva);
 }
 
-bool goodMuonIsolated(unsigned int i, bool lockToCoreSelectors, bool useMVAmuId, MuonIDMVA *mva){
+bool goodMuonIsolated(	unsigned int i, bool lockToCoreSelectors, bool useMVAmuId, MuonIDMVA *mva, 
+						MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle ){
     bool ptcut = cms2.mus_p4().at(i).pt() >= 10.0;
     bool core = ptcut && muonId(i, NominalSmurfV6);
-    bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i, useMVAmuId, mva) && ww_muIso(i); 
+    bool internal = ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i, useMVAmuId, mva) && ww_muIso(i, muonMVAEstimator, IdentifiedMu,  IdentifiedEle); 
     assert(!lockToCoreSelectors || core==internal);
     return internal;
 }
@@ -256,14 +262,14 @@ bool ww_elBase(unsigned int index){
     if (fabs(cms2.els_p4().at(index).eta()) > 2.5) return false;
     return true;
 }
-bool ww_elId(unsigned int index, bool useLHeleId, int useMVAeleId, ElectronIDMVA *mva) {
+bool ww_elId(unsigned int index, bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator) {
 
     if (useLHeleId) {
         if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
         if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
     if (useMVAeleId>0){
-      if (!goodElectronTMVA(mva, useMVAeleId, index)) return false;
+      if (!goodElectronTMVA(egammaMvaEleEstimator, useMVAeleId, index)) return false;
     } else {
         if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
     }
@@ -304,21 +310,14 @@ bool ww_eldZPV(unsigned int index){
 }
 
 double ww_elIsoVal(unsigned int index){
-    float sum = cms2.els_tkIso().at(index);
-    if ( fabs(cms2.els_etaSC()[index]) < 1.479 )
-        // if ( fabs(cms2.els_p4().at(index).eta()) < 1.479)
-        sum += max(0., (cms2.els_ecalIso().at(index) -1.));
-    else 
-        sum += cms2.els_ecalIso().at(index);
-    sum += cms2.els_hcalIso().at(index);
-    double pt = cms2.els_p4().at(index).pt();
-    return sum/pt;
+	return electronIsoValuePF2012_FastJetEffArea_HWW( index );
 }
 
 bool ww_elIso(unsigned int index){
-    return pass_electronSelection(index, electronSelection_smurfV5_iso);
-    //return ww_elIsoVal(index)<0.1;
+	float pfiso = ww_elIsoVal( index ); 
+	return pfiso<0.15;
 }
+
 
 //
 // Muon Id
@@ -346,6 +345,7 @@ bool ww_mud0PV(unsigned int index){
     if ( cms2.mus_p4().at(index).pt() < 20. ) return ww_mud0ValuePV(index) < 0.01;
     return ww_mud0ValuePV(index) < 0.02;
 }
+
 bool ww_mudZPV(unsigned int index, float cut){
     int vtxIndex = primaryVertex();
     if (vtxIndex<0) return false;
@@ -353,17 +353,19 @@ bool ww_mudZPV(unsigned int index, float cut){
     double dzpv = dzPV(cms2.mus_vertex_p4()[index], cms2.mus_trk_p4()[index], cms2.vtxs_position()[vtxIndex]);
     return fabs(dzpv)<cut;
 }
+
 bool ww_muId(unsigned int index, bool useMVAmuId, MuonIDMVA *mva){ 
     if (useMVAmuId){
       if (!goodMuonTMVA(mva,index)) return false;
       return true;
     }
-    if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
-    if (cms2.mus_validHits().at(index) < 11)            return false; // # of tracker hits
-    if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt()>0.1) return false;
+    
+	if (((cms2.mus_type().at(index)) & (1<<2)) == 0)    return false; // tracker muon
+    if (cms2.trks_nlayers().at(cms2.mus_trkidx().at(index)) < 6) return false; // # of tracker hits 
+    if (cms2.mus_ptErr().at(index)/cms2.mus_trk_p4().at(index).pt()>0.1) return false; // Does pt come from track?
     if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(index))==0) return false;
     if (cms2.mus_trkKink().at(index) > 20.) return false; //kink finder
-    // if (!isPFMuon(index))return false;
+    if (!cms2.mus_pid_PFMuon().at(index)) return false; // should be a pfmuon
     // global muon
     bool goodMuonGlobalMuon = false;
     if (((cms2.mus_type().at(index)) & (1<<1)) == (1<<1)){
@@ -383,6 +385,7 @@ double ww_muIsoVal(unsigned int index){
     double pt  = cms2.mus_p4().at(index).pt();
     return sum/pt;
 }
+
 bool ww_muIso(unsigned int index){
     if (cms2.mus_p4().at(index).pt()>20) {
         if (TMath::Abs(cms2.mus_p4()[index].eta())<1.479) 
@@ -396,6 +399,11 @@ bool ww_muIso(unsigned int index){
             return muonIsoValuePF(index,0,0.3) < 0.05;
     }
 }
+
+bool ww_muIso(unsigned int index, MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle){
+	return passMuonRingsMVA(index, muonMVAEstimator, IdentifiedMu, IdentifiedEle); 
+}
+
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
         const std::vector<JetPair>& vetojets)
 {
@@ -405,7 +413,7 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
         if (  ((cms2.mus_goodmask()[imu]) & (1<<19)) == 0 ) continue; // TMLastStationAngTight
         if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
         if ( ww_mud0ValuePV(imu) > 0.2) continue;
-        if ( ! ww_mudZPV(imu,0.2) ) continue;//newcuts, was 0.1
+        if ( ! ww_mudZPV(imu,0.2) ) continue; //newcuts, was 0.1
         if ( cms2.mus_validHits()[imu] < 11) continue;
         if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
         if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
@@ -420,7 +428,7 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
     return nMuons;
 }
 
-std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleId, int useMVAeleId, ElectronIDMVA *elmva, bool useMVAmuId, MuonIDMVA *mumva){
+std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva){
     std::vector<LeptonPair> leptons;
     for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
         if ( cms2.mus_p4()[i].pt() < minPt ) continue;
@@ -434,15 +442,15 @@ std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleI
         if ( cms2.els_p4()[i].pt() < minPt ) continue;
         if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
         if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.els_p4().at(i)) <0.1) ) continue;
-        if ( !(ww_elId(i, useLHeleId, useMVAeleId, elmva) && ww_eld0PV(i) && ww_elIso(i) &&
+        if ( !(ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) && ww_eld0PV(i) && ww_elIso(i) &&
                     fabs(cms2.els_p4().at(i).eta()) < 2.5) ) continue;
         leptons.push_back(LeptonPair(false,i));
     }
     return leptons;
 }
 
-unsigned int numberOfExtraLeptons(int i_hyp, double minPt, bool useLHeleId, int useMVAeleId, ElectronIDMVA *elmva, bool useMVAmuId, MuonIDMVA *mumva){
-  return getExtraLeptons(i_hyp, minPt, useLHeleId, useMVAeleId, elmva, useMVAmuId, mumva).size();
+unsigned int numberOfExtraLeptons(int i_hyp, double minPt, bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva){
+  return getExtraLeptons(i_hyp, minPt, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, mumva).size();
 }
 
 
@@ -686,22 +694,43 @@ bool passedTriggerRequirementsWithRuns() {
 // MET
 //
 
-bool passedMetRequirements(unsigned int i_hyp){
-    // if ( cms2.hyp_p4().at(i_hyp).mass()>130 ) return true;
+double minmet(unsigned int i_hyp) {
+    metStruct trkMET = trackerMET(i_hyp,0.1); 
+    double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
+            projectedMet(i_hyp, trkMET.met, trkMET.metphi));
+    return pMet;
+}
+
+bool passedMetRequirements(unsigned int i_hyp, FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3) {
+   
+    bool applyJEC = true;
+    int njets = numberOfJets(i_hyp, applyJEC, jet_corrector_pfL1FastJetL2L3); 
+	
+	return passedMetRequirements(i_hyp, njets, getJets( jetType(), i_hyp, 0., 4.7, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false));
+}
+
+bool passedMetRequirements(unsigned int i_hyp, unsigned int njets, std::vector<JetPair> jets ){
+	float dymva=-999.;
     HypothesisType type = getHypothesisTypeNew(i_hyp);
-    // std::vector<LorentzVector> jets = getDefaultJets(i_hyp);
     metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
     double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
             projectedMet(i_hyp, trkMET.met, trkMET.metphi));
-    // if ( type == EM && cms2.hyp_p4().at(i_hyp).mass()>90 ) return true;
-    if ( pMet < 20 ) return false;
+    if ( njets<2 && pMet < 20 ) return false;
     if (type == EE || type == MM) {
-        double threshold = 37+nGoodVertex()/2.0;
-        // double dmass = fabs(cms2.hyp_p4()[i_hyp].mass()-91);
-        // if ( metValue() < 45 ) return false;
-        if ( pMet < threshold ) return false;
+		if(njets==0) {
+			dymva =  DYMVA(i_hyp, njets, jets );
+			if( dymva < 0.6 ) return false;
+		}
+		else if(njets==1) {
+			dymva =  DYMVA(i_hyp, njets, jets ); 
+			if( dymva < -0.01 ) return false;
+		}
+		else {
+        	double threshold = 40 + nGoodVertex()/2.0;
+        	if ( metValue() < threshold ) return false;
+		}
     }
-    return true;
+	return true;
 }
 
 double nearestDeltaPhi(double Phi, int i_hyp)
@@ -770,10 +799,9 @@ bool inZmassWindow(float mass, double delta){
 // event top tagging
 //
 
-bool toptag(WWJetType type, int i_hyp, double minPt,
+bool toptag(WWJetType type, int i_hyp, double minPt, FactorizedJetCorrector *jet_corrector_pfL1FastJetL2L3,
         std::vector<JetPair> ignoreJets)
 {
-    //std::vector<LorentzVector> jets;
     const double vetoCone    = 0.3;
 
     switch ( type ){
@@ -786,10 +814,20 @@ bool toptag(WWJetType type, int i_hyp, double minPt,
                     if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ijet->first,cms2.pfjets_p4()[i])) < vetoCone ) ignoreJet=true;
                 if ( ignoreJet ) continue;
                 if ( TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_lt_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ||
-                        TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
-                if ( !defaultBTag(type,i) ) continue;
-                // dZ cut
-                if (fabs(jetDz(i,0))>2) continue;
+						TMath::Abs(ROOT::Math::VectorUtil::DeltaR(cms2.hyp_ll_p4()[i_hyp],cms2.pfjets_p4()[i])) < vetoCone ) continue;
+
+				double jec = 1.0;
+				jet_corrector_pfL1FastJetL2L3->setRho(cms2.evt_ww_rho()); 
+				jet_corrector_pfL1FastJetL2L3->setJetA(cms2.pfjets_area().at(i));
+				jet_corrector_pfL1FastJetL2L3->setJetPt(cms2.pfjets_p4()[i].pt());
+				jet_corrector_pfL1FastJetL2L3->setJetEta(cms2.pfjets_p4()[i].eta());
+				double corr = jet_corrector_pfL1FastJetL2L3->getCorrection();
+				jec *= corr;
+
+				if ( !passMVAJetId( cms2.pfjets_p4()[i].pt() * jec, cms2.pfjets_p4()[i].eta(), cms2.pfjets_mvavalue()[i], 2) ) continue;
+               
+				if ( !defaultBTag(type,i, jec) ) continue;
+				
                 return true;
             }
             break;
@@ -816,3 +854,136 @@ bool toptag(WWJetType type, int i_hyp, double minPt,
     return false;
 }
 
+// tightness : 2=loose 1=medium 0=tight
+bool passMVAJetId(double corjetpt, double jeteta, double mvavalue, unsigned int tightness)         
+{
+	if(tightness<0 || tightness>2)
+	{
+		cout << "ERROR : tightness should be 0, 1, or 2. " << endl;
+		return false;
+	}
+
+	double fMVACut[3][4][4];
+/*
+	// original cuts for 52X (used for MVA Met)
+	// Do not use these cuts for Jet Id in 52X
+	//Tight Id
+	fMVACut[0][0][0] =  0.5; fMVACut[0][0][1] = 0.6; fMVACut[0][0][2] = 0.6; fMVACut[0][0][3] = 0.9;
+	fMVACut[0][1][0] = -0.2; fMVACut[0][1][1] = 0.2; fMVACut[0][1][2] = 0.2; fMVACut[0][1][3] = 0.6;
+	fMVACut[0][2][0] =  0.3; fMVACut[0][2][1] = 0.4; fMVACut[0][2][2] = 0.7; fMVACut[0][2][3] = 0.8;
+	fMVACut[0][3][0] =  0.5; fMVACut[0][3][1] = 0.4; fMVACut[0][3][2] = 0.8; fMVACut[0][3][3] = 0.9;
+	//Medium id
+	fMVACut[1][0][0] =  0.2; fMVACut[1][0][1] = 0.4; fMVACut[1][0][2] = 0.2; fMVACut[1][0][3] = 0.6;
+	fMVACut[1][1][0] = -0.3; fMVACut[1][1][1] = 0. ; fMVACut[1][1][2] = 0. ; fMVACut[1][1][3] = 0.5;
+	fMVACut[1][2][0] =  0.2; fMVACut[1][2][1] = 0.2; fMVACut[1][2][2] = 0.5; fMVACut[1][2][3] = 0.7;
+	fMVACut[1][3][0] =  0.3; fMVACut[1][3][1] = 0.2; fMVACut[1][3][2] = 0.7; fMVACut[1][3][3] = 0.8;
+	//Loose Id 
+	fMVACut[2][0][0] = -0.2; fMVACut[2][0][1] =  0. ; fMVACut[2][0][2] =  0.2; fMVACut[2][0][3] =  0.5;
+	fMVACut[2][1][0] =  0.2; fMVACut[2][1][1] = -0.6; fMVACut[2][1][2] = -0.6; fMVACut[2][1][3] = -0.4;
+	fMVACut[2][2][0] =  0.2; fMVACut[2][2][1] = -0.6; fMVACut[2][2][2] = -0.6; fMVACut[2][2][3] = -0.4;
+	fMVACut[2][3][0] =  0.2; fMVACut[2][3][1] = -0.8; fMVACut[2][3][2] = -0.8; fMVACut[2][3][3] = -0.4;
+*/	
+
+	// These cuts are for 42X but used for 52X jet Id
+	//Tight Id
+	fMVACut[0][0][0] =  0.5; fMVACut[0][0][1] = 0.6; fMVACut[0][0][2] = 0.6; fMVACut[0][0][3] = 0.9;
+	fMVACut[0][1][0] = -0.2; fMVACut[0][1][1] = 0.2; fMVACut[0][1][2] = 0.2; fMVACut[0][1][3] = 0.6;
+	fMVACut[0][2][0] =  0.3; fMVACut[0][2][1] = 0.4; fMVACut[0][2][2] = 0.7; fMVACut[0][2][3] = 0.8;
+	fMVACut[0][3][0] =  0.5; fMVACut[0][3][1] = 0.4; fMVACut[0][3][2] = 0.8; fMVACut[0][3][3] = 0.9;
+	//Medium id
+	fMVACut[1][0][0] =  0.2; fMVACut[1][0][1] = 0.4; fMVACut[1][0][2] = 0.2; fMVACut[1][0][3] = 0.6;
+	fMVACut[1][1][0] = -0.3; fMVACut[1][1][1] = 0. ; fMVACut[1][1][2] = 0. ; fMVACut[1][1][3] = 0.5;
+	fMVACut[1][2][0] =  0.2; fMVACut[1][2][1] = 0.2; fMVACut[1][2][2] = 0.5; fMVACut[1][2][3] = 0.7;
+	fMVACut[1][3][0] =  0.3; fMVACut[1][3][1] = 0.2; fMVACut[1][3][2] = 0.7; fMVACut[1][3][3] = 0.8;
+	//Loose Id 
+	fMVACut[2][0][0] =  0. ; fMVACut[2][0][1] =  0. ; fMVACut[2][0][2] =  0. ; fMVACut[2][0][3] = 0.2;
+	fMVACut[2][1][0] = -0.4; fMVACut[2][1][1] = -0.4; fMVACut[2][1][2] = -0.4; fMVACut[2][1][3] = 0.4;
+	fMVACut[2][2][0] =  0. ; fMVACut[2][2][1] =  0. ; fMVACut[2][2][2] =  0.2; fMVACut[2][2][3] = 0.6;
+	fMVACut[2][3][0] =  0. ; fMVACut[2][3][1] =  0. ; fMVACut[2][3][2] =  0.6; fMVACut[2][3][3] = 0.2;
+
+
+	// pT categorization
+	int ptId = 0;
+	if( corjetpt > 10 && corjetpt < 20 ) ptId = 1;
+	if( corjetpt > 20 && corjetpt < 30 ) ptId = 2;
+	if( corjetpt > 30                  ) ptId = 3;
+
+	// eta categorization
+	int etaId = 0;
+	if( fabs(jeteta) > 2.5  && fabs(jeteta) < 2.75 ) etaId = 1;
+	if( fabs(jeteta) > 2.75 && fabs(jeteta) < 3.0  ) etaId = 2;
+	if( fabs(jeteta) > 3.0  && fabs(jeteta) < 5.0  ) etaId = 3;
+
+	// return  
+	if( mvavalue > fMVACut[tightness][ptId][etaId] ) return true;
+	return false;
+}
+
+bool goodElectronTMVA(EGammaMvaEleEstimator* egammaMvaEleEstimator, int useMVAeleId, unsigned int i) 
+{  
+
+	float pt = cms2.els_p4().at(i).pt();
+  	float etaSC = cms2.els_etaSC().at(i);
+
+	//preselection
+	if (fabs(etaSC)<1.479) {
+		if (cms2.els_sigmaIEtaIEta().at(i)>0.01 || 
+				fabs(cms2.els_dEtaIn().at(i))>0.007 ||
+				fabs(cms2.els_dPhiIn().at(i))>0.15 ||
+				cms2.els_hOverE().at(i)>0.12 ||
+				cms2.els_tkIso().at(i)/pt>0.2 ||
+				TMath::Max(cms2.els_ecalIso().at(i) - 1.0, 0.0)/pt>0.20 ||
+				//cms2.els_ecalIso().at(i)/pt>0.20 ||////FIXME 
+				cms2.els_hcalIso().at(i)/pt>0.20 ) return 0;
+	} else {
+		if (cms2.els_sigmaIEtaIEta().at(i)>0.03 || 
+				fabs(cms2.els_dEtaIn().at(i))>0.009 ||
+				fabs(cms2.els_dPhiIn().at(i))>0.10 ||
+				cms2.els_hOverE().at(i)>0.10 ||
+				cms2.els_tkIso().at(i)/pt>0.2 ||
+				//TMath::Max(cms2.els_ecalIso().at(i) - 1.0, 0.0)/pt>0.20 || //FIXME  
+				cms2.els_ecalIso().at(i)/pt>0.20 ||
+				cms2.els_hcalIso().at(i)/pt>0.20 ) return 0;
+	}
+
+
+	double mvavalue =  egammaMvaEleEstimator->mvaValue(i,false);
+
+	if( pt > 20 ) {
+		if( fabs(etaSC)>=1.479 && mvavalue>0.92)  return true;
+		if( fabs(etaSC)>=0.8 && fabs(etaSC)<1.479 && mvavalue>0.85)  return true;
+		if( fabs(etaSC)<0.8 && mvavalue>0.94)  return true;
+		return false;
+	}
+	else {
+		if( fabs(etaSC)>=1.479 && mvavalue>0.62)  return true;
+		if( fabs(etaSC)>=0.8 && fabs(etaSC)<1.479 && mvavalue>0.1)  return true;
+		if( fabs(etaSC)<0.8 && 
+			mvavalue>0.0)  return true;
+		return false;
+	}
+
+	cout << "Something is wrong. You should not see this! " << endl; 
+}
+
+bool passMuonRingsMVA(unsigned int mu, MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle)
+{
+	double mvavalue = muonMVAEstimator->mvaValueIso( mu, cms2.evt_ww_rho(), MuonEffectiveArea::kMuEAFall11MC,
+	                                               	 IdentifiedEle, IdentifiedMu, false );
+
+	double pt 	= cms2.mus_trk_p4()[mu].pt();
+	double eta 	= cms2.mus_trk_p4()[mu].eta();
+
+	if( pt>20 ) {
+		if( fabs(eta)>=1.479 && fabs(eta)<2.4 && mvavalue>0.86 )  return true;
+		if( fabs(eta)<1.479 && mvavalue>0.82 )  return true;
+		return false;
+	}
+	else {
+		if( fabs(eta)>=1.479 && fabs(eta)<2.4 && mvavalue>0.82 )  return true;
+		if( fabs(eta)<1.479 && mvavalue>0.86 )  return true;
+		return false;
+	}	
+	
+	cout << "Something is wrong. You should not see this! " << endl; 
+}

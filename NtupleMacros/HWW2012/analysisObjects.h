@@ -59,7 +59,8 @@ std::vector<JetPair> getDefaultJets(unsigned int i_hyp, bool applyJEC, Factorize
 
 double BTag(LorentzVector jetP4);
 double BTag(WWJetType type, unsigned int iJet);
-bool defaultBTag(WWJetType type, unsigned int iJet);
+double BTag(WWJetType type, unsigned int iJet, float corjetpt);
+bool   defaultBTag(WWJetType type, unsigned int iJet, float jec=1.);
 
 #endif
 
