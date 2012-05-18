@@ -467,7 +467,7 @@ Double_t MuonMVAEstimator::mvaValueIso( Int_t mu, Double_t rho, MuonEffectiveAre
 				if( cms2.pfcands_trkidx()[ipf]>=0) { //Charged
 
 					// dZ cut
-					if ( (fabs( trks_dz_pv( cms2.pfcands_trkidx()[ipf], ivtx, false ).first 
+					if ( (fabs( trks_dz_pv( cms2.pfcands_trkidx()[ipf], ivtx ).first 
 									- dzPVmu(cms2.mus_vertex_p4()[mu], cms2.mus_trk_p4()[mu], cms2.vtxs_position()[ivtx]) ) > 0.2) ) continue;
 
 					// Veto any PFmuon, or PFEle 
