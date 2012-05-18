@@ -166,13 +166,13 @@ float samesign::electronIsolationPF2012(int idx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 // passes dilepton trigger
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool samesign::passesTrigger(bool is_data, int hyp_type)
+bool samesign::passesTrigger(int hyp_type)
 {
     //----------------------------------------
     // no trigger requirements applied to MC
     //----------------------------------------
   
-    if (!is_data)
+    if (!cms2.evt_isRealData())
         return true; 
   
     //---------------------------------
