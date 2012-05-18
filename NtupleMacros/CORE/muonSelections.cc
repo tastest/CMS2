@@ -417,7 +417,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         // if there isn't a good vertex, use the beamSpot
         if (trkidx < 0)                                                          return false; // require a matching track
         if (vtxidx < 0 || trkidx < 0) {
-	  cout << __FILE__ <<< " " << __LINE__ << endl;
+	  cout << __FILE__ << " " << __LINE__ << endl;
 	  cout << "WARNING: didn't find any good vertices, should never get here" << endl;
 
             if (fabs(cms2.mus_d0corr().at(index)) > 0.2)  return false;
