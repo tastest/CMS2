@@ -51,7 +51,7 @@ ifeq ($(shell root-config --platform),macosx)
 	MACOSXFLAGS = -dynamiclib -undefined dynamic_lookup -Wl,-x -O -Xlinker -bind_at_load -flat_namespace
 endif
 
-CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc $(CMSROOT)/CORE/jetSelections.cc $(CMSROOT)/CORE/MITConversionUtilities.cc $(CMSROOT)/CORE/trackSelections.cc $(CMSROOT)/CORE/eventSelections.cc $(CMSROOT)/CORE/metSelections.cc $(CMSROOT)/Tools/ElectronIDMVA.cc $(CMSROOT)/Tools/MuonIDMVA.cc $(CMSROOT)/Tools/goodrun.cc 
+CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROOT)/CORE/electronSelections.cc $(CMSROOT)/CORE/electronSelectionsParameters.cc $(CMSROOT)/CORE/jetSelections.cc $(CMSROOT)/CORE/MITConversionUtilities.cc $(CMSROOT)/CORE/trackSelections.cc $(CMSROOT)/CORE/eventSelections.cc $(CMSROOT)/CORE/metSelections.cc $(CMSROOT)/Tools/ElectronIDMVA.cc $(CMSROOT)/Tools/MuonIDMVA.cc $(CMSROOT)/Tools/goodrun.cc  $(CMSROOT)/Tools/EGammaMvaEleEstimator.cc $(CMSROOT)/Tools/MuonMVAEstimator.cc
 
 # $(CMSROOT)/CORE/utilities.cc
 #$(CMSROOT)/CORE/fakerates.cc
