@@ -25,15 +25,20 @@ const char* config_info = "SmurfV8 selection (Baseline;Tight+Loose;MET20); 42X";
 #include "TPRegexp.h"
 #include "monitor.h"
 #include "../Tools/goodrun.h"
-#include "../Tools/ElectronIDMVA.h"
+//#include "../Tools/ElectronIDMVA.h"
 #include "../Tools/MuonIDMVA.h"
+#include "../Tools/EGammaMvaEleEstimator.h"
+#include "../Tools/MuonMVAEstimator.h"
+#include "../Tools/MuonEffectiveArea.h"
 #include "TTreeCache.h"
 
 #include "analysisObjects.h"
 #include "analysisTools.h"
 #include "analysisSelections.h"
+#include "DYMVA.h"
 
 using namespace std;
+using namespace tas;
 
 #ifndef __CINT__
 #include "CORE/CMS2.h"
@@ -60,7 +65,7 @@ bool lockToCoreSelectors = false;
 bool applyFastJetCorrection = false;
 bool selectBestCandidate = false; // select only one hypothesis per event with the two most energetic leptons
 bool useLHeleId = false;
-int useMVAeleId = 2;//zero means off, otherwise it's the mva version
+int useMVAeleId = 1;//zero means off, otherwise it's the mva version
 bool useMVAmuId = false;
 bool doDYNNLOw = false;
 const unsigned int prescale = 1; // DON'T USE ANYTHING BUT 1, unless you know what you are doing
@@ -74,8 +79,10 @@ wwcuts_t cuts_passed = 0;
 //
 
 TH1D* HiggsPtKFactor = 0;
-ElectronIDMVA* electronIdMVA = 0;
+//ElectronIDMVA* electronIdMVA = 0;
 MuonIDMVA* muonIdMVA = 0;
+EGammaMvaEleEstimator* egammaMvaEleEstimator = 0;
+MuonMVAEstimator* muonMVAEstimator = 0;
 vector<TH2D*>     fDYNNLOKFactorHists;           //vector of hist for Drell-Yan NNLO Kfactor
 
 hypo_monitor monitor(true);
@@ -98,146 +105,189 @@ bool hypoSync(int i_hyp, double weight, bool realData)
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && std::fabs(cms2.mus_p4().at(cms2.hyp_lt_index()[i_hyp]).eta()) >= 2.4) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && std::fabs(cms2.els_p4().at(cms2.hyp_ll_index()[i_hyp]).eta()) >= 2.5) return false;
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && std::fabs(cms2.els_p4().at(cms2.hyp_lt_index()[i_hyp]).eta()) >= 2.5) return false;
-
   monitor.count(cms2,type,"charge + pt 20/10 + eta",weight);
 
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
+
+  // 
+  std::vector<Int_t> nullMu; // null identified muons 
+  std::vector<Int_t> nullEle; // null identified electrons 
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_lt_index()[i_hyp], muonMVAEstimator, nullMu, nullEle) ) return false;  
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muIso(cms2.hyp_ll_index()[i_hyp], muonMVAEstimator, nullMu, nullEle) ) return false; 
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_elIso(cms2.hyp_ll_index()[i_hyp]) ) return false;
+  monitor.count(cms2,type,"lepton iso",weight);
 
-  monitor.count(cms2,type,"iso",weight);
 
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-      cms2.els_exp_innerlayers().at(cms2.hyp_lt_index()[i_hyp]) != 0) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-      cms2.els_exp_innerlayers().at(cms2.hyp_ll_index()[i_hyp]) != 0) return false;
-
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
-      isFromConversionMIT(cms2.hyp_lt_index()[i_hyp]))
-    return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
-      isFromConversionMIT(cms2.hyp_ll_index()[i_hyp]))
-    return false;
-  
+  //
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && cms2.els_exp_innerlayers().at(cms2.hyp_lt_index()[i_hyp]) != 0) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && cms2.els_exp_innerlayers().at(cms2.hyp_ll_index()[i_hyp]) != 0) return false;
+  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && isFromConversionMIT(cms2.hyp_lt_index()[i_hyp])) return false;
+  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && isFromConversionMIT(cms2.hyp_ll_index()[i_hyp])) return false;
   monitor.count(cms2,type,"conv rejection",weight);
-  
+
+
+  //
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mud0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eld0PV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  
   monitor.count(cms2,type,"d0",weight);
 
+
+  //
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_mudZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_lt_index()[i_hyp]) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !ww_eldZPV(cms2.hyp_ll_index()[i_hyp]) ) return false;
-  
   monitor.count(cms2,type,"dZ",weight);
-
+ 
+ 
+  //
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_lt_index()[i_hyp],useMVAmuId,muonIdMVA) ) return false;
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !ww_muId(cms2.hyp_ll_index()[i_hyp],useMVAmuId,muonIdMVA) ) return false;
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11) {
-    int index = cms2.hyp_lt_index()[i_hyp];
+    int index = cms2.hyp_lt_index()[i_hyp];   
     if (useLHeleId) {
       if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
       if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
     if (useMVAeleId>0){
-      if (!goodElectronTMVA(electronIdMVA, useMVAeleId, index)) return false;
+      if (!goodElectronTMVA(egammaMvaEleEstimator, useMVAeleId, index) ) return false;
     } else {
       if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
     }
   } 
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11) {
-    int index = cms2.hyp_ll_index()[i_hyp];
-    if (useLHeleId) {
+    int index = cms2.hyp_ll_index()[i_hyp];   
+	if (useLHeleId) {
       if (cms2.els_p4().at(index).pt()>20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false; 
       if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
     if (useMVAeleId>0){
-      if (!goodElectronTMVA(electronIdMVA, useMVAeleId, index)) return false;
+      if (!goodElectronTMVA(egammaMvaEleEstimator, useMVAeleId, index)) return false;
     } else {
       if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
     }
   } 
-
   monitor.count(cms2,type,"lepton id",weight);
 
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp], lockToCoreSelectors, useMVAmuId, muonIdMVA) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp], lockToCoreSelectors, useMVAmuId, muonIdMVA) ) return false;
-  if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], useLHeleId, useMVAeleId, electronIdMVA, lockToCoreSelectors) ) return false;
-  if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], useLHeleId, useMVAeleId, electronIdMVA, lockToCoreSelectors) ) return false;
 
+  //
+  if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && 
+  	   !goodMuonIsolated(cms2.hyp_lt_index()[i_hyp], lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) ) return false;  
+  if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && 
+       !goodMuonIsolated(cms2.hyp_ll_index()[i_hyp], lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) ) return false;   
+  if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11 && 
+  	   !goodElectronIsolated(cms2.hyp_lt_index()[i_hyp], useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) return false;
+  if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11 && 
+  	   !goodElectronIsolated(cms2.hyp_ll_index()[i_hyp], useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) return false;
   monitor.count(cms2,type,"lepton id/iso pt20/10",weight);
 
+
+  //
   if ( metValue()<20 ) return false;
   monitor.count(cms2,type,"met>20",weight);
-  
-  if (cms2.hyp_p4().at(i_hyp).mass2()<0 || 
-      cms2.hyp_p4()[i_hyp].mass() < 12) return false;
-  if ( (type == EE || type == MM) && cms2.hyp_p4()[i_hyp].mass() < 20) return false;
-  monitor.count(cms2,type,"mll>12(20)",weight);
-  
+
+
+  //
+  if (cms2.hyp_p4().at(i_hyp).mass2()<0 || cms2.hyp_p4()[i_hyp].mass() < 12) return false;
+  monitor.count(cms2,type,"mll>12 (20->12 for SF)",weight);
+
+
+  //
   if ( type == EE || type == MM) {
     if (inZmassWindow(cms2.hyp_p4()[i_hyp].mass())) return false;
   }
   monitor.count(cms2,type,"z veto",weight);
-  
-  if (!passedMetRequirements(i_hyp)) return false;
-  monitor.count(cms2,type,"Full MET cuts",weight);
 
-  int njets = numberOfJets(i_hyp, applyJEC, jet_corrector_pfL1FastJetL2L3);
-  std::vector<JetPair> sortedJets = getJets(jetType(), i_hyp, 15.0, 5.0, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false);
+
+  // 
+  if ( minmet(i_hyp) < 20 )  return false; 
+  monitor.count(cms2,type,"minMet > 20 GeV",weight);
+
+
+  //
+  int njets = numberOfJets(i_hyp, applyJEC, jet_corrector_pfL1FastJetL2L3); 
+  std::vector<JetPair> sortedJets = getJets(jetType(), i_hyp, 15.0, 4.7, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false); // new cut
   if (cms2.hyp_type().at(i_hyp)!=1 && cms2.hyp_type().at(i_hyp)!=2 && sortedJets.size()>0) {
-    if (njets<2 && fabs(ROOT::Math::VectorUtil::DeltaPhi(sortedJets[0].first,cms2.hyp_p4().at(i_hyp)))>=165.*TMath::Pi()/180.) return false;
-    else if (njets>= 2 && fabs(ROOT::Math::VectorUtil::DeltaPhi(sortedJets[0].first+sortedJets[1].first,cms2.hyp_p4().at(i_hyp)))>=165.*TMath::Pi()/180.) return false;
-  }
-  monitor.count(cms2,type,"Jet DPhi",weight);
+ 	  if (njets>= 2 && fabs(ROOT::Math::VectorUtil::DeltaPhi(sortedJets[0].first+sortedJets[1].first,cms2.hyp_p4().at(i_hyp)))>=165.*TMath::Pi()/180.) return false;
+  } 
+  monitor.count(cms2,type,"Jet DPhi only for 2jet bin",weight);
+  
 
+  //
   if (numberOfSoftMuons(i_hyp,true)>0) return false;
   monitor.count(cms2,type,"soft muon veto",weight);
 
-  if (numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, electronIdMVA, useMVAmuId, muonIdMVA)>0) return false;
+
+  //
+  if (numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA)>0) return false;
   monitor.count(cms2,type,"extra lepton veto",weight);
 
-  if ( toptag(jetType(),i_hyp,10) )  return false;
-  monitor.count(cms2,type,"top tag",weight);
-  
-  if ( cms2.hyp_p4().at(i_hyp).pt() < 45 ) return false;
-  if ( (type==EE || type==MM) && cms2.hyp_lt_p4().at(i_hyp).pt() < 15 ) return false;
-  if ( (type==EE || type==MM) && cms2.hyp_ll_p4().at(i_hyp).pt() < 15 ) return false;
-  monitor.count(cms2,type,"dilep.pt()>45 && lep2.pt()>15",weight);
 
+  //
+  if ( toptag(jetType(),i_hyp, 10, jet_corrector_pfL1FastJetL2L3) )  return false;
+  monitor.count(cms2,type,"top tag",weight);
+
+
+  //
+  if ( cms2.hyp_p4().at(i_hyp).pt() < 45 ) return false;
+  monitor.count(cms2,type,"dilep.pt()>45",weight);
+ 
+
+  // 
+  if ( !passedMetRequirements(i_hyp,jet_corrector_pfL1FastJetL2L3) ) return false;
+  monitor.count(cms2,type,"Full MET cuts",weight);
+
+
+  //
   if ( njets==0 )
     monitor.count(cms2,type,"0 jet bin",weight);
-
+  
+  //
   if ( njets==1 )
     monitor.count(cms2,type,"1 jet bin",weight);
 
+  //
   if ( njets==2 || njets==3 ) {
-    if (fabs(sortedJets[0].first.eta())>=4.5 || fabs(sortedJets[1].first.eta())>=4.5) return false;
+    if (fabs(sortedJets[0].first.eta())>=4.7 || fabs(sortedJets[1].first.eta())>=4.7) return false;
     if (njets==3 && sortedJets[2].first.pt()>30 && ((sortedJets[0].first.eta()-sortedJets[2].first.eta() > 0 && sortedJets[1].first.eta()-sortedJets[2].first.eta() < 0) ||
 					(sortedJets[1].first.eta()-sortedJets[2].first.eta() > 0 && sortedJets[0].first.eta()-sortedJets[2].first.eta() < 0)) ) return false;
     monitor.count(cms2,type,"2 jet bin",weight);
   }
+  
 
+  //
   if ( njets!=0 ) return false;
   monitor.count(cms2,type,"JetVeto cuts",weight);
 
+
+  //
+  if ( njets!=0 ) return false;
   if ( TMath::Max(cms2.hyp_ll_p4().at(i_hyp).pt(),cms2.hyp_lt_p4().at(i_hyp).pt())<=30. )  return false;
   monitor.count(cms2,type,"ptMax",weight);
 
+
+  //
+  if ( njets!=0 ) return false;
   if ( TMath::Min(cms2.hyp_ll_p4().at(i_hyp).pt(),cms2.hyp_lt_p4().at(i_hyp).pt())<=25. )  return false;
   monitor.count(cms2,type,"ptMin",weight);
 
+
+  //
+  if ( njets!=0 ) return false;
   if ( cms2.hyp_p4().at(i_hyp).mass()>=50. )  return false;
   monitor.count(cms2,type,"mll",weight);
 
-  if ( mt(cms2.hyp_p4().at(i_hyp).pt(),cms2.evt_pfmet(),acos(cos(cms2.hyp_p4().at(i_hyp).phi()-metPhiValue())))<=90. || mt(cms2.hyp_p4().at(i_hyp).pt(),cms2.evt_pfmet(),acos(cos(cms2.hyp_p4().at(i_hyp).phi()-metPhiValue())))>=160. )  return false;
+
+  //
+  if ( njets!=0 ) return false;
+  if ( mt(cms2.hyp_p4().at(i_hyp).pt(),cms2.evt_pfmet(),acos(cos(cms2.hyp_p4().at(i_hyp).phi()-metPhiValue())))<80.)  return false;
   monitor.count(cms2,type,"mT",weight);
 
+
+  //
+  if ( njets!=0 ) return false;
   if ( fabs(ROOT::Math::VectorUtil::DeltaPhi(cms2.hyp_ll_p4().at(i_hyp),cms2.hyp_lt_p4().at(i_hyp)))>=60.*TMath::Pi()/180. )  return false;
   monitor.count(cms2,type,"dphill",weight);
 
@@ -290,7 +340,7 @@ bool hypo (int i_hyp, double weight, bool realData)
   // Require opposite sign
   if ( cms2.hyp_lt_id()[i_hyp] * cms2.hyp_ll_id()[i_hyp] < 0 ) cuts_passed |= PASSED_Charge;
 
-  // monitor.count(cms2,type,"baseline cuts",weight);
+  //monitor.count(cms2,type,"baseline cuts",weight);
  
   if (gSystem->Getenv("Sync")) // Synchronization info
     {
@@ -318,26 +368,29 @@ bool hypo (int i_hyp, double weight, bool realData)
   // if (additionalZveto()) return;
 
   // == MET
-  if ( passedMetRequirements(i_hyp) ) cuts_passed |= PASSED_MET;
+  if ( passedMetRequirements(i_hyp, jet_corrector_pfL1FastJetL2L3 ) ) cuts_passed |= PASSED_MET;
 
+  std::vector<Int_t> nullMu; // null identified muons // FIXME
+  std::vector<Int_t> nullEle; // null identified electrons  // FIXME
+  
   // == letpon ID and Isolation
   // Muon quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
-    if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA) )   cuts_passed |= PASSED_LT_FINAL;
+    if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LT_FINAL;
     if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LT_FO_MU1;
     if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LT_FO_MU2;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
-    if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA) )   cuts_passed |= PASSED_LL_FINAL;
+    if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LL_FINAL;
     if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LL_FO_MU1;
     if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LL_FO_MU2;
   } 
   // Electron quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
-    if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, electronIdMVA, lockToCoreSelectors) ) cuts_passed |= PASSED_LT_FINAL;
+    if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) cuts_passed |= PASSED_LT_FINAL;
     if ( fakableElectron(index,EleFOV1) )   cuts_passed |= PASSED_LT_FO_ELEV1;
     if ( fakableElectron(index,EleFOV2) )   cuts_passed |= PASSED_LT_FO_ELEV2;
     if ( fakableElectron(index,EleFOV3) )   cuts_passed |= PASSED_LT_FO_ELEV3;
@@ -345,7 +398,7 @@ bool hypo (int i_hyp, double weight, bool realData)
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
-    if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, electronIdMVA, lockToCoreSelectors) ) cuts_passed |= PASSED_LL_FINAL;
+    if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) cuts_passed |= PASSED_LL_FINAL;
     if ( fakableElectron(index,EleFOV1) )   cuts_passed |= PASSED_LL_FO_ELEV1;
     if ( fakableElectron(index,EleFOV2) )   cuts_passed |= PASSED_LL_FO_ELEV2;
     if ( fakableElectron(index,EleFOV3) )   cuts_passed |= PASSED_LL_FO_ELEV3;
@@ -373,9 +426,9 @@ bool hypo (int i_hyp, double weight, bool realData)
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true,vetojets);
   if ( countmus == 0)        cuts_passed |=   PASSED_SOFTMUVETO;
   if ( nExtraVetoMuons == 0) cuts_passed |=   PASSED_SOFTMUVETO_NotInJets;
-  if ( numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, electronIdMVA, useMVAmuId, muonIdMVA) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
-  if ( ! toptag(jetType(),i_hyp,10,vetojets) ) cuts_passed |= PASSED_TOPVETO_NotInJets;//newcuts, was 7
-  if ( ! toptag(jetType(),i_hyp,10) )          cuts_passed |= PASSED_TOPVETO;//newcuts, was 7
+  if ( numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
+  if ( ! toptag(jetType(),i_hyp,10,jet_corrector_pfL1FastJetL2L3,vetojets) ) cuts_passed |= PASSED_TOPVETO_NotInJets;//newcuts, was 7
+  if ( ! toptag(jetType(),i_hyp,10,jet_corrector_pfL1FastJetL2L3) )          cuts_passed |= PASSED_TOPVETO;//newcuts, was 7
 
   if( CheckCuts(  PASSED_MET | PASSED_BaseLine , cuts_passed)) {
     if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
@@ -416,6 +469,7 @@ bool hypo (int i_hyp, double weight, bool realData)
 void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp, 
 		     double weight, enum SmurfTree::DataType sample, wwcuts_t cuts_passed){
 
+
   tree.InitVariables();
   tree.run_         = cms2.evt_run();
   tree.event_       = cms2.evt_event();
@@ -447,7 +501,7 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
-
+/*
   if (ltIsFirst) {
     tree.lmva1_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? 
       (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0):-999.) : 
@@ -463,19 +517,20 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
       (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0):-999.) : 
       (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0)    :-999.) ;
   }
+*/
 
-  const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 5.0, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false);
+  const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 4.7, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false);
   if (jets.size()>0){
     tree.jet1_ = jets.at(0).first;
-    tree.jet1Btag_ = BTag(jetType(),jets.at(0).second);
+    tree.jet1Btag_ = BTag(jetType(),jets.at(0).second, jets.at(0).first.pt());
   }
   if (jets.size()>1){
     tree.jet2_ = jets.at(1).first;
-    tree.jet2Btag_ = BTag(jetType(),jets.at(1).second);
+    tree.jet2Btag_ = BTag(jetType(),jets.at(1).second, jets.at(1).first.pt());
   }
   if (jets.size()>2){
     tree.jet3_ = jets.at(2).first;
-    tree.jet3Btag_ = BTag(jetType(),jets.at(2).second);
+    tree.jet3Btag_ = BTag(jetType(),jets.at(2).second, jets.at(2).first.pt());
   }
   tree.njets_ = numberOfJets(i_hyp, applyJEC, jet_corrector_pfL1FastJetL2L3);
   tree.dilep_ = cms2.hyp_p4().at(i_hyp);
@@ -607,11 +662,11 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   // highest Btag for soft jets (jets below the threshold)
   tree.jetLowBtag_ = -999.;
   for (unsigned int i=tree.njets_; i<jets.size(); ++i)
-    if ( tree.jetLowBtag_ < BTag(jetType(),jets.at(i).second) )
-      tree.jetLowBtag_ = BTag(jetType(),jets.at(i).second);
+    if ( tree.jetLowBtag_ < BTag(jetType(),jets.at(i).second, jets.at(i).first.pt()) )
+      tree.jetLowBtag_ = BTag(jetType(),jets.at(i).second, jets.at(i).first.pt());
 
   // third lepton
-  const std::vector<LeptonPair>& leptons(getExtraLeptons(i_hyp,0, useLHeleId, useMVAeleId, electronIdMVA, useMVAmuId, muonIdMVA));
+  const std::vector<LeptonPair>& leptons(getExtraLeptons(i_hyp,0, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA));
   for (std::vector<LeptonPair>::const_iterator lep=leptons.begin();
        lep!=leptons.end(); ++lep){
     if (lep->first){
@@ -744,9 +799,9 @@ void ScanChain( TChain* chain,
       jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L3Absolute_AK5PF.txt");
       jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L2L3Residual_AK5PF.txt");
     } else {
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START50_V15_L1FastJet_AK5PF.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START50_V15_L2Relative_AK5PF.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START50_V15_L3Absolute_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L1FastJet_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L2Relative_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L3Absolute_AK5PF.txt");
     }
     jet_corrector_pfL1FastJetL2L3= makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
   } catch (...){
@@ -798,9 +853,10 @@ void ScanChain( TChain* chain,
     for( unsigned int event = 0; event < nEvents; ++event) {
       tree->LoadTree(event);
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
-      if (cms2.evt_event()%prescale!=0) continue;
-      //if (cms2.evt_event()!=67523347) continue;
-      // if (cms2.evt_event()!=13595393 && cms2.evt_event()!=227560649) continue;
+
+	if (cms2.evt_event()%prescale!=0) continue;
+      //if (cms2.evt_event()!=1069201 && cms2.evt_event()!=3060471 && cms2.evt_event()!=3030572) continue;
+      //if (cms2.evt_event()!=3060471) continue;
       // Select the good runs from the json file
       if(realData && cms2_json_file!="") {
 	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
@@ -843,6 +899,7 @@ void ScanChain( TChain* chain,
 	     continue;
 	   }
 	 }
+
 
 	 // loop over hypothesis candidates
 	 unsigned int nHyps = cms2.hyp_type().size();
@@ -968,7 +1025,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    bool realData,
 		    TString cms2_json_file)
 {
-
+/*
   if (useMVAeleId>0) {
     electronIdMVA = new ElectronIDMVA();
     if (useMVAeleId==2) {
@@ -992,7 +1049,7 @@ void ProcessSample( std::vector<std::string> file_patterns,
       return;
     }
   }
-
+*/
   if (useMVAmuId) {
     muonIdMVA = new MuonIDMVA();
     muonIdMVA->Initialize("BDTG method", 1,
@@ -1004,6 +1061,30 @@ void ProcessSample( std::vector<std::string> file_patterns,
 			  "./files/EndcapPtBin2_IDIsoCombined_BDTG.weights.xml");
   }
 
+  // --------------- EGamma Id MVA  --------------------------
+  vector<std::string> egammaweights;
+  egammaweights.push_back("./files/Electrons_BDTG_TrigV0_Cat1.weights.xml"); 
+  egammaweights.push_back("./files/Electrons_BDTG_TrigV0_Cat2.weights.xml"); 
+  egammaweights.push_back("./files/Electrons_BDTG_TrigV0_Cat3.weights.xml"); 
+  egammaweights.push_back("./files/Electrons_BDTG_TrigV0_Cat4.weights.xml"); 
+  egammaweights.push_back("./files/Electrons_BDTG_TrigV0_Cat5.weights.xml"); 
+  egammaweights.push_back("./files/Electrons_BDTG_TrigV0_Cat6.weights.xml"); 
+  egammaMvaEleEstimator = new EGammaMvaEleEstimator();
+  egammaMvaEleEstimator->initialize("BDT", EGammaMvaEleEstimator::kTrig, true, egammaweights );
+  // --------------- EGamma Id MVA  --------------------------
+
+  // --------------- Muon RingIso MVA  --------------------------
+  vector<std::string> muonisoweights;
+  muonisoweights.push_back("./files/MuonIsoMVA_sixie-BarrelPt5To10_V0_BDTG.weights.xml");
+  muonisoweights.push_back("./files/MuonIsoMVA_sixie-EndcapPt5To10_V0_BDTG.weights.xml");
+  muonisoweights.push_back("./files/MuonIsoMVA_sixie-BarrelPt10ToInf_V0_BDTG.weights.xml");
+  muonisoweights.push_back("./files/MuonIsoMVA_sixie-EndcapPt10ToInf_V0_BDTG.weights.xml");
+  muonisoweights.push_back("./files/MuonIsoMVA_sixie-Tracker_V0_BDTG.weights.xml");
+  muonisoweights.push_back("./files/MuonIsoMVA_sixie-Global_V0_BDTG.weights.xml");
+  muonMVAEstimator = new MuonMVAEstimator();
+  muonMVAEstimator->initialize( "MuonIso_BDTG_IsoRings", MuonMVAEstimator::kIsoRings, true, muonisoweights );
+  // --------------- Muon RingIso MVA  --------------------------
+
   TChain *tchain = new TChain("Events");
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
 	pattern != file_patterns.end(); ++pattern )
@@ -1012,8 +1093,9 @@ void ProcessSample( std::vector<std::string> file_patterns,
   std::cout << "Processing " << SmurfTree::name(sample) << ".." << std::endl;
   ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file);
 
-  if (useMVAeleId>0) delete electronIdMVA;
+//  if (useMVAeleId>0) delete electronIdMVA;
   if (useMVAmuId)    delete muonIdMVA;
   delete tchain;
+
 }
 
