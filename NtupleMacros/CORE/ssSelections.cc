@@ -156,7 +156,7 @@ float samesign::electronIsolationPF2012(int idx)
     float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
 
     // rho
-    float rhoPrime = std::max(cms2.evt_rho(), float(0.0));
+    float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
     float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
     float pfiso = (pfiso_ch + pfiso_n) / pt;
 
@@ -415,7 +415,11 @@ std::vector<bool> samesign::getJetFlags(int idx, enum JetType type, float deltaR
             continue;
         }
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx) * rescale;
+        LorentzVector vjet;
+        if (cms2.evt_isRealData()) 
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx) * rescale;
+        else
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx) * rescale;
         if (vjet.pt() < min_pt) {
             final_jets.push_back(false);
             continue;
@@ -572,7 +576,11 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, enum JetType type, enum 
             continue;
         }
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx) * rescale;
+        LorentzVector vjet;
+        if (cms2.evt_isRealData()) 
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx) * rescale;
+        else
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx) * rescale;
         if (vjet.pt() < min_pt) {
             final_jets.push_back(false);
             continue;
