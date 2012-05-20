@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.17 2012/05/07 15:25:45 fgolf Exp $
+// $Id: jetSelections.h,v 1.18 2012/05/20 18:28:50 fgolf Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -13,6 +13,7 @@
 
 enum JetType {
     JETS_TYPE_JPT,
+    JETS_TYPE_PF_FAST_CORR_RESIDUAL,
     JETS_TYPE_PF_FAST_CORR,
     JETS_TYPE_PF_CORR,
     JETS_TYPE_PF_UNCORR,
