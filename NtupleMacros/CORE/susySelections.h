@@ -72,5 +72,10 @@ bool passHLTTriggerPattern(const char* arg);
 int passTriggerPrescale(const char* arg);
 TString triggerName(TString triggerPattern);
 
+bool passElectronSelection_ZMet2012_v1_NoIso(int index);
+bool passElectronSelection_ZMet2012_v1_Iso(int index);
+bool passElectronSelection_ZMet2012_v1(int index);
+
+
 #endif
 

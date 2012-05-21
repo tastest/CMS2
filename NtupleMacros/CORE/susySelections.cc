@@ -17,6 +17,36 @@
 
 using namespace tas;
 
+// loose electron WP of:
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification
+
+bool passElectronSelection_ZMet2012_v1_NoIso(int index){
+  
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, LOOSE);
+  if ((answer_loose_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) return true;
+  
+  return false;
+}
+
+bool passElectronSelection_ZMet2012_v1_Iso(int index){
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, LOOSE);
+  if ((answer_loose_2012 & PassWP2012CutsIso) == PassWP2012CutsIso) return true;
+  
+  return false;
+}
+
+
+bool passElectronSelection_ZMet2012_v1(int index){
+  
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, LOOSE);
+  if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
+  
+  return false;
+}
+
+
+
 //--------------------------------------------------------
 // leptonOrTauIsFromW(int idx, int id, bool alsoSusy)
 // this function is the same as leptonIsFromW in mcSelections
