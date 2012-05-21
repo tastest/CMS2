@@ -1013,6 +1013,8 @@ static const electronIdComponent_t PassAllWP2012Cuts = DETAIN | DPHIIN | SIGMAIE
 static const electronIdComponent_t PassWP2012CutsNoIso = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
                                 | OOEMOOP | D0VTX | DZVTX | VTXFIT | MHITS;
 
+static const electronIdComponent_t PassWP2012CutsIso = ISO;
+
 static const electronIdComponent_t PassWP2012CutsNoIsoNoIP = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
                                 | OOEMOOP | DZVTX | VTXFIT | MHITS;
 };
