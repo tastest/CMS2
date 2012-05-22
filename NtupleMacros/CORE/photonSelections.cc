@@ -186,11 +186,11 @@ bool photon_VGamma_2011(const int index){
     if( cms2.photons_hcalIso04().at(index)     > 2.2 + 0.0025 * ET + 0.0620 * rho ) return false; // hcal iso
 
     // spike killing
-    int scIndex = photons_scindex().at(index);
+    int scIndex = cms2.photons_scindex().at(index);
     if( scIndex < 0 ) return false; // no matched SC found
 
     if( cms2.photons_sigmaIEtaIEta().at(index) < 0.001 )                            return false; // spike cleaning: ietaieta
-    if( scs_sigmaIPhiIPhi().at(scIndex)        < 0.001 )                            return false; // spike cleaning: iphiiphi
+    if( cms2.scs_sigmaIPhiIPhi().at(scIndex)        < 0.001 )                            return false; // spike cleaning: iphiiphi
   }
 
   // endcap
