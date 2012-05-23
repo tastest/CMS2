@@ -16,6 +16,7 @@
 #include "mcSelections.h"
 
 using namespace tas;
+using namespace wp2012;
 
 // loose electron WP of:
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification
