@@ -22,7 +22,7 @@
 double pfCandDz(const unsigned ipfcand, const unsigned ipv) {
 
 	double lDz = -999;
-	if(cms2.pfcands_trkidx()[ipfcand]>=0) 	lDz = fabs( trks_dz_pv( cms2.pfcands_trkidx()[ipfcand], ipv, false ).first );
+	if(cms2.pfcands_trkidx()[ipfcand]>=0) 	lDz = fabs( trks_dz_pv( cms2.pfcands_trkidx()[ipfcand], ipv).first );
 	/*  
 		if( abs(cms2.pfcands_particleId()[ipfcand])==11   &&
 		cms2.pfcands_pfelsidx()[ipfcand]>=0          &&
