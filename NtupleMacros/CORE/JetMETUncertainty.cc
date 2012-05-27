@@ -29,7 +29,7 @@ JetMETUncertainty::JetMETUncertainty(string jetcorr_unc_file_name,
         if (jetCorrectionUncertainty_ != 0)
             have_jetcorr_unc_ = true;
         else
-            cout << "Trouble get jet correction uncertainty service." << endl;
+            cout << "Trouble getting jet correction uncertainty service." << endl;
     }
 
     have_jetsmear_ = false;
@@ -39,7 +39,7 @@ JetMETUncertainty::JetMETUncertainty(string jetcorr_unc_file_name,
         if (jetSmearer_ != 0)
             have_jetsmear_ = true;
         else
-            cout << "Trouble get jet resolution smearing service." << endl;
+            cout << "Trouble getting jet resolution smearing service." << endl;
     }
 }
 
@@ -179,8 +179,8 @@ void JetMETUncertainty::SmearMETForMuonUncertainty ()
     double umet_x = good_met_.first * cos(good_met_.second);
     double umet_y = good_met_.first * sin(good_met_.second);
     for (unsigned int idx = 0; idx < good_mus_.size(); idx++) {
-        double px    = good_els_.at(idx).px();
-        double py    = good_els_.at(idx).py();        
+        double px    = good_mus_.at(idx).px();
+        double py    = good_mus_.at(idx).py();        
 
         dmet_x -= DOWN * mu_unc_ * px;
         dmet_y -= DOWN * mu_unc_ * py;
@@ -313,6 +313,7 @@ void JetMETUncertainty::SmearMETForJERUncertainty ()
     //
     // this is all just to make the up/down variation easier to deal with
     //
+    smeared_jet_sf_.clear();
     smeared_jet_sf_.reserve(smeared_jets_.size());
     for (unsigned int idx = 0; idx < smeared_jets_.size(); idx++) {
         double diff = (smeared_jets_.at(idx).pt() - good_jets_.at(idx).pt()) / good_jets_.at(idx).pt();
