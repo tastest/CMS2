@@ -5,6 +5,7 @@
 #include "Math/LorentzVector.h"
 #include "CMS2.h"
 #include "jetSelections.h"
+#include "jetcorr/JetCorrectionUncertainty.h"
 
 namespace samesign {
 /////////////////////////////////////////////////////////////////
@@ -158,7 +159,85 @@ namespace samesign {
 ///////////////////////////////////////////////////////////////////////////////////////////
     int nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20., float rescale = 1.0);
 
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
+// e/mu with pt > x (defaults are 10/5 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type,  enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    float sumJetPt(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// same as above, but allowing use of on-the-fly JEC corrections
+///////////////////////////////////////////////////////////////////////////////////////////
+    float sumJetPt(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    int nJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// same as above, but allowing use of on-the-fly JEC corrections
+///////////////////////////////////////////////////////////////////////////////////////////
+    int nJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
+// e/mu with pt > x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+    int nBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// same as above, but allowing use of on-the-fly JEC corrections
+///////////////////////////////////////////////////////////////////////////////////////////
+    int nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40., float max_eta = 2.4, float mu_minpt = 20., float ele_minpt = 20.);
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get vector of good els p4s
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getGoodElectrons();
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// get vector of good mus p4s
+///////////////////////////////////////////////////////////////////////////////////////////
+    std::vector<LorentzVector> getGoodMuons();
+
 }
+
+
 
 
 namespace samesign2011 {
