@@ -36,24 +36,66 @@
 // Added Jan 16, 2012:
 // btagEventWeight3 and btagEventUncertainty3 are the versions of the 
 // above that are appropriate for >=3 btags.
+//
+// Added by FG on May 27, 2012:
+// overload event weight, uncertainty functions to use "official" scale
+// factors, uncertainties as recorded in Tools/btagEff_BTV.h
+//
 //-----------------------------------------------------------------------
 //----------------------------------------------------------------------
 // The btagging scale factor and its uncertainty as a function of pt is 
 // hardwired in the functions btagScaleFactor and btagScaleFactorError  
-double btagScaleFactor(double jetpt) {
-  if (jetpt < 240.) return 0.96;
-  return 0.96;
+// these values are from the BTV based on 2011 mu-jet data
+// https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/SFb-mujet_payload.txt
+double btagScaleFactor(double jetpt, std::string algo) {
+    if (algo == "CSVM") {
+        float pt = max(min(jetpt, 670.),30.);
+        return (0.6981*((1.+(0.414063*jetpt))/(1.+(0.300155*jetpt))));
+    }
+    else {
+        if (jetpt < 240.) return 0.96;
+        return 0.96;
+    }
 }
-double btagScaleFactorError(double jetpt) {
-  if (jetpt < 240.) return 0.04;
-  return 0.144;
+double btagScaleFactorError(double jetpt, std::string algo) {
+    if (algo == "CSVM") {
+        double ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
+        double ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
+        double SFb_error[] = {
+            0.0295675,
+            0.0295095,
+            0.0210867,
+            0.0219349,
+            0.0227033,
+            0.0204062,
+            0.0185857,
+            0.0256242,
+            0.0383341,
+            0.0409675,
+            0.0420284,
+            0.0541299,
+            0.0578761,
+            0.0655432 };
+        
+        const unsigned int nbins = sizeof(ptmin)/sizeof(float);
+        if (jetpt < ptmin[0]) return 0.12;
+        if (jetpt > ptmax[nbins-1]) return 2*SFb_error[nbins-1];
+        for (unsigned int idx = 0; idx < nbins; idx++) {
+            if (jetpt > ptmin[idx] && jetpt < ptmax[idx])
+                return SFb_error[idx];
+        }
+    }
+    else return 0.04;
 }
+
+
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // Two simple utility functions: the min pt for btag jets and the eta range
 // This are used to determine status=3 taggable jets
 double getMinBtagPt()  {return 40.;}
-double getMaxBtagEta() {return 2.5;}
+double getMaxBtagEta() {return 2.4;}
 //--------------------------------------------------------------------------
 // In order to calculate the "event uncertainty" we need the actual values
 // of the btagging efficiencies (for data).  These come from some database 
@@ -61,6 +103,7 @@ double getMaxBtagEta() {return 2.5;}
 // THE FUNCTION BELOW IS JUST A PLACE HOLDER.  PLEASE FIX IT.
 // Note: these are meant to be the efficiencies for jets in the fiducial region,
 // i.e., something like abs(eta)<2.5.
+
 // The btag efficiency does not need to be perfect, since it is only used for
 // calculating uncertainties
 double btagEff(double jetpt) {

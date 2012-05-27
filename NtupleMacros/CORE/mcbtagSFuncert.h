@@ -1,8 +1,8 @@
 #ifndef MCBTAGSFUNCERT_H
 #define MCBTAGSFUNCERT_H
 
-double btagScaleFactor(double jetpt);
-double btagScaleFactorError(double jetpt);
+double btagScaleFactor(double jetpt, std::string algo = "CSVM");
+double btagScaleFactorError(double jetpt, std::string algo = "CSVM");
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
