@@ -42,6 +42,7 @@
 #include "mcSelections.h"
 #include "ssSelections.h"
 #include "susySelections.h"
+#include "jetcorr/FactorizedJetCorrector.h"
 // for compiling in ACLiC (.L myBabyMaker.c++ method)
 // since the source files are included
 #else
@@ -61,6 +62,7 @@
 #include "../CORE/mcSelections.cc"
 #include "../CORE/ssSelections.cc"
 #include "../CORE/susySelections.cc"
+#include "../CORE/jetcorr/FactorizedJetCorrector.h"
 #endif // __CINT__
 #endif // __NON_ROOT_BUILD__
 
@@ -998,9 +1000,24 @@ void myBabyMaker::InitBabyNtuple()
     npfc40L1Fj1_       = 0;
     btagpfcL1F_        = false;
 
+    // PF L1FastL2L3Residual Corrected jets
+    emfpfcL1Fj1res_       = -999.;
+    ptpfcL1Fj1res_        = 0.;
+    dphipfcL1Fj1res_      = -999.;
+    ptpfcL1Fj1res_b2b_    = -999.;
+    dphipfcL1Fj1res_b2b_  = -999.;
+    npfcL1Fj1res_         = 0;
+    npfc30L1Fj1res_       = 0;
+    npfc40L1Fj1res_       = 0;
+    btagpfcL1Fres_        = false;
+
     // btag PF L1FastL2L3 Corrected jets
     ptbtagpfcL1Fj1_        = 0.;
     dphibtagpfcL1Fj1_      = -999.;
+    
+    // btag PF L1FastL2L3Residual Corrected jets
+    ptbtagpfcL1Fj1res_        = 0.;
+    dphibtagpfcL1Fj1res_      = -999.;
     
     //
     nbjet_  = 0;
@@ -1449,9 +1466,24 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
     babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
 
+    // PF L1FastL2L3Residual Corrected jets         
+    babyTree_->Branch("emfpfcL1Fj1res"     , &emfpfcL1Fj1res_      );
+    babyTree_->Branch("ptpfcL1Fj1res"      , &ptpfcL1Fj1res_       );       
+    babyTree_->Branch("dphipfcL1Fj1res"    , &dphipfcL1Fj1res_     );       
+    babyTree_->Branch("npfcL1Fj1res"       , &npfcL1Fj1res_        );
+    babyTree_->Branch("npfc30L1Fj1res"     , &npfc30L1Fj1res_      );
+    babyTree_->Branch("npfc40L1Fj1res"     , &npfc40L1Fj1res_      );
+    babyTree_->Branch("ptpfcL1Fj1res_b2b"  , &ptpfcL1Fj1res_b2b_   );       
+    babyTree_->Branch("dphipfcL1Fj1res_b2b", &dphipfcL1Fj1res_b2b_ );     
+    babyTree_->Branch("btagpfcL1Fres"      , &btagpfcL1Fres_       );
+
     // B-tagged PF L1FastL2L3 Corrected jets         
     babyTree_->Branch("ptbtagpfcL1Fj1"   , &ptbtagpfcL1Fj1_   );
     babyTree_->Branch("dphibtagpfcL1Fj1" , &dphibtagpfcL1Fj1_ );
+    
+    // B-tagged PF L1FastL2L3Residual Corrected jets         
+    babyTree_->Branch("ptbtagpfcL1Fj1res"   , &ptbtagpfcL1Fj1res_   );
+    babyTree_->Branch("dphibtagpfcL1Fj1res" , &dphibtagpfcL1Fj1res_ );
     
     // B Tagging
     babyTree_->Branch("nbjet"        , &nbjet_        );
@@ -1543,9 +1575,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
     if (isData) {        
         string data_pf_l2 = jetcorrPath;
-        data_pf_l2.append("/GR_R_42_V14_AK5PF_L2Relative.txt");
+        data_pf_l2.append("/GR_R_52_V7_L2Relative_AK5PF.txt");
         string data_pf_l3 = jetcorrPath;
-        data_pf_l3.append("/GR_R_42_V14_AK5PF_L3Absolute.txt");
+        data_pf_l3.append("/GR_R_52_V7_L3Absolute_AK5PF.txt");
         jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
         jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
     }
@@ -1562,6 +1594,21 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     for (unsigned int idx = 0; idx < jetcorr_pf_L2L3_filenames.size(); idx++)
         std::cout << jetcorr_pf_L2L3_filenames.at(idx) << std::endl;
     FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
+
+    //// set up on-the-fly L1FastJetL2L3 JEC
+    //std::vector<std::string> jetcorr_pf_L1FastJetL2L3_filenames;
+    //jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L1FastJet_AK5PF.txt"   , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+    //jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L2Relative_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+    //jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L3Absolute_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+    //FactorizedJetCorrector* jet_pf_L1FastJetL2L3_corrector = makeJetCorrector(jetcorr_pf_L1FastJetL2L3_filenames); 
+
+    //// set up on-the-fly L1FastJetL2L3 residual JEC
+    //std::vector<std::string> jetcorr_pf_L1FastJetL2L3Residual_filenames;
+    //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L1FastJet_AK5PF.txt"   , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+    //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L2Relative_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+    //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L3Absolute_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+    //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L2L3Residual_AK5PF.txt", jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+    //FactorizedJetCorrector* jet_pf_L1FastJetL2L3Residual_corrector = makeJetCorrector(jetcorr_pf_L1FastJetL2L3Residual_filenames); 
 
     // The deltaR requirement between objects and jets to remove the jet trigger dependence
     float deltaRCut   = 1.0;
@@ -1589,6 +1636,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
     bool finish_looping = false;
 
     std::cout << "looping on " << nEventsChain << " out of " << chain->GetEntries() << " events..." << std::endl;
+    std::cout << "nEventTotal = " << nEventsTotal << endl;
+    std::cout << "nEventChain = " << nEventsChain << endl;
 
     while(TChainElement *currentFile = (TChainElement*)fileIter.Next())
     {
@@ -1603,7 +1652,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
         }
     
         TFile* f = TFile::Open(filename.Data());
-        TTree *tree = (TTree*)f->Get("Events");
+        TTree* tree = (TTree*)f->Get("Events");
         cms2.Init(tree);
 
         unsigned int nEntries = tree->GetEntries();
@@ -1661,21 +1710,27 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
             vector<unsigned int> bindex;
             for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
                 if (jets_p4().at(iJet).pt() < 15.) continue;
-                if (jets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74) continue;
+                if (cms2.jets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
                 this_nbjet++;
                 bindex.push_back(iJet);
             }
 
             // PF Jets
             int this_nbpfjet = 0;
+            //FactorizedJetCorrector* jet_pf_corrector = evt_isRealData() ? jet_pf_L1FastJetL2L3Residual_corrector : jet_pf_L1FastJetL2L3_corrector; 
             vector<unsigned int> bpfindex;
             for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                 if ( !passesPFJetID(iJet)) continue;
                 LorentzVector jp4 = pfjets_p4()[iJet];
-                float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                //jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
+                //jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                //jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                //jet_pf_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                //float jet_cor = jetCorrection(jp4, jet_pf_corrector);
+                float jet_cor = evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(iJet) : cms2.pfjets_corL1FastL2L3().at(iJet);
                 LorentzVector jp4cor = jp4 * jet_cor;
                 if (jp4cor.pt() < 15) continue;
-                if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74) continue;
+                if (cms2.pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
                 this_nbpfjet++;
                 bpfindex.push_back(iJet);
             }
@@ -2211,8 +2266,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
                         float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                        //float jet_cor = pfjets_corL2L3().at(iJet);
                         LorentzVector jp4cor = jp4 * jet_cor;
-                        if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfc_ = true;
+                        if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfc_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
@@ -2243,8 +2299,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
                         LorentzVector jp4cor = jp4 * jet_cor;
-                        if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
+                        if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
@@ -2263,6 +2324,47 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         }
                     }
 
+                    // L1FastL2L3Residual PF Jets
+                    // Find the highest Pt PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    emfpfcL1Fj1res_      = -999.0;
+                    ptpfcL1Fj1res_       = -999.0;
+                    dphipfcL1Fj1res_ 	  = -999.0;
+                    ptpfcL1Fj1res_b2b_   = -999.0;
+                    dphipfcL1Fj1res_b2b_ = -999.0;
+                    npfcL1Fj1res_        = 0;
+                    npfc30L1Fj1res_      = 0;
+                    npfc30L1Fj1res_      = 0;
+                    btagpfcL1Fres_       = false;
+                    rho_ = cms2.evt_rho();
+                    for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                        if ( !passesPFJetID(iJet)) continue;
+                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                        LorentzVector jp4cor = jp4 * jet_cor;
+                        if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfcL1Fres_ = true;
+                        double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                        if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                        if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
+                            emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
+                            ptpfcL1Fj1res_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+                            dphipfcL1Fj1res_ = dphi;
+
+                            // back to back in phi
+                            if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1res_b2b_ ){
+                                ptpfcL1Fj1res_b2b_   = jp4cor.pt();
+                                dphipfcL1Fj1res_b2b_ = dphi;
+                            }
+                        }
+                    }
+
 					// *** Doing B-tagging correctly ***
                     // B-tagged L1FastL2L3 PF Jets
                     // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
@@ -2272,8 +2374,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
                         LorentzVector jp4cor = jp4 * jet_cor;
-                        if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74 ) continue;
+                        if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
                         if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
                             ptbtagpfcL1Fj1_ = jp4cor.pt();
@@ -2282,6 +2389,29 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         }
                     }
 
+					// *** Doing B-tagging correctly ***
+                    // B-tagged L1FastL2L3Residual PF Jets
+                    // Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    ptbtagpfcL1Fj1res_       = -999.0;
+                    dphibtagpfcL1Fj1res_       = -999.0;
+                    for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                        if ( !passesPFJetID(iJet)) continue;
+                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                        LorentzVector jp4cor = jp4 * jet_cor;
+                        if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
+                        double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                        if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
+                            ptbtagpfcL1Fj1res_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+							dphibtagpfcL1Fj1res_ = dphi; 
+                        }
+                    }
                     //////////////
                     // End Jets //
                     //////////////
@@ -2310,6 +2440,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         unsigned int iJet = bpfindex[ii];
                         LorentzVector jp4 = pfjets_p4()[iJet];
                         float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                        //float jet_corr = pfjets_corL2L3().at(iJet);
                         LorentzVector jp4cor = jp4 * jet_cor;
                         float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor);
                         if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
@@ -2837,8 +2968,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
                         float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                        //float jet_cor = pfjets_corL2L3().at(iJet);
                         LorentzVector jp4cor = jp4 * jet_cor;
-                        if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfc_ = true;
+                        if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfc_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
@@ -2870,8 +3002,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
                         LorentzVector jp4cor = jp4 * jet_cor;
-                        if (jp4cor.pt() > 15 && pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) > 1.74 ) btagpfcL1F_ = true;
+                        if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfcL1F_ = true;
                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
@@ -2890,6 +3027,48 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         }
                     }
 
+                    // L1FastL2L3Residual PF Jets
+                    // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    emfpfcL1Fj1res_      = -999.0;
+                    ptpfcL1Fj1res_       = -999.0;
+                    dphipfcL1Fj1res_ 	  = -999.0;
+                    ptpfcL1Fj1res_b2b_   = -999.0;
+                    dphipfcL1Fj1res_b2b_ = -999.0;
+                    npfcL1Fj1res_        = 0;
+                    npfc30L1Fj1res_      = 0;
+                    npfc40L1Fj1res_      = 0;
+                    btagpfcL1Fres_       = false;
+                    rho_ = cms2.evt_rho();
+                    for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                        // JetID
+                        if ( !passesPFJetID(iJet)) continue;
+                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                        LorentzVector jp4cor = jp4 * jet_cor;
+                        if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfcL1Fres_ = true;
+                        double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                        if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
+                        if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                        if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
+                            emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
+                            ptpfcL1Fj1res_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+                            dphipfcL1Fj1res_ = dphi;
+
+                            // back to back in phi
+                            if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1res_b2b_ ){
+                                ptpfcL1Fj1res_b2b_   = jp4cor.pt();
+                                dphipfcL1Fj1res_b2b_ = dphi;
+                            }
+                        }
+                    }
+
 					//***  Doing B-tagging correctly ***
                     // B-tagged L1FastL2L3 PF Jets
                     // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
@@ -2899,8 +3078,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                         if ( !passesPFJetID(iJet)) continue;
                         LorentzVector jp4 = pfjets_p4()[iJet];
                         float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
                         LorentzVector jp4cor = jp4 * jet_cor;
-                        if (pfjets_simpleSecondaryVertexHighEffBJetTag().at(iJet) < 1.74 ) continue;
+                        if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679 ) continue;
                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
                         if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
                             ptbtagpfcL1Fj1_ = jp4cor.pt();
@@ -2908,6 +3092,31 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
 							dphibtagpfcL1Fj1_ = dphi; 
                         }
                     }
+
+					//***  Doing B-tagging correctly ***
+                    // B-tagged L1FastL2L3Residual PF Jets
+                    // Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                    ptbtagpfcL1Fj1res_       = -999.0;
+                    dphibtagpfcL1Fj1res_     = -999.0;
+                    for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                        if ( !passesPFJetID(iJet)) continue;
+                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                        LorentzVector jp4cor = jp4 * jet_cor;
+                        if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679 ) continue;
+                        double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                        if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
+                            ptbtagpfcL1Fj1res_ = jp4cor.pt();
+                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+							dphibtagpfcL1Fj1res_ = dphi; 
+                        }
+                    }
+
 
                     //////////////
                     // End Jets //
@@ -2932,10 +3141,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     nbpfcjet_ = this_nbpfjet;
                     dRbpfcNear_ = 99.;
                     dRbpfcFar_  = -99.;
+                    //FactorizedJetCorrector* jet_pf_corrector = evt_isRealData() ? jet_pf_L1FastJetL2L3Residual_corrector : jet_pf_L1FastJetL2L3_corrector; 
                     for (int ii=0; ii<nbpfcjet_; ii++) {
                         unsigned int iJet = bpfindex[ii];
                         LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                        //jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
+                        //jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                        //jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                        //jet_pf_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                        //float jet_cor = jetCorrection(jp4, jet_pf_corrector);
+                        float jet_cor = evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(iJet) : cms2.pfjets_corL1FastL2L3().at(iJet);
                         LorentzVector jp4cor = jp4 * jet_cor;
                         float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor);
                         if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
@@ -2956,10 +3171,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
         }// closes loop over events
         //printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
 
-        //f->Close();
-        //delete f;
+        f->Close();
+        delete f;
 
     }  // closes loop over files
+
+    std::cout << "nEventTotal = " << nEventsTotal << endl;
+    std::cout << "nEventChain = " << nEventsChain << endl;
 
     bmark.Stop("benchmark");
     cout << endl;

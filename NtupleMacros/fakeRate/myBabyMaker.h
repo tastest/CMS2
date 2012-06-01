@@ -536,6 +536,21 @@ private:
     Float_t ptbtagpfcL1Fj1_;       // highest pt btagged jet well separated from the lepton
     Float_t dphibtagpfcL1Fj1_;     // dphi between highest pt btagged jet well separated from the lepton and lepton
     
+    // Same for PF Corrected jets L1FastL2L3Residual
+    Float_t emfpfcL1Fj1res_;      // EMF of hight pt PF jet well separated from lepton
+    Float_t ptpfcL1Fj1res_;       // highest pt jet well separated from the lepton
+    Float_t dphipfcL1Fj1res_;     // dphi between highest pt jet well separated from the lepton and lepton
+    Float_t ptpfcL1Fj1res_b2b_;   // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
+    Float_t dphipfcL1Fj1res_b2b_; // dphi between lepton and jet for jets away from lepton by dR >= 1.0
+    Int_t   npfcL1Fj1res_;        // number of jets above 10 GeV and away from lepton by dR >= 1.0
+    Bool_t  btagpfcL1Fres_;
+    Int_t   npfc30L1Fj1res_;      // number of jets above 30 GeV and away from lepton by dR >= 1.0
+    Int_t   npfc40L1Fj1res_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
+
+    // Same for btagged PF Corrected jets L1FastL2L3Residual
+    Float_t ptbtagpfcL1Fj1res_;       // highest pt btagged jet well separated from the lepton
+    Float_t dphibtagpfcL1Fj1res_;     // dphi between highest pt btagged jet well separated from the lepton and lepton
+    
     Float_t rho_;
 
     //////////////
