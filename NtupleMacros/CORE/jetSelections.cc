@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.30 2012/05/20 18:28:50 fgolf Exp $
+// $Id: jetSelections.cc,v 1.31 2012/06/01 16:08:39 benhoob Exp $
 
 #include <algorithm>
 #include <utility>
@@ -58,10 +58,14 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
             corr = cms2.pfjets_cor().at(i) * rescale;
             break;
         case JETS_TYPE_PF_FAST_CORR:
-            corr = cms2.pfjets_corL1FastL2L3().at(i) * rescale;
+	  //corr = cms2.pfjets_corL1FastL2L3().at(i) * rescale;
+	  cout << __FILE__ << " " << __LINE__ << " ERROR BRANCH NOT SET" << endl;
+	  exit(0);
             break;
         case JETS_TYPE_PF_FAST_CORR_RESIDUAL:
-            corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale;
+	  //corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale;
+	  cout << __FILE__ << " " << __LINE__ << " ERROR BRANCH NOT SET" << endl;
+	  exit(0);
             break;
         case JETS_TYPE_JPT: 
             corr = cms2.jpts_cor().at(i) * rescale;
