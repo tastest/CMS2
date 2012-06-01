@@ -713,6 +713,20 @@ bool passSUSYTrigger2012_v1( bool isData , int hypType ) {
   return false;
 }
 
+bool passSUSYTrigger2012_v2( bool isData ) {
+
+  if( !isData ) return true;
+
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )                                           return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TkMu8_v" ) )                                         return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )        return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )        return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v" ) )                                            return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+
+  return false;
+}
+
 
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection
