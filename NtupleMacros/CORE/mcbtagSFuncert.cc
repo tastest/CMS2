@@ -79,7 +79,7 @@ double btagScaleFactorError(double jetpt, std::string algo) {
             0.0578761,
             0.0655432 };
         
-	doublr fudgeFactor=1.5;
+	double fudgeFactor=1.5;
         const unsigned int nbins = sizeof(ptmin)/sizeof(float);
         if (jetpt < ptmin[0]) return 0.12;
         if (jetpt > ptmax[nbins-1]) return 2*SFb_error[nbins-1];
