@@ -41,6 +41,8 @@
 // overload event weight, uncertainty functions to use "official" scale
 // factors, uncertainties as recorded in Tools/btagEff_BTV.h
 //
+// Mods by Claudio June 7, 2012
+// Blow up the errors by a factor of 1.5 according to ICHEP BTV reccommendation 
 //-----------------------------------------------------------------------
 //----------------------------------------------------------------------
 // The btagging scale factor and its uncertainty as a function of pt is 
@@ -77,12 +79,13 @@ double btagScaleFactorError(double jetpt, std::string algo) {
             0.0578761,
             0.0655432 };
         
+	doublr fudgeFactor=1.5;
         const unsigned int nbins = sizeof(ptmin)/sizeof(float);
         if (jetpt < ptmin[0]) return 0.12;
         if (jetpt > ptmax[nbins-1]) return 2*SFb_error[nbins-1];
         for (unsigned int idx = 0; idx < nbins; idx++) {
             if (jetpt > ptmin[idx] && jetpt < ptmax[idx])
-                return SFb_error[idx];
+                return fudgeFactor*SFb_error[idx];
         }
     }
     else return 0.04;
@@ -100,7 +103,6 @@ double getMaxBtagEta() {return 2.4;}
 // In order to calculate the "event uncertainty" we need the actual values
 // of the btagging efficiencies (for data).  These come from some database 
 // or some plots or something.  
-// THE FUNCTION BELOW IS JUST A PLACE HOLDER.  PLEASE FIX IT.
 // Note: these are meant to be the efficiencies for jets in the fiducial region,
 // i.e., something like abs(eta)<2.5.
 
