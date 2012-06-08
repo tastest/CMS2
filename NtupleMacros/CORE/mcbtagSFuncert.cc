@@ -52,7 +52,7 @@
 double btagScaleFactor(double jetpt, std::string algo) {
     if (algo == "CSVM") {
         float pt = max(min(jetpt, 670.),30.);
-        return (0.6981*((1.+(0.414063*jetpt))/(1.+(0.300155*jetpt))));
+        return (0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt))));
     }
     else {
         if (jetpt < 240.) return 0.96;
