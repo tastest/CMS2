@@ -80,9 +80,9 @@ double btagScaleFactorError(double jetpt, std::string algo) {
             0.0655432 };
         
 	double fudgeFactor=1.5;
-        const unsigned int nbins = sizeof(ptmin)/sizeof(float);
-        if (jetpt < ptmin[0]) return 0.12;
-        if (jetpt > ptmax[nbins-1]) return 2*SFb_error[nbins-1];
+        const unsigned int nbins = sizeof(ptmin)/sizeof(double);
+        if (jetpt < ptmin[0]) return 0.12*fudgeFactor;
+        if (jetpt > ptmax[nbins-1]) return 2*SFb_error[nbins-1]*fudgeFactor;
         for (unsigned int idx = 0; idx < nbins; idx++) {
             if (jetpt > ptmin[idx] && jetpt < ptmax[idx])
                 return fudgeFactor*SFb_error[idx];
@@ -221,6 +221,7 @@ double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, dou
     }
     mynbjet = 2;
   }
+
 
   // Here for two jets
   if (mynbjet == 2) return (eff[0]*effErr[1]+eff[1]*effErr[0])/(eff[0]*eff[1]);
