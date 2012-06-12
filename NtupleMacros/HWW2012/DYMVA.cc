@@ -6,8 +6,8 @@
 #include "CORE/metSelections.h"
 
 // need to set proper weight files 
-#include "/smurf/cerati/weightsDYMVA/TMVA_BDTG_0j_mll12.class.C"
-#include "/smurf/cerati/weightsDYMVA/TMVA_BDTG_1j_mll12.class.C"
+#include "files/TMVA_BDTG_0j_mll12.class.C"
+#include "files/TMVA_BDTG_1j_mll12.class.C"
 
 #include "CMS2.h"
 
@@ -108,6 +108,9 @@ float DYMVA(unsigned int ihyp, unsigned int njets, std::vector<JetPair> jets) {
 	  } 
 	  std::cout << njets_ << " :::: " << dymva_ << std::endl;
   }
+
+  delete rbdtgDy_0j;
+  delete rbdtgDy_1j;
 
   return dymva_;
 
