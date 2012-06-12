@@ -6,21 +6,41 @@
 #include "wwtypes.h"
 #include "doAnalysis.h"
 
-int main()
+#include <stdlib.h>
+
+int main(int argc, char *argv[])
 {
+
   using namespace std;
+
+  //
+  // if the arguments are provided
+  // then run one file
+  //
+
+  if (argc == 3) {
+    SmurfTree::DataType dataType = (SmurfTree::DataType)atoi(argv[1]);
+    std::string dataFile = argv[2];
+    bool realData = false;
+    if (dataType == 0) realData = true;
+    const std::string cms2_json_file = "./files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
+    ProcessSample(dataFile, dataType, 3.1, -1, -1, false, realData, cms2_json_file);
+    return 0;
+  }
 
   //
   // Define how to handle complex Monte Carlo samples which may have 
   // more than one event type mixed in. Careful with this option. 
   // You don't need it for not mixed samples.
   //
+
   const bool identifyDYEvents = true;
 
   //
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
+
   bool runTest   = 1;
   bool runWW     = 0;
   bool runWWmcnlo= 0;

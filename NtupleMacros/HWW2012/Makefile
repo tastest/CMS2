@@ -63,7 +63,8 @@ SOURCES = $(wildcard *.cc)
 OBJECTS = $(SOURCES:.cc=.o) LinkDef_out.o
 LIB = libCMS2NtupleMacrosLooper.so
 
-FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
+#FWLIB = ../Tools/MiniFWLite/libMiniFWLite.so
+FWLIB = libMiniFWLite.so
 
 LIBS = $(CORELIB) $(LIB) $(FWLIB)
 
@@ -79,10 +80,12 @@ $(LIB):	$(OBJECTS)
 	$(QUIET) echo "Linking $(LIB)"; \
 	$(LINKER) $(LINKERFLAGS) $(MACOSXFLAGS) $(LINKERLIBS) -shared $(OBJECTS) -o $@ 2>&1|perl -ne 'print if(!/skipping incompatible/)'
 
+WORKDIR := $(shell pwd) 
 $(FWLIB):
 	$(QUIET) echo "making MiniFWLite"; \
 	cd ../Tools/MiniFWLite; \
-	$(MAKE) -f Makefile;
+	$(MAKE) -f Makefile; \
+	cp $(FWLIB) $(WORKDIR);
 
 LinkDef_out.cxx: LinkDef.h
 	$(QUIET) echo "Making CINT dictionaries"; \
