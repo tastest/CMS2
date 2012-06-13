@@ -150,13 +150,44 @@ bool goodElectronIsolated(unsigned int i,  bool useLHeleId, int useMVAeleId, EGa
     return internal;
 }
 
+bool ElectronFOIdV4(unsigned int i) {
+
+	float pt = cms2.els_p4().at(i).pt();
+	float etaSC = cms2.els_etaSC().at(i);
+
+	if (fabs(etaSC)<1.479) {
+		if (cms2.els_sigmaIEtaIEta().at(i)>0.01		||
+			fabs(cms2.els_dEtaIn().at(i))>0.007 	||
+			fabs(cms2.els_dPhiIn().at(i))>0.15 		||
+			cms2.els_hOverE().at(i)>0.12 			||
+			cms2.els_tkIso().at(i)/pt>0.2 			||
+			(cms2.els_ecalIso().at(i) - 1.0)/pt>0.2 ||
+			cms2.els_hcalIso().at(i)/pt>0.2 ) return false;
+	} else {
+		if (cms2.els_sigmaIEtaIEta().at(i)>0.03		|| 
+			fabs(cms2.els_dEtaIn().at(i))>0.009 	||
+			fabs(cms2.els_dPhiIn().at(i))>0.10 		|| 
+			cms2.els_hOverE().at(i)>0.10 			||
+			cms2.els_tkIso().at(i)/pt>0.2 			||
+			cms2.els_ecalIso().at(i)/pt>0.2 		||
+			cms2.els_hcalIso().at(i)/pt>0.2 ) return false;
+	}
+
+	return true;
+} 
+
+bool ElectronFOV4(unsigned int i){
+    return ww_elBase(i) && ElectronFOIdV4(i) && ww_eld0PV(i) && ww_eldZPV(i);
+}
+
 bool fakableElectron(unsigned int i, EleFOTypes type){
     if ( cms2.els_p4().at(i).pt() < 10.0 ) return false;
     switch (type){
         case EleFOV1: return pass_electronSelection( i, electronSelectionFO_el_smurf_v1);
         case EleFOV2: return pass_electronSelection( i, electronSelectionFO_el_smurf_v2);
         case EleFOV3: return pass_electronSelection( i, electronSelectionFO_el_smurf_v3);
-        case EleFOV4: return pass_electronSelection( i, electronSelectionFO_el_smurf_v4);
+        //case EleFOV4: return pass_electronSelection( i, electronSelectionFO_el_smurf_v4);
+        case EleFOV4: return ElectronFOV4(i);
     }
     return false;
 }
@@ -244,14 +275,6 @@ bool goodMuonIsolated(	unsigned int i, bool lockToCoreSelectors, bool useMVAmuId
     return internal;
 }
 
-bool fakableMuon(unsigned int i, MuFOTypes type){
-    if ( cms2.mus_p4().at(i).pt() < 10.0 ) return false;
-    switch (type){
-        case MuFOV1: return muonId(i, muonSelectionFO_mu_smurf_10);
-        case MuFOV2: return muonId(i, muonSelectionFO_mu_smurf_04);
-    }
-    return false;
-}
 
 //
 // Electron Id
@@ -404,6 +427,8 @@ bool ww_muIso(unsigned int index, MuonMVAEstimator* muonMVAEstimator, std::vecto
 	return passMuonRingsMVA(index, muonMVAEstimator, IdentifiedMu, IdentifiedEle); 
 }
 
+
+/////
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
         const std::vector<JetPair>& vetojets)
 {
@@ -987,3 +1012,50 @@ bool passMuonRingsMVA(unsigned int mu, MuonMVAEstimator* muonMVAEstimator, std::
 	
 	cout << "Something is wrong. You should not see this! " << endl; 
 }
+
+bool passMuonRingsMVAFO(unsigned int mu, MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle)
+{
+	double mvavalue = muonMVAEstimator->mvaValueIso( mu, cms2.evt_ww_rho(), MuonEffectiveArea::kMuEAFall11MC,
+	                                               	 IdentifiedEle, IdentifiedMu, false );
+
+	if( mvavalue>-0.6 )  return true;
+	return false;
+}
+
+bool MuonFOV2(	unsigned int i, MuonMVAEstimator* muonMVAEstimator, 
+				std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle){
+
+	if (((cms2.mus_type().at(i)) & (1<<2)) == 0)    return false; // tracker muon
+    if (cms2.trks_nlayers().at(cms2.mus_trkidx().at(i)) < 6) return false; // # of tracker hits 
+    if (cms2.mus_ptErr().at(i)/cms2.mus_trk_p4().at(i).pt()>0.1) return false; // Does pt come from track?
+    if (cms2.trks_valid_pixelhits().at(cms2.mus_trkidx().at(i))==0) return false;
+    if (cms2.mus_trkKink().at(i) > 20.) return false; //kink finder
+    if (!cms2.mus_pid_PFMuon().at(i)) return false; // should be a pfmuon
+    // global muon
+    bool goodMuonGlobalMuon = false;
+    if (((cms2.mus_type().at(i)) & (1<<1)) == (1<<1)) {
+        goodMuonGlobalMuon = true;
+        if (cms2.mus_gfit_chi2().at(i)/cms2.mus_gfit_ndof().at(i) >= 10) goodMuonGlobalMuon = false; //glb fit chisq
+        if (cms2.mus_gfit_validSTAHits().at(i)==0 ) goodMuonGlobalMuon = false;
+        if (cms2.mus_nmatches().at(i)<2) goodMuonGlobalMuon = false;
+    }
+
+    return 	(goodMuonGlobalMuon || cms2.mus_pid_TMLastStationTight().at(i) == 1) 	&& // ---> Id
+			ww_muBase(i) 															&& 
+			ww_mud0ValuePV(i)<0.2 													&& 
+			ww_mudZPV(i) 															&& 
+  			passMuonRingsMVAFO(i, muonMVAEstimator, IdentifiedMu, IdentifiedEle);
+}
+
+
+bool fakableMuon(unsigned int i, MuFOTypes type,MuonMVAEstimator* muonMVAEstimator,
+                std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle){
+    if ( cms2.mus_p4().at(i).pt() < 10.0 ) return false;
+    switch (type){
+        case MuFOV1: return muonId(i, muonSelectionFO_mu_smurf_10);
+        //case MuFOV2: return muonId(i, muonSelectionFO_mu_smurf_04);
+        case MuFOV2: return MuonFOV2(i, muonMVAEstimator, IdentifiedMu, IdentifiedEle);
+    }
+    return false;
+}
+

@@ -35,6 +35,7 @@ bool goodElectronTMVA(EGammaMvaEleEstimator* egammaMvaEleEstimator, int useMVAel
 bool goodElectronWithoutIsolation(unsigned int i, bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator);
 bool goodElectronIsolated(unsigned int i, bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool lockToCoreSelectors);
 bool fakableElectron(unsigned int i,EleFOTypes);
+bool ElectronFOV4(unsigned int i);
 
 //
 // Muon Id
@@ -54,7 +55,8 @@ bool goodMuonTMVA(MuonIDMVA *mva, unsigned int i);
 bool goodMuonWithoutIsolation(unsigned int i, bool useMVAmuId, MuonIDMVA *mva);
 bool goodMuonIsolated( unsigned int i, bool lockToCoreSelectors, bool useMVAmuId, MuonIDMVA *mva, 
 					   MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle );
-bool fakableMuon(unsigned int i, MuFOTypes);
+bool fakableMuon(unsigned int i, MuFOTypes, MuonMVAEstimator* muonMVAEstimator,
+                std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
 bool passMuonRingsMVA(unsigned int mu, MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
 
 //

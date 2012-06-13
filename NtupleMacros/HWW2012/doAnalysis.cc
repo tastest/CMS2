@@ -378,14 +378,14 @@ bool hypo (int i_hyp, double weight, bool realData)
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
     if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LT_FINAL;
-    if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LT_FO_MU1;
-    if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LT_FO_MU2;
+    if ( fakableMuon(index,MuFOV1, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LT_FO_MU1;
+    if ( fakableMuon(index,MuFOV2, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LT_FO_MU2;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
     if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LL_FINAL;
-    if ( fakableMuon(index,MuFOV1) ) cuts_passed |= PASSED_LL_FO_MU1;
-    if ( fakableMuon(index,MuFOV2) ) cuts_passed |= PASSED_LL_FO_MU2;
+    if ( fakableMuon(index, MuFOV1, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LL_FO_MU1;
+    if ( fakableMuon(index, MuFOV2, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LL_FO_MU2;
   } 
   // Electron quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
@@ -461,6 +461,8 @@ bool hypo (int i_hyp, double weight, bool realData)
       cuts_passed |= PASSED_Skim3;
   }
 
+  if(! CheckCuts(pass_all, cuts_passed)) return false;
+
   monitor.count(cms2,type,"all cuts (including soft and extra lepton veto)",weight);
   return true;
 
@@ -501,23 +503,25 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
-/*
+
+  std::vector<Int_t> nullMu; // null identified muons // FIXME
+  std::vector<Int_t> nullEle; // null identified electrons  // FIXME
   if (ltIsFirst) {
     tree.lmva1_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? 
-      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0):-999.) : 
-      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0)    :-999.) ;
+      egammaMvaEleEstimator->mvaValue(cms2.hyp_lt_index().at(i_hyp), false) : 
+      muonMVAEstimator->mvaValueIso( cms2.hyp_lt_index().at(i_hyp), cms2.evt_ww_rho(), MuonEffectiveArea::kMuEAFall11MC, nullEle, nullMu, false );
     tree.lmva2_ = abs(cms2.hyp_ll_id().at(i_hyp))==11 ? 
-      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0):-999.) : 
-      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0)    :-999.) ;
+      egammaMvaEleEstimator->mvaValue(cms2.hyp_ll_index().at(i_hyp), false) : 
+      muonMVAEstimator->mvaValueIso( cms2.hyp_ll_index().at(i_hyp), cms2.evt_ww_rho(), MuonEffectiveArea::kMuEAFall11MC, nullEle, nullMu, false );
   } else {
     tree.lmva1_ = abs(cms2.hyp_ll_id().at(i_hyp))==11 ? 
-      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0):-999.) : 
-      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_ll_index().at(i_hyp), 0)    :-999.) ;
+      egammaMvaEleEstimator->mvaValue(cms2.hyp_ll_index().at(i_hyp), false) : 
+      muonMVAEstimator->mvaValueIso( cms2.hyp_ll_index().at(i_hyp), cms2.evt_ww_rho(), MuonEffectiveArea::kMuEAFall11MC, nullEle, nullMu, false );
     tree.lmva2_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? 
-      (useMVAeleId>0 ? electronIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0):-999.) : 
-      (useMVAmuId  ? muonIdMVA->MVAValue(cms2.hyp_lt_index().at(i_hyp), 0)    :-999.) ;
+      egammaMvaEleEstimator->mvaValue(cms2.hyp_lt_index().at(i_hyp), false) : 
+      muonMVAEstimator->mvaValueIso( cms2.hyp_lt_index().at(i_hyp), cms2.evt_ww_rho(), MuonEffectiveArea::kMuEAFall11MC, nullEle, nullMu, false );
   }
-*/
+
 
   const std::vector<JetPair>& jets = getJets(jetType(), i_hyp, 0, 4.7, applyJEC, jet_corrector_pfL1FastJetL2L3, true, false);
   if (jets.size()>0){
