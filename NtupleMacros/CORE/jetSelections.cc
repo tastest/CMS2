@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.31 2012/06/01 16:08:39 benhoob Exp $
+// $Id: jetSelections.cc,v 1.32 2012/06/14 21:20:45 kelley Exp $
 
 #include <algorithm>
 #include <utility>
@@ -20,9 +20,51 @@ using std::pair;
 // copies
 typedef vector<pair<const LorentzVector *, double> > jets_with_corr_t;
 
+//-----------------------------------------------------------------------------
+// These are the jetMet rescaling factors for the jet (+1 sigma or -1 sigma)
+// flag == 0:  return 1
+// flag == 1:  scale up   by 1 sigma
+// flag == -1: scale down by 1 sigma
+// Uses the ICHE2012 prescription from Filip
+//------------------------------------------------------------------------------
+float getJetMetSyst(int flag, float pt, float eta) {
+
+  if (flag == 0) return 1.;
+  if (flag > 1 || flag < -1) {
+    std::cout << "Illegal call to getJetMetSyst" << std::endl;
+    return 1.0;
+  }
+
+  float result;
+  const int nBinsEta = 2 ;
+  const int nBinsPt = 10 ;
+  float uncert[nBinsEta][nBinsPt] =
+    {
+      { 12.0,  7.5,  6.3,  4.7,  3.7,  2.7,  2.6,  2.5,  2.4,  2.3  },
+      { 20.0,  17.2, 14.5,  10.7,  7.9,  6.9,  6.0,  5.2,  4.7,  4.4  }
+    };			
+  int ipt = int(pt/10.);
+  float rest = pt/10. - ipt;
+  int ieta = 0;
+  if (eta < -2.5 || eta > 2.5) {ieta = 1;}
+  
+  if (pt > 10. && pt < 100.) { 
+    result = uncert[ieta][ipt-1] + rest*(uncert[ieta][ipt] - uncert[ieta][ipt-1]);
+  } else if (pt >= 100.){
+    result = uncert[ieta][9];
+  } else {
+    result = uncert[ieta][0];
+  }		
+  result = 1.0 + flag*result*0.01;
+  return result;
+}
+  
+
+
+
 // function to give us the indices of jets passing kinematic and cleaning cuts
 static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
-                                      double deltaR, double min_pt, double max_eta, double rescale = 1.0)
+                                      double deltaR, double min_pt, double max_eta, double rescale = 1.0, int systFlag = 0)
 {
     // JPT, PF or calo jets?  Introduce this variable so we only have to decide once
     const vector<LorentzVector> *jets = 0;
@@ -52,23 +94,19 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
         // CALO_CORR and PF_CORR need to be pt-corrected
         switch (type) {
         case JETS_TYPE_CALO_CORR:
-            corr = cms2.jets_cor().at(i) * rescale;
+	  corr = cms2.jets_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.jets_p4().at(i).pt(), cms2.jets_p4().at(i).eta());
             break;
         case JETS_TYPE_PF_CORR:
-            corr = cms2.pfjets_cor().at(i) * rescale;
+            corr = cms2.pfjets_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
             break;
         case JETS_TYPE_PF_FAST_CORR:
-	  //corr = cms2.pfjets_corL1FastL2L3().at(i) * rescale;
-	  cout << __FILE__ << " " << __LINE__ << " ERROR BRANCH NOT SET" << endl;
-	  exit(0);
+            corr = cms2.pfjets_corL1FastL2L3().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
             break;
         case JETS_TYPE_PF_FAST_CORR_RESIDUAL:
-	  //corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale;
-	  cout << __FILE__ << " " << __LINE__ << " ERROR BRANCH NOT SET" << endl;
-	  exit(0);
+            corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
             break;
         case JETS_TYPE_JPT: 
-            corr = cms2.jpts_cor().at(i) * rescale;
+            corr = cms2.jpts_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.jpts_p4().at(i).pt(), cms2.jpts_p4().at(i).eta());
             break;
         case JETS_TYPE_CALO_UNCORR: 
         case JETS_TYPE_PF_UNCORR:
@@ -166,9 +204,10 @@ struct jets_pt_gt {
 // functions that we let other people use
 vector<LorentzVector> getJets (unsigned int i_hyp, bool sort_, 
                                enum JetType type, enum CleaningType cleaning,
-                               double deltaR, double min_pt, double max_eta, double rescale)
+                               double deltaR, double min_pt, double max_eta, double rescale, int systFlag)
+
 {
-    jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale);
+  jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale, systFlag);
     vector<LorentzVector> ret;
     ret.reserve(jets.size());
     for (unsigned int i = 0; i < jets.size(); ++i) {
@@ -182,9 +221,9 @@ vector<LorentzVector> getJets (unsigned int i_hyp, bool sort_,
 }
 
 std::vector<bool> getJetFlags (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
-                               double deltaR, double min_pt, double max_eta, double rescale)
+                               double deltaR, double min_pt, double max_eta, double rescale,  int systFlag)
 {
-    jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale);
+  jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale, systFlag);
     vector<bool> ret;
     ret.reserve(jets.size());
     for (unsigned int i = 0; i < jets.size(); ++i) {
@@ -196,9 +235,9 @@ std::vector<bool> getJetFlags (unsigned int i_hyp, enum JetType type, enum Clean
 
 
 int nJets (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
-           double deltaR, double min_pt, double max_eta, double rescale)
+           double deltaR, double min_pt, double max_eta, double rescale,  int systFlag)
 {
-    jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale);
+  jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale, systFlag);
     int ret = 0;
     for (unsigned int i = 0; i < jets.size(); ++i) {
         // correct the jet momentum if a corrected jet type was requested
@@ -209,9 +248,9 @@ int nJets (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
 }
 
 double sumPt (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
-              double deltaR, double min_pt, double max_eta, double rescale)
+              double deltaR, double min_pt, double max_eta, double rescale,  int systFlag)
 {
-    jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale);
+  jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale, systFlag);
     double ret = 0;
     for (unsigned int i = 0; i < jets.size(); ++i) {
         // correct the jet momentum if a corrected jet type was requested
@@ -426,9 +465,10 @@ float jetDz(int ijet, int ivtx) {
 }
 
 vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetType type, enum CleaningType cleaning,
-                                      enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double rescale)
+                                      enum BtagType btag_type, double deltaR, double min_pt, double max_eta, 
+                                      double rescale,  int systFlag)
 {
-    jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale);
+  jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale, systFlag);
     const vector<float> *btags = 0;
     const float btag_wp = BtagWP[btag_type];
 
@@ -530,9 +570,10 @@ vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetTy
 }
 
 std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
-                                      enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double rescale)
+                                      enum BtagType btag_type, double deltaR, double min_pt, double max_eta, 
+                                      double rescale,  int systFlag)
 {
-    jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale);
+  jets_with_corr_t jets = getJets_fast(i_hyp, type, cleaning, deltaR, min_pt, max_eta, rescale, systFlag);
     const vector<float> *btags = 0;
     const float btag_wp = BtagWP[btag_type];
 
@@ -631,8 +672,8 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enu
 }
 
 int nBtaggedJets (unsigned int i_hyp, enum JetType type, enum CleaningType cleaning,
-                  enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double rescale)
+                  enum BtagType btag_type, double deltaR, double min_pt, double max_eta, double rescale,  int systFlag)
 {
-    std::vector<LorentzVector> jets = getBtaggedJets(i_hyp, false, type, cleaning, btag_type, deltaR, min_pt, max_eta, rescale);
+  std::vector<LorentzVector> jets = getBtaggedJets(i_hyp, false, type, cleaning, btag_type, deltaR, min_pt, max_eta, rescale, systFlag);
     return jets.size();
 }

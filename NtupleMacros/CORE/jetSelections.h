@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.19 2012/05/27 21:56:32 fgolf Exp $
+// $Id: jetSelections.h,v 1.20 2012/06/14 21:20:45 kelley Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -46,11 +46,6 @@ enum BtagType {
     JETS_BTAG_CSVT
 };
 
-enum JetScaleType {
-    JETS_SCALE_DOWN = -1,
-    JETS_SCALE_UP = 1
-};
-
 static const float BtagWP[] = {-999999., 1.7, 3.3, 1.93, 3.41, 1.74, 2.00, 0.244, 0.679, 0.898};
 
 #define JET_DEFAULT_TYPE 	JETS_TYPE_JPT
@@ -68,7 +63,8 @@ std::vector<LorentzVector> getJets (unsigned int i_hyp,  // hyp or single-e to u
                                     double deltaR = JET_DEFAULT_DR,
                                     double min_pt = JET_DEFAULT_PT,
                                     double max_eta = JET_DEFAULT_ETA,
-                                    double rescale = 1.0);
+                                    double rescale = 1.0,
+				    int systFlag = 0);
 
 // vector of bools aligned with the jet collection telling you which
 // jets passed the selections
@@ -78,7 +74,8 @@ std::vector<bool> getJetFlags (unsigned int i_hyp,  // hyp or single-e to use fo
                                double deltaR = JET_DEFAULT_DR,
                                double min_pt = JET_DEFAULT_PT,
                                double max_eta = JET_DEFAULT_ETA,
-                               double rescale = 1.0);
+                               double rescale = 1.0,
+			       int systFlag = 0);
 
 // number of jets passing selections
 int nJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
@@ -87,7 +84,8 @@ int nJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
            double deltaR = JET_DEFAULT_DR,
            double min_pt = JET_DEFAULT_PT,
            double max_eta = JET_DEFAULT_ETA,
-           double rescale = 1.0);
+           double rescale = 1.0,
+	   int systFlag = 0);
 
 // scalar sum pt of jets passing selections
 double sumPt (unsigned int i_hyp,  // hyp or single-e to use for cleaning
@@ -96,7 +94,8 @@ double sumPt (unsigned int i_hyp,  // hyp or single-e to use for cleaning
               double deltaR = JET_DEFAULT_DR,
               double min_pt = JET_DEFAULT_PT,
               double max_eta = JET_DEFAULT_ETA,
-              double rescale = 1.0);
+              double rescale = 1.0,
+	      int systFlag = 0);
 
 // code to retrieve jet corrections from jet-correction text files
 class FactorizedJetCorrector;
@@ -128,7 +127,8 @@ std::vector<LorentzVector> getBtaggedJets (unsigned int i_hyp,  // hyp or single
                                            double deltaR = JET_DEFAULT_DR,
                                            double min_pt = JET_DEFAULT_PT,
                                            double max_eta = JET_DEFAULT_ETA,
-                                           double rescale = 1.0);
+                                           double rescale = 1.0,
+					   int systFlag = 0);
 
 // vector of bools aligned with the jet collection telling you which
 // jets passed the selections
@@ -139,7 +139,8 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp,  // hyp or single-e to
                                       double deltaR = JET_DEFAULT_DR,
                                       double min_pt = JET_DEFAULT_PT,
                                       double max_eta = JET_DEFAULT_ETA,
-                                      double rescale = 1.0);
+                                      double rescale = 1.0,
+				      int systFlag = 0);
 
 // number of jets passing selections
 int nBtaggedJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
@@ -149,6 +150,11 @@ int nBtaggedJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
                   double deltaR = JET_DEFAULT_DR,
                   double min_pt = JET_DEFAULT_PT,
                   double max_eta = JET_DEFAULT_ETA,
-                  double rescale = 1.0);
+                  double rescale = 1.0,
+		  int systFlag = 0);
+
+// the jet met systematic...see the cc file for details
+float getJetMetSyst(int flag, float pt, float eta);
+
 
 #endif // SEL_JETS_H
