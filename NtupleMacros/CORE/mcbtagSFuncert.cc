@@ -3,7 +3,7 @@
 #include <set>
 #include "TDatabasePDG.h"
 #include "Math/VectorUtil.h"
-#include "CMS2.h"
+//#include "CMS2.h"
 #include "Math/LorentzVector.h"
 #include "TSystem.h"
 #include "TFile.h"
@@ -49,18 +49,36 @@
 // hardwired in the functions btagScaleFactor and btagScaleFactorError  
 // these values are from the BTV based on 2011 mu-jet data
 // https://twiki.cern.ch/twiki/pub/CMS/BtagPOG/SFb-mujet_payload.txt
-double btagScaleFactor(double jetpt, std::string algo) {
+double btagScaleFactor(double jetpt, std::string algo, bool useFastSim) {
+  double SFb = 1.0;
+  double ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
+  double ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
+  double CFb[] = {0.982194,0.980998,0.992014,0.994472,0.996825,0.999822,1.00105,1.00023,0.991994,0.979123,0.947207,0.928006,0.874260,0.839610};
+  const unsigned int nbins = sizeof(ptmin)/sizeof(double);
+
     if (algo == "CSVM") {
         float pt = max(min(jetpt, 670.),30.);
-        return (0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt))));
+	SFb = (0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt))));
+	if (useFastSim){
+	  if (jetpt < ptmin[0]) SFb *=CFb[0];
+	  if (jetpt >= ptmax[nbins-1]) SFb *= CFb[nbins-1];
+	  for (unsigned int idx = 0; idx < nbins; idx++) {
+            if (jetpt >= ptmin[idx] && jetpt < ptmax[idx])
+	      SFb *= CFb[idx];
+	    
+	  }
+	}
+    } else {
+        if (jetpt < 240.) SFb = 0.96;
+	SFb = 0.96;
     }
-    else {
-        if (jetpt < 240.) return 0.96;
-        return 0.96;
-    }
+    return SFb;
 }
-double btagScaleFactorError(double jetpt, std::string algo) {
-    if (algo == "CSVM") {
+double btagScaleFactorError(double jetpt, std::string algo, bool useFastSim, SMSFastSim systType) {
+  double SFerr_full = 0;
+  double SFerr_fast_stat = 0;
+  double SFerr_fast_syst = 0;
+  if (algo == "CSVM") {
         double ptmin[] = {30, 40, 50, 60, 70, 80, 100, 120, 160, 210, 260, 320, 400, 500};
         double ptmax[] = {40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400, 500, 670};
         double SFb_error[] = {
@@ -78,17 +96,38 @@ double btagScaleFactorError(double jetpt, std::string algo) {
             0.0541299,
             0.0578761,
             0.0655432 };
+	double CFb_error[] = {
+	  0.00253112,0.00296453,0.00113963,0.00128363,0.00232566,0.00232353,0.00219086,0.00156856,
+	  0.00322279,0.00400414,0.00737465,0.0105033,0.0171706,0.0344172}; // stat + PU
+	double CFb_T1tttt_syst[] = {
+	  0.00716144,0.00659549,0.00515735,0.00384551,0.00435913,0.00394750,0.00587666,0.00569624,
+	  0.000432074,-0.0108556,-0.0150331,-0.0310161,-0.0266697,-0.0185043};
         
 	double fudgeFactor=1.5;
         const unsigned int nbins = sizeof(ptmin)/sizeof(double);
-        if (jetpt < ptmin[0]) return 0.12*fudgeFactor;
-        if (jetpt > ptmax[nbins-1]) return 2*SFb_error[nbins-1]*fudgeFactor;
+        if (jetpt < ptmin[0]) {
+	  SFerr_full =  0.12*fudgeFactor;
+	  SFerr_fast_stat = CFb_error[0]*2.; //no idea if this is right (not on the twiki)
+	  if (systType == SMS_T1tttt) SFerr_fast_syst = CFb_T1tttt_syst[0]*2.;
+	}
+        if (jetpt >= ptmax[nbins-1]){
+	  SFerr_full =  2*SFb_error[nbins-1]*fudgeFactor;
+	  SFerr_fast_stat = CFb_error[nbins-1]*2.; 
+          if (systType == SMS_T1tttt) SFerr_fast_syst = CFb_T1tttt_syst[nbins-1]*2.;
+	}
         for (unsigned int idx = 0; idx < nbins; idx++) {
-            if (jetpt > ptmin[idx] && jetpt < ptmax[idx])
-                return fudgeFactor*SFb_error[idx];
+            if (jetpt >= ptmin[idx] && jetpt < ptmax[idx])
+	      SFerr_full =  fudgeFactor*SFb_error[idx];
+	    SFerr_fast_stat = CFb_error[idx];
+	    if (systType == SMS_T1tttt) SFerr_fast_syst = CFb_T1tttt_syst[idx];
+
         }
     }
-    else return 0.04;
+    else SFerr_full =  0.04;
+
+    double SFtotalErr = SFerr_full;
+    if (useFastSim) SFtotalErr = sqrt(SFerr_full*SFerr_full + SFerr_fast_stat*SFerr_fast_stat + SFerr_fast_syst*SFerr_fast_syst);
+    return SFtotalErr;
 }
 
 
@@ -123,7 +162,8 @@ double btagEff(double jetpt) {
 // pt4    = pt of the fourth btegged jet
 // (note: these do not need to be truth matched)
 // Returns a negative number if something goes wrong
-double btagEventWeight(int nbjets, double pt1, double pt2, double pt3, double pt4){
+double btagEventWeight(int nbjets, double pt1, double pt2, double pt3, double pt4, 
+		       bool useFastSim){
 
   // protect against bad input values
   if (nbjets < 2 || nbjets > 4) {
@@ -132,10 +172,10 @@ double btagEventWeight(int nbjets, double pt1, double pt2, double pt3, double pt
   }
 
   // get the scale factors for these jets;
-  double sf1 = btagScaleFactor(pt1);
-  double sf2 = btagScaleFactor(pt2);
-  double sf3 = btagScaleFactor(pt3);
-  double sf4 = btagScaleFactor(pt4);
+  double sf1 = btagScaleFactor(pt1, "CSVM", useFastSim);
+  double sf2 = btagScaleFactor(pt2, "CSVM", useFastSim);
+  double sf3 = btagScaleFactor(pt3, "CSVM", useFastSim);
+  double sf4 = btagScaleFactor(pt4, "CSVM", useFastSim);
 
   // calculate the event weight for the two jet case
   if (nbjets == 2) return sf1*sf2;
@@ -175,7 +215,9 @@ double btagEventWeight(int nbjets, double pt1, double pt2, double pt3, double pt
 // eta2   = eta of the second b quark
 // eta3   = eta of the third  b quark
 // eta4   = eta of the fourth b quark
-double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, double eta2, double pt3, double eta3, double pt4, double eta4) {
+double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, double eta2, 
+			    double pt3, double eta3, double pt4, double eta4,
+			    bool useFastSim, SMSFastSim systType) {
   // protect against bad input values
   if (nbjets < 2 || nbjets > 4) {
     std::cout << "Illegal nbjets = " << nbjets << " in btagEventUncertainty" <<endl;
@@ -191,22 +233,22 @@ double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, dou
   double effErr[4];
   if (pt1 > minpt && fabs(eta1) < etacut) {
     eff[mynbjet]    =  btagEff(pt1);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt1)/btagScaleFactor(pt1);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt1, "CSVM", useFastSim, systType)/btagScaleFactor(pt1, "CSVM", useFastSim);
     mynbjet++;
   }
   if (pt2 > minpt && fabs(eta2) < etacut) {
     eff[mynbjet]    =  btagEff(pt2);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt2)/btagScaleFactor(pt2);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt2, "CSVM", useFastSim, systType)/btagScaleFactor(pt2, "CSVM", useFastSim);
     mynbjet++;
   }
   if (nbjets >= 3 && pt3 > minpt && fabs(eta3) < etacut) {
     eff[mynbjet]    =  btagEff(pt3);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt3)/btagScaleFactor(pt3);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt3, "CSVM", useFastSim, systType)/btagScaleFactor(pt3, "CSVM", useFastSim);
     mynbjet++;
   }
   if (nbjets == 4 && pt4 > minpt && fabs(eta4) < etacut) {
     eff[mynbjet]    =  btagEff(pt4);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt4)/btagScaleFactor(pt4);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt4, "CSVM", useFastSim, systType)/btagScaleFactor(pt4, "CSVM", useFastSim);
     mynbjet++;
   }
 
@@ -214,7 +256,7 @@ double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, dou
   // We will pretend that we have 2 bjets at threshold
   if (mynbjet < 2) {
     eff[1]    = btagEff(minpt);
-    effErr[1] = eff[1]*btagScaleFactorError(minpt)/btagScaleFactor(minpt);
+    effErr[1] = eff[1]*btagScaleFactorError(minpt, "CSVM", useFastSim, systType)/btagScaleFactor(minpt, "CSVM", useFastSim);
     if (mynbjet == 0) {
       eff[0]    = eff[1];
       effErr[1] = effErr[0];
@@ -281,7 +323,7 @@ double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, dou
 // pt4    = pt of the fourth btegged jet
 // (note: these do not need to be truth matched)
 // Returns a negative number if something goes wrong
-double btagEventWeight3(int nbjets, double pt1, double pt2, double pt3, double pt4){
+double btagEventWeight3(int nbjets, double pt1, double pt2, double pt3, double pt4, bool useFastSim){
 
   // protect against bad input values
   if (nbjets < 3 || nbjets > 4) {
@@ -290,10 +332,10 @@ double btagEventWeight3(int nbjets, double pt1, double pt2, double pt3, double p
   }
 
   // get the scale factors for these jets;
-  double sf1 = btagScaleFactor(pt1);
-  double sf2 = btagScaleFactor(pt2);
-  double sf3 = btagScaleFactor(pt3);
-  double sf4 = btagScaleFactor(pt4);
+  double sf1 = btagScaleFactor(pt1, "CSVM", useFastSim);
+  double sf2 = btagScaleFactor(pt2, "CSVM", useFastSim);
+  double sf3 = btagScaleFactor(pt3, "CSVM", useFastSim);
+  double sf4 = btagScaleFactor(pt4, "CSVM", useFastSim);
 
   // calculate the event weight for the three jet case
   if (nbjets == 3) return sf1*sf2*sf3;
@@ -327,7 +369,8 @@ double btagEventWeight3(int nbjets, double pt1, double pt2, double pt3, double p
 // eta2   = eta of the second b quark
 // eta3   = eta of the third  b quark
 // eta4   = eta of the fourth b quark
-double btagEventUncertainty3(int nbjets, double pt1, double eta1, double pt2, double eta2, double pt3, double eta3, double pt4, double eta4) {
+double btagEventUncertainty3(int nbjets, double pt1, double eta1, double pt2, double eta2, double pt3, double eta3, double pt4, double eta4,
+			     bool useFastSim, SMSFastSim systType) {
   // protect against bad input values
   if (nbjets < 3 || nbjets > 4) {
     std::cout << "Illegal nbjets = " << nbjets << " in btagEventUncertainty3" <<endl;
@@ -342,22 +385,22 @@ double btagEventUncertainty3(int nbjets, double pt1, double eta1, double pt2, do
   double effErr[4];
   if (pt1 > minpt && fabs(eta1) < etacut) {
     eff[mynbjet]    =  btagEff(pt1);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt1)/btagScaleFactor(pt1);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt1, "CSVM", useFastSim, systType)/btagScaleFactor(pt1, "CSVM", useFastSim);
     mynbjet++;
   }
   if (pt2 > minpt && fabs(eta2) < etacut) {
     eff[mynbjet]    =  btagEff(pt2);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt2)/btagScaleFactor(pt2);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt2, "CSVM", useFastSim, systType)/btagScaleFactor(pt2, "CSVM", useFastSim);
     mynbjet++;
   }
   if (nbjets >= 3 && pt3 > minpt && fabs(eta3) < etacut) {
     eff[mynbjet]    =  btagEff(pt3);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt3)/btagScaleFactor(pt3);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt3, "CSVM", useFastSim, systType)/btagScaleFactor(pt3, "CSVM", useFastSim);
     mynbjet++;
   }
   if (nbjets == 4 && pt4 > minpt && fabs(eta4) < etacut) {
     eff[mynbjet]    =  btagEff(pt4);
-    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt4)/btagScaleFactor(pt4);
+    effErr[mynbjet] =  eff[mynbjet]*btagScaleFactorError(pt4, "CSVM", useFastSim, systType)/btagScaleFactor(pt4, "CSVM", useFastSim);
     mynbjet++;
   }
 
@@ -365,13 +408,13 @@ double btagEventUncertainty3(int nbjets, double pt1, double eta1, double pt2, do
   // We will pretend that we have 3 bjets at threshold
   if (mynbjet < 3) {
     eff[2]    = btagEff(minpt);
-    effErr[2] = eff[2]*btagScaleFactorError(minpt)/btagScaleFactor(minpt);
+    effErr[2] = eff[2]*btagScaleFactorError(minpt, "CSVM", useFastSim, systType)/btagScaleFactor(minpt, "CSVM", useFastSim);
     if (mynbjet < 2) {
       eff[1]    = btagEff(minpt);
-      effErr[1] = eff[1]*btagScaleFactorError(minpt)/btagScaleFactor(minpt);
+      effErr[1] = eff[1]*btagScaleFactorError(minpt, "CSVM", useFastSim, systType)/btagScaleFactor(minpt, "CSVM", useFastSim);
       if (mynbjet == 0) {
           eff[0]    = btagEff(minpt);
-          effErr[0] = eff[0]*btagScaleFactorError(minpt)/btagScaleFactor(minpt);
+          effErr[0] = eff[0]*btagScaleFactorError(minpt, "CSVM", useFastSim, systType)/btagScaleFactor(minpt, "CSVM", useFastSim);
       }
     }
     mynbjet = 3;
