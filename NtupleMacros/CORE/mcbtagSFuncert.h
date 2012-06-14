@@ -5,7 +5,7 @@ enum SMSFastSim {
   SMS_None = 0,
   SMS_T1tttt = 1
 };
-
+// if useFastSim is enabled, follow prescription at https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2011_FastSim_Correction_Factors
 double btagScaleFactor(double jetpt, std::string algo = "CSVM", bool useFastSim = false);
 double btagScaleFactorError(double jetpt, std::string algo = "CSVM", bool useFastSim = false, SMSFastSim systType  = SMS_None);
 

@@ -43,6 +43,10 @@
 //
 // Mods by Claudio June 7, 2012
 // Blow up the errors by a factor of 1.5 according to ICHEP BTV reccommendation 
+// Mods by Slava July 15, 2012
+// a) add functionality to use fastsim corrections and systematics according to 
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagPOG#2011_FastSim_Correction_Factors
+// b) fix a bug in range/bin selections when the pt is on the boundary: the lower value is in the bin; upper is not.
 //-----------------------------------------------------------------------
 //----------------------------------------------------------------------
 // The btagging scale factor and its uncertainty as a function of pt is 
