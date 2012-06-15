@@ -1563,7 +1563,7 @@ myBabyMaker::myBabyMaker ()
 //      =11 do electrons
 //      =13 do muons
 //-----------------------------------
-void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData, int eormu, bool applyFOfilter, const std::string& jetcorrPath)
+void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, bool applyFOfilter, const std::string& jetcorrPath)
 {
 
     already_seen.clear();
@@ -1573,22 +1573,22 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
 
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
-    if (isData) {        
+    //if (isData) {        
         string data_pf_l2 = jetcorrPath;
         data_pf_l2.append("/GR_R_52_V7_L2Relative_AK5PF.txt");
         string data_pf_l3 = jetcorrPath;
         data_pf_l3.append("/GR_R_52_V7_L3Absolute_AK5PF.txt");
         jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
         jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
-    }
-    else {
-        string mc_pf_l2 = jetcorrPath;
-        mc_pf_l2.append("/START41_V0_AK5PF_L2Relative.txt");
-        string mc_pf_l3 = jetcorrPath;
-        mc_pf_l3.append("/START41_V0_AK5PF_L3Absolute.txt");
-        jetcorr_pf_L2L3_filenames.push_back(mc_pf_l2.c_str());
-        jetcorr_pf_L2L3_filenames.push_back(mc_pf_l3.c_str());
-    }    
+    //}
+    //else {
+    //    string mc_pf_l2 = jetcorrPath;
+    //    mc_pf_l2.append("/START41_V0_AK5PF_L2Relative.txt");
+    //    string mc_pf_l3 = jetcorrPath;
+    //    mc_pf_l3.append("/START41_V0_AK5PF_L3Absolute.txt");
+    //    jetcorr_pf_L2L3_filenames.push_back(mc_pf_l2.c_str());
+    //    jetcorr_pf_L2L3_filenames.push_back(mc_pf_l3.c_str());
+    //}    
 
     std::cout << "making jet corrector with the following files: " << std::endl;
     for (unsigned int idx = 0; idx < jetcorr_pf_L2L3_filenames.size(); idx++)
@@ -1669,6 +1669,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                 finish_looping = true;
                 break;
             }
+
+            bool isData = evt_isRealData();
 
             if(isData){
                 // Good  Runs
@@ -1935,10 +1937,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
                     ///////////////////////////
 
                     // Load the electron and event quantities
-                    run_   = evt_run();
-                    ls_    = evt_lumiBlock();
-                    evt_   = evt_event();
-                    weight_ = isData ? 1. : evt_scale1fb();
+                    run_    = evt_run();
+                    ls_     = evt_lumiBlock();
+                    evt_    = evt_event();
+                    weight_ = isData ? 1.0 : evt_scale1fb();
   
                     if(!isData){
                         // Pileup - PUSummaryInfoMaker                        
@@ -2453,11 +2455,11 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, bool isData
 
 
 
-                    // Time to fill the baby for the electrons
-                    FillBabyNtuple();
+                  // Time to fill the baby for the electrons
+                  FillBabyNtuple();
 
-                } // closes loop over electrons
-            } // closes if statements about whether we want to fill electrons
+              } // closes loop over electrons
+          } // closes if statements about whether we want to fill electrons
 
 
             // Muons

@@ -28,7 +28,7 @@ public:
     void CloseBabyNtuple ();
     void SetNumEvents(int nevt) {nEvents_ = nevt;}
     void SetVerbose(bool verbose) {verbose_ = verbose;}
-    void ScanChain (TChain *chain, const char *babyFileName, bool isData, int eormu, bool applyFOfilter = true, const std::string& jetcorrPath="../CORE/jetcorr/data/");
+    void ScanChain (TChain *chain, const char *babyFileName, int eormu, bool applyFOfilter = true, const std::string& jetcorrPath="../CORE/jetcorr/data/");
     void SetGoodRunList(const char* fileName, bool goodRunIsJson=false);
 
 private:

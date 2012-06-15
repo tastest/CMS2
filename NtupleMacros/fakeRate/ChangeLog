@@ -1,3 +1,6 @@
+05-20-2012 - Ryan Kelley 
+	* updated jets to use residiual corrections 
+
 05-10-2012 - Ryan Kelley 
 	* commented obselete isolation methods
 	* removed extra loops over pfcandidate -- using what's stored in ntuple
