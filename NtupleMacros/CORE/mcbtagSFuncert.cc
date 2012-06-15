@@ -61,7 +61,7 @@ double btagScaleFactor(double jetpt, std::string algo, bool useFastSim) {
   const unsigned int nbins = sizeof(ptmin)/sizeof(double);
 
     if (algo == "CSVM") {
-        float pt = max(min(jetpt, 670.),30.);
+      float pt = std::max(std::min(jetpt, 670.),30.);
 	SFb = (0.6981*((1.+(0.414063*pt))/(1.+(0.300155*pt))));
 	if (useFastSim){
 	  if (jetpt < ptmin[0]) SFb *=CFb[0];
@@ -171,7 +171,7 @@ double btagEventWeight(int nbjets, double pt1, double pt2, double pt3, double pt
 
   // protect against bad input values
   if (nbjets < 2 || nbjets > 4) {
-    std::cout << "Illegal nbjets = " << nbjets << " in btagEventWeight" <<endl;
+    std::cout << "Illegal nbjets = " << nbjets << " in btagEventWeight" << std::endl;
     return -1.;
   }
 
@@ -224,7 +224,7 @@ double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, dou
 			    bool useFastSim, SMSFastSim systType) {
   // protect against bad input values
   if (nbjets < 2 || nbjets > 4) {
-    std::cout << "Illegal nbjets = " << nbjets << " in btagEventUncertainty" <<endl;
+    std::cout << "Illegal nbjets = " << nbjets << " in btagEventUncertainty" << std::endl;
     return -1.;
   }
 
@@ -331,7 +331,7 @@ double btagEventWeight3(int nbjets, double pt1, double pt2, double pt3, double p
 
   // protect against bad input values
   if (nbjets < 3 || nbjets > 4) {
-    std::cout << "Illegal nbjets = " << nbjets << " in btagEventWeight3" <<endl;
+    std::cout << "Illegal nbjets = " << nbjets << " in btagEventWeight3" << std::endl;
     return -1.;
   }
 
@@ -377,7 +377,7 @@ double btagEventUncertainty3(int nbjets, double pt1, double eta1, double pt2, do
 			     bool useFastSim, SMSFastSim systType) {
   // protect against bad input values
   if (nbjets < 3 || nbjets > 4) {
-    std::cout << "Illegal nbjets = " << nbjets << " in btagEventUncertainty3" <<endl;
+    std::cout << "Illegal nbjets = " << nbjets << " in btagEventUncertainty3" << std::endl;
     return -1.;
   }
 
