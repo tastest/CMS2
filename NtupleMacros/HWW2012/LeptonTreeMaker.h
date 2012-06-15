@@ -19,6 +19,8 @@
 
 #include "analysisEnums.h"
 
+#include "SmurfDataTypes.h"
+
 
 class TChain;
 typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > LorentzVectorD;
@@ -39,7 +41,7 @@ class LeptonTreeMaker
 
         void ScanChain(TString outfileid, 
                 TChain* chain,
-                SmurfTree::DataType sample,
+				SmurfTree::DataType sample,
                 double integratedLumi,
                 double xsec,
                 int nProcessedEvents,
@@ -99,6 +101,17 @@ class LeptonTreeMaker
         ElectronIDMVA *electronIdMVA_;
 
 
+		unsigned int HLT_Ele17_Ele8_tag_;
+		unsigned int HLT_Ele17_Ele8_probe_;
+		unsigned int HLT_Ele27_WP80_tag_;
+		unsigned int HLT_Ele27_WP80_probe_;
+		
+		unsigned int HLT_IsoMu24_eta2p1_tag_;
+		unsigned int HLT_IsoMu24_eta2p1_probe_;
+		unsigned int HLT_Mu17_TkMu8_tag_;
+		unsigned int HLT_Mu17_TkMu8_probe_;
+		unsigned int HLT_Mu17_Mu8_tag_;
+		unsigned int HLT_Mu17_Mu8_probe_;
 
 };
 
