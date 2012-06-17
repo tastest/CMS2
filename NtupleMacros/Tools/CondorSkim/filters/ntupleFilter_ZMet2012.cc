@@ -6,45 +6,15 @@
 #include "TTree.h"
 #include "TDatabasePDG.h"
 
-/*
-#include "../CORE/CMS2.cc"
-// #include "../CORE/utilities.cc"
-// #include "../CORE/trackSelections.cc"
-// #include "../CORE/eventSelections.cc"
-// #include "../CORE/MITConversionUtilities.cc"
-#include "../CORE/eventSelections.cc"
-#include "../CORE/ssSelections.cc"
-#include "../CORE/muonSelections.cc"
-#include "../CORE/electronSelectionsParameters.cc"
-#include "../CORE/electronSelections.cc"
-#include "../CORE/triggerUtils.cc"
-#include "../CORE/susySelections.cc"
-*/
-
-#include "../CORE/CMS2.cc"
-#ifndef __CINT__
-#include "../CORE/utilities.cc"
-#include "../CORE/electronSelections.cc"
-#include "../CORE/electronSelectionsParameters.cc"
-#include "../CORE/MITConversionUtilities.cc"
-#include "../CORE/muonSelections.cc"
-#include "../CORE/eventSelections.cc"
-#include "../CORE/ttbarSelections.cc"
-#include "../CORE/trackSelections.cc"
-#include "../CORE/metSelections.cc"
-#include "../CORE/jetSelections.cc"
-#include "../CORE/photonSelections.cc"
-#include "../CORE/triggerUtils.cc"
-#include "../CORE/triggerSuperModel.cc"
-#include "../CORE/mcSelections.cc"
-#include "../CORE/susySelections.cc"
-#include "../CORE/mcSUSYkfactor.cc"
-#include "../CORE/SimpleFakeRate.cc"
-//#include "../Tools/goodrun.cc"
-//#include "../Tools/vtxreweight.cc"
-//#include "../Tools/msugraCrossSection.cc"
-//#include "../Tools/bTagEff_BTV.cc"
-#endif
+#include "CMS2.cc"
+#include "CORE/utilities.cc"
+#include "CORE/electronSelections.cc"
+#include "CORE/electronSelectionsParameters.cc"
+#include "CORE/MITConversionUtilities.cc"
+#include "CORE/muonSelections.cc"
+#include "CORE/eventSelections.cc"
+#include "CORE/ttbarSelections.cc"
+#include "CORE/trackSelections.cc"
 
 #include "Rtypes.h"
 typedef ULong64_t uint64;
@@ -63,6 +33,18 @@ using namespace tas;
 // WARNING: all of the input files are put into 1 output file, so
 // please be careful you don't create a file which is enormous (unless
 // you can handle enormous files)
+
+bool passElectronSelection_ZMet2012_v1(int index, bool vetoTransition=false, bool eta24=false){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, LOOSE);
+  if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
+  
+  return false;
+}
+
 
 bool select (bool isData)
 {
