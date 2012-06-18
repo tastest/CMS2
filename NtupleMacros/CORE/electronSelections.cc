@@ -801,6 +801,9 @@ electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_t
 
 float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int ivtx ){
 
+    float etaAbs = fabs(cms2.els_etaSC()[index]);
+    float pt     = cms2.els_p4()[index].pt();
+
     // get effective area
     float AEff = 0.;
     if (etaAbs <= 1.0) AEff = 0.10;
