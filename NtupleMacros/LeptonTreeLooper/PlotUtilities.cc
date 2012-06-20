@@ -109,7 +109,7 @@ void saveHist(const char* filename, const char* pat)
     delete iter ;
 }
 
-TCanvas *ComparePlots(TFile *f, const char *hist1, const char *hist2, const char *label1, const char *label2, unsigned int rebin, bool norm)
+TCanvas *ComparePlots(TFile *f, const char *hist1, const char *hist2, const char *label1, const char *label2, unsigned int rebin, bool norm, bool log, unsigned int opt)
 {
 
     // get hists
@@ -130,14 +130,27 @@ TCanvas *ComparePlots(TFile *f, const char *hist1, const char *hist2, const char
     if (norm) h1->Scale(h2->Integral(0, h2->GetNbinsX() + 1) / h1->Integral(0, h1->GetNbinsX() + 1));
 
     // format
-    h1->SetLineWidth(2);
-    h1->SetLineColor(kRed);
-    h2->SetLineColor(kBlue);
-    h2->SetFillColor(kBlue);
-    h2->SetFillStyle(0);
-    h2->SetLineWidth(2);
-    h2->SetMarkerStyle(20);
-    h2->SetMarkerColor(kBlue);
+    if (opt == 1) {
+        h1->SetLineWidth(2);
+        h1->SetLineColor(kRed);
+        h2->SetLineColor(kBlue);
+        h2->SetFillColor(kBlue);
+        h2->SetFillStyle(0);
+        h2->SetLineWidth(2);
+        h2->SetMarkerStyle(20);
+        h2->SetMarkerColor(kBlue);
+    } 
+    if (opt == 2) {
+        h1->SetLineWidth(2);
+        h1->SetLineColor(kRed);
+        h1->SetFillColor(kRed);
+        h1->SetFillStyle(3004);
+        h2->SetFillStyle(0);
+        h2->SetLineWidth(2);
+        h2->SetMarkerStyle(20);
+        h2->SetMarkerColor(kBlack);
+        h2->SetLineColor(kBlack);
+    }
 
     // legend
     TLegend *l1 = new TLegend(0.70, 0.85, 0.98, 0.98);
@@ -149,13 +162,57 @@ TCanvas *ComparePlots(TFile *f, const char *hist1, const char *hist2, const char
 
     // draw
     TCanvas *c1 = new TCanvas();
+    if (log) c1->SetLogy();
     c1->cd();
     h1->Draw("HIST");
     h2->Draw("SAME E1");
     double yMax = TMath::Max(h1->GetMaximum(), h2->GetMaximum());
-    h1->GetYaxis()->SetRangeUser(0.01, yMax + 2*sqrt(yMax));
-
+    h1->GetYaxis()->SetRangeUser(0.0, TMath::Max(yMax + 2*sqrt(yMax), yMax + 0.3*yMax));
+    if (log) h1->GetYaxis()->SetRangeUser(0.1, yMax * 1000);
     l1->Draw();
+
     return c1;
 
 }
+
+TGraph GetROC(TFile *f, const char *hist1, const char *hist2, bool increasing)
+{
+
+    // get hists
+    TH1F *sig = (TH1F*)f->Get(hist1)->Clone(hist1);
+    TH1F *bkg = (TH1F*)f->Get(hist2)->Clone(hist2);
+    
+    // overflow
+    sig->SetBinContent(sig->GetNbinsX(), sig->GetBinContent(sig->GetNbinsX()) + sig->GetBinContent(sig->GetNbinsX()+1));
+    sig->SetBinContent(sig->GetNbinsX()+1, 0.0);
+    bkg->SetBinContent(bkg->GetNbinsX(), bkg->GetBinContent(bkg->GetNbinsX()) + bkg->GetBinContent(bkg->GetNbinsX()+1));
+    bkg->SetBinContent(bkg->GetNbinsX()+1, 0.0);
+
+    TGraph gr_roc = eff_rej(*sig, *bkg, true, increasing);
+    return gr_roc;
+}
+
+
+TGraph GetEff(TFile *f, const char *hist1, bool increasing)
+{
+
+    // get hists
+    TH1F *sig = (TH1F*)f->Get(hist1)->Clone(hist1);
+
+    // overflow
+    sig->SetBinContent(sig->GetNbinsX(), sig->GetBinContent(sig->GetNbinsX()) + sig->GetBinContent(sig->GetNbinsX()+1));
+    sig->SetBinContent(sig->GetNbinsX()+1, 0.0);
+
+    TGraph ret(sig->GetNbinsX());
+    for (int i = 1; i <= sig->GetNbinsX(); ++i) {
+        float val = sig->GetBinLowEdge(i);
+        float ntotal = sig->Integral(1, sig->GetNbinsX());
+        float npass = sig->Integral(i, sig->GetNbinsX());
+        if (increasing) npass = ntotal - npass;
+        ret.SetPoint(i - 1, val, npass/ntotal);
+    }
+
+    return ret;
+}
+
+

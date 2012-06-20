@@ -21,7 +21,7 @@ void plotMuonFRStudy(TString det, TString pt)
     // open file
     //
 
-    TString inputFile = "/smurf/dlevans/LeptonTree/V00-02-00_frtests/DoubleMuRun2012APromptV1/merged_Cert_190456-193336_8TeV_PromptReco_Collisions12_JSON.root";
+    TString inputFile = "/smurf/dlevans/LeptonTree/V00-02-00_frtests2/DoubleMuRun2012APromptV1/merged_Cert_190456-193336_8TeV_PromptReco_Collisions12_JSON.root";
     TFile *f = new TFile(inputFile, "READ");
     TTree *leptons = (TTree*)f->Get("leptons");
     gROOT->cd();
@@ -42,11 +42,11 @@ void plotMuonFRStudy(TString det, TString pt)
         kinematics = TCut("abs(probe.Eta()) < 1.479 && probe.Pt() > 20.0");
     }
 
-    TH1F *h1_pfiso = new TH1F("h1_pfiso", "h1_pfiso; PFIso/p_{T}", 100, 0.0, 1.0);
-    TH1F *h1_mva = new TH1F("h1_mva", "h1_pfiso; MVA", 100, -1.0, -0.8);
+    TH1F *h1_pfiso = new TH1F("h1_pfiso", "h1_pfiso; PFIso/p_{T}", 100, 0.0, 2.0);
+    TH1F *h1_mva = new TH1F("h1_mva", "h1_pfiso; MVA", 100, -1.0, 1.0);
 
-    leptons->Draw("TMath::Min(iso2011/probe.Pt(), 0.99) >> h1_pfiso", kinematics + denominator);
-    leptons->Draw("TMath::Min(muonHZZ2012IsoRingsMVA, -0.801) >> h1_mva", kinematics + denominator);
+    leptons->Draw("TMath::Min(iso2011, 1.99) >> h1_pfiso", kinematics + denominator);
+    leptons->Draw("TMath::Min(muonHZZ2012IsoRingsMVA, 0.99) >> h1_mva", kinematics + denominator);
 
     TCanvas *c1_pfiso = new TCanvas();
     c1_pfiso->SetLogy();
@@ -60,16 +60,16 @@ void plotMuonFRStudy(TString det, TString pt)
     h1_mva->Draw();
     c1_mva->SaveAs("muonFRStudy_mva_"+det+"_"+pt+".png");
 
-    float n_denominator = leptons->GetEntries(kinematics + denominator + "iso2011/probe.Pt()<0.4");
-    float n_numerator = leptons->GetEntries(numerator + kinematics + denominator + "iso2011/probe.Pt()<0.4");
+    float n_denominator = leptons->GetEntries(kinematics + denominator + "iso2011<0.4");
+    float n_numerator = leptons->GetEntries(numerator + kinematics + denominator + "iso2011<0.4");
     printf("%s %s\t Fake Rate = %4.3f\n", det.Data(), pt.Data(), n_numerator/n_denominator);
 
     float n_denominator = leptons->GetEntries(kinematics + denominator);
     float n_numerator = leptons->GetEntries(numerator + kinematics + denominator);
     printf("%s %s\t Fake Rate (no iso) = %4.3f\n", det.Data(), pt.Data(), n_numerator/n_denominator);
 
-    n_denominator = leptons->GetEntries(kinematics + denominator + "muonHZZ2012IsoRingsMVA > -0.99");
-    n_numerator = leptons->GetEntries(numerator + kinematics + denominator + "muonHZZ2012IsoRingsMVA > -0.99");
+    n_denominator = leptons->GetEntries(kinematics + denominator + "muonHZZ2012IsoRingsMVA > -0.6");
+    n_numerator = leptons->GetEntries(numerator + kinematics + denominator + "muonHZZ2012IsoRingsMVA > -0.6");
     printf("%s %s\t Fake Rate (new) = %4.3f\n", det.Data(), pt.Data(), n_numerator/n_denominator);
 
     f->Close();

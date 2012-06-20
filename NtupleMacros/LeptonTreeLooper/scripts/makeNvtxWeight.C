@@ -1,10 +1,10 @@
 {
 
     TChain *ch_data = new TChain("leptons");
-    ch_data->Add("/smurf/dlevans/LeptonTree/V00-01-02/DoubleElectronRun2012APromptV1/merged.root");
+    ch_data->Add("/smurf/dlevans/LeptonTree/V00-01-07/DoubleMuRun2012APromptV1/merged_Cert_190456-191859_8TeV_PromptReco_Collisions12_JSON.root");
 
     TChain *ch_dyee = new TChain("leptons");
-    ch_dyee->Add("/smurf/dlevans/LeptonTree/V00-01-02/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/merged.root");
+    ch_dyee->Add("/smurf/dlevans/LeptonTree/V00-01-07/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/merged.root");
 
     gROOT->cd();
 

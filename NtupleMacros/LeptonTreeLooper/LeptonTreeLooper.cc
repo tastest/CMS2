@@ -28,7 +28,12 @@ void LeptonTreeLooper::setGoodRunList(const char *runlist)
     runlistIsSet_ = true;
 }
 
-void LeptonTreeLooper::loop(TChain *chain, TString name)
+void LeptonTreeLooper::unsetGoodRunList()
+{
+    runlistIsSet_ = false;
+}
+
+void LeptonTreeLooper::loop(TChain *chain, TString name, unsigned int plotBin)
 {
 
     printf("[LeptonTreeLooper::loop] %s\n", name.Data());
@@ -48,28 +53,38 @@ void LeptonTreeLooper::loop(TChain *chain, TString name)
     // load nvtx weight
     //
 
-    //TFile f_weight("nvtxweight.root", "READ");
-    //gROOT->cd();
-    //TH1F *h1_nvtxweight = (TH1F*)f_weight.Get("weight")->Clone("weight");
-    //f_weight.Close();
+  TFile *pufile_el    = 0;
+  TFile *pufile_mu    = 0;
+  TH1D  *puWeights_el = 0;
+  TH1D  *puWeights_mu = 0;
+  //const TString pufname2012_el("/smurf/data/Run2012_Summer12_SmurfV9_52X/auxiliar/puWeights_Summer12_el.root");
+  //const TString pufname2012_mu("/smurf/data/Run2012_Summer12_SmurfV9_52X/auxiliar/puWeights_Summer12_mu.root");
+  //const TString pufname2012_el("/smurf/data/Run2012_Summer12_SmurfV9_52X/auxiliar/puWeights_Summer12_3000ipb.root");
+  //const TString pufname2012_mu("/smurf/data/Run2012_Summer12_SmurfV9_52X/auxiliar/puWeights_Summer12_3000ipb.root");
+    const TString pufname2012_el("/smurf/data/Run2012_Summer12_SmurfV9_52X/auxiliar/puWeights_Summer12_2400ipb.root");
+    const TString pufname2012_mu("/smurf/data/Run2012_Summer12_SmurfV9_52X/auxiliar/puWeights_Summer12_2400ipb.root");
+
+  pufile_el = new TFile(pufname2012_el);
+  pufile_mu = new TFile(pufname2012_mu);
+  puWeights_el = (TH1D*)pufile_el->Get("puWeights");
+  puWeights_mu = (TH1D*)pufile_mu->Get("puWeights");
 
     //
     // set up N-1 cuts
     //
 
-enum CutType {
-    DETAIN          = (1<<0),
-    DPHIIN          = (1<<1),
-    SIGMAIETAIETA   = (1<<2),
-    HOE             = (1<<3),
-    OOEMOOP         = (1<<4),
-    D0VTX           = (1<<5),
-    DZVTX           = (1<<6),
-    ISO             = (1<<7),
-    VTXFIT          = (1<<8),
-    MHITS           = (1<<9),
-    EOPFBREM        = (1<<10)
-};
+    enum CutType {
+        DETAIN          = (1<<0),
+        DPHIIN          = (1<<1),
+        SIGMAIETAIETA   = (1<<2),
+        HOE             = (1<<3),
+        OOEMOOP         = (1<<4),
+        D0VTX           = (1<<5),
+        DZVTX           = (1<<6),
+        ISO             = (1<<7),
+        VTXFIT          = (1<<8),
+        MHITS           = (1<<9),
+    };
 
     unsigned int all = DETAIN | DPHIIN | SIGMAIETAIETA | HOE | OOEMOOP | D0VTX | DZVTX | ISO | VTXFIT | MHITS;
     unsigned int nm1_detain     = all & ~DETAIN;
@@ -83,59 +98,38 @@ enum CutType {
     unsigned int nm1_vfitprob   = all & ~VTXFIT;
     unsigned int nm1_mhit       = all & ~MHITS;
 
+    unsigned int all_nohoe_noiso = DETAIN | DPHIIN | SIGMAIETAIETA | OOEMOOP | D0VTX | DZVTX | VTXFIT | MHITS;
+
     //
     // set up histograms
     //
 
     gROOT->cd();
 
+    // general
+    TH1F *h1_run = new TH1F(Form("%s_h1_run", name.Data()), "run", 200, 190600, 190600 + 200);
+
     // tag and probe
-    TH1F *h1_tp_nvtx = new TH1F(Form("%s_h1_tp_nvtx", name.Data()), "nvtx", 40, -0.5, 39.5);
-    TH1F *h1_tp_tagAndProbeMass = new TH1F(Form("%s_h1_tp_tagAndProbeMass", name.Data()), "tagAndProbeMass", 80, 20.0, 160.0);
-    h1_tp_nvtx->Sumw2();
-    h1_tp_tagAndProbeMass->Sumw2();
+    TH1F *h1_mu_tp_nvtx = new TH1F(Form("%s_h1_mu_tp_nvtx", name.Data()), "nvtx; Number of PV", 40, -0.5, 39.5);
+    TH1F *h1_el_tp_nvtx = new TH1F(Form("%s_h1_el_tp_nvtx", name.Data()), "nvtx; Number of PV", 40, -0.5, 39.5);
+    h1_mu_tp_nvtx->Sumw2();
+    h1_el_tp_nvtx->Sumw2();
 
-    TH1F *h1_tp_detain = new TH1F(Form("%s_h1_tp_detain", name.Data()), "detain", 50, 0.0, 0.01);
-    TH1F *h1_tp_dphiin = new TH1F(Form("%s_h1_tp_dphiin", name.Data()), "dphiin", 50, 0.0, 0.1);
-    TH1F *h1_tp_sieie = new TH1F(Form("%s_h1_tp_sieie", name.Data()), "sieie", 50, 0.0, 0.05);
-    TH1F *h1_tp_hoe = new TH1F(Form("%s_h1_tp_hoe", name.Data()), "hoe", 50, 0.0, 0.5);
-    TH1F *h1_tp_ooemoop = new TH1F(Form("%s_h1_tp_ooemoop", name.Data()), "ooemoop", 50, 0.0, 0.05);
-    TH1F *h1_tp_d0vtx = new TH1F(Form("%s_h1_tp_d0vtx", name.Data()), "d0vtx", 50, 0.0, 0.1);
-    TH1F *h1_tp_dzvtx = new TH1F(Form("%s_h1_tp_dzvtx", name.Data()), "dzvtx", 50, 0.0, 0.2);
-    TH1F *h1_tp_vfitprob = new TH1F(Form("%s_h1_tp_vfitprob", name.Data()), "vfitprob", 2, -0.5, 1.5);
-    TH1F *h1_tp_mhit = new TH1F(Form("%s_h1_tp_mhit", name.Data()), "mhit", 5, -0.5, 4.5);
-    h1_tp_detain->Sumw2();
-    h1_tp_dphiin->Sumw2();
-    h1_tp_sieie->Sumw2();
-    h1_tp_hoe->Sumw2();
-    h1_tp_ooemoop->Sumw2();
-    h1_tp_d0vtx->Sumw2();
-    h1_tp_dzvtx->Sumw2();
-    h1_tp_vfitprob->Sumw2();
-    h1_tp_mhit->Sumw2();
+    // electron BDT output studies
+    TH1F *h1_el_bdt = new TH1F(Form("%s_h1_el_bdt", name.Data()), "BDT; BDT", 50, -1.0, 1.0);
+    TH1F *h1_el_eopin = new TH1F(Form("%s_h1_el_eopin", name.Data()), "E/p; E/p", 40, 0.0, 2);
+    TH1F *h1_el_hoe = new TH1F(Form("%s_h1_el_hoe", name.Data()), "H/E; H/E", 40, 0.0, 0.2);
+    TH1F *h1_el_detain = new TH1F(Form("%s_h1_el_detain", name.Data()), "dEtaIn; dEtaIn", 40, -0.02, 0.02);
+    TH1F *h1_el_dphiin = new TH1F(Form("%s_h1_el_dphiin", name.Data()), "dPhiIn; dPhiIn", 40, -0.2, 0.2);
+    TH1F *h1_el_sieie = new TH1F(Form("%s_h1_el_sieie", name.Data()), "#sigma_{i#etai#eta}; #sigma_{i#etai#eta}", 50, 0.0, 0.05);
 
-    // fake rate
-    TH1F *h1_fr_nvtx = new TH1F(Form("%s_h1_fr_nvtx", name.Data()), "nvtx", 40, -0.5, 39.5);
-    h1_fr_nvtx->Sumw2();
+    h1_el_bdt->Sumw2();
+    h1_el_eopin->Sumw2();
+    h1_el_hoe->Sumw2();
+    h1_el_detain->Sumw2();
+    h1_el_dphiin->Sumw2();
+    h1_el_sieie->Sumw2();
 
-    TH1F *h1_fr_detain = new TH1F(Form("%s_h1_fr_detain", name.Data()), "detain", 50, 0.0, 0.01);
-    TH1F *h1_fr_dphiin = new TH1F(Form("%s_h1_fr_dphiin", name.Data()), "dphiin", 50, 0.0, 0.1);
-    TH1F *h1_fr_sieie = new TH1F(Form("%s_h1_fr_sieie", name.Data()), "sieie", 50, 0.0, 0.05);
-    TH1F *h1_fr_hoe = new TH1F(Form("%s_h1_fr_hoe", name.Data()), "hoe", 50, 0.0, 0.5);
-    TH1F *h1_fr_ooemoop = new TH1F(Form("%s_h1_fr_ooemoop", name.Data()), "ooemoop", 50, 0.0, 0.05);
-    TH1F *h1_fr_d0vtx = new TH1F(Form("%s_h1_fr_d0vtx", name.Data()), "d0vtx", 50, 0.0, 0.1);
-    TH1F *h1_fr_dzvtx = new TH1F(Form("%s_h1_fr_dzvtx", name.Data()), "dzvtx", 50, 0.0, 0.2);
-    TH1F *h1_fr_vfitprob = new TH1F(Form("%s_h1_fr_vfitprob", name.Data()), "vfitprob", 2, -0.5, 1.5);
-    TH1F *h1_fr_mhit = new TH1F(Form("%s_h1_fr_mhit", name.Data()), "mhit", 5, -0.5, 4.5);
-    h1_fr_detain->Sumw2();
-    h1_fr_dphiin->Sumw2();
-    h1_fr_sieie->Sumw2();
-    h1_fr_hoe->Sumw2();
-    h1_fr_ooemoop->Sumw2();
-    h1_fr_d0vtx->Sumw2();
-    h1_fr_dzvtx->Sumw2();
-    h1_fr_vfitprob->Sumw2();
-    h1_fr_mhit->Sumw2();
 
     //
     // file loop
@@ -156,6 +150,18 @@ enum CutType {
         LeptonTree *tree = new LeptonTree();
         tree->LoadTree(currentFile->GetTitle());
         tree->InitTree();
+
+        unsigned int HLT_Mu8_probe_ = 1;
+        unsigned int HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_probe_ = 1;
+        unsigned int HLT_IsoMu24_eta2p1_tag_ = 1;
+        unsigned int HLT_Ele27_WP80_tag_ = 1;
+        if (name != "dy_ee" && name != "dy_mm") {
+            tree->tree_->SetBranchAddress("HLT_Mu8_probe", &HLT_Mu8_probe_);
+            tree->tree_->SetBranchAddress("HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_probe", &HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_probe_);
+            tree->tree_->SetBranchAddress("HLT_IsoMu24_eta2p1_tag", &HLT_IsoMu24_eta2p1_tag_);
+            tree->tree_->SetBranchAddress("HLT_Ele27_WP80_tag", &HLT_Ele27_WP80_tag_);
+        }
+
 
         //
         // event loop
@@ -182,6 +188,13 @@ enum CutType {
             }
 
             //
+            // plot bin
+            //
+
+            if (!testPlotBin(plotBin, tree)) continue;
+
+
+            //
             // good run list
             //
 
@@ -189,63 +202,53 @@ enum CutType {
                 if (!goodrun_json(tree->run_, tree->lumi_)) continue;
             }
 
+            h1_run->Fill(tree->run_, 1.0);
+
             //
             // nvtx weight
             //
 
             float weight = 1.0;
-            //int nvtxbin = h1_nvtxweight->FindBin(TMath::Min(int(tree->nvtx_), 19));
-            //if (name == "dyee") weight = h1_nvtxweight->GetBinContent(nvtxbin);
+            if (name == "dy_ee") weight *= puWeights_el->GetBinContent(tree->npu_+1);
+            if (name == "dy_mm") weight *= puWeights_mu->GetBinContent(tree->npu_+1);
 
             //
             // dataset specific cuts
             //
 
-            if (name == "data_2012A") {
-                if (tree->run_ < 190659) continue;
-            }
-
-            //
-            // fill tag and probe histograms
-            //
-
-            if ((tree->eventSelection_ & LeptonTree::ZeeTagAndProbe) && tree->probe_.Pt() > 10.0)
+            if ((tree->eventSelection_ & LeptonTree::ZmmTagAndProbe) && HLT_IsoMu24_eta2p1_tag_ > 0
+                    && tree->qTag_ * tree->qProbe_ < 0)
             {
-                h1_tp_nvtx->Fill(tree->nvtx_, weight);
-                h1_tp_tagAndProbeMass->Fill(tree->tagAndProbeMass_, weight);
-
-                if (abs(tree->tagAndProbeMass_ - 91) < 15.0) {
-                    h1_tp_nvtx->Fill(tree->nvtx_, weight);
-                    if ((tree->looseId_ & nm1_detain) == nm1_detain)     h1_tp_detain->Fill(    fabs(tree->detain_));
-                    if ((tree->looseId_ & nm1_dphiin) == nm1_dphiin)     h1_tp_dphiin->Fill(    fabs(tree->dphiin_));
-                    if ((tree->looseId_ & nm1_sieie) == nm1_sieie)       h1_tp_sieie->Fill(     tree->sieie_);
-                    if ((tree->looseId_ & nm1_hoe) == nm1_hoe)           h1_tp_hoe->Fill(       tree->hoe_);
-                    if ((tree->looseId_ & nm1_ooemoop) == nm1_ooemoop)   h1_tp_ooemoop->Fill(   fabs(tree->ooemoop_));
-                    if ((tree->looseId_ & nm1_d0vtx) == nm1_d0vtx)       h1_tp_d0vtx->Fill(     fabs(tree->d0vtx_));
-                    if ((tree->looseId_ & nm1_dzvtx) == nm1_dzvtx)       h1_tp_dzvtx->Fill(     fabs(tree->dzvtx_));
-                    if ((tree->looseId_ & nm1_vfitprob) == nm1_vfitprob) h1_tp_vfitprob->Fill(  tree->vfitprob_);
-                    if ((tree->looseId_ & nm1_mhit) == nm1_mhit)         h1_tp_mhit->Fill(      tree->mhit_);
-                }
+                h1_mu_tp_nvtx->Fill(tree->nvtx_, weight);
 
             }
 
-            //
-            // fill FR histograms
-            //
 
-            if (tree->tagAndProbeMass_ < 0.0) {
-                if (tree->probe_.Pt() < 30.0) {
-                    h1_fr_nvtx->Fill(tree->nvtx_, weight);
-                    if ((tree->looseId_ & nm1_detain) == nm1_detain)     h1_fr_detain->Fill(    fabs(tree->detain_));
-                    if ((tree->looseId_ & nm1_dphiin) == nm1_dphiin)     h1_fr_dphiin->Fill(    fabs(tree->dphiin_));
-                    if ((tree->looseId_ & nm1_sieie) == nm1_sieie)       h1_fr_sieie->Fill(     tree->sieie_);
-                    if ((tree->looseId_ & nm1_hoe) == nm1_hoe)           h1_fr_hoe->Fill(       tree->hoe_);
-                    if ((tree->looseId_ & nm1_ooemoop) == nm1_ooemoop)   h1_fr_ooemoop->Fill(   fabs(tree->ooemoop_));
-                    if ((tree->looseId_ & nm1_d0vtx) == nm1_d0vtx)       h1_fr_d0vtx->Fill(     fabs(tree->d0vtx_));
-                    if ((tree->looseId_ & nm1_dzvtx) == nm1_dzvtx)       h1_fr_dzvtx->Fill(     fabs(tree->dzvtx_));
-                    if ((tree->looseId_ & nm1_vfitprob) == nm1_vfitprob) h1_fr_vfitprob->Fill(  tree->vfitprob_);
-                    if ((tree->looseId_ & nm1_mhit) == nm1_mhit)         h1_fr_mhit->Fill(      tree->mhit_);
+            if ((tree->eventSelection_ & LeptonTree::ZeeTagAndProbe) 
+                    && tree->probe_.Pt() > 10.0 
+                    && HLT_Ele27_WP80_tag_ > 0
+                    && tree->qTag_ * tree->qProbe_ < 0)
+            {
+
+                h1_el_tp_nvtx->Fill(tree->nvtx_, weight);
+
+
+                // pass isolation
+                // pass id
+
+                if (passElectronFO2012(tree) && passElectronIso2012(tree)
+                            && fabs(tree->tagAndProbeMass_ - 91) < 10.0) {
+                    h1_el_bdt->Fill(tree->egammaPOG2012MVA_, weight);
+
+                    if (tree->egammaPOG2012MVA_ > 0.6) {
+                        h1_el_eopin->Fill(tree->eopin_, weight);
+                        h1_el_hoe->Fill(tree->hoe_, weight);
+                        h1_el_detain->Fill(tree->detain_, weight);
+                        h1_el_dphiin->Fill(tree->dphiin_, weight);
+                        h1_el_sieie->Fill(tree->sieie_, weight);
+                    }
                 }
+
             }
 
         } // end event loop
@@ -260,5 +263,79 @@ enum CutType {
 
     gROOT->cd();
 
+}
+
+bool LeptonTreeLooper::passElectronIso2012(const LeptonTree *leptonTree)
+{
+          float EffectiveArea = 0.0;
+          if (fabs(leptonTree->sceta_) >= 0.0 && fabs(leptonTree->sceta_) < 1.0 ) EffectiveArea = 0.176;
+          if (fabs(leptonTree->sceta_) >= 1.0 && fabs(leptonTree->sceta_) < 1.479 ) EffectiveArea = 0.206;
+          if (fabs(leptonTree->sceta_) >= 1.479 && fabs(leptonTree->sceta_) < 2.0 ) EffectiveArea = 0.094;
+          if (fabs(leptonTree->sceta_) >= 2.2 && fabs(leptonTree->sceta_) < 2.2 ) EffectiveArea = 0.172;
+          if (fabs(leptonTree->sceta_) >= 2.3 && fabs(leptonTree->sceta_) < 2.3 ) EffectiveArea = 0.244;
+          if (fabs(leptonTree->sceta_) >= 2.4 && fabs(leptonTree->sceta_) < 2.4 ) EffectiveArea = 0.333;
+          if (fabs(leptonTree->sceta_) >= 2.4 ) EffectiveArea = 0.348;
+
+        if ((leptonTree->pfchiso04_ + TMath::Max(float(0.0), leptonTree->pfemiso04_ + leptonTree->pfnhiso04_
+            - EffectiveArea * TMath::Max(float(0.0), leptonTree->rhoIsoAll_)))/leptonTree->probe_.Pt() > 0.15) return false;
+    return true;
+}
+
+bool LeptonTreeLooper::passElectronFO2012(const LeptonTree *leptonTree)
+{
+
+        float pt = leptonTree->probe_.Pt();
+        float d0 = leptonTree->d0vtx_;
+        float dz = leptonTree->dzvtx_;
+        if (leptonTree->trkiso_/pt               > 0.2)      return false;
+        if (leptonTree->hcaliso_/pt              > 0.2)      return false;
+        if (fabs(d0) > 0.02)                                return false;
+        if (fabs(dz) > 0.1)                                 return false;
+
+        unsigned int mhits = leptonTree->mhit_;
+        bool conv = leptonTree->vfitprob_;
+        if (mhits > 0)      return false;
+        if (conv)           return false;
+
+        if (fabs(leptonTree->sceta_) < 1.479) {
+            if (leptonTree->sieie_               > 0.01)  return false;
+            if (fabs(leptonTree->detain_)        > 0.007) return false;
+            if (fabs(leptonTree->dphiin_)        > 0.15)  return false;
+            if (leptonTree->hoe_                 > 0.12)  return false;
+            if ((leptonTree->ecaliso_ - 1.0)/pt  > 0.2)   return false;
+        } else {
+            if (leptonTree->sieie_               > 0.03)  return false;
+            if (fabs(leptonTree->detain_)        > 0.009) return false;
+            if (fabs(leptonTree->dphiin_)        > 0.10)  return false;
+            if (leptonTree->hoe_                 > 0.10)  return false;
+            if ((leptonTree->ecaliso_)/pt        > 0.2)   return false;
+        }
+
+    return true;
+
+}
+
+bool LeptonTreeLooper::testPlotBin(const unsigned int plotBin, const LeptonTree *tree)
+{
+
+    float pt = tree->probe_.Pt();
+
+    float eta = fabs(tree->sceta_);
+    if ((tree->eventSelection_ & LeptonTree::QCDFakeMu) || (tree->eventSelection_ & LeptonTree::ZmmTagAndProbe))
+        eta = fabs(tree->probe_.Eta());
+
+    if ((plotBin & plotbin::EB) == plotbin::EB && !(eta < 1.479))                     return false;
+    if ((plotBin & plotbin::CENTRAL) == plotbin::CENTRAL && !(eta < 0.80))            return false;
+    if ((plotBin & plotbin::TRANSITION) == plotbin::TRANSITION && !(eta >= 0.80 && eta < 1.479))            return false;
+    if ((plotBin & plotbin::EE) == plotbin::EE && !(eta >= 1.479))                    return false;
+    if ((plotBin & plotbin::EELO) == plotbin::EELO && !(eta >= 1.479 && eta < 2.0))                    return false;
+    if ((plotBin & plotbin::EEHI) == plotbin::EEHI && !(eta >= 2.0))                    return false;
+
+    if ((plotBin & plotbin::PT1015) == plotbin::PT1015 && !(pt >= 10.0 && pt < 15.0)) return false;
+    if ((plotBin & plotbin::PT1020) == plotbin::PT1020 && !(pt >= 10.0 && pt < 20.0)) return false;
+    if ((plotBin & plotbin::PT20UP) == plotbin::PT20UP && !(pt >= 20.0))              return false;
+    if ((plotBin & plotbin::PT10UP) == plotbin::PT10UP && !(pt >= 10.0))              return false;
+
+    return true;
 }
 
