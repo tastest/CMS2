@@ -1,27 +1,12 @@
-
-
 #! /usr/bin/python
 
 
-# import xml.dom.minidom
 import string
 import subprocess
 import sys, os
 import argparse
 import urllib2
 import itertools
-
-# print "bunch of stuff \n\
-# here too."
-
-# def checkLocalFiles(localFilePath):
-    # p = subprocess.Popen(["ls", localfilepath ""], stderr=subprocess.PIPE,stdout=subprocess.PIPE)
-    # err, out = p.output()
-    # print out
-    # print err
-    # print p.exitstatus()
-    # cmd = 'ls ' + localFilePath + 'merged_ntuple*.xml'
-
 
 #global vars 
 successlist = {'fjr':[[],[],[],[]], 
@@ -76,13 +61,10 @@ def isGoodURL(server, task = ''):
 
 def getCrabLog(serveraddress,taskid,job):
     username = taskid.split("_")[0] # gets username appended to front of task
-    # n = len(username)
     global filepath
     filepath = '%s/temp/' % (taskid[+len(username)+1:-7])
     ensure_dir(filepath) # makes sure path exists and if it does not, creates it.
     
-    # print 'Attempting to retrieve files for job %s to store in %s' % (str(job), filepath)     
-    # urlforfile = '%s%s/crab_fjr_%s.xml' % (serveraddress, taskid, str(job))
 
     try:
       crabfjr = urllib2.urlopen('%s/%s/crab_fjr_%s.xml' % (serveraddress, taskid, str(job)))
@@ -130,15 +112,12 @@ def getCrabLog(serveraddress,taskid,job):
       successlist['outfiles'][1].append(job)
 
 def getFiles(jobs, serveradd, taskID):
-  # print jobs
     for jobid in jobs:
-      # print 'Getting files for job %i' %(jobid)
       getCrabLog(serveradd, taskID, jobid)
     
 
 def ensure_dir(f):
     d = os.path.dirname(f)
-    # Print 'Crab files will be stored in: %s' %(f) 
     if not os.path.exists(d):
       print 'Directory %s does not exist. Making directory.' %(f)
       os.makedirs(d)
@@ -148,18 +127,6 @@ def ranges(i):
       b = list(b)
       yield b[0][1], b[-1][1]
 
-####ryan's code to parse input options
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# parser = OptionParser()
-# parser.add_option("--nev"   , dest="num_events"  , default=-1          , help="The number of events to run (-1 for all)")
-# parser.add_option("--lumi"  , dest="lumi"        , default=1.0         , help="luminosity in 1 fb^-1"                   )
-# parser.add_option("--print" , dest="print_output", default="0"         , help="Print the histograms"                    )
-# parser.add_option("--suffix", dest="suffix"      , default="png"       , help="The suffix for the histograms"           )
-# parser.add_option("--data"  , dest="data"        , action="store_true" , default=False, help="is this for data?"        )
-# parser.add_option("--submit", dest="submit"      , action="store_true" , default=False, help="submit the commands"      )
-#
-# (options, args) = parser.parse_args()
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 
 def main():
