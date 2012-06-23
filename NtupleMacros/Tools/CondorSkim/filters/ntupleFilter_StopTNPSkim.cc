@@ -87,7 +87,7 @@ bool select (bool isData)
       if (cms2.mus_p4()[probe].Pt() < 10.0)                continue; // pt cut
       if (fabs(cms2.mus_p4()[probe].Eta()) > 2.4)          continue; // eta cut
 
-      float dilmass = (cms2.els_p4()[probe] + cms2.els_p4()[tag]).M();
+      float dilmass = (cms2.mus_p4()[probe] + cms2.mus_p4()[tag]).M();
 
       // return true if T&P mass is in Z window
       if( dilmass > 76 && dilmass < 106 ) return true;
