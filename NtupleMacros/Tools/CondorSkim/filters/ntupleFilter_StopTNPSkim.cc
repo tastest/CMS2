@@ -38,6 +38,10 @@ using namespace tas;
 bool select (bool isData)
 {
 
+  for( unsigned int i = 0 ; i < svs_anglePV().size() ; ++i ){
+    if( svs_anglePV().at(i) != svs_anglePV().at(i) ) return false;
+  }
+
   //------------------------------------
   // check for electron T&P pair
   //------------------------------------
