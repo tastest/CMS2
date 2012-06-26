@@ -802,6 +802,24 @@ int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum 
 }
 
 
+///////////////////////////////////////////////////////////////////////////////////////////
+// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+int samesign::nJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
+{
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    return good_jets.size();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// same as above, but allowing use of on-the-fly JEC corrections
+///////////////////////////////////////////////////////////////////////////////////////////
+int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
+{
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    return good_jets.size();
+}
+
  ///////////////////////////////////////////////////////////////////////////////////////////	 
  // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)	 
  ///////////////////////////////////////////////////////////////////////////////////////////	 
