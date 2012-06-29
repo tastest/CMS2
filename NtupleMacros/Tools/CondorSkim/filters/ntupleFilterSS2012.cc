@@ -116,7 +116,7 @@ bool selectSameSign(bool do20_20, bool btag2, bool jets2, FactorizedJetCorrector
             {
                 // select specific events
                 bool ee_or_em = ((hyp_typeToHypType(hyp_type().at(ihyp)) == DILEPTON_EE) || (hyp_typeToHypType(hyp_type().at(ihyp)) == DILEPTON_EMU));
-                if (not (ee_or_em && samesign2011::isNumeratorHypothesis(ihyp)))
+                if (not (ee_or_em && samesign::isNumeratorHypothesis(ihyp)))
                 {
                     continue;
                 }
