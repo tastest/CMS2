@@ -210,8 +210,8 @@ else :
 
     #print command
 
-    len = len( os.popen(command).readlines() )
-    if( len > 0 ):
+    length = len( os.popen(command).readlines() )
+    if( length > 0 ):
       lines = os.popen(command);
       for i in lines.readlines():
         dbs_result = re.sub('\n', '', i)
