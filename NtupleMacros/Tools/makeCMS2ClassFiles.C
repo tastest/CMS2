@@ -1,4 +1,5 @@
 // Original author: Puneeth Kalavase (UCSB)
+// Updates: Frank Golf (UCSD)
 // 
 /*
   ROOT macro to make CMS2.h and ScanChain.C files for basic analysis
@@ -35,9 +36,9 @@ ofstream implf;
 ofstream branchfile;
 
 void makeHeaderFile(TFile *f, std::string treeName, bool paranoid, string Classname);
-void makeSrcFile(std::string Classname, std::string branchNamesFile);
-void makeBranchFile(std::string branchNamesFile);
-void makeDriverFile(std::string fname);
+void makeSrcFile(std::string Classname, std::string branchNamesFile, std::string treeName);
+void makeBranchFile(std::string branchNamesFile, std::string treeName);
+void makeDriverFile(std::string fname, std::string treeName);
 
 
 //-------------------------------------------------------------------------------------------------
@@ -80,9 +81,9 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string tr
   
     implf << "#include \"" << className+".h" << "\"\n" << className << " cms2;" << endl;
     makeHeaderFile(f, treeName, paranoid, className);
-    makeSrcFile(className, branchNamesFile);
+    makeSrcFile(className, branchNamesFile, treeName);
     if(branchNamesFile!="")
-        makeBranchFile(branchNamesFile);
+        makeBranchFile(branchNamesFile, treeName);
     implf << "}" << endl;
     implf.close();
     headerf << "}" << endl;
@@ -92,7 +93,7 @@ void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string tr
   
     codef.close();
 
-    makeDriverFile(fname);
+    makeDriverFile(fname, treeName);
 
     f->Close();
 }
@@ -175,6 +176,7 @@ void makeHeaderFile(TFile *f, std::string treeName, bool paranoid, string Classn
 
         TString branchname(branch->GetName());
         TString branchtitle(branch->GetTitle());
+        TString branchclass(branch->GetClassName());
         if(!branchname.BeginsWith("int") && 
            !branchname.BeginsWith("uint") && 
            !branchname.BeginsWith("bool") && 
@@ -185,8 +187,14 @@ void makeHeaderFile(TFile *f, std::string treeName, bool paranoid, string Classn
            !branchtitle.EndsWith("/i") &&
            !branchtitle.EndsWith("/O") &&
            !branchtitle.BeginsWith("TString") &&
-           !branchtitle.BeginsWith("TBits"))
+           !branchtitle.BeginsWith("TBits") &&
+           !branchclass.Contains("LorentzVector"))
             continue;
+
+//        if (branchclass.Contains("LorentzVector"))
+        // std::cout << "Adding branch " << branchtitle.Data() << " to list." << std::endl;
+        // std::cout.flush();
+
         aliasarray->Add(fullarray->At(i));
     }
   
@@ -675,7 +683,7 @@ void makeHeaderFile(TFile *f, std::string treeName, bool paranoid, string Classn
 }
   
 //-------------------------------------------------------------------------------------------------
-void makeSrcFile(std::string Classname, std::string branchNamesFile) {
+void makeSrcFile(std::string Classname, std::string branchNamesFile, std::string treeName) {
 
     // TTree *ev = (TTree*)f->Get("Events");
   
@@ -728,7 +736,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
     codef << "" << endl;
     codef << "    // Get File Content" << endl;
     codef << "    TFile *file = new TFile( currentFile->GetTitle() );" << endl;
-    codef << "    TTree *tree = (TTree*)file->Get(\"Events\");" << endl;
+    codef << "    TTree *tree = (TTree*)file->Get(\"" << treeName << "\");" << endl;
     codef << "    if(fast) TTreeCache::SetLearnEntries(10);" << endl;
     codef << "    if(fast) tree->SetCacheSize(128*1024*1024);" << endl;
     codef << "    cms2.Init(tree);" << endl;
@@ -782,7 +790,7 @@ void makeSrcFile(std::string Classname, std::string branchNamesFile) {
 
   
 //-------------------------------------------------------------------------------------------------
-void makeBranchFile(std::string branchNamesFile) {
+void makeBranchFile(std::string branchNamesFile, std::string treeName) {
   
     ifstream branchesF(branchNamesFile.c_str());
     vector<TString> v_datatypes;
@@ -852,7 +860,7 @@ void makeBranchFile(std::string branchNamesFile) {
     branchfile << "      outFile_ = TFile::Open(string(skimFilePrefix + \"_skimmednTuple.root\").c_str(),\"RECREATE\");\n";
     branchfile << "   else outFile_ = TFile::Open(\"skimmednTuple.root\", \"RECREATE\");\n";
     branchfile << "   outFile_->cd();" << endl;
-    branchfile << "   outTree_ = new TTree(\"Events\", \"\");\n\n";
+    branchfile << "   outTree_ = new TTree(\"" << treeName << "\", \"\");\n\n";
     branchfile << "   //book the branches\n";
     for(unsigned int i = 0; i < v_datatypes.size(); i++) {
         TString varName = v_varNames[i];
@@ -908,14 +916,14 @@ void makeBranchFile(std::string branchNamesFile) {
 }
 
   
-void makeDriverFile(std::string fname) { 
+void makeDriverFile(std::string fname, std::string treeName) { 
 
     ofstream driverF;
     driverF.open("doAll.C");
 
     driverF << "{" << endl << endl;
     driverF << "  gROOT->ProcessLine(\".L ScanChain.C+\");" << endl << endl;
-    driverF << "  TChain *ch = new TChain(\"Events\"); " << endl;
+    driverF << "  TChain *ch = new TChain(\"" << treeName << "\"); " << endl;
     driverF << "  ch->Add(\"" + fname + "\");" << endl;
     driverF << "  ScanChain(ch); " << endl;
     driverF << "}";
