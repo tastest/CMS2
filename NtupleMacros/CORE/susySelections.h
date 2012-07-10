@@ -34,7 +34,7 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt );
 /*****************************************************************************************/
 //passes the SUSY 2012 trigger selections
 /*****************************************************************************************/
-bool passSUSYTrigger2012_v1( bool isData , int hypType );
+bool passSUSYTrigger2012_v1( int hypType );
 bool passSUSYTrigger2012_v2( bool isData );
 
 /*****************************************************************************************/

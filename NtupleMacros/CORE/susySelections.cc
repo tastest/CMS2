@@ -700,7 +700,9 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
 }
 
 
-bool passSUSYTrigger2012_v1( bool isData , int hypType ) {
+bool passSUSYTrigger2012_v1( int hypType ) {
+
+  if (!cms2.evt_isRealData()) return true;
 
   //mm
   if( hypType == 0 ){
