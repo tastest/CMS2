@@ -1,0 +1,40 @@
+
+
+####################
+# MET Filters 2012 #
+####################
+
+cvs co -r V00-00-07 RecoMET/METFilters
+touch RecoMET/METFilters/data/dummy.txt
+sed '3 s/EDFilter/EDProducer/' <$CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py >blah
+mv blah $CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py
+
+#############
+# MVA JetId #
+#############
+ 
+cvs co -r V00-00-09 -d CMGTools/External UserCode/CMG/CMGTools/External
+
+##############
+# do stuff with PF candidates
+#############
+
+addpkg CommonTools/ParticleFlow V00-03-11
+addpkg RecoParticleFlow/PFProducer CMSSW_5_3_2_patch3
+
+####################
+# 2012 Electron ID #
+####################
+
+cvs co -r V00-00-06 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysisTools
+
+
+########################
+# Type-I Corrected MET #
+########################
+
+cvs co -r V04-05-08      JetMETCorrections/Type1MET 
+
+#
+echo;echo checkingdeps;echo
+checkdeps -a
