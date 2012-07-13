@@ -2670,17 +2670,17 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
                     // mc information
                     if (!isData) {
-                        mcid_       = els_mc_id().at(iLep);
-                        mcmotherid_ = els_mc_motherid().at(iLep);
-                        int status3_index = mc3idx_eormu(11, iLep);
+                        mcid_       = mus_mc_id().at(iLep);
+                        mcmotherid_ = mus_mc_motherid().at(iLep);
+                        int status3_index = mc3idx_eormu(13, iLep);
                         if (status3_index >= 0)
                         {
                             mc3id_ = cms2.genps_id().at(status3_index);
                             mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
                             mc3p4_ = cms2.genps_p4().at(status3_index);                            
                         }
-                        mc3dr_ = mc3dr_eormu(11, iLep);            
-                        leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
+                        mc3dr_ = mc3dr_eormu(13, iLep);            
+                        leptonIsFromW_ = leptonIsFromW(iLep, -13 * cms2.mus_charge().at(iLep), true);
                     }
 
                     // muon effective area
@@ -2698,22 +2698,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     mu_nh_effarea04_tight_ = EffectiveArea_nh(eta_, /*cone=*/0.4, /*use_tight=*/true);
                     mu_em_effarea04_tight_ = EffectiveArea_em(eta_, /*cone=*/0.4, /*use_tight=*/true);
 
-                    // mc information
-                    if (!isData) 
-                    {
-                        mcid_       = mus_mc_id().at(iLep);
-                        mcmotherid_ = mus_mc_motherid().at(iLep);
-                        int status3_index = mc3idx_eormu(13, iLep);
-                        if (status3_index >= 0) {
-                            mc3id_ = cms2.genps_id().at(status3_index);
-                            mc3pt_ = cms2.genps_p4().at(status3_index).pt();
-                            mc3p4_ = cms2.genps_p4().at(status3_index);
-                        }
-                        mc3dr_ = mc3dr_eormu(13, iLep);
-                        leptonIsFromW_ = leptonIsFromW(iLep, -13*cms2.mus_charge().at(iLep), true);
-                    }
-
-                    mu_isCosmic_ = isCosmics(iLep);
+                    // cosmics
+                    mu_isCosmic_           = isCosmics(iLep);
 
                     // W transverse mass
                     mt_   = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
