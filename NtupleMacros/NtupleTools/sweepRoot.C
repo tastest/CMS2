@@ -38,6 +38,7 @@ void move(std::string& target) {
 int main(int argc, char** argv) {
    std::vector<std::string> printbad;
    std::vector<std::string> printgood;
+   int nbad = 0;
 
    /**************************/
    /* command line arguments */
@@ -104,7 +105,6 @@ int main(int argc, char** argv) {
    //std::cout << "Checking for TObject named: " << name << std::endl;
    std::cout << "sweepRooting " << argc-shift << " files" << std::endl;
 
-   int nbad = 0;
    for (int it = shift; it < argc; it++) {
       std::cout << "\rsweepRooted  " << it-shift + 1 << " files";
       std::cout.flush();
@@ -163,5 +163,5 @@ int main(int argc, char** argv) {
          std::cout << printgood.at(i) << std::endl;
    }
 
-   return 0;
+   return nbad;
 }
