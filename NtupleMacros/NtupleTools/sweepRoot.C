@@ -106,7 +106,7 @@ int main(int argc, char** argv) {
 
    int nbad = 0;
    for (int it = shift; it < argc; it++) {
-      std::cout << "\rsweepRooted  " << it-shift << " files";
+      std::cout << "\rsweepRooted  " << it-shift + 1 << " files";
       std::cout.flush();
       //std::cout << "File " << argv[it] << " is... ";
       std::string target(argv[it]);
