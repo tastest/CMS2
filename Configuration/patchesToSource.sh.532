@@ -19,8 +19,11 @@ cvs co -r V00-00-09 -d CMGTools/External UserCode/CMG/CMGTools/External
 # do stuff with PF candidates
 #############
 
-addpkg CommonTools/ParticleFlow V00-03-11
-addpkg RecoParticleFlow/PFProducer CMSSW_5_3_2_patch3
+#addpkg CommonTools/ParticleFlow    V00-03-11
+#addpkg RecoParticleFlow/PFProducer V05-01-06
+
+addpkg CommonTools/ParticleFlow    CMSSW_5_3_2_patch4
+addpkg RecoParticleFlow/PFProducer CMSSW_5_3_2_patch4
 
 ####################
 # 2012 Electron ID #
