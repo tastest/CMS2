@@ -52,12 +52,14 @@ bool   ww_mudZPV(unsigned int i, float cut=0.1);
 
 // combined analysis selectors
 bool goodMuonTMVA(MuonIDMVA *mva, unsigned int i);
-bool goodMuonWithoutIsolation(unsigned int i, bool useMVAmuId, MuonIDMVA *mva);
+bool goodMuonWithoutIsolation(unsigned int i, bool useMVAmuId, MuonIDMVA *mva,
+							  MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
 bool goodMuonIsolated( unsigned int i, bool lockToCoreSelectors, bool useMVAmuId, MuonIDMVA *mva, 
 					   MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle );
 bool fakableMuon(unsigned int i, MuFOTypes, MuonMVAEstimator* muonMVAEstimator,
                 std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
 bool passMuonRingsMVA(unsigned int mu, MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
+bool passMuonRingsMVAFO(unsigned int mu, MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
 
 //
 // extra leptons
@@ -66,11 +68,12 @@ bool passMuonRingsMVA(unsigned int mu, MuonMVAEstimator* muonMVAEstimator, std::
 //
 // leptons
 //
-
 std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleId, int useMVAeleId, 
-										EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva);
+										EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva,
+										MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
 unsigned int numberOfExtraLeptons(int i_hyp, double minPt, bool useLHeleId, int useMVAeleId, 
-								  EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva);
+								  EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva,
+								  MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle);
 unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated, const std::vector<JetPair>& = std::vector<JetPair>());
 
 //

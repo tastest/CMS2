@@ -173,6 +173,11 @@ bool ElectronFOIdV4(unsigned int i) {
 			cms2.els_hcalIso().at(i)/pt>0.2 ) return false;
 	}
 
+    // MIT conversion
+	if ( isFromConversionMIT(i) ) return false;
+	// conversion rejection - hit based
+	if ( cms2.els_exp_innerlayers().at(i) > 0 ) return false;
+	
 	return true;
 } 
 
@@ -262,8 +267,9 @@ bool goodMuonTMVA(MuonIDMVA* mva, unsigned int i) {
   return pass;
 }
 
-bool goodMuonWithoutIsolation(unsigned int i, bool useMVAmuId, MuonIDMVA *mva){
-  return ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i, useMVAmuId, mva);
+bool goodMuonWithoutIsolation(unsigned int i, bool useMVAmuId, MuonIDMVA *mva, 
+								MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle){
+  return ww_muBase(i) && ww_mud0PV(i) && ww_mudZPV(i) && ww_muId(i, useMVAmuId, mva) && passMuonRingsMVAFO(i, muonMVAEstimator, IdentifiedMu, IdentifiedEle);
 }
 
 bool goodMuonIsolated(	unsigned int i, bool lockToCoreSelectors, bool useMVAmuId, MuonIDMVA *mva, 
@@ -299,7 +305,6 @@ bool ww_elId(unsigned int index, bool useLHeleId, int useMVAeleId, EGammaMvaEleE
 
     // MIT conversion
     if ( isFromConversionMIT(index) ) return false;
-
     // conversion rejection - hit based
     if ( cms2.els_exp_innerlayers().at(index) > 0 ) return false;
 
@@ -439,7 +444,8 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
         if ( cms2.mus_p4()[imu].pt() < 3 ) continue;
         if ( ww_mud0ValuePV(imu) > 0.2) continue;
         if ( ! ww_mudZPV(imu,0.2) ) continue; //newcuts, was 0.1
-        if ( cms2.mus_validHits()[imu] < 11) continue;
+        //if ( cms2.mus_validHits()[imu] < 11) continue;
+        if (cms2.trks_nlayers().at(cms2.mus_trkidx().at(imu)) < 6) return false; // # of tracker hits 
         if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == imu ) continue;
         if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == imu ) continue;
         if ( nonisolated && ww_muIsoVal(imu)<0.1 && cms2.mus_p4()[imu].pt()>20 ) continue;
@@ -453,13 +459,16 @@ unsigned int numberOfSoftMuons(int i_hyp, bool nonisolated,
     return nMuons;
 }
 
-std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva){
-    std::vector<LeptonPair> leptons;
+std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva,
+										MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle ){
+
+	std::vector<LeptonPair> leptons;
     for (int i=0; i < int(cms2.mus_charge().size()); ++i) {
         if ( cms2.mus_p4()[i].pt() < minPt ) continue;
         if ( TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13 && cms2.hyp_lt_index()[i_hyp] == i ) continue;
         if ( TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13 && cms2.hyp_ll_index()[i_hyp] == i ) continue;
-        if ( ! (ww_mud0PV(i) && ww_muId(i, useMVAmuId, mumva) && ww_muIso(i)&&
+        //if ( ! (ww_mud0PV(i) && ww_muId(i, useMVAmuId, mumva) && ww_muIso(i)&&
+        if ( ! (ww_mud0PV(i) && ww_muId(i, useMVAmuId, mumva) && ww_muIso(i, muonMVAEstimator, IdentifiedMu,  IdentifiedEle) &&
                     fabs(cms2.mus_p4().at(i).eta()) <2.4) ) continue;
         leptons.push_back(LeptonPair(true,i));
     }
@@ -474,8 +483,9 @@ std::vector<LeptonPair> getExtraLeptons(int i_hyp, double minPt,  bool useLHeleI
     return leptons;
 }
 
-unsigned int numberOfExtraLeptons(int i_hyp, double minPt, bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva){
-  return getExtraLeptons(i_hyp, minPt, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, mumva).size();
+unsigned int numberOfExtraLeptons(	int i_hyp, double minPt, bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool useMVAmuId, MuonIDMVA *mumva,
+									MuonMVAEstimator* muonMVAEstimator, std::vector<Int_t> IdentifiedMu, std::vector<Int_t> IdentifiedEle){
+	return getExtraLeptons(i_hyp, minPt, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, mumva,muonMVAEstimator,IdentifiedMu,IdentifiedEle).size();
 }
 
 
@@ -505,106 +515,49 @@ bool passedTrigger(TString trigName, unsigned int minRun, unsigned int maxRun)
 }
 
 bool passedTriggerRequirements() {
-    // return true; // no trigger requirements
-    // return cms2.filter_ele10mu10IsoId_passed();
-    if ( passedTrigger("HLT_Mu17_Ele8_CaloIdL_v1") || 
-            passedTrigger("HLT_Mu17_Ele8_CaloIdL_v2") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdL_v3") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdL_v4") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdL_v5") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdL_v6") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdL_v8") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v1") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v3") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v4") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v7") ||
-            passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_v8") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdL_v1") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdL_v2") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdL_v3") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdL_v4") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdL_v5") || 
-            passedTrigger("HLT_Mu8_Ele17_CaloIdL_v6") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v1") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v3") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v4") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v7") ||
-            passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_v8")
-       ) return true;
-    if ( passedTrigger("HLT_DoubleMu7_v1") ||
-            passedTrigger("HLT_DoubleMu7_v2") ||
-            passedTrigger("HLT_Mu13_Mu8_v2") ||
-            passedTrigger("HLT_Mu13_Mu8_v3") ||
-            passedTrigger("HLT_Mu13_Mu8_v4") ||
-            passedTrigger("HLT_Mu13_Mu8_v6") ||
-            passedTrigger("HLT_Mu13_Mu8_v7") ||
-            passedTrigger("HLT_Mu17_Mu8_v2") ||
-            passedTrigger("HLT_Mu17_Mu8_v3") ||
-            passedTrigger("HLT_Mu17_Mu8_v4") ||
-            passedTrigger("HLT_Mu17_Mu8_v6") ||
-            passedTrigger("HLT_Mu17_Mu8_v7") ||
-            passedTrigger("HLT_Mu17_Mu8_v10") ||
-            passedTrigger("HLT_Mu17_Mu8_v11") ||
-            passedTrigger("HLT_Mu17_TkMu8_v3") ||
-            passedTrigger("HLT_Mu17_TkMu8_v4") ) return true;
-    if ( passedTrigger("HLT_Mu15_v2") ||
-            passedTrigger("HLT_Mu24_v1") ||
-            passedTrigger("HLT_Mu24_v2") ||
-            passedTrigger("HLT_Mu30_v1") ||
-            passedTrigger("HLT_Mu30_v2") ||
-            passedTrigger("HLT_Mu30_v3") ||
-            passedTrigger("HLT_Mu30_v4") ||
-            passedTrigger("HLT_Mu30_v5") ||
-            passedTrigger("HLT_Mu30_v7") ||
-            passedTrigger("HLT_IsoMu17_v5") ||
-            passedTrigger("HLT_IsoMu17_v6") ||
-            passedTrigger("HLT_IsoMu17_v8") ||
-            passedTrigger("HLT_IsoMu17_v9") ||
-            passedTrigger("HLT_IsoMu17_v10") ||
-            passedTrigger("HLT_IsoMu17_v11") ||
-            passedTrigger("HLT_IsoMu17_eta2p1_v1") ||
-            passedTrigger("HLT_IsoMu20_eta2p1_v1") ||
-            passedTrigger("HLT_IsoMu24_v1") ||
-            passedTrigger("HLT_IsoMu24_v2") ||
-            passedTrigger("HLT_IsoMu24_v4") ||
-            passedTrigger("HLT_IsoMu24_v5") ||
-            passedTrigger("HLT_IsoMu24_v6") ||
-            passedTrigger("HLT_IsoMu24_v7") ||
-            passedTrigger("HLT_IsoMu24_v8") ||
-            passedTrigger("HLT_IsoMu24_eta2p1_v3") ||
-            passedTrigger("HLT_IsoMu24_eta2p1_v6") ||
-            passedTrigger("HLT_IsoMu24_eta2p1_v7") ||
-            passedTrigger("HLT_IsoMu30_eta2p1_v3") ||
-            passedTrigger("HLT_IsoMu30_eta2p1_v6") ||
-            passedTrigger("HLT_IsoMu30_eta2p1_v7") ) return true;
-    if ( passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v1") ||
-            passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v2") ||
-            passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v3") ||
-            passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v4") ||
-            passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v5") ||
-            passedTrigger("HLT_Ele17_CaloIdL_CaloIsoVL_Ele8_CaloIdL_CaloIsoVL_v6") ||
-            passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") ||
-            passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") ||
-            passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") ||
-            passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8") ||
-            passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9") ||
-            passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10") ) return true;
-    if ( passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
-            passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ||
-            passedTrigger("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ||
-            passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
-            passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v2") ||
-            passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v3") ||
-            passedTrigger("HLT_Ele32_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v4") ||
-            passedTrigger("HLT_Ele42_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v1") ||
-            passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v1") ||
-            passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v2") ||
-            passedTrigger("HLT_Ele52_CaloIdVT_TrkIdT_v3") ||
-            passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v3") ||
-            passedTrigger("HLT_Ele65_CaloIdVT_TrkIdT_v4") ||
-            passedTrigger("HLT_Ele80_CaloIdVT_TrkIdT_v2") ||
-            passedTrigger("HLT_Ele80_CaloIdVT_TrkIdT_v3") ) return true;
+    
+	// 
+	//  2012 ICHEP triggers
+	// 
 
+    // double electron 
+    if(  	passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15")   ||
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v16") 	|| 
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17")  
+	  ) return true;
+
+    // double muon 
+	if(  	passedTrigger("HLT_Mu17_Mu8_v16") 	||
+			passedTrigger("HLT_Mu17_Mu8_v17") 	||
+			passedTrigger("HLT_Mu17_Mu8_v18") 	||
+			passedTrigger("HLT_Mu17_TkMu8_v9") 	||
+			passedTrigger("HLT_Mu17_TkMu8_v10")	||
+			passedTrigger("HLT_Mu17_TkMu8_v11")
+	  ) return true;
+
+	// emu
+	if(  	passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4") 	||
+	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 	||
+	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 	||
+	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	||
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4") 	||
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 	||
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 	||
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	
+	  ) return true;
+
+	// single ele
+	if(  	passedTrigger("HLT_Ele27_WP80_v8") 	||
+	  		passedTrigger("HLT_Ele27_WP80_v9") 	||
+	  		passedTrigger("HLT_Ele27_WP80_v10") 	
+	  ) return true;
+
+	// single ele
+	if(  	passedTrigger("HLT_IsoMu24_eta2p1_v11") 	||
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v12") 	||
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v13") 	
+	  ) return true;
+    
     return false;
 }
 
@@ -958,7 +911,6 @@ bool goodElectronTMVA(EGammaMvaEleEstimator* egammaMvaEleEstimator, int useMVAel
 				cms2.els_hOverE().at(i)>0.12 ||
 				cms2.els_tkIso().at(i)/pt>0.2 ||
 				TMath::Max(cms2.els_ecalIso().at(i) - 1.0, 0.0)/pt>0.20 ||
-				//cms2.els_ecalIso().at(i)/pt>0.20 ||////FIXME 
 				cms2.els_hcalIso().at(i)/pt>0.20 ) return 0;
 	} else {
 		if (cms2.els_sigmaIEtaIEta().at(i)>0.03 || 
@@ -966,11 +918,14 @@ bool goodElectronTMVA(EGammaMvaEleEstimator* egammaMvaEleEstimator, int useMVAel
 				fabs(cms2.els_dPhiIn().at(i))>0.10 ||
 				cms2.els_hOverE().at(i)>0.10 ||
 				cms2.els_tkIso().at(i)/pt>0.2 ||
-				//TMath::Max(cms2.els_ecalIso().at(i) - 1.0, 0.0)/pt>0.20 || //FIXME  
 				cms2.els_ecalIso().at(i)/pt>0.20 ||
 				cms2.els_hcalIso().at(i)/pt>0.20 ) return 0;
 	}
 
+	// MIT conversion
+	if ( isFromConversionMIT(i) ) return false;
+	// conversion rejection - hit based
+	if ( cms2.els_exp_innerlayers().at(i) > 0 ) return false;
 
 	double mvavalue =  egammaMvaEleEstimator->mvaValue(i,false);
 

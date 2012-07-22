@@ -24,9 +24,63 @@ int main(int argc, char *argv[])
     bool realData = false;
     if (dataType == 0) realData = true;
     const std::string cms2_json_file = "./files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
-    ProcessSample(dataFile, dataType, 3.1, -1, -1, false, realData, cms2_json_file);
+    ProcessSample(dataFile, dataType, 3.6, -1, -1, false, realData, "");
+	return 0;
+  }
+  
+  if (argc == 5) {
+  
+    std::vector<string> dataSamples;
+ 
+ 	// 2012A
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleElectron_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleMu_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/MuEG_Run2012A-PromptReco-v1/V05-02-28/vvfilter/preprocessing/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleElectron_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleMu_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
+
+ 	// 2012B
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+
+	dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+
+    SmurfTree::DataType dataType = (SmurfTree::DataType)atoi(argv[1]);
+    std::string dataFile = argv[2];
+    int beginrun = atoi(argv[3]);
+    int endrun = atoi(argv[4]);
+    bool realData = false;
+    if (dataType == 0) realData = true;
+    const std::string cms2_json_file = "Cert_190456-195658_8TeV_PromptReco_Collisions12_JSON_cms2.txt";
+    ProcessSample(dataSamples, dataType, 3.5, -1, -1, false, realData, "", beginrun, endrun);
     return 0;
   }
+
 
   //
   // Define how to handle complex Monte Carlo samples which may have 
@@ -40,8 +94,7 @@ int main(int argc, char *argv[])
   // Flags for files to run over 
   // (0 and 1 are easier to modify)
   //
-
-  bool runTest   = 1;
+  bool runTest   = 0;
   bool runWW     = 0;
   bool runWWmcnlo= 0;
   bool runWWup   = 0;
@@ -64,7 +117,7 @@ int main(int argc, char *argv[])
   bool runtW     = 0;
   bool runtWds   = 0;
   bool runEmb    = 0;
-  bool runData   = 0;
+  bool runData   = 1;
 
   // 
   // Ntuple version
@@ -90,8 +143,15 @@ int main(int argc, char *argv[])
     //samples.push_back(dataset+"/GluGluToHToWWTo2L2Nu_M-160_7TeV-powheg-pythia6_Summer11-PU_S4_START42_V11-v1/V04-02-36/DiLeptonFilter/merged_ntuple.root");
     //ProcessSample(samples, SmurfTree::hww160, integratedLumi, -1, -1);
     //samples.push_back("/nfs-6/userdata/jaehyeok/WW_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START50_V15-v1/V05-01-01/nofilter/postprocessing_forsync/*.root");
-    samples.push_back("/tas/jaehyeok/home/HWW/MakeCMS2ntuple/CMSSW_5_2_3_patch4/src/post_ntuple_A6DE4085-8191-E111-BF4E-001E67396D5B.root");
-    ProcessSample(samples, SmurfTree::qqww, integratedLumi, -1, -1);
+    //samples.push_back("/tas/jaehyeok/home/HWW/MakeCMS2ntuple/CMSSW_5_2_3_patch4/src/post_ntuple_A6DE4085-8191-E111-BF4E-001E67396D5B.root");
+    //ProcessSample(samples, SmurfTree::qqww, integratedLumi, -1, -1);
+    
+	//samples.push_back("/home/users/jaehyeok/HWW/MakeCMS2ntuples/ICHEP2012/CMSSW_5_2_3_patch4_V05-02-28_dataJECfix/src/ntuple.root");
+    //const std::string cms2_json = "./files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
+    //ProcessSample(samples, SmurfTree::data, 3.1, -1, -1, false, true, "");
+    
+	ProcessSample("/nfs-6/userdata/jaehyeok/TTTo2L2Nu2B_8TeV-powheg-pythia6_Summer12-PU_S7_START52_V9-v1/V05-02-28/vvfilter/*.root", 
+		  SmurfTree::ttbar, integratedLumi, -1, -1);
   }
 
   if (runWW)
@@ -344,7 +404,7 @@ int main(int argc, char *argv[])
     ProcessSample(embSamples, SmurfTree::dyttDataDriven, 3.1, -1, -1, false, true, cms2_json_file);
 
   std::vector<string> dataSamples;
-  /*
+  
   dataSamples.push_back(dataset+"/DoubleElectron_Run2011A-May10ReReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/DoubleMu_Run2011A-May10ReReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/MuEG_Run2011A-May10ReReco-v1/V04-02-36/vvfilter/*.root");
@@ -374,16 +434,15 @@ int main(int argc, char *argv[])
   dataSamples.push_back(dataset+"/SingleElectron_Run2011B-PromptReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/SingleMu_Run2011B-PromptReco-v1/V04-02-36/vvfilter/*.root");
   dataSamples.push_back(dataset+"/DoubleMu_Run2011B-PromptReco-v1/V04-02-36/vvfilter/*.root");
-  */
 
-  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleMu_Run2012A-PromptReco-v1_AOD/merged/*.root");
-  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/DoubleElectron_Run2012A-PromptReco-v1_AOD/merged/*.root");
-  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/MuEG_Run2012A-PromptReco-v1_AOD/merged/*.root");
-  dataSamples.push_back("/hadoop/cms/store/user/yanjuntu/CMSSW_5_2_3_patch3_V05-02-07/SingleElectron_Run2012A-PromptReco-v1_AOD/merged/*.root");
-  dataSamples.push_back("/hadoop/cms/store/user/jaehyeok/CMSSW_5_2_3_patch3_V05-02-07/SingleMu_Run2012A-PromptReco-v1_AOD/merged/*.root");
+  dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+  dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+  dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+  dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+  dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
 
   if (runData)
-    ProcessSample(dataSamples, SmurfTree::data, 3.1, -1, -1, false, true, cms2_json_file);
+    ProcessSample(dataSamples, SmurfTree::data, 5.1 -1, -1, false, true, "");
   
   return 0; 
 }

@@ -63,7 +63,7 @@ wwcuts_t pass_all = PASSED_Skim3; // Baseline, Tight+Fakeable, no MET requiremen
 bool applyJEC = true;
 bool lockToCoreSelectors = false;
 bool applyFastJetCorrection = false;
-bool selectBestCandidate = false; // select only one hypothesis per event with the two most energetic leptons
+bool selectBestCandidate = true; // select only one hypothesis per event with the two most energetic leptons
 bool useLHeleId = false;
 int useMVAeleId = 1;//zero means off, otherwise it's the mva version
 bool useMVAmuId = false;
@@ -221,7 +221,7 @@ bool hypoSync(int i_hyp, double weight, bool realData)
 
 
   //
-  if (numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA)>0) return false;
+  if (numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA,muonMVAEstimator,  nullMu, nullEle)>0) return false;
   monitor.count(cms2,type,"extra lepton veto",weight);
 
 
@@ -370,39 +370,39 @@ bool hypo (int i_hyp, double weight, bool realData)
   // == MET
   if ( passedMetRequirements(i_hyp, jet_corrector_pfL1FastJetL2L3 ) ) cuts_passed |= PASSED_MET;
 
-  std::vector<Int_t> nullMu; // null identified muons // FIXME
-  std::vector<Int_t> nullEle; // null identified electrons  // FIXME
+  std::vector<Int_t> nullMu; // null identified muons 
+  std::vector<Int_t> nullEle; // null identified electrons  
   
   // == letpon ID and Isolation
   // Muon quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
     if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LT_FINAL;
-    if ( fakableMuon(index,MuFOV1, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LT_FO_MU1;
-    if ( fakableMuon(index,MuFOV2, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LT_FO_MU2;
+    if ( fakableMuon(index,MuFOV1, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LT_FO_MU1;
+    if ( fakableMuon(index,MuFOV2, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LT_FO_MU2;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
     if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LL_FINAL;
-    if ( fakableMuon(index, MuFOV1, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LL_FO_MU1;
-    if ( fakableMuon(index, MuFOV2, muonMVAEstimator,  nullMu, nullEle) ) cuts_passed |= PASSED_LL_FO_MU2;
+    if ( fakableMuon(index, MuFOV1, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LL_FO_MU1;
+    if ( fakableMuon(index, MuFOV2, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LL_FO_MU2;
   } 
   // Electron quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
     if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) cuts_passed |= PASSED_LT_FINAL;
-    if ( fakableElectron(index,EleFOV1) )   cuts_passed |= PASSED_LT_FO_ELEV1;
-    if ( fakableElectron(index,EleFOV2) )   cuts_passed |= PASSED_LT_FO_ELEV2;
-    if ( fakableElectron(index,EleFOV3) )   cuts_passed |= PASSED_LT_FO_ELEV3;
-    if ( fakableElectron(index,EleFOV4) )   cuts_passed |= PASSED_LT_FO_ELEV4;
+    if ( fakableElectron(index,EleFOV1) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) )   cuts_passed |= PASSED_LT_FO_ELEV1;
+    if ( fakableElectron(index,EleFOV2) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV2;
+    if ( fakableElectron(index,EleFOV3) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV3;
+    if ( fakableElectron(index,EleFOV4) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV4;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
     if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) cuts_passed |= PASSED_LL_FINAL;
-    if ( fakableElectron(index,EleFOV1) )   cuts_passed |= PASSED_LL_FO_ELEV1;
-    if ( fakableElectron(index,EleFOV2) )   cuts_passed |= PASSED_LL_FO_ELEV2;
-    if ( fakableElectron(index,EleFOV3) )   cuts_passed |= PASSED_LL_FO_ELEV3;
-    if ( fakableElectron(index,EleFOV4) )   cuts_passed |= PASSED_LL_FO_ELEV4;
+    if ( fakableElectron(index,EleFOV1) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV1;
+    if ( fakableElectron(index,EleFOV2) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV2;
+    if ( fakableElectron(index,EleFOV3) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV3;
+    if ( fakableElectron(index,EleFOV4) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) )   cuts_passed |= PASSED_LL_FO_ELEV4;
   }
 
   // if ( passedLTFinalRequirements || passedLLFinalRequirements ) cuts_passed |= (1<<PASS_PROBE);
@@ -426,12 +426,13 @@ bool hypo (int i_hyp, double weight, bool realData)
   int nExtraVetoMuons = numberOfSoftMuons(i_hyp,true,vetojets);
   if ( countmus == 0)        cuts_passed |=   PASSED_SOFTMUVETO;
   if ( nExtraVetoMuons == 0) cuts_passed |=   PASSED_SOFTMUVETO_NotInJets;
-  if ( numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
+  if ( numberOfExtraLeptons(i_hyp,10, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA,muonMVAEstimator,  nullMu, nullEle) == 0) cuts_passed |= PASSED_EXTRALEPTONVETO;
   if ( ! toptag(jetType(),i_hyp,10,jet_corrector_pfL1FastJetL2L3,vetojets) ) cuts_passed |= PASSED_TOPVETO_NotInJets;//newcuts, was 7
   if ( ! toptag(jetType(),i_hyp,10,jet_corrector_pfL1FastJetL2L3) )          cuts_passed |= PASSED_TOPVETO;//newcuts, was 7
 
   if( CheckCuts(  PASSED_MET | PASSED_BaseLine , cuts_passed)) {
-    if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
+    if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FINAL,   cuts_passed ) ||
+     CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU2,   cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV1, cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV2, cuts_passed ) ||
@@ -446,7 +447,8 @@ bool hypo (int i_hyp, double weight, bool realData)
       cuts_passed |= PASSED_Skim1;
   }
   if( CheckCuts(  PASSED_BaseLine, cuts_passed)) {
-    if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
+    if ( CheckCuts( PASSED_LT_FINAL | PASSED_LL_FINAL,   cuts_passed ) ||
+     CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU1,   cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_MU2,   cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV1, cuts_passed ) ||
 	 CheckCuts( PASSED_LT_FINAL | PASSED_LL_FO_ELEV2, cuts_passed ) ||
@@ -504,8 +506,9 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
 
-  std::vector<Int_t> nullMu; // null identified muons // FIXME
-  std::vector<Int_t> nullEle; // null identified electrons  // FIXME
+  std::vector<Int_t> nullMu; // null identified muons 
+  std::vector<Int_t> nullEle; // null identified electrons  
+  
   if (ltIsFirst) {
     tree.lmva1_ = abs(cms2.hyp_lt_id().at(i_hyp))==11 ? 
       egammaMvaEleEstimator->mvaValue(cms2.hyp_lt_index().at(i_hyp), false) : 
@@ -527,14 +530,18 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   if (jets.size()>0){
     tree.jet1_ = jets.at(0).first;
     tree.jet1Btag_ = BTag(jetType(),jets.at(0).second, jets.at(0).first.pt());
+    tree.jet1ProbBtag_ = cms2.pfjets_jetBProbabilityBJetTag()[jets.at(0).second];
+    //tree.jet1Dz_ = jetDz(0,0); // FIXME : commented out for embedded sample
   }
   if (jets.size()>1){
     tree.jet2_ = jets.at(1).first;
     tree.jet2Btag_ = BTag(jetType(),jets.at(1).second, jets.at(1).first.pt());
+    tree.jet2ProbBtag_ = cms2.pfjets_jetBProbabilityBJetTag()[jets.at(1).second];
   }
   if (jets.size()>2){
     tree.jet3_ = jets.at(2).first;
     tree.jet3Btag_ = BTag(jetType(),jets.at(2).second, jets.at(2).first.pt());
+    tree.jet3ProbBtag_ = cms2.pfjets_jetBProbabilityBJetTag()[jets.at(2).second];
   }
   tree.njets_ = numberOfJets(i_hyp, applyJEC, jet_corrector_pfL1FastJetL2L3);
   tree.dilep_ = cms2.hyp_p4().at(i_hyp);
@@ -670,31 +677,31 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
       tree.jetLowBtag_ = BTag(jetType(),jets.at(i).second, jets.at(i).first.pt());
 
   // third lepton
-  const std::vector<LeptonPair>& leptons(getExtraLeptons(i_hyp,0, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA));
+  const std::vector<LeptonPair>& leptons(getExtraLeptons(i_hyp,0, useLHeleId, useMVAeleId, egammaMvaEleEstimator, useMVAmuId, muonIdMVA,muonMVAEstimator,  nullMu, nullEle));
   for (std::vector<LeptonPair>::const_iterator lep=leptons.begin();
-       lep!=leptons.end(); ++lep){
-    if (lep->first){
-      // muons
-      if ( tree.lep3_.pt() < cms2.mus_p4().at(lep->second).pt() ){
-	tree.lep3_ = cms2.mus_p4().at(lep->second);
-	tree.lq3_   = cms2.mus_charge().at(lep->second);
-	tree.lid3_ = tree.lq3_>0?-13:13;
-	if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){// GC
-	  tree.lep3McId_ = cms2.mus_mc_id().at(lep->second);
-	  tree.lep3MotherMcId_  = cms2.mus_mc_motherid().at(lep->second);
-	}
-      }
-    } else {
-      if ( tree.lep3_.pt() < cms2.els_p4().at(lep->second).pt() ){
-	tree.lep3_ = cms2.els_p4().at(lep->second);
-	tree.lq3_   = cms2.els_charge().at(lep->second);
-	tree.lid3_ = tree.lq3_>0?-11:11;
-	if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){// GC
-	  tree.lep3McId_ = cms2.els_mc_id().at(lep->second);
-	  tree.lep3MotherMcId_  = cms2.els_mc_motherid().at(lep->second);
-	}
-      }
-    }
+		  lep!=leptons.end(); ++lep){
+	  if (lep->first){
+		  // muons
+		  if ( tree.lep3_.pt() < cms2.mus_p4().at(lep->second).pt() ){
+			  tree.lep3_ = cms2.mus_p4().at(lep->second);
+			  tree.lq3_   = cms2.mus_charge().at(lep->second);
+			  tree.lid3_ = tree.lq3_>0?-13:13;
+			  if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){// GC
+				  tree.lep3McId_ = cms2.mus_mc_id().at(lep->second);
+				  tree.lep3MotherMcId_  = cms2.mus_mc_motherid().at(lep->second);
+			  }
+		  }
+	  } else {
+		  if ( tree.lep3_.pt() < cms2.els_p4().at(lep->second).pt() ){
+			  tree.lep3_ = cms2.els_p4().at(lep->second);
+			  tree.lq3_   = cms2.els_charge().at(lep->second);
+			  tree.lid3_ = tree.lq3_>0?-11:11;
+			  if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){// GC
+				  tree.lep3McId_ = cms2.els_mc_id().at(lep->second);
+				  tree.lep3MotherMcId_  = cms2.els_mc_motherid().at(lep->second);
+			  }
+		  }
+	  }
   }
   if (tree.lep3_.pt()>0 && jets.size()>0) {
     tree.dPhiLep3Jet1_ = fabs(ROOT::Math::VectorUtil::DeltaPhi(tree.lep3_,jets.at(0).first));
@@ -726,7 +733,9 @@ void ScanChain( TChain* chain,
 		int nProcessedEvents,  // if negative, take it from evt_nEvts
 		bool identifyEvents, 
 		bool realData,
-		TString cms2_json_file)
+		TString cms2_json_file,
+		int beginrun, 
+		int endrun)
 {
 
   std::string prefix = SmurfTree::name(sample);
@@ -777,8 +786,8 @@ void ScanChain( TChain* chain,
   unsigned int nEventsTotal = 0;
   
   // make smurf ntuples
-  gSystem->MakeDirectory("smurf");
-  TFile* fSmurf = TFile::Open(Form("smurf/%s.root",prefix.c_str()),"RECREATE");
+  gSystem->MakeDirectory(Form("smurf_%d_%d", beginrun, endrun));
+  TFile* fSmurf = TFile::Open(Form("smurf_%d_%d/%s.root", beginrun, endrun, prefix.c_str()),"RECREATE");
   assert(fSmurf);
   SmurfTree smurfTree;
   smurfTree.CreateTree();
@@ -857,22 +866,24 @@ void ScanChain( TChain* chain,
     for( unsigned int event = 0; event < nEvents; ++event) {
       tree->LoadTree(event);
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
+	
+	  if (cms2.evt_run()<beginrun || cms2.evt_run()>=endrun) continue;
+	  if (cms2.evt_event()%prescale!=0) continue;
+	  //if (cms2.evt_event()!=20494961 && cms2.evt_event()!=787812949 && cms2.evt_event()!=73349194 && cms2.evt_event()!=68905080) continue;
+	  //cout << "event: " << cms2.evt_event() << endl;
 
-	if (cms2.evt_event()%prescale!=0) continue;
-      //if (cms2.evt_event()!=1069201 && cms2.evt_event()!=3060471 && cms2.evt_event()!=3030572) continue;
-      //if (cms2.evt_event()!=3060471) continue;
-      // Select the good runs from the json file
-      if(realData && cms2_json_file!="") {
-	if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
-      }
-      runList[cms2.evt_run()].insert(cms2.evt_lumiBlock());
-      double weight = 1.0;
-      if ( !realData && integratedLumi>0 ){
-	double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
-	weight = integratedLumi * mcweight * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()*cms2.evt_filt_eff()) /
-	     (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
-      }       
-      ++nEventsTotal;
+	  // Select the good runs from the json file
+	  if(realData && cms2_json_file!="") {
+		  if( !goodrun(cms2.evt_run(), cms2.evt_lumiBlock()) ) continue;
+	  }
+	  runList[cms2.evt_run()].insert(cms2.evt_lumiBlock());
+	  double weight = 1.0;
+	  if ( !realData && integratedLumi>0 ){
+		  double mcweight = cms2.genps_weight() > 0.0 ? 1.0 : -1.0;
+		  weight = integratedLumi * mcweight * (xsec>0?xsec:cms2.evt_xsec_excl()*cms2.evt_kfactor()*cms2.evt_filt_eff()) /
+			  (nProcessedEvents>0?nProcessedEvents:cms2.evt_nEvts());
+	  }       
+	  ++nEventsTotal;
 
 	 if (cms2.trks_d0().size() == 0) continue;  // needed to get rid of back Monte Carlo events in CMSSW_2_X analysis
 	 if (cms2.hyp_type().size() == 0) continue; // skip events without hypothesis
@@ -955,8 +966,8 @@ void ScanChain( TChain* chain,
   fSmurf->Close();
 
   if (realData){
-      ofstream json("processed.json");
-      ofstream json2("processed_detailed.json");
+      ofstream json(Form("processed_%d_%d.json", beginrun, endrun));
+      ofstream json2(Form("processed_detailed_%d_%d.json", beginrun, endrun));
       json << "{";
       json2 << "{";
       bool firstRun(true);
@@ -1013,11 +1024,13 @@ void ProcessSample( std::string file_pattern,
 		    int nProcessedEvents,
 		    bool identifyEvents,
 		    bool realData,
-		    TString cms2_json_file)
+		    TString cms2_json_file,
+			int beginrun, 
+			int endrun)
 {
   std::vector<string> vec;
   vec.push_back(file_pattern);
-  ProcessSample(vec,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file);
+  ProcessSample(vec,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file,beginrun,endrun);
 }
 
 void ProcessSample( std::vector<std::string> file_patterns, 
@@ -1027,7 +1040,9 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    int nProcessedEvents,
 		    bool identifyEvents,
 		    bool realData,
-		    TString cms2_json_file)
+		    TString cms2_json_file,
+			int beginrun, 
+			int endrun)
 {
 /*
   if (useMVAeleId>0) {
@@ -1095,11 +1110,12 @@ void ProcessSample( std::vector<std::string> file_patterns,
     tchain->Add(pattern->c_str());
 
   std::cout << "Processing " << SmurfTree::name(sample) << ".." << std::endl;
-  ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file);
+  ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file,beginrun,endrun);
 
 //  if (useMVAeleId>0) delete electronIdMVA;
   if (useMVAmuId)    delete muonIdMVA;
   delete tchain;
-
+  delete muonMVAEstimator;
+  delete egammaMvaEleEstimator;
 }
 

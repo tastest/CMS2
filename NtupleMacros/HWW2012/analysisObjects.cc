@@ -92,10 +92,10 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
                 if ( cms2.pfjets_p4()[i].pt() * jec < etThreshold ) continue;
                 if ( btag && !defaultBTag(type,i, jec) ) continue;
                 if ( TMath::Abs(cms2.pfjets_p4()[i].eta()) > etaMax ) continue;
-                //if (btag && cms2.pfjets_p4()[i].pt() * jec < 30. && fabs(jetDz(i,0))>2.) continue;//newcuts
+                //if (btag && cms2.pfjets_p4()[i].pt() * jec < 30. && fabs(jetDz(i,0))>2.) continue;	//newcuts
                 if ( (lt.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(lt, cms2.pfjets_p4()[i])) < vetoCone) ||
                         (ll.Pt() > 0 && TMath::Abs(ROOT::Math::VectorUtil::DeltaR(ll, cms2.pfjets_p4()[i])) < vetoCone) ) continue;
-				
+
 				if ( !passMVAJetId( cms2.pfjets_p4()[i].pt() * jec, cms2.pfjets_p4()[i].eta(), cms2.pfjets_mvavalue()[i], 2) ) continue;
 
                 // cout << " \tpassed all cuts" << endl;
@@ -198,7 +198,7 @@ double BTag(WWJetType type, unsigned int iJet, float corjetpt){
             return cms2.jets_trackCountingHighEffBJetTag()[iJet];
             break;
         case pfJet:
-            return corjetpt<30 ? cms2.pfjets_trackCountingHighEffBJetTag()[iJet] : cms2.pfjets_jetBProbabilityBJetTag()[iJet];
+            return  cms2.pfjets_trackCountingHighEffBJetTag()[iJet]; 
             break;
         default:
             std::cout << "ERROR: not supported jet type is requested: " << type << " FixIt!" << std::endl;
@@ -211,8 +211,7 @@ bool defaultBTag(WWJetType type, unsigned int iJet, float jec) {
     
 	switch ( type ) {
         case pfJet:
-			if ( cms2.pfjets_p4()[iJet].pt() * jec < 30 && cms2.pfjets_trackCountingHighEffBJetTag()[iJet] > 2.1) return true;
-			if ( cms2.pfjets_p4()[iJet].pt() * jec > 30 && cms2.pfjets_jetBProbabilityBJetTag()[iJet] > 1.05) return true; 
+			if ( cms2.pfjets_trackCountingHighEffBJetTag()[iJet] > 2.1) return true;
             break;
         default:
             std::cout << "ERROR: Please use PFJets : " << type << " FixIt!" << std::endl;

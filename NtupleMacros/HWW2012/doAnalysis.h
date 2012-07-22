@@ -22,7 +22,9 @@ void ScanChain( TChain* chain,
 	   int nProcessedEvents,
 	   bool identifyEvents,
 	   bool realData = false,
-	   TString cms2_json_file = "");
+	   TString cms2_json_file = "",
+	   int beginrun=0, 
+	   int endrun=999999);
 
 void ProcessSample( std::string file_pattern, 
 		    SmurfTree::DataType sample, 
@@ -31,7 +33,10 @@ void ProcessSample( std::string file_pattern,
 		    int nProcessedEvents,
 		    bool identifyEvents = false,
 		    bool realData = false,
-		    TString cms2_json_file = "");
+		    TString cms2_json_file = "",
+			int beginrun=0, 
+			int endrun=999999);
+
 void ProcessSample( std::vector<std::string> file_patterns, 
 		    SmurfTree::DataType sample,
 		    double integratedLumi,
@@ -39,6 +44,8 @@ void ProcessSample( std::vector<std::string> file_patterns,
 		    int nProcessedEvents,
 		    bool identifyEvents = false,
 		    bool realData = false,
-		    TString cms2_json_file = "");
+		    TString cms2_json_file = "",
+			int beginrun=0, 
+			int endrun=999999);
 
 #endif
