@@ -39,6 +39,13 @@ cvs co -r V00-00-06 -d EGamma/EGammaAnalysisTools UserCode/EGamma/EGammaAnalysis
 #cvs co -r V04-05-08      JetMETCorrections/Type1MET 
 cvs co -r V04-06-09      JetMETCorrections/Type1MET 
 
+
+#######################
+# MC Jet Flavor Truth #
+#######################
+
+cvs co -r V00-07-04 PhysicsTools/JetMCAlgos
+
 #
 echo;echo checkingdeps;echo
 checkdeps -a
