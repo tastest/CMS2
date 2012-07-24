@@ -54,6 +54,10 @@ namespace edm
             struct Transients {};
     };
     class ProductID {};
+    class StoredProductProvenance {
+        public:
+            struct Transients {};
+    };
     class ProductProvenance {
         public:
             struct Transients {};

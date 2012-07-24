@@ -48,7 +48,8 @@
 #pragma link C++ class edm::Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > >,allocator<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > > > > >+;
 #pragma link C++ class edm::Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > >,allocator<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > > > > >+;
 
-namespace edm {
+namespace edm 
+{
 typedef Wrapper<vector<TString,allocator<TString> > > Wrapper<vector<TString> >;
 typedef Wrapper<vector<double,allocator<double> > > Wrapper<vector<double> >;
 typedef Wrapper<vector<float,allocator<float> > > Wrapper<vector<float> >;
@@ -66,7 +67,8 @@ typedef Wrapper<vector<vector<unsigned int,allocator<unsigned int> >,allocator<v
 typedef Wrapper<vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >,allocator<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > >,allocator<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >,allocator<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > > > > Wrapper<vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > > > >;
 typedef Wrapper<vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,allocator<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > >,allocator<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> >,allocator<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > > > > Wrapper<vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > >;
 typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > >,allocator<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > > > > > Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double>,ROOT::Math::DefaultCoordinateSystemTag> > > >;
-typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > >,allocator<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > > > > > Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > > >;};
+typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > >,allocator<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag>,allocator<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > > > > > Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<float>,ROOT::Math::DefaultCoordinateSystemTag> > > >;
+};
 
 #pragma link C++ typedef edm::Wrapper<vector<TString> >;
 #pragma link C++ typedef edm::Wrapper<vector<double> >;
@@ -121,10 +123,10 @@ typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian
 #pragma link C++ class edm::ProcessConfiguration+;
 #pragma link C++ class edm::ProcessConfiguration::Transients+;
 #pragma link C++ class edm::ProcessHistory+;
+#pragma link C++ class edm::ProductProvenance+;
+#pragma link C++ class edm::StoredProductProvenance+;
 #pragma link C++ class edm::ProcessHistory::Transients+;
 #pragma link C++ class edm::ProductID+;
-#pragma link C++ class edm::ProductProvenance+;
-#pragma link C++ class edm::ProductProvenance::Transients+;
 #pragma link C++ class edm::ProductRegistry+;
 #pragma link C++ class edm::ProductRegistry::Transients+;
 #pragma link C++ class edm::RunAuxiliary+;
@@ -139,6 +141,7 @@ typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian
 #pragma link C++ class edm::Transient<edm::ProcessHistory::Transients>+;
 #pragma link C++ class edm::Transient<edm::ProductProvenance::Transients>+;
 #pragma link C++ class edm::Transient<edm::ProductRegistry::Transients>+;
+#pragma link C++ class edm::Transient<edm::IndexIntoFile::Transients>+;
 #pragma link C++ class pair<edm::BranchKey,edm::BranchDescription>+;
 #pragma link C++ class pair<edm::Hash<1>,edm::ParameterSetBlob>+;
 #pragma link C++ class edm::Wrapper<bool>+;
@@ -146,7 +149,7 @@ typedef Wrapper<vector<vector<ROOT::Math::PositionVector3D<ROOT::Math::Cartesian
 #pragma link C++ class edm::Wrapper<ULong64_t>+;
 #pragma link C++ class edm::IndexIntoFile+;
 #pragma link C++ class edm::IndexIntoFile::RunOrLumiEntry+;
-#pragma link C++ class edm::Transient<edm::IndexIntoFile::Transients>+;
+#pragma link C++ class edm::IndexIntoFile::Transients+;
 #pragma link C++ class edm::Wrapper<TBits>+;
 using std::pair;
 using std::set;
