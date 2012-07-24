@@ -45,6 +45,8 @@ cvs co -r V04-06-09      JetMETCorrections/Type1MET
 #######################
 
 cvs co -r V00-07-04 PhysicsTools/JetMCAlgos
+# need sed or awk line here to change some headers
+
 
 #
 echo;echo checkingdeps;echo
