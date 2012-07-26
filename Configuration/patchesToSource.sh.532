@@ -71,3 +71,6 @@ mv blah $CMSSW_BASE/src/PhysicsTools/JetMCAlgos/plugins/GenJetBCEnergyRatio.cc
 #
 echo;echo checkingdeps;echo
 checkdeps -a
+
+#
+scram build -c
