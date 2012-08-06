@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.34 2012/08/06 11:29:58 benhoob Exp $
+// $Id: jetSelections.cc,v 1.35 2012/08/06 18:43:09 benhoob Exp $
 
 #include <algorithm>
 #include <utility>
@@ -464,6 +464,12 @@ float jetDz(int ijet, int ivtx) {
     else return 99999.;
 }
 
+float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx ){
+  
+  return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
+  
+}
+
 float pfjet_beta(int ijet, int power , float dzcut , int ivtx , bool verbose ) {
 
   //---------------------------------------------------------------------------------
@@ -495,7 +501,7 @@ float pfjet_beta(int ijet, int power , float dzcut , int ivtx , bool verbose ) {
     
     int itrk = cms2.pfcands_trkidx().at(ican);
     
-    if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
+    if( itrk >= (int) cms2.trks_trk_p4().size() || itrk < 0 ){
       if( verbose ){
 	std::cout << __FILE__ << " " << __LINE__ << " WARNING! skipping electron with pt " << cms2.pfcands_p4().at(ican).pt() << endl;
       }
