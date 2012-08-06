@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.32 2012/06/14 21:20:45 kelley Exp $
+// $Id: jetSelections.cc,v 1.33 2012/08/06 11:28:41 benhoob Exp $
 
 #include <algorithm>
 #include <utility>
@@ -462,6 +462,78 @@ float jetDz(int ijet, int ivtx) {
     }
     if (jptsq>1E-6) return jptsqdz/jptsq;
     else return 99999.;
+}
+
+float jet_beta(int ijet, int power , float dzcut , int ivtx , bool verbose ) {
+
+  //---------------------------------------------------------------------------------
+  // cands is the vector of PFCandidate indices matched to the pfjet with index ijet
+  //---------------------------------------------------------------------------------
+
+  vector<int> cands = cms2.pfjets_pfcandIndicies().at(ijet);
+
+  float pt_tot = 0.0;
+  float pt_vtx = 0.0;
+
+  //-------------------------------------
+  // loop over PFCandidates in jet
+  //-------------------------------------
+  
+  for (unsigned int ivc=0;ivc<cands.size();ivc++) {
+
+    int ican = cands[ivc];
+
+    //--------------------
+    // skip neutrals 
+    //--------------------
+    
+    if (cms2.pfcands_charge().at(ican)==0) continue;
+
+    //-------------------------------------------------------------
+    // get track from PFCandidate, this is used to calculate dz
+    //-------------------------------------------------------------
+    
+    int itrk = cms2.pfcands_trkidx().at(ican);
+    
+    if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ){
+      if( verbose ){
+	std::cout << __FILE__ << " " << __LINE__ << " WARNING! skipping electron with pt " << cms2.pfcands_p4().at(ican).pt() << endl;
+      }
+      //note: this should only happen for electrons which do not have a matched track
+      //currently we are just ignoring these guys
+      continue;
+    }
+    
+    //-------------------------------------------------------------------
+    // calculate scalar sum of  pT(track)^(power) for all tracks in jet
+    //-------------------------------------------------------------------
+
+    pt_tot += pow( cms2.pfcands_p4().at(ican).pt() , power );
+
+    //-------------------------------------------------------------------    
+    // require dz(trk,vtx) < dzcut
+    //-------------------------------------------------------------------
+
+    float dz = dz_trk_vtx(itrk,ivtx);    
+    if ( fabs(dz) > dzcut )     continue;
+
+    //-------------------------------------------------------------------
+    // calculate scalar sum of  pT(track)^(power) for all tracks in jet
+    // which are within dz < dzcut of the given vtx
+    //-------------------------------------------------------------------
+    
+    pt_vtx += pow( cms2.pfcands_p4().at(ican).pt() , power );
+    
+  }
+
+  //-------------------------------------------------------------------    
+  // calculate beta, the ratio of pt_vtx to pt_tot
+  //-------------------------------------------------------------------
+
+  float beta = 0.0;
+  if( pt_tot > 0.0 ) beta = pt_vtx / pt_tot;
+  return beta;
+
 }
 
 vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetType type, enum CleaningType cleaning,

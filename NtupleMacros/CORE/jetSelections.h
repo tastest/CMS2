@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.21 2012/06/15 23:13:17 fgolf Exp $
+// $Id: jetSelections.h,v 1.22 2012/08/06 11:28:41 benhoob Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -161,5 +161,8 @@ int nBtaggedJets (unsigned int i_hyp,  // hyp or single-e to use for cleaning
 // the jet met systematic...see the cc file for details
 float getJetMetSyst(int flag, float pt, float eta);
 
+
+// this function calculates the fraction of the pt of charged particles in a jet associated to the vertex ivtx
+float jet_beta(int ijet, int power = 1, float dzcut = 0.05 , int ivtx = 0, bool verbose = false );
 
 #endif // SEL_JETS_H
