@@ -9,7 +9,7 @@ touch RecoMET/METFilters/data/dummy.txt
 sed '3 s/EDFilter/EDProducer/' <$CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py >blah
 mv blah $CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py
 
-cvs co -r V00-00-08   RecoMET/METAnalyzer 
+cvs co -r V00-00-08   RecoMET/METAnalyzers
 cvs co -r V00-03-23   CommonTools/RecoAlgos  
 
 #############
