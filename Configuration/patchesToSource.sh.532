@@ -4,10 +4,13 @@
 # MET Filters 2012 #
 ####################
 
-cvs co -r V00-00-07 RecoMET/METFilters
+cvs co -r V00-00-08 RecoMET/METFilters
 touch RecoMET/METFilters/data/dummy.txt
 sed '3 s/EDFilter/EDProducer/' <$CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py >blah
 mv blah $CMSSW_BASE/src/RecoMET/METFilters/python/EcalDeadCellDeltaRFilter_cfi.py
+
+cvs co -r V00-00-08   RecoMET/METAnalyzers
+cvs co -r V00-03-23   CommonTools/RecoAlgos  
 
 #############
 # MVA JetId #
@@ -24,7 +27,9 @@ cvs co -r V00-00-09 -d CMGTools/External UserCode/CMG/CMGTools/External
 
 #addpkg CommonTools/ParticleFlow    CMSSW_5_3_2_patch4
 
-addpkg RecoParticleFlow/PFProducer CMSSW_5_3_2_patch4
+#addpkg RecoParticleFlow/PFProducer CMSSW_5_3_2_patch4
+addpkg RecoParticleFlow/PFProducer V15-02-06
+
 # use new recommended tags (keep the original PFProducer
 cvs co -rV00-03-15 CommonTools/ParticleFlow
 cvs co -rV08-09-21 PhysicsTools/PatAlgos
