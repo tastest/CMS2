@@ -18,8 +18,10 @@
 using namespace tas;
 using namespace wp2012;
 
+//--------------------------------------------------------------------------------
 // loose electron WP of:
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification
+//--------------------------------------------------------------------------------
 
 bool passElectronSelection_ZMet2012_v1_NoIso(int index, bool vetoTransition, bool eta24){
 
@@ -50,6 +52,45 @@ bool passElectronSelection_ZMet2012_v1(int index, bool vetoTransition, bool eta2
   if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
 
   electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, LOOSE);
+  if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
+  
+  return false;
+}
+
+//--------------------------------------------------------------------------------
+// medium electron WP of:
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification
+//--------------------------------------------------------------------------------
+
+bool passElectronSelection_Stop2012_v1_NoIso(int index, bool vetoTransition, bool eta24){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, MEDIUM);
+  if ((answer_loose_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) return true;
+  
+  return false;
+}
+
+bool passElectronSelection_Stop2012_v1_Iso(int index, bool vetoTransition, bool eta24){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, MEDIUM);
+  if ((answer_loose_2012 & PassWP2012CutsIso) == PassWP2012CutsIso) return true;
+  
+  return false;
+}
+
+bool passElectronSelection_Stop2012_v1(int index, bool vetoTransition, bool eta24){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, MEDIUM);
   if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
   
   return false;
