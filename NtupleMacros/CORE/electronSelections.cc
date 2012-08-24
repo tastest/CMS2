@@ -799,6 +799,97 @@ electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_t
 
 }
 
+// WP2012: same as above function but with updated electron isolation branches, and calculate dz using GSF track and 1st good vertex
+electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp2012_tightness tightness)
+{
+
+    // set return value
+    unsigned int mask = 0;
+
+    // cut values
+    std::vector<double> dEtaInThresholds;
+    std::vector<double> dPhiInThresholds;
+    std::vector<double> sigmaIEtaIEtaThresholds;
+    std::vector<double> hoeThresholds;
+    std::vector<double> ooemoopThresholds;
+    std::vector<double> d0VtxThresholds;
+    std::vector<double> dzVtxThresholds;
+    std::vector<bool> vtxFitThresholds;
+    std::vector<int> mHitsThresholds;
+    std::vector<double> isoHiThresholds;
+    std::vector<double> isoLoThresholds;
+
+    // set cut values
+    eidGetWP2012(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, sigmaIEtaIEtaThresholds, 
+                    ooemoopThresholds, d0VtxThresholds, dzVtxThresholds, vtxFitThresholds, mHitsThresholds, 
+                    isoHiThresholds, isoLoThresholds);
+
+    // useful kinematic variables
+    unsigned int det = ((cms2.els_fiduciality()[index] & (1<<ISEB)) == (1<<ISEB)) ? 0 : 1;
+    float etaAbs = fabs(cms2.els_etaSC()[index]);
+    float pt     = cms2.els_p4()[index].pt();
+
+    // get effective area
+    float AEff = 0.;
+    if (etaAbs <= 1.0) AEff = 0.10;
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
+    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
+    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
+    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
+    else if (etaAbs > 2.4) AEff = 0.13;
+
+    // pf iso
+    // calculate from the ntuple for now...
+    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
+    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
+    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
+
+    // rho
+    float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
+    float pfiso = (pfiso_ch + pfiso_n) / pt;
+
+    // |1/E - 1/p|
+    float ooemoop = fabs( (1.0/cms2.els_ecalEnergy()[index]) - (cms2.els_eOverPIn()[index]/cms2.els_ecalEnergy()[index]) );
+
+    // MIT conversion vtx fit
+    bool vtxFitConversion = isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
+
+    int elgsftkid = cms2.els_gsftrkidx().at(index);
+    int eltkid    = cms2.els_trkidx().at(index);
+    int ivtx      = firstGoodVertex();
+
+    // sanity check
+    if( elgsftkid < 0 ){
+      std::cout << __FILE__ << " " << __LINE__                                                                           << std::endl;
+      std::cout << "WARNING! found electron without valid GSF track index"                                               << std::endl;
+      std::cout << cms2.evt_dataset().at(0) << " " << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << std::endl;
+      std::cout << "Electron pT eta phi " << Form("%.1f   %.1f   %.1f",cms2.els_p4().at(index).pt(),cms2.els_p4().at(index).phi(),cms2.els_p4().at(index).eta()) << std::endl;
+    }
+
+    //take dz from gsf, and if it does not exist (should always exist) take it from ctf track
+    float dzvtx = elgsftkid>=0 ? gsftrks_dz_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
+    float d0vtx = elgsftkid>=0 ? gsftrks_d0_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
+ 
+    // test cuts
+    if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[det])             mask |= wp2012::DETAIN;
+    if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[det])             mask |= wp2012::DPHIIN;
+    if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[det])     mask |= wp2012::SIGMAIETAIETA;
+    if (cms2.els_hOverE()[index] < hoeThresholds[det])                      mask |= wp2012::HOE;
+    if (ooemoop < ooemoopThresholds[det])                                   mask |= wp2012::OOEMOOP;
+    if (fabs(d0vtx) < d0VtxThresholds[det])                                 mask |= wp2012::D0VTX;
+    if (fabs(dzvtx) < dzVtxThresholds[det])                                 mask |= wp2012::DZVTX;
+    if (!vtxFitThresholds[det] || !vtxFitConversion)                        mask |= wp2012::VTXFIT;
+    if (cms2.els_exp_innerlayers()[index] <= mHitsThresholds[det])          mask |= wp2012::MHITS;
+    if (pt >= 20.0 && pfiso < isoHiThresholds[det])                         mask |= wp2012::ISO;
+    if (pt < 20.0 && pfiso < isoLoThresholds[det])                          mask |= wp2012::ISO;
+
+    // return the mask
+    return mask;
+
+}
+
 float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int ivtx ){
 
     float etaAbs = fabs(cms2.els_etaSC()[index]);
@@ -819,6 +910,36 @@ float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int iv
     float pfiso_ch = cms2.els_iso03_pf2012_ch().at(index);
     float pfiso_em = cms2.els_iso03_pf2012_em().at(index);
     float pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
+
+    // rho
+    float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
+    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
+    float pfiso = (pfiso_ch + pfiso_n) / pt;
+
+    return pfiso;
+}
+
+// same as above function, but with updated electron isolation branches
+float electronIsoValuePF2012_FastJetEffArea_v2( int index , float conesize , int ivtx ){
+
+    float etaAbs = fabs(cms2.els_etaSC()[index]);
+    float pt     = cms2.els_p4()[index].pt();
+
+    // get effective area
+    float AEff = 0.;
+    if (etaAbs <= 1.0) AEff = 0.10;
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
+    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
+    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
+    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
+    else if (etaAbs > 2.4) AEff = 0.13;
+
+    // pf iso
+    // calculate from the ntuple for now...
+    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
+    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
+    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
 
     // rho
     float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));

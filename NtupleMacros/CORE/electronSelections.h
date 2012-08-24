@@ -1039,6 +1039,7 @@ bool electronId_smurf_v2ss(const unsigned int index);
 
 // WP2012
 electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_tightness tightness);
+electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp2012_tightness tightness);
 
 // "VBTF" id
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
@@ -1117,6 +1118,7 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
 void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, bool barrelVetoes = false);
 void electronIsoValuePF2012reco(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, float neutral_threshold = 0.5);
 float electronIsoValuePF2012_FastJetEffArea( int index , float conesize = 0.3 , int ivtx = 0);
+float electronIsoValuePF2012_FastJetEffArea_v2( int index , float conesize = 0.3 , int ivtx = 0);
 float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold = 1.0, float cone_size = 0.3, bool barrelVetoes = false, bool verbose = false);
 
 float electronIsoValuePF2012_FastJetEffArea_HWW( int index );
