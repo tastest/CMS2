@@ -74,6 +74,17 @@ bool cleaning_standardNovember2011() {
     return cleaning_standardOctober2010();
 }
 
+bool passHBHEFilter(){
+
+  if( !cms2.evt_hbheFilter() )                             return false;
+  if( cms2.hcalnoise_isolatedNoiseSumE() >= 50.0       )   return false;
+  if( cms2.hcalnoise_isolatedNoiseSumEt() >= 25.0      )   return false;
+  if( cms2.hcalnoise_numIsolatedNoiseChannels() >= 10  )   return false;
+
+  return true;
+
+}
+
 
 ////
 //// 5 August 2010

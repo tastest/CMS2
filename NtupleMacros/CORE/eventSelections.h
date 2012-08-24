@@ -123,3 +123,5 @@ int numberOfGoodVertices(void);
 
 //
 int chargedHadronVertex( const unsigned int );
+
+bool passHBHEFilter();
