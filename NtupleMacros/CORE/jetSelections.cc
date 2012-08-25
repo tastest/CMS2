@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.35 2012/08/06 18:43:09 benhoob Exp $
+// $Id: jetSelections.cc,v 1.36 2012/08/25 00:32:31 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -69,9 +69,6 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
     // JPT, PF or calo jets?  Introduce this variable so we only have to decide once
     const vector<LorentzVector> *jets = 0;
     switch (type) {
-    case JETS_TYPE_JPT:
-        jets = &cms2.jpts_p4();
-        break;
     case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
         jets = &cms2.jets_p4();
         break;
@@ -104,9 +101,6 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
             break;
         case JETS_TYPE_PF_FAST_CORR_RESIDUAL:
             corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
-            break;
-        case JETS_TYPE_JPT: 
-            corr = cms2.jpts_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.jpts_p4().at(i).pt(), cms2.jpts_p4().at(i).eta());
             break;
         case JETS_TYPE_CALO_UNCORR: 
         case JETS_TYPE_PF_UNCORR:
@@ -172,7 +166,7 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
         //------------------------------------------------------------
         // jet ID cuts
         //------------------------------------------------------------
-        if (type == JETS_TYPE_CALO_CORR || type == JETS_TYPE_JPT || type == JETS_TYPE_CALO_UNCORR){
+        if (type == JETS_TYPE_CALO_CORR || type == JETS_TYPE_CALO_UNCORR){
             if (not passesCaloJetID(jets->at(i)))
                 goto conti;
         }
@@ -555,9 +549,6 @@ vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetTy
         btags = 0;
     case JETS_BTAG_TCHEL: case JETS_BTAG_TCHEM:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_trackCountingHighEffBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_trackCountingHighEffBJetTag();
             break;
@@ -570,9 +561,6 @@ vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetTy
         break;
     case JETS_BTAG_TCHPM: case JETS_BTAG_TCHPT:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_trackCountingHighPurBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_trackCountingHighPurBJetTag();
             break;
@@ -585,9 +573,6 @@ vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetTy
         break;
     case JETS_BTAG_SSVHEM:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_simpleSecondaryVertexHighEffBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_simpleSecondaryVertexHighEffBJetTag();
             break;
@@ -600,9 +585,6 @@ vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetTy
         break;
     case JETS_BTAG_SSVHPT:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_simpleSecondaryVertexHighPurBJetTags();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_simpleSecondaryVertexHighPurBJetTags();
             break;
@@ -615,9 +597,6 @@ vector<LorentzVector> getBtaggedJets (unsigned int i_hyp, bool sort_, enum JetTy
         break;
     case JETS_BTAG_CSVL: case JETS_BTAG_CSVM: case JETS_BTAG_CSVT:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_combinedSecondaryVertexBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_combinedSecondaryVertexBJetTag();
             break;
@@ -660,9 +639,6 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enu
         btags = 0;
     case JETS_BTAG_TCHEL: case JETS_BTAG_TCHEM:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_trackCountingHighEffBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_trackCountingHighEffBJetTag();
             break;
@@ -675,9 +651,6 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enu
         break;
     case JETS_BTAG_TCHPM: case JETS_BTAG_TCHPT:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_trackCountingHighPurBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_trackCountingHighPurBJetTag();
             break;
@@ -690,9 +663,6 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enu
         break;
     case JETS_BTAG_SSVHEM:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_simpleSecondaryVertexHighEffBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_simpleSecondaryVertexHighEffBJetTag();
             break;
@@ -705,9 +675,6 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enu
         break;
     case JETS_BTAG_SSVHPT:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_simpleSecondaryVertexHighPurBJetTags();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_simpleSecondaryVertexHighPurBJetTags();
             break;
@@ -720,9 +687,6 @@ std::vector<bool> getBtaggedJetFlags (unsigned int i_hyp, enum JetType type, enu
         break;
     case JETS_BTAG_CSVL: case JETS_BTAG_CSVM: case JETS_BTAG_CSVT:
         switch (type) {
-        case JETS_TYPE_JPT:
-            btags = &cms2.jpts_combinedSecondaryVertexBJetTag();
-            break;
         case JETS_TYPE_CALO_CORR: case JETS_TYPE_CALO_UNCORR:
             btags = &cms2.jets_combinedSecondaryVertexBJetTag();
             break;

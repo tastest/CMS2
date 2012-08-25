@@ -1,6 +1,6 @@
 // -*- C++ -*-
 
-// $Id: jetSelections.h,v 1.23 2012/08/06 11:29:58 benhoob Exp $
+// $Id: jetSelections.h,v 1.24 2012/08/25 00:32:31 fgolf Exp $
 
 #ifndef JETSELECTIONS_H
 #define JETSELECTIONS_H
@@ -12,7 +12,6 @@
 #define haveGEN 0
 
 enum JetType {
-    JETS_TYPE_JPT,
     JETS_TYPE_PF_FAST_CORR_RESIDUAL,
     JETS_TYPE_PF_FAST_CORR,
     JETS_TYPE_PF_CORR,
@@ -53,7 +52,7 @@ enum JetScaleType {
 
 static const float BtagWP[] = {-999999., 1.7, 3.3, 1.93, 3.41, 1.74, 2.00, 0.244, 0.679, 0.898};
 
-#define JET_DEFAULT_TYPE 	JETS_TYPE_JPT
+#define JET_DEFAULT_TYPE 	JETS_TYPE_PF_UNCORR
 #define JET_DEFAULT_CLEANING 	JETS_CLEAN_HYP_E_MU
 #define JET_DEFAULT_DR		0.4
 #define JET_DEFAULT_PT		30
