@@ -78,9 +78,9 @@ bool passElectronSelection_ZMet2012_v1_NoIso(int index , bool vetoTransition=fal
 bool passElectronSelection_ZMet2012_v1_Iso(int index   , bool vetoTransition=false, bool eta24=false);
 bool passElectronSelection_ZMet2012_v1(int index       , bool vetoTransition=false, bool eta24=false);
 
-bool passElectronSelection_ZMet2012_v2_NoIso(int index , bool vetoTransition=false, bool eta24=false);
-bool passElectronSelection_ZMet2012_v2_Iso(int index   , bool vetoTransition=false, bool eta24=false);
-bool passElectronSelection_ZMet2012_v2(int index       , bool vetoTransition=false, bool eta24=false);
+bool passElectronSelection_ZMet2012_v2_NoIso(int index , bool vetoTransition=false, bool eta24=false, bool useOldIsolation=false);
+bool passElectronSelection_ZMet2012_v2_Iso(int index   , bool vetoTransition=false, bool eta24=false, bool useOldIsolation=false);
+bool passElectronSelection_ZMet2012_v2(int index       , bool vetoTransition=false, bool eta24=false, bool useOldIsolation=false);
 
 bool passElectronSelection_Stop2012_v1_NoIso(int index , bool vetoTransition=false, bool eta24=false);
 bool passElectronSelection_Stop2012_v1_Iso(int index   , bool vetoTransition=false, bool eta24=false);

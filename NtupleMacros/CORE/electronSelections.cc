@@ -800,7 +800,7 @@ electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_t
 }
 
 // WP2012: same as above function but with updated electron isolation branches, and calculate dz using GSF track and 1st good vertex
-electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp2012_tightness tightness)
+electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp2012_tightness tightness, bool useOldIsolation)
 {
 
     // set return value
@@ -841,10 +841,22 @@ electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp201
 
     // pf iso
     // calculate from the ntuple for now...
-    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
-    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
-    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
+    float pfiso_ch = 0.0;
+    float pfiso_em = 0.0;
+    float pfiso_nh = 0.0;
 
+    if( useOldIsolation ){
+      pfiso_ch = cms2.els_iso03_pf2012_ch().at(index);
+      pfiso_em = cms2.els_iso03_pf2012_em().at(index);
+      pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
+    }
+
+    else{
+      pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
+      pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
+      pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
+    }
+    
     // rho
     float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
     float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
@@ -920,7 +932,7 @@ float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int iv
 }
 
 // same as above function, but with updated electron isolation branches
-float electronIsoValuePF2012_FastJetEffArea_v2( int index , float conesize , int ivtx ){
+float electronIsoValuePF2012_FastJetEffArea_v2( int index , float conesize , int ivtx , bool useOldIsolation ){
 
     float etaAbs = fabs(cms2.els_etaSC()[index]);
     float pt     = cms2.els_p4()[index].pt();
@@ -937,9 +949,21 @@ float electronIsoValuePF2012_FastJetEffArea_v2( int index , float conesize , int
 
     // pf iso
     // calculate from the ntuple for now...
-    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
-    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
-    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
+    float pfiso_ch = 0.0;
+    float pfiso_em = 0.0;
+    float pfiso_nh = 0.0;
+
+    if( useOldIsolation ){
+      pfiso_ch = cms2.els_iso03_pf2012_ch().at(index);
+      pfiso_em = cms2.els_iso03_pf2012_em().at(index);
+      pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
+    }
+
+    else{
+      pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
+      pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
+      pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
+    }
 
     // rho
     float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
