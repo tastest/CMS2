@@ -65,7 +65,8 @@ enum SelectionType {
       // Fakes
       muonSelectionFO_mu_smurf_04,
       muonSelectionFO_mu_smurf_10,
-      ZMet2012_v1
+      ZMet2012_v1,
+      ZMet2012_detiso_v1
 }; 
 
 ////////////////////

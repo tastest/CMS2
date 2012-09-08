@@ -72,6 +72,11 @@ bool muonId(unsigned int index, SelectionType type){
         return (muonIsoValuePF2012_deltaBeta(index) < 0.15);
         break;
 
+    case ZMet2012_detiso_v1:
+        if (!muonIdNotIsolated(index, ZMet2012_v1)) return false;
+        return (muonIsoValue(index,false)<0.15);
+        break;
+
         ////////////////////
         // Same Sign 2012 //
         ////////////////////
