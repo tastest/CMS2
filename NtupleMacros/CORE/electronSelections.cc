@@ -881,9 +881,14 @@ electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp201
     }
 
     //take dz from gsf, and if it does not exist (should always exist) take it from ctf track
-    float dzvtx = elgsftkid>=0 ? gsftrks_dz_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
-    float d0vtx = elgsftkid>=0 ? gsftrks_d0_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
+    float dzvtx = 100.0;
+    float d0vtx = 100.0;
  
+    if( ivtx >= 0 ){
+      dzvtx = elgsftkid>=0 ? gsftrks_dz_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
+      d0vtx = elgsftkid>=0 ? gsftrks_d0_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
+    }
+
     // test cuts
     if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[det])             mask |= wp2012::DETAIN;
     if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[det])             mask |= wp2012::DPHIIN;
