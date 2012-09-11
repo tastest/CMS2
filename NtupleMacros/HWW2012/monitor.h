@@ -2,7 +2,7 @@
 #define WW_monitor_h
 #include <vector>
 #include <string>
-#include "wwtypes.h"
+#include "../HWW2012CORE/wwtypes.h"
 
 class CMS2;
 struct MonitorEventId { 

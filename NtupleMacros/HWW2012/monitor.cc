@@ -1,5 +1,5 @@
 #include "monitor.h"
-#include "CORE/CMS2.h"
+#include "../CORE/CMS2.h"
 #include <fstream>
 
 MonitorEventId::MonitorEventId(CMS2& cms2){

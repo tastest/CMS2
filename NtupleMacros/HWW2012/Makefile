@@ -59,7 +59,7 @@ CORESOURCES = $(CMSROOT)/CORE/CMS2.cc $(CMSROOT)/CORE/muonSelections.cc $(CMSROO
 COREOBJECTS = $(CORESOURCES:.cc=.o) 
 CORELIB = libCMS2NtupleMacrosCORE.so
 
-SOURCES = $(wildcard *.cc) 
+SOURCES = $(wildcard *.cc)  $(wildcard $(CMSROOT)/HWW2012CORE/*.cc)
 OBJECTS = $(SOURCES:.cc=.o) LinkDef_out.o
 LIB = libCMS2NtupleMacrosLooper.so
 

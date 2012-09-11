@@ -4,13 +4,13 @@
 #include "Rtypes.h"
 #include <vector>
 #include <set>
-#include "wwtypes.h"
+#include "../HWW2012CORE/wwtypes.h"
 #include "TChain.h"
 #include <fstream>
 #include <vector>
 #include "../../../Smurf/Core/SmurfTree.h"
 
-#include "analysisEnums.h"
+#include "../HWW2012CORE/analysisEnums.h"
 
 bool hypo (int i_hyp, double weight, bool realData = false ); 
 
