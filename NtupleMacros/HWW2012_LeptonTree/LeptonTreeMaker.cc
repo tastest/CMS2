@@ -75,23 +75,23 @@ LeptonTreeMaker::LeptonTreeMaker(bool lockToCoreSelectors, bool useLHeleId, bool
 
 	// --------------- EGamma Id MVA  --------------------------
 	vector<std::string> egammaweights;
-	egammaweights.push_back("../HWW2012CORE/files/Electrons_BDTG_TrigV0_Cat1.weights.xml"); 
-	egammaweights.push_back("../HWW2012CORE/files/Electrons_BDTG_TrigV0_Cat2.weights.xml"); 
-	egammaweights.push_back("../HWW2012CORE/files/Electrons_BDTG_TrigV0_Cat3.weights.xml"); 
-	egammaweights.push_back("../HWW2012CORE/files/Electrons_BDTG_TrigV0_Cat4.weights.xml"); 
-	egammaweights.push_back("../HWW2012CORE/files/Electrons_BDTG_TrigV0_Cat5.weights.xml"); 
-	egammaweights.push_back("../HWW2012CORE/files/Electrons_BDTG_TrigV0_Cat6.weights.xml"); 
+	egammaweights.push_back("files/Electrons_BDTG_TrigV0_Cat1.weights.xml"); 
+	egammaweights.push_back("files/Electrons_BDTG_TrigV0_Cat2.weights.xml"); 
+	egammaweights.push_back("files/Electrons_BDTG_TrigV0_Cat3.weights.xml"); 
+	egammaweights.push_back("files/Electrons_BDTG_TrigV0_Cat4.weights.xml"); 
+	egammaweights.push_back("files/Electrons_BDTG_TrigV0_Cat5.weights.xml"); 
+	egammaweights.push_back("files/Electrons_BDTG_TrigV0_Cat6.weights.xml"); 
 	egammaMvaEleEstimator_leptree = new EGammaMvaEleEstimator();
 	egammaMvaEleEstimator_leptree->initialize("BDT", EGammaMvaEleEstimator::kTrig, true, egammaweights );
 
 	// --------------- Muon RingIso MVA  --------------------------
 	vector<std::string> muonisoweights;
-	muonisoweights.push_back("../HWW2012CORE/files/MuonIsoMVA_sixie-BarrelPt5To10_V0_BDTG.weights.xml");
-	muonisoweights.push_back("../HWW2012CORE/files/MuonIsoMVA_sixie-EndcapPt5To10_V0_BDTG.weights.xml");
-	muonisoweights.push_back("../HWW2012CORE/files/MuonIsoMVA_sixie-BarrelPt10ToInf_V0_BDTG.weights.xml");
-	muonisoweights.push_back("../HWW2012CORE/files/MuonIsoMVA_sixie-EndcapPt10ToInf_V0_BDTG.weights.xml");
-	muonisoweights.push_back("../HWW2012CORE/files/MuonIsoMVA_sixie-Tracker_V0_BDTG.weights.xml");
-	muonisoweights.push_back("../HWW2012CORE/files/MuonIsoMVA_sixie-Global_V0_BDTG.weights.xml");
+	muonisoweights.push_back("files/MuonIsoMVA_sixie-BarrelPt5To10_V0_BDTG.weights.xml");
+	muonisoweights.push_back("files/MuonIsoMVA_sixie-EndcapPt5To10_V0_BDTG.weights.xml");
+	muonisoweights.push_back("files/MuonIsoMVA_sixie-BarrelPt10ToInf_V0_BDTG.weights.xml");
+	muonisoweights.push_back("files/MuonIsoMVA_sixie-EndcapPt10ToInf_V0_BDTG.weights.xml");
+	muonisoweights.push_back("files/MuonIsoMVA_sixie-Tracker_V0_BDTG.weights.xml");
+	muonisoweights.push_back("files/MuonIsoMVA_sixie-Global_V0_BDTG.weights.xml");
 	muonMVAEstimator_leptree =new MuonMVAEstimator();
 	muonMVAEstimator_leptree->initialize( "MuonIso_BDTG_IsoRings", MuonMVAEstimator::kIsoRings, true, muonisoweights );
 
@@ -102,14 +102,14 @@ LeptonTreeMaker::LeptonTreeMaker(bool lockToCoreSelectors, bool useLHeleId, bool
     try {
         jetcorr_filenames_pfL1FastJetL2L3.clear();
         if (realData) {
-            jetcorr_filenames_pfL1FastJetL2L3.push_back("../HWW2012CORE/files/GR_R_52_V7_L1FastJet_AK5PF.txt"); 
-            jetcorr_filenames_pfL1FastJetL2L3.push_back("../HWW2012CORE/files/GR_R_52_V7_L2Relative_AK5PF.txt");
-            jetcorr_filenames_pfL1FastJetL2L3.push_back("../HWW2012CORE/files/GR_R_52_V7_L3Absolute_AK5PF.txt"); 
-            jetcorr_filenames_pfL1FastJetL2L3.push_back("../HWW2012CORE/files/GR_R_52_V7_L2L3Residual_AK5PF.txt");
+            jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L1FastJet_AK5PF.txt"); 
+            jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L2Relative_AK5PF.txt");
+            jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L3Absolute_AK5PF.txt"); 
+            jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L2L3Residual_AK5PF.txt");
         } else {
-			jetcorr_filenames_pfL1FastJetL2L3.push_back("../HWW2012CORE/files/START52_V9_L1FastJet_AK5PF.txt");
-			jetcorr_filenames_pfL1FastJetL2L3.push_back("../HWW2012CORE/files/START52_V9_L2Relative_AK5PF.txt");
-			jetcorr_filenames_pfL1FastJetL2L3.push_back("../HWW2012CORE/files/START52_V9_L3Absolute_AK5PF.txt");
+			jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L1FastJet_AK5PF.txt");
+			jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L2Relative_AK5PF.txt");
+			jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L3Absolute_AK5PF.txt");
         }
         jet_corrector_pfL1FastJetL2L3_ = makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
     } catch (...){
@@ -311,7 +311,7 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 
     vector<TH2D*>     fDYNNLOKFactorHists;           //vector of hist for Drell-Yan NNLO Kfactor
     if (doDYNNLOw_ && (sample==SmurfTree::dyee || sample==SmurfTree::dymm || sample==SmurfTree::dytt) ) {
-        TFile *tmpFile = new TFile( "../HWW2012CORE/files/fewz_powheg_weights_stepwise_2011_fine7.root", "READ");
+        TFile *tmpFile = new TFile( "files/fewz_powheg_weights_stepwise_2011_fine7.root", "READ");
         const int nMassBins = 41;
         for(int i=0; i<nMassBins; i++){         
             TString hname = TString::Format("weight_%02d",i+1);
