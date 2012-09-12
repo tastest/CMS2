@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     std::string dataFile = argv[2];
     bool realData = false;
     if (dataType == 0) realData = true;
-    const std::string cms2_json_file = "../HWW2012CORE/files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
+    const std::string cms2_json_file = "files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
     ProcessSample(dataFile, dataType, 3.6, -1, -1, false, realData, "");
 	return 0;
   }
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
     //ProcessSample(samples, SmurfTree::qqww, integratedLumi, -1, -1);
     
 	//samples.push_back("/home/users/jaehyeok/HWW/MakeCMS2ntuples/ICHEP2012/CMSSW_5_2_3_patch4_V05-02-28_dataJECfix/src/ntuple.root");
-    //const std::string cms2_json = "../HWW2012CORE/files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
+    //const std::string cms2_json = "files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
     //ProcessSample(samples, SmurfTree::data, 3.1, -1, -1, false, true, "");
     
 	ProcessSample("/nfs-6/userdata/jaehyeok/TTTo2L2Nu2B_8TeV-powheg-pythia6_Summer12-PU_S7_START52_V9-v1/V05-02-28/vvfilter/merged_ntuple.root", 
@@ -394,7 +394,7 @@ int main(int argc, char *argv[])
   }
  
   // RealData
-  TString cms2_json_file = "../HWW2012CORE/files/hww.Full2011.txt";
+  TString cms2_json_file = "files/hww.Full2011.txt";
   cms2_json_file = "";
 
   std::vector<string> embSamples;
