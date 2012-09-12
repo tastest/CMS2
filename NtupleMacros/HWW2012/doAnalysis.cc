@@ -489,6 +489,15 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.trackMetPhi_ = trkMET.metphi;
   tree.pTrackMet_   = projectedMet(i_hyp, trkMET.met, trkMET.metphi);
 
+  tree.Q_    	= cms2.pdfinfo_scale();
+  tree.id1_   	= cms2.pdfinfo_id1();
+  tree.x1_    	= cms2.pdfinfo_x1(); 
+  tree.pdf1_    = cms2.pdfinfo_pdf1();
+  tree.id2_    	= cms2.pdfinfo_id2(); 
+  tree.x2_    	= cms2.pdfinfo_x2(); 
+  tree.pdf2_    = cms2.pdfinfo_pdf2(); 
+  
+
   bool ltIsFirst = true;
   if ( cms2.hyp_lt_p4().at(i_hyp).pt()<cms2.hyp_ll_p4().at(i_hyp).pt() ) ltIsFirst = false;
   tree.type_ = SmurfTree::Type(cms2.hyp_type().at(i_hyp));
