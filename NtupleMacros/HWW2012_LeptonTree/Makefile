@@ -136,6 +136,8 @@ clean: # clean up
 	$(CMSROOT)/CORE/*.so \
 	$(CMSROOT)/Tools/*.o \
     $(CMSROOT)/Tools/*.d \
+	$(CMSROOT)/HWW2012CORE/*.o \
+	$(CMSROOT)/HWW2012CORE/*.d \
 	../Tools/MiniFWLite/*.o \
     ../Tools/MiniFWLite/*.d \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
