@@ -888,6 +888,8 @@ bool passSUSYTrigger2012_v2( bool isData ) {
   if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )        return true;
   if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )        return true;
   if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v" ) )                                            return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_eta2p1_v" ) )                                     return true;
+  if( passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_v" ) )                                         return true;
   if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
 
   return false;
