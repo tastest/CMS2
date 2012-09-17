@@ -935,7 +935,7 @@ bool goodElectronTMVA(EGammaMvaEleEstimator* egammaMvaEleEstimator, int useMVAel
 	// conversion rejection - hit based
 	if ( cms2.els_exp_innerlayers().at(i) > 0 ) return false;
 
-	double mvavalue =  egammaMvaEleEstimator->mvaValue(i,true);
+	double mvavalue =  egammaMvaEleEstimator->mvaValue(i,false);
 
 	if( pt > 20 ) {
 		if( fabs(etaSC)>=1.479 && mvavalue>0.92)  return true;
