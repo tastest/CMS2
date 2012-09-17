@@ -144,9 +144,17 @@ bool goodElectronWithoutIsolation(unsigned int i,  bool useLHeleId, int useMVAel
 
 bool goodElectronIsolated(unsigned int i,  bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool lockToCoreSelectors){
     bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
-    bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV6);
+    bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV6); 
     bool internal = ww_elBase(i) && ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
-    assert(!lockToCoreSelectors || core==internal);
+    assert(!lockToCoreSelectors || core==internal); 
+
+
+	// FIXME 
+	cout << ww_elBase(i) << endl;
+	cout << ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) << endl;
+	cout << ww_eld0PV(i) << endl;
+	cout << ww_eldZPV(i) << endl;
+	cout << ww_elIso(i) << endl;
     return internal;
 }
 
@@ -298,7 +306,7 @@ bool ww_elId(unsigned int index, bool useLHeleId, int useMVAeleId, EGammaMvaEleE
         if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
     if (useMVAeleId>0){
-      if (!goodElectronTMVA(egammaMvaEleEstimator, useMVAeleId, index)) return false;
+      if (!goodElectronTMVA(egammaMvaEleEstimator, useMVAeleId, index)) return false; 
     } else {
         if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
     }
@@ -927,7 +935,7 @@ bool goodElectronTMVA(EGammaMvaEleEstimator* egammaMvaEleEstimator, int useMVAel
 	// conversion rejection - hit based
 	if ( cms2.els_exp_innerlayers().at(i) > 0 ) return false;
 
-	double mvavalue =  egammaMvaEleEstimator->mvaValue(i,false);
+	double mvavalue =  egammaMvaEleEstimator->mvaValue(i,true);
 
 	if( pt > 20 ) {
 		if( fabs(etaSC)>=1.479 && mvavalue>0.92)  return true;
@@ -938,8 +946,7 @@ bool goodElectronTMVA(EGammaMvaEleEstimator* egammaMvaEleEstimator, int useMVAel
 	else {
 		if( fabs(etaSC)>=1.479 && mvavalue>0.62)  return true;
 		if( fabs(etaSC)>=0.8 && fabs(etaSC)<1.479 && mvavalue>0.1)  return true;
-		if( fabs(etaSC)<0.8 && 
-			mvavalue>0.0)  return true;
+		if( fabs(etaSC)<0.8 && mvavalue>0.0)  return true;
 		return false;
 	}
 

@@ -56,6 +56,7 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
     const double vetoCone = 0.3;
 
     switch ( type ){
+	/*
         case jptJet:
             for ( unsigned int i=0; i < cms2.jpts_p4().size(); ++i) {
                 double jec = 1.0;
@@ -67,6 +68,7 @@ getJets(WWJetType type, LorentzVector &lt, LorentzVector &ll, double etThreshold
                 jets.push_back(JetPair(cms2.jpts_p4()[i] * jec,i));
             }
             break;
+	*/
         case pfJet:
             for ( unsigned int i=0; i < cms2.pfjets_p4().size(); ++i) {
                 double jec = 1.0;
@@ -174,7 +176,7 @@ double BTag(LorentzVector jetP4){
 double BTag(WWJetType type, unsigned int iJet){
     switch ( type ) {
         case jptJet:
-            return BTag(cms2.jpts_p4().at(iJet));
+//            return BTag(cms2.jpts_p4().at(iJet));
             break;
         case CaloJet:
             return cms2.jets_trackCountingHighEffBJetTag()[iJet];
@@ -192,7 +194,7 @@ double BTag(WWJetType type, unsigned int iJet){
 double BTag(WWJetType type, unsigned int iJet, float corjetpt){
     switch ( type ) {
         case jptJet:
-            return BTag(cms2.jpts_p4().at(iJet));
+//            return BTag(cms2.jpts_p4().at(iJet));
             break;
         case CaloJet:
             return cms2.jets_trackCountingHighEffBJetTag()[iJet];
