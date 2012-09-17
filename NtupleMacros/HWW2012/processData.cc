@@ -28,10 +28,10 @@ int main(int argc, char *argv[])
 	return 0;
   }
   
-  if (argc == 5) {
+  if (argc == 4) {
   
     std::vector<string> dataSamples;
- 
+/* 
  	// 2012A
 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleElectron_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleMu_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
@@ -69,16 +69,30 @@ int main(int argc, char *argv[])
     dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
     dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
     dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-
+*/
     SmurfTree::DataType dataType = (SmurfTree::DataType)atoi(argv[1]);
-    std::string dataFile = argv[2];
-    int beginrun = atoi(argv[3]);
-    int endrun = atoi(argv[4]);
+    int beginrun = atoi(argv[2]);
+    int endrun = atoi(argv[3]);
     bool realData = false;
     if (dataType == 0) realData = true;
-    const std::string cms2_json_file = "Cert_190456-195658_8TeV_PromptReco_Collisions12_JSON_cms2.txt";
-    ProcessSample(dataSamples, dataType, 3.5, -1, -1, false, realData, "", beginrun, endrun);
+    const std::string cms2_json_file = "Cert_190456-202016_8TeV_PromptReco_Collisions12_JSON_cms2.txt";
+	
+	for(unsigned int run = beginrun; run<=endrun; run++) { 
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/DoubleElectron_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/DoubleMu_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/MuEG_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/jaehyeok/CMSSW_5_3_2_patch4_V05-03-13/SingleMu_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/cwelke/CMSSW_5_3_2_patch4_V05-03-13/SingleElectron_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
+		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/DoubleElectron_Run2012C-PromptReco-v2_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/DoubleMu_Run2012C-PromptReco-v2_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/MuEG_Run2012C-PromptReco-v2_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/jaehyeok/CMSSW_5_3_2_patch4_V05-03-13/SingleMu_Run2012C-PromptReco-v2_AOD/merged/*%d*.root",run));
+//		dataSamples.push_back(Form("/hadoop/cms/store/user/cwelke/CMSSW_5_3_2_patch4_V05-03-13/SingleElectron_Run2012C-PromptReco-v2_AOD/merged/*%d*.root",run));
+   	} 
+	
+	ProcessSample(dataSamples, dataType, 3.5, -1, -1, false, realData, "", beginrun, endrun);
     return 0;
+  
   }
 
 
@@ -150,8 +164,8 @@ int main(int argc, char *argv[])
     //const std::string cms2_json = "files/Cert_190456-195396_8TeV_PromptReco_Collisions12_JSON_v2.jmu";
     //ProcessSample(samples, SmurfTree::data, 3.1, -1, -1, false, true, "");
     
-	ProcessSample("/nfs-6/userdata/jaehyeok/TTTo2L2Nu2B_8TeV-powheg-pythia6_Summer12-PU_S7_START52_V9-v1/V05-02-28/vvfilter/merged_ntuple.root", 
-		  SmurfTree::ttbar, integratedLumi, -1, -1);
+	ProcessSample("/nfs-7/userdata/jaehyeok/WWTo2L2Nu_TuneZ2star_8TeV_pythia6_tauola_Summer12-PU_S7_START52_V9-v1/V05-02-28/vvfilter/merged_ntuple.root", 
+		  SmurfTree::qqww, integratedLumi, -1, -1);
   }
 
   if (runWW)
