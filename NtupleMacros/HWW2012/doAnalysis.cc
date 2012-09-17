@@ -484,19 +484,24 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.metSig_      = cms2.evt_pfmetSignificance();
   tree.sumet_       = sumetValue();
   tree.metPhi_      = metPhiValue();
-  metStruct trkMET  = trackerMET(i_hyp,0.1);
-  tree.trackMet_    = trkMET.met;
-  tree.trackMetPhi_ = trkMET.metphi;
-  tree.pTrackMet_   = projectedMet(i_hyp, trkMET.met, trkMET.metphi);
+//  metStruct trkMET  = trackerMET(i_hyp,0.1);
+//  tree.trackMet_    = trkMET.met;
+//  tree.trackMetPhi_ = trkMET.metphi;
+//  tree.pTrackMet_   = projectedMet(i_hyp, trkMET.met, trkMET.metphi);
+  tree.trackMet_    = cms2.trk_met()[i_hyp];
+  tree.trackMetPhi_ = cms2.trk_metPhi()[i_hyp];
+  tree.pTrackMet_   = projectedMet(i_hyp, tree.trackMet_, tree.trackMetPhi_);
 
-  tree.Q_    	= cms2.pdfinfo_scale();
-  tree.id1_   	= cms2.pdfinfo_id1();
-  tree.x1_    	= cms2.pdfinfo_x1(); 
-  tree.pdf1_    = cms2.pdfinfo_pdf1();
-  tree.id2_    	= cms2.pdfinfo_id2(); 
-  tree.x2_    	= cms2.pdfinfo_x2(); 
-  tree.pdf2_    = cms2.pdfinfo_pdf2(); 
-  
+  // PDF stuffs
+  if (sample!=SmurfTree::data && sample!=SmurfTree::dyttDataDriven){
+	  tree.Q_    	= cms2.pdfinfo_scale();
+	  tree.id1_   	= cms2.pdfinfo_id1();
+	  tree.x1_    	= cms2.pdfinfo_x1(); 
+	  tree.pdf1_    = cms2.pdfinfo_pdf1();
+	  tree.id2_    	= cms2.pdfinfo_id2(); 
+	  tree.x2_    	= cms2.pdfinfo_x2(); 
+	  tree.pdf2_    = cms2.pdfinfo_pdf2(); 
+  } 
 
   bool ltIsFirst = true;
   if ( cms2.hyp_lt_p4().at(i_hyp).pt()<cms2.hyp_ll_p4().at(i_hyp).pt() ) ltIsFirst = false;
@@ -514,6 +519,19 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
   tree.lq2_   = ltIsFirst ? cms2.hyp_ll_charge().at(i_hyp) : cms2.hyp_lt_charge().at(i_hyp);
   tree.lid1_  = ltIsFirst ? cms2.hyp_lt_id().at(i_hyp) : cms2.hyp_ll_id().at(i_hyp);
   tree.lid2_  = ltIsFirst ? cms2.hyp_ll_id().at(i_hyp) : cms2.hyp_lt_id().at(i_hyp);
+
+  // SC eta for electrons and  mu p4 eta for muons
+  if (ltIsFirst) {
+    tree.lep1DetEta_ =  abs(cms2.hyp_lt_id().at(i_hyp))==11 ?
+						cms2.els_etaSC().at(cms2.hyp_lt_index().at(i_hyp)) :  cms2.mus_p4().at(cms2.hyp_lt_index().at(i_hyp)).eta(); 
+    tree.lep2DetEta_ =  abs(cms2.hyp_ll_id().at(i_hyp))==11 ?
+						cms2.els_etaSC().at(cms2.hyp_ll_index().at(i_hyp)) :  cms2.mus_p4().at(cms2.hyp_ll_index().at(i_hyp)).eta(); 
+  } else {
+    tree.lep1DetEta_ =  abs(cms2.hyp_ll_id().at(i_hyp))==11 ?
+						cms2.els_etaSC().at(cms2.hyp_ll_index().at(i_hyp)) :  cms2.mus_p4().at(cms2.hyp_ll_index().at(i_hyp)).eta(); 
+    tree.lep2DetEta_ =  abs(cms2.hyp_lt_id().at(i_hyp))==11 ?
+						cms2.els_etaSC().at(cms2.hyp_lt_index().at(i_hyp)) :  cms2.mus_p4().at(cms2.hyp_lt_index().at(i_hyp)).eta(); 
+  }
 
   std::vector<Int_t> nullMu; // null identified muons 
   std::vector<Int_t> nullEle; // null identified electrons  
