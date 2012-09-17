@@ -147,14 +147,6 @@ bool goodElectronIsolated(unsigned int i,  bool useLHeleId, int useMVAeleId, EGa
     bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV6); 
     bool internal = ww_elBase(i) && ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
     assert(!lockToCoreSelectors || core==internal); 
-
-
-	// FIXME 
-	cout << ww_elBase(i) << endl;
-	cout << ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) << endl;
-	cout << ww_eld0PV(i) << endl;
-	cout << ww_eldZPV(i) << endl;
-	cout << ww_elIso(i) << endl;
     return internal;
 }
 
