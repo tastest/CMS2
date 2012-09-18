@@ -920,3 +920,39 @@ float muonIsoValuePF2012_deltaBeta(unsigned int imu)
     float absiso = chiso + max(0.0, nhiso + emiso - 0.5 * deltaBeta);
     return (absiso / pt);
 }
+
+bool passes_muid_wp2012 (const unsigned int index, const mu2012_tightness::value_type tightness)
+{
+    bool is_global  = ((cms2.mus_type().at(index) & (1<<1)) != 0);
+    bool is_tracker = ((cms2.mus_type().at(index) & (1<<2)) != 0);
+    bool is_pfmu    = ((cms2.mus_type().at(index) & (1<<5)) != 0);
+
+    int vtxidx = firstGoodVertex();
+
+    switch (tightness) {
+        
+    case mu2012_tightness::LOOSE:
+        if (!is_pfmu) return false;
+        if (!is_global && !is_tracker) return false;      
+        return true;
+
+    case mu2012_tightness::TIGHT:
+        if (!is_global) return false;
+        if (!is_pfmu) return false;
+        if (cms2.mus_gfit_validSTAHits().at(index) < 1) return false;
+        if (cms2.mus_numberOfMatchedStations().at(index) < 2) return false;
+
+        int ctfidx = cms2.mus_trkidx().at(index);
+        if (ctfidx < 0) return false;
+        std::pair<double, double> cord0 = trks_d0_pv(ctfidx, vtxidx);
+        std::pair<double, double> cordz = trks_dz_pv(ctfidx, vtxidx);
+        if (fabs(cord0.first) > 0.2) return false;
+        if (fabs(cordz.first) > 0.5) return false;
+        if (cms2.trks_valid_pixelhits().at(ctfidx) < 1) return false;
+        if (cms2.trks_nlayers().at(ctfidx) < 6) return false;
+        return true;
+    } // end switch block
+
+    return false;
+}
+

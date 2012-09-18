@@ -116,5 +116,17 @@ double mudzPV_smurfV3 (unsigned int index);
 
 bool isPFMuon( int index , bool requireSamePt = true , float dpt_max = 1.0 );
 
+struct mu2012_tightness 
+{
+    enum value_type 
+    {
+        LOOSE,
+        TIGHT,
+        static_size
+    };
+};
+
+bool passes_muid_wp2012(const unsigned int index, const mu2012_tightness::value_type tightness);
+
 #endif
 
