@@ -886,7 +886,7 @@ electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp201
  
     if( ivtx >= 0 ){
       dzvtx = elgsftkid>=0 ? gsftrks_dz_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
-      d0vtx = elgsftkid>=0 ? gsftrks_d0_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
+      d0vtx = elgsftkid>=0 ? gsftrks_d0_pv( elgsftkid,ivtx ).first : trks_d0_pv(eltkid,ivtx).first;
     }
 
     // test cuts
