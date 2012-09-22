@@ -151,9 +151,12 @@ float samesign::electronIsolationPF2012(int idx)
 
     // pf iso
     // calculate from the ntuple for now...
-    float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
-    float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
-    float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
+    //float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
+    //float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
+    //float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
+    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
+    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
+    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
 
     // rho
     float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
@@ -202,7 +205,7 @@ bool samesign::passesTrigger(int hyp_type)
 ///////////////////////////////////////////////////////////////////////////////////////////
 // extra Z veto for b-tagged same sign analysis
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool samesign::makesExtraZ(int idx, bool apply_id_iso) {
+bool samesign::makesExtraZ(int idx, bool apply_id_iso, bool verbose) {
 
     std::vector<unsigned int> ele_idx;
     std::vector<unsigned int> mu_idx;
@@ -232,31 +235,55 @@ bool samesign::makesExtraZ(int idx, bool apply_id_iso) {
                 continue;
 
             if (fabs(cms2.els_p4().at(eidx).eta()) > 2.4)
+            {
+                if (verbose) {cout << "samesign::makesExtraZ fails at electron |eta| < 2.4" << endl;}
                 continue;
+            }
 
             if (cms2.els_p4().at(eidx).pt() < 10.)
+            {
+                if (verbose) {cout << "samesign::makesExtraZ fails at electron pT > 10" << endl;}
                 continue;
+            }
+
 
             if (apply_id_iso) {
-                float iso_val = electronIsolationPF2012(eidx);
+                float iso_val = samesign::electronIsolationPF2012(eidx);
                 if (iso_val > 0.2)
+                {
+                    if (verbose) {cout << "samesign::makesExtraZ fails at electron is not isolated: " << iso_val << endl;}
                     continue;
+                }
                 
                 electronIdComponent_t passAllVetoCuts = DETAIN | DPHIIN | SIGMAIETAIETA | HOE | D0VTX | DZVTX;
                 electronIdComponent_t vetoid = electronId_WP2012(eidx, VETO);
                 if ((passAllVetoCuts & vetoid) != passAllVetoCuts)
-                    continue;                
+                {
+                    if (verbose) {cout << "samesign::makesExtraZ fails at electron ID cuts" << endl;}
+                    continue;
+                }
             }
 
             for (unsigned int vidx = 0; vidx < ele_idx.size(); vidx++) {
 
                 if (cms2.els_charge().at(eidx) * cms2.els_charge().at(ele_idx.at(vidx)) > 0)
+                {
+                    if (verbose) {cout << "samesign::makesExtraZ fails at electron fails opposite charge cut" << endl;}
                     continue;
+                }
 
                 LorentzVector zp4 = cms2.els_p4().at(eidx) + cms2.els_p4().at(ele_idx.at(vidx));
                 float zcandmass = sqrt(fabs(zp4.mass2()));
                 if (fabs(zcandmass-91.) < 15.)
+                {
+                    if (verbose) 
+                    {
+                        cout << "samesign::makesExtraZ makes an extra Z: " << zcandmass << endl;
+                        cout << Form("l1pt: %f, l2pt: %f", cms2.els_p4().at(eidx).pt(), cms2.els_p4().at(ele_idx.at(vidx)).pt()) << endl;
+                    }
+                    
                     return true;
+                }
             }
         }        
     }
