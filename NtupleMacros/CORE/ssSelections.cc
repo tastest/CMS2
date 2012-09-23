@@ -205,7 +205,7 @@ bool samesign::passesTrigger(int hyp_type)
 ///////////////////////////////////////////////////////////////////////////////////////////
 // extra Z veto for b-tagged same sign analysis
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool samesign::makesExtraZ(int idx, bool apply_id_iso, bool verbose) {
+bool samesign::makesExtraZ(int idx, bool apply_id_iso) {
 
     std::vector<unsigned int> ele_idx;
     std::vector<unsigned int> mu_idx;
@@ -236,13 +236,11 @@ bool samesign::makesExtraZ(int idx, bool apply_id_iso, bool verbose) {
 
             if (fabs(cms2.els_p4().at(eidx).eta()) > 2.4)
             {
-                if (verbose) {cout << "samesign::makesExtraZ fails at electron |eta| < 2.4" << endl;}
                 continue;
             }
 
             if (cms2.els_p4().at(eidx).pt() < 10.)
             {
-                if (verbose) {cout << "samesign::makesExtraZ fails at electron pT > 10" << endl;}
                 continue;
             }
 
@@ -251,7 +249,6 @@ bool samesign::makesExtraZ(int idx, bool apply_id_iso, bool verbose) {
                 float iso_val = samesign::electronIsolationPF2012(eidx);
                 if (iso_val > 0.2)
                 {
-                    if (verbose) {cout << "samesign::makesExtraZ fails at electron is not isolated: " << iso_val << endl;}
                     continue;
                 }
                 
@@ -259,7 +256,6 @@ bool samesign::makesExtraZ(int idx, bool apply_id_iso, bool verbose) {
                 electronIdComponent_t vetoid = electronId_WP2012(eidx, VETO);
                 if ((passAllVetoCuts & vetoid) != passAllVetoCuts)
                 {
-                    if (verbose) {cout << "samesign::makesExtraZ fails at electron ID cuts" << endl;}
                     continue;
                 }
             }
@@ -268,7 +264,6 @@ bool samesign::makesExtraZ(int idx, bool apply_id_iso, bool verbose) {
 
                 if (cms2.els_charge().at(eidx) * cms2.els_charge().at(ele_idx.at(vidx)) > 0)
                 {
-                    if (verbose) {cout << "samesign::makesExtraZ fails at electron fails opposite charge cut" << endl;}
                     continue;
                 }
 
@@ -276,12 +271,6 @@ bool samesign::makesExtraZ(int idx, bool apply_id_iso, bool verbose) {
                 float zcandmass = sqrt(fabs(zp4.mass2()));
                 if (fabs(zcandmass-91.) < 15.)
                 {
-                    if (verbose) 
-                    {
-                        cout << "samesign::makesExtraZ makes an extra Z: " << zcandmass << endl;
-                        cout << Form("l1pt: %f, l2pt: %f", cms2.els_p4().at(eidx).pt(), cms2.els_p4().at(ele_idx.at(vidx)).pt()) << endl;
-                    }
-                    
                     return true;
                 }
             }
