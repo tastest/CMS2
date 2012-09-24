@@ -176,8 +176,9 @@ bool samesign::passesTrigger(int hyp_type)
     // no trigger requirements applied to MC
     //----------------------------------------
   
-    if (!cms2.evt_isRealData())
-        return true; 
+    // removed for HCP preapproval -- RWK
+    //if (!cms2.evt_isRealData())
+    //    return true; 
   
     //---------------------------------
     // triggers for dilepton datasets
