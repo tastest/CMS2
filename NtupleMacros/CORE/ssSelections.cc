@@ -326,6 +326,131 @@ bool samesign::makesExtraZ(int idx, bool apply_id_iso) {
 }
 
 
+///////////////////////////////////////////////////////////////////////////////////////////
+// Gamma* veto for b-tagged same sign analysis
+///////////////////////////////////////////////////////////////////////////////////////////
+bool samesign::makesExtraGammaStar(int idx, bool apply_id_iso) {
+
+    std::vector<unsigned int> ele_idx;
+    std::vector<unsigned int> mu_idx;
+
+    int lt_id           = cms2.hyp_lt_id().at(idx);
+    int ll_id           = cms2.hyp_ll_id().at(idx);
+    unsigned int lt_idx = cms2.hyp_lt_index().at(idx);
+    unsigned int ll_idx = cms2.hyp_ll_index().at(idx);
+
+    (abs(lt_id) == 11) ? ele_idx.push_back(lt_idx) : mu_idx.push_back(lt_idx);
+    (abs(ll_id) == 11) ? ele_idx.push_back(ll_idx) : mu_idx.push_back(ll_idx);
+
+    if (ele_idx.size() + mu_idx.size() != 2) {
+        std::cout << "ERROR: don't have 2 leptons in hypothesis!!!  Exiting" << std::endl;
+        return false;
+    }
+        
+    if (ele_idx.size() > 0) {
+        for (unsigned int eidx = 0; eidx < cms2.els_p4().size(); eidx++) {
+
+            bool is_hyp_lep = false;
+            for (unsigned int vidx = 0; vidx < ele_idx.size(); vidx++) {
+                if (eidx == ele_idx.at(vidx))
+                    is_hyp_lep = true;                
+            }
+            if (is_hyp_lep)
+                continue;
+
+            if (fabs(cms2.els_p4().at(eidx).eta()) > 2.4)
+            {
+                continue;
+            }
+
+            if (cms2.els_p4().at(eidx).pt() < 5.0)
+            {
+                continue;
+            }
+
+
+            if (apply_id_iso) {
+                float iso_val = samesign::electronIsolationPF2012(eidx);
+                if (iso_val > 0.2)
+                {
+                    continue;
+                }
+                
+                electronIdComponent_t passAllVetoCuts = DETAIN | DPHIIN | SIGMAIETAIETA | HOE | D0VTX | DZVTX;
+                electronIdComponent_t vetoid = electronId_WP2012(eidx, VETO);
+                if ((passAllVetoCuts & vetoid) != passAllVetoCuts)
+                {
+                    continue;
+                }
+            }
+
+            for (unsigned int vidx = 0; vidx < ele_idx.size(); vidx++) {
+
+                if (cms2.els_charge().at(eidx) * cms2.els_charge().at(ele_idx.at(vidx)) > 0)
+                {
+                    continue;
+                }
+
+                LorentzVector gamma_p4 = cms2.els_p4().at(eidx) + cms2.els_p4().at(ele_idx.at(vidx));
+                float gammacandmass = sqrt(fabs(gamma_p4.mass2()));
+                if (gammacandmass < 12.0)
+                {
+                    return true;
+                }
+            }
+        }        
+    }
+
+    if (mu_idx.size() > 0) {
+        for (unsigned int midx = 0; midx < cms2.mus_p4().size(); midx++) {
+
+            bool is_hyp_lep = false;
+            for (unsigned int vidx = 0; vidx < mu_idx.size(); vidx++) {
+                if (midx == mu_idx.at(vidx))
+                    is_hyp_lep = true;                
+            }
+            if (is_hyp_lep)
+                continue;
+
+            if (fabs(cms2.mus_p4().at(midx).eta()) > 2.4)
+                continue;
+
+            if (cms2.mus_p4().at(midx).pt() < 5.0)
+                continue;
+
+            if (apply_id_iso) {
+                float iso_val = muonIsoValuePF2012_deltaBeta(midx);
+                if (iso_val > 0.2)
+                    continue;
+                
+                if (!cms2.mus_pid_PFMuon().at(midx))
+                    continue;
+
+                bool is_global  = ((cms2.mus_type().at(midx) & (1<<1)) == (1<<1));
+                bool is_tracker = ((cms2.mus_type().at(midx) & (1<<2)) == (1<<2));
+                if (!is_global && !is_tracker)
+                    continue;
+            }
+
+            for (unsigned int vidx = 0; vidx < mu_idx.size(); vidx++) {
+
+                if (cms2.mus_charge().at(midx) * cms2.mus_charge().at(mu_idx.at(vidx)) > 0)
+                    continue;
+
+                LorentzVector gamma_p4 = cms2.els_p4().at(midx) + cms2.els_p4().at(ele_idx.at(vidx));
+                float gammacandmass = sqrt(fabs(gamma_p4.mass2()));
+                if (gammacandmass < 12.0)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
 ////////////////////////////////////////////////////////////////////////////////////////////////
