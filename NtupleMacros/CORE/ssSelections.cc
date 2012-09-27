@@ -151,12 +151,12 @@ float samesign::electronIsolationPF2012(int idx)
 
     // pf iso
     // calculate from the ntuple for now...
-    //float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
-    //float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
-    //float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
-    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
-    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
-    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
+    float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
+    float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
+    float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
+    //float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
+    //float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
+    //float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
 
     // rho
     float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
@@ -437,7 +437,7 @@ bool samesign::makesExtraGammaStar(int idx, bool apply_id_iso) {
                 if (cms2.mus_charge().at(midx) * cms2.mus_charge().at(mu_idx.at(vidx)) > 0)
                     continue;
 
-                LorentzVector gamma_p4 = cms2.els_p4().at(midx) + cms2.els_p4().at(ele_idx.at(vidx));
+                LorentzVector gamma_p4 = cms2.mus_p4().at(midx) + cms2.mus_p4().at(mu_idx.at(vidx));
                 float gammacandmass = sqrt(fabs(gamma_p4.mass2()));
                 if (gammacandmass < 12.0)
                 {
