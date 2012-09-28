@@ -135,13 +135,11 @@ clean: # clean up
 	$(CMSROOT)/CORE/*.d \
 	$(CMSROOT)/CORE/*.so \
 	$(CMSROOT)/Tools/*.o \
-	$(CMSROOT)/Tools/*.d \
-	$(CMSROOT)/Tools/MiniFWLite/*.o \
-	$(CMSROOT)/Tools/MiniFWLite/*.d \
-	$(CMSROOT)/Tools/MiniFWLite/*.so \
+    $(CMSROOT)/Tools/*.d \
+	../Tools/MiniFWLite/*.o \
+    ../Tools/MiniFWLite/*.d \
 	$(CORELIB) $(LOOPERLIB) $(FWLIB) \
 	processed_data.* *.list \
-	../HWW2012CORE/*.o \
 	*.o *.d *.so *.exe LinkDef_out*; echo "Done"
 
 table: data main
