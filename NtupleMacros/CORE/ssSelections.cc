@@ -151,12 +151,15 @@ float samesign::electronIsolationPF2012(int idx)
 
     // pf iso
     // calculate from the ntuple for now...
+#ifdef SS_USE_OLD_ISO
     float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
     float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
     float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
-    //float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
-    //float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
-    //float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
+#else
+    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
+    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
+    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
+#endif
 
     // rho
     float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
