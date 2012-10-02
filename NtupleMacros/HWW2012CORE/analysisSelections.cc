@@ -517,22 +517,27 @@ bool passedTrigger(TString trigName, unsigned int minRun, unsigned int maxRun)
 bool passedTriggerRequirements() {
     
 	// 
-	//  2012 ICHEP triggers
+	//  2012 ICHEP triggers and then HCP
 	// 
 
     // double electron 
     if(  	passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15")   ||
      		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v16") 	|| 
-     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17")  
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17")  ||
+                passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18") 
 	  ) return true;
 
     // double muon 
 	if(  	passedTrigger("HLT_Mu17_Mu8_v16") 	||
 			passedTrigger("HLT_Mu17_Mu8_v17") 	||
 			passedTrigger("HLT_Mu17_Mu8_v18") 	||
+                        passedTrigger("HLT_Mu17_Mu8_v19")       ||
+                        passedTrigger("HLT_Mu17_Mu8_v21")       ||
 			passedTrigger("HLT_Mu17_TkMu8_v9") 	||
 			passedTrigger("HLT_Mu17_TkMu8_v10")	||
-			passedTrigger("HLT_Mu17_TkMu8_v11")
+			passedTrigger("HLT_Mu17_TkMu8_v11")     ||
+                        passedTrigger("HLT_Mu17_TkMu8_v12")     ||
+                        passedTrigger("HLT_Mu17_TkMu8_v13")
 	  ) return true;
 
 	// emu
@@ -540,25 +545,38 @@ bool passedTriggerRequirements() {
 	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 	||
 	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 	||
 	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	||
+                        passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8")    ||
+                        passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9")    ||
 	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4") 	||
 	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 	||
 	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 	||
-	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	||
+                        passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8")    ||
+                        passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9")
 	  ) return true;
 
 	// single ele
 	if(  	passedTrigger("HLT_Ele27_WP80_v8") 	||
 	  		passedTrigger("HLT_Ele27_WP80_v9") 	||
-	  		passedTrigger("HLT_Ele27_WP80_v10") 	
+	  		passedTrigger("HLT_Ele27_WP80_v10") 	||
+                        passedTrigger("HLT_Ele27_WP80_v11")
+
 	  ) return true;
 
-	// single ele
+	// single muon
 	if(  	passedTrigger("HLT_IsoMu24_eta2p1_v11") 	||
 	 		passedTrigger("HLT_IsoMu24_eta2p1_v12") 	||
-	 		passedTrigger("HLT_IsoMu24_eta2p1_v13") 	
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v13") ||
+                        passedTrigger("HLT_IsoMu24_eta2p1_v14") ||
+                        passedTrigger("HLT_IsoMu24_eta2p1_v15")
+ 	
 	  ) return true;
-    
+   
     return false;
+
+
+
+
 }
 
 bool passedTriggerRequirementsWithRuns() {
