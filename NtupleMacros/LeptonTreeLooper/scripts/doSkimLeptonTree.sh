@@ -86,10 +86,10 @@ CERTNAME="../runlists/${CERT}.jmu"
 ############
 
 # V00-02-07
-# first attempt with 53X for HCP
+# HCP dataset
 
 TAG="V00-02-07"
-CERT="Cert_190456-202305_8TeV_PromptReco_Collisions12_JSON"
+CERT="HCP"
 CERTNAME="../runlists/${CERT}.jmu"
 root -b -q skimLeptonTree.C+\(\"${CERTNAME}\",\"/smurf/dlevans/LeptonTree/${TAG}/DoubleElectron_Run2012A-13Jul2012-v1_AOD_190456_193621/\",\"merged_${CERT}.root\",0\)
 root -b -q skimLeptonTree.C+\(\"${CERTNAME}\",\"/smurf/dlevans/LeptonTree/${TAG}/DoubleElectron_Run2012A-recover-06Aug2012-v1_AOD_190782_190949/\",\"merged_${CERT}.root\",0\)
