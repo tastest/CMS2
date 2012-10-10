@@ -904,6 +904,8 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
     std::vector<LorentzVector> final_jets;
     for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
 
+        if (!tmp_jet_flags.at(jidx)) continue;
+
         LorentzVector vjet = cms2.pfjets_p4().at(jidx);
         jet_corrector->setRho(cms2.evt_ww_rho_vor());
         jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
