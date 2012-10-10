@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.36 2012/08/25 00:32:31 fgolf Exp $
+// $Id: jetSelections.cc,v 1.37 2012/10/10 17:56:29 fgolf Exp $
 
 #include <algorithm>
 #include <utility>
@@ -94,13 +94,16 @@ static jets_with_corr_t getJets_fast (unsigned int i_hyp, enum JetType type, enu
 	  corr = cms2.jets_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.jets_p4().at(i).pt(), cms2.jets_p4().at(i).eta());
             break;
         case JETS_TYPE_PF_CORR:
-            corr = cms2.pfjets_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
+//            corr = cms2.pfjets_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
+            corr = cms2.pfjets_cor().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt() * cms2.pfjets_cor().at(i), cms2.pfjets_p4().at(i).eta());
             break;
         case JETS_TYPE_PF_FAST_CORR:
-            corr = cms2.pfjets_corL1FastL2L3().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
+//            corr = cms2.pfjets_corL1FastL2L3().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
+            corr = cms2.pfjets_corL1FastL2L3().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt() * cms2.pfjets_corL1FastL2L3().at(i), cms2.pfjets_p4().at(i).eta());
             break;
         case JETS_TYPE_PF_FAST_CORR_RESIDUAL:
-            corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
+//            corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt(), cms2.pfjets_p4().at(i).eta());
+            corr = cms2.pfjets_corL1FastL2L3residual().at(i) * rescale * getJetMetSyst(systFlag, cms2.pfjets_p4().at(i).pt() * cms2.pfjets_corL1FastL2L3residual().at(i), cms2.pfjets_p4().at(i).eta());
             break;
         case JETS_TYPE_CALO_UNCORR: 
         case JETS_TYPE_PF_UNCORR:
