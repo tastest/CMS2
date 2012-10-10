@@ -571,8 +571,9 @@ std::pair<float, float> MetCorrector::correctMETforJES(std::pair<float, float> u
         if (emfrac > 0.9) continue;
 
         LorentzVector2 tmpjetp4 = LorentzVector2(jetp4);
-        if (tmpjetp4.eta() > 4.7) tmpjetp4.SetEta(4.7);
-        if (tmpjetp4.eta() < -4.7) tmpjetp4.SetEta(-4.7);   
+        if (fabs(tmpjetp4.eta()) > 9.9) continue;
+        // if (tmpjetp4.eta() > 4.7) tmpjetp4.SetEta(4.7);
+        // if (tmpjetp4.eta() < -4.7) tmpjetp4.SetEta(-4.7);   
 
         offset_corrector->setRho(cms2.evt_ww_rho_vor());
         offset_corrector->setJetA(cms2.pfjets_area().at(idx));
