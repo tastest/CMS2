@@ -440,7 +440,9 @@ int chargedHadronVertex( const unsigned int ipf ){
     for (unsigned int index = 0; index < cms2.vtxs_position().size(); ++index) {
 
         // find the dz
-		double dz = cms2.pfcands_dzpv().at(ipf);
+        const unsigned int itrk = cms2.pfcands_trkidx()[ipf];
+        double dz = fabs(cms2.trks_vertex_p4()[itrk].z() - cms2.vtxs_position()[index].z());  // trks_vertex_p4 has been dropped in slim CMS2
+        //double dz = trks_dz_pv(itrk, index).first; // should we be using this?
 
         // find the closest dz
         if (dz < dzmin) {
