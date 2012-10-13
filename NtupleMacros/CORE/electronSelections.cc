@@ -1642,7 +1642,7 @@ void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, c
         // charged hadrons closest vertex
         // should be the primary vertex
         if (particleId == 211) {
-            int pfVertexIndex = chargedHadronVertex(ipf);
+            int pfVertexIndex = cms2.pfcands_vtxidx().at(ipf); 
             if (pfVertexIndex != ivtx) continue;
         }
 
@@ -1687,7 +1687,7 @@ void electronIsoValuePF2012reco(float &pfiso_ch, float &pfiso_em, float &pfiso_n
         // charged hadrons closest vertex
         // should be the primary vertex
         if (particleId == 211) {
-            int pfVertexIndex = chargedHadronVertex(ipf);
+            int pfVertexIndex = cms2.pfcands_vtxidx().at(ipf); 
             if (pfVertexIndex != ivtx) continue;
         }
 
