@@ -187,8 +187,10 @@ private:
     Bool_t conv0MissHits_;    // true if els_exp_innerlayers().at(index) == 0
 
     // HT
+#ifndef __CMS2_SLIM__
     float ht_calo_;          
     float ht_calo_L2L3_;
+#endif
     float ht_pf_;            
     float ht_pf_L2L3_;       
     float ht_pf_L1FastL2L3_;  
@@ -322,23 +324,25 @@ private:
     Int_t hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;               // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
     Int_t hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;         // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
     Int_t hltps_ele8_CaloIdT_TrkIdVL_vstar_;                                  // HLT_Ele8_CaloIdT_TrkIdVL_v*
-    Int_t hltps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_;                             // HLT_Ele8_CaloIdT_TrkIdVL_Jet30_v*
+    Int_t hltps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_;                            // HLT_Ele8_CaloIdT_TrkIdVL_Jet30_v*
     Int_t hltps_ele17_CaloIdL_CaloIsoVL_vstar_;                               // HLT_Ele17_CaloIdL_CaloIsoVL_v*
     Int_t hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;              // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
     Int_t hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;        // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
     Int_t hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_; // HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
     Int_t hltps_ele27_WP80_vstar_;                                            // HLT_Ele27_WP80_v*
 
-    Int_t l1ps_ele8_CaloIdL_CaloIsoVL_vstar_;                                 // HLT_Ele8_CaloIdL_CaloIsoVL_v*
-    Int_t l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;                // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Int_t l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;          // HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Int_t l1ps_ele8_CaloIdT_TrkIdVL_vstar_;                                   // HLT_Ele8_CaloIdT_TrkIdVL_v*
-    Int_t l1ps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_;                             // HLT_Ele8_CaloIdT_TrkIdVL_Jet30_v*
-    Int_t l1ps_ele17_CaloIdL_CaloIsoVL_vstar_;                                // HLT_Ele17_CaloIdL_CaloIsoVL_v*
-    Int_t l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;               // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
-    Int_t l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;         // HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
-    Int_t l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_;  // HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
-    Int_t l1ps_ele27_WP80_vstar_;                                             // HLT_Ele27_WP80_v*
+#ifndef __CMS2_SLIM__
+    Int_t l1ps_ele8_CaloIdL_CaloIsoVL_vstar_;                                 // L1_Ele8_CaloIdL_CaloIsoVL_v*
+    Int_t l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;                // L1_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Int_t l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;          // L1_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Int_t l1ps_ele8_CaloIdT_TrkIdVL_vstar_;                                   // L1_Ele8_CaloIdT_TrkIdVL_v*
+    Int_t l1ps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_;                             // L1_Ele8_CaloIdT_TrkIdVL_Jet30_v*
+    Int_t l1ps_ele17_CaloIdL_CaloIsoVL_vstar_;                                // L1_Ele17_CaloIdL_CaloIsoVL_v*
+    Int_t l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_;               // L1_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*
+    Int_t l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_;         // L1_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v*
+    Int_t l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_;  // L1_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_v*
+    Int_t l1ps_ele27_WP80_vstar_;                                             // L1_Ele27_WP80_v*
+#endif
 
     // Muons
     Int_t mu5_vstar_;                  // HLT_Mu5_v*            // also in 2011
@@ -393,6 +397,7 @@ private:
     Int_t hltps_relIso1p0Mu17_vstar_;  // HLT_RelIso1p0Mu17_v*
     Int_t hltps_relIso1p0Mu5_vstar_;   // HLT_RelIso1p0Mu5_v*
 
+#ifndef __CMS2_SLIM__
     Int_t l1ps_mu5_vstar_;             // HLT_Mu5_v*            // also in 2011
     Int_t l1ps_mu8_vstar_;             // HLT_Mu8_v*            // also in 2011
     Int_t l1ps_mu12_vstar_;            // HLT_Mu12_v*           // also in 2011
@@ -405,6 +410,7 @@ private:
     Int_t l1ps_isoMu30_eta2p1_vstar_;  // HLT_IsoMu30_eta2p1_v*
     Int_t l1ps_relIso1p0Mu17_vstar_;   // HLT_RelIso1p0Mu17_v*
     Int_t l1ps_relIso1p0Mu5_vstar_;    // HLT_RelIso1p0Mu5_v*
+#endif
 
     ///////////////////////  
     // End 2012 Triggers //
@@ -495,20 +501,24 @@ private:
     //////////////
 
     // Btag information
+#ifndef __CMS2_SLIM__
     Int_t nbjet_; // number of btagged jet pt>15
     Float_t dRbNear_; // dR between lepton and closest such jet
     Float_t dRbFar_; // dR between lepton and farthest such jet
+#endif
   
     // Btag PF Corrected information
     Int_t nbpfcjet_; // number of btagged jet pt>15
     Float_t dRbpfcNear_; // dR between lepton and closest such jet
     Float_t dRbpfcFar_; // dR between lepton and farthest such jet
   
+#ifndef __CMS2_SLIM__
     // Information to do offline jet trigger selection
     Float_t ptj1_;          // highest pt jet well separated from the lepton
     Float_t ptj1_b2b_;      // highest pt jet away frmo lepton by dR >= 1.0 and dPhi > 2.5
     Float_t dphij1_b2b_;    // dphi between lepton and jet for jets away from lepton by dR >= 1.0
     Int_t   nj1_;           // number of jets above 10 GeV and away from lepton by dR >= 1.0
+#endif
     Float_t ptpfj1_;        // highest pt pfjet well separated from the lepton
     Float_t ptpfj1_b2b_;    // highest pt pfjet away frmo lepton by dR >= 1.0 and dPhi > 2.5
     Float_t dphipfj1_b2b_;  // dphi between lepton and pfjet for pfjets away from lepton by dR >= 1.0

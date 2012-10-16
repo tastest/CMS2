@@ -32,20 +32,20 @@
 #include "electronSelections.h"
 #include "electronSelectionsParameters.h"
 #include "eventSelections.h"
-#include "jetSelections.h"
+//#include "jetSelections.h"
 #include "metSelections.h"
 #include "MITConversionUtilities.h"
 #include "muonSelections.h"
 #include "trackSelections.h"
 #include "triggerUtils.h"
-#include "goodrun.h"
+#include "at/GoodRun.h"
 #include "mcSelections.h"
 #include "ssSelections.h"
 #include "susySelections.h"
 #include "jetcorr/FactorizedJetCorrector.h"
+#else
 // for compiling in ACLiC (.L myBabyMaker.c++ method)
 // since the source files are included
-#else
 #include "CMS2.cc"  
 #ifndef __CINT__
 #include "../CORE/utilities.cc"
@@ -675,8 +675,10 @@ void myBabyMaker::InitBabyNtuple()
     mcmotherid_           = 0;
       
     // HT
+#ifndef __CMS2_SLIM__
     ht_calo_          = -999;           
     ht_calo_L2L3_     = -999;      
+#endif
     ht_pf_            = -999;            
     ht_pf_L2L3_       = -999;        
     ht_pf_L1FastL2L3_ = -999;
@@ -818,6 +820,7 @@ void myBabyMaker::InitBabyNtuple()
     hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = - 1;
     hltps_ele27_WP80_vstar_                                            = - 1;
 
+#ifndef __CMS2_SLIM__
     l1ps_ele17_CaloIdL_CaloIsoVL_vstar_                                = - 1;
     l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_               = - 1;
     l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         = - 1;
@@ -828,6 +831,7 @@ void myBabyMaker::InitBabyNtuple()
     l1ps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_                             = - 1;
     l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_  = - 1;
     l1ps_ele27_WP80_vstar_                                             = - 1;
+#endif
 
     // Muons
     mu5_vstar_                  = 0;
@@ -882,6 +886,7 @@ void myBabyMaker::InitBabyNtuple()
     hltps_relIso1p0Mu17_vstar_  = -1;
     hltps_relIso1p0Mu5_vstar_   = -1;
 
+#ifndef __CMS2_SLIM__
     l1ps_mu8_vstar_             = -1;
     l1ps_mu5_vstar_             = -1;
     l1ps_mu12_vstar_            = -1;
@@ -894,7 +899,7 @@ void myBabyMaker::InitBabyNtuple()
     l1ps_isoMu30_eta2p1_vstar_  = -1;
     l1ps_relIso1p0Mu17_vstar_   = -1;
     l1ps_relIso1p0Mu5_vstar_    = -1;
-
+#endif
 
     ///////////////////////  
     // End 2012 Triggers //
@@ -970,11 +975,13 @@ void myBabyMaker::InitBabyNtuple()
     // Jets     //
     //////////////
 
+#ifndef __CMS2_SLIM__
     // Calo Jets
     ptj1_       = 0.;
     ptj1_b2b_   = -999.;
     dphij1_b2b_ = -999.;
     nj1_        = 0;
+#endif
 
     // PF Jets
     ptpfj1_       = 0.;
@@ -1019,10 +1026,12 @@ void myBabyMaker::InitBabyNtuple()
     ptbtagpfcL1Fj1res_        = 0.;
     dphibtagpfcL1Fj1res_      = -999.;
     
-    //
+#ifndef __CMS2_SLIM__
+    // CALO Jet info
     nbjet_  = 0;
     dRbNear_ = 99.;
     dRbFar_ = -99.;
+#endif
     nbpfcjet_  = 0;
     dRbpfcNear_ = 99.;
     dRbpfcFar_ = -99.;
@@ -1161,8 +1170,10 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("els_exp_innerlayers"   , &els_exp_innerlayers_   ); 
     babyTree_->Branch("d0PV_wwV1"             , &d0PV_wwV1_             ); 
     babyTree_->Branch("dzPV_wwV1"             , &dzPV_wwV1_             ); 
+#ifndef __CMS2_SLIM__
     babyTree_->Branch("ht_calo"               , &ht_calo_               ); 
     babyTree_->Branch("ht_calo_L2L3"          , &ht_calo_L2L3_          ); 
+#endif
     babyTree_->Branch("ht_pf"                 , &ht_pf_                 ); 
     babyTree_->Branch("ht_pf_L2L3"            , &ht_pf_L2L3_            ); 
     babyTree_->Branch("ht_pf_L1FastL2L3"      , &ht_pf_L1FastL2L3_      ); 
@@ -1329,6 +1340,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar" , &hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ );
     babyTree_->Branch("hltps_ele27_WP80_vstar"                                            , &hltps_ele27_WP80_vstar_                                            );
 
+#ifndef __CMS2_SLIM__
     babyTree_->Branch("l1ps_ele8_CaloIdL_CaloIsoVL_vstar"                                 , &l1ps_ele8_CaloIdL_CaloIsoVL_vstar_                                 );
     babyTree_->Branch("l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar"                , &l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                );
     babyTree_->Branch("l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar"          , &l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_          );
@@ -1339,6 +1351,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar"         , &l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         );
     babyTree_->Branch("l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar"  , &l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_  );
     babyTree_->Branch("l1ps_ele27_WP80_vstar"                                             , &l1ps_ele27_WP80_vstar_                                             );
+#endif
 
     // Muons
     babyTree_->Branch("mu3_vstar"                  , &mu3_vstar_                  ); 
@@ -1417,6 +1430,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hltps_relIso1p0Mu17_vstar"  , &hltps_relIso1p0Mu17_vstar_  ); 
     babyTree_->Branch("hltps_relIso1p0Mu5_vstar"   , &hltps_relIso1p0Mu5_vstar_   ); 
 
+#ifndef __CMS2_SLIM__
     babyTree_->Branch("l1ps_mu5_vstar"             , &l1ps_mu5_vstar_             ); 
     babyTree_->Branch("l1ps_mu8_vstar"             , &l1ps_mu8_vstar_             ); 
     babyTree_->Branch("l1ps_mu12_vstar"            , &l1ps_mu12_vstar_            ); 
@@ -1429,6 +1443,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("l1ps_isoMu30_eta2p1_vstar"  , &l1ps_isoMu30_eta2p1_vstar_  ); 
     babyTree_->Branch("l1ps_relIso1p0Mu17_vstar"   , &l1ps_relIso1p0Mu17_vstar_   ); 
     babyTree_->Branch("l1ps_relIso1p0Mu5_vstar"    , &l1ps_relIso1p0Mu5_vstar_    ); 
+#endif
 
     ///////////////////////  
     // End 2011 Triggers //
@@ -1439,10 +1454,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     //////////////
 
     // Information to do offline jet trigger selection
+#ifndef __CMS2_SLIM__
     babyTree_->Branch("ptj1"         , &ptj1_         );
     babyTree_->Branch("nj1"          , &nj1_          );
     babyTree_->Branch("ptj1_b2b"     , &ptj1_b2b_     );
     babyTree_->Branch("dphij1_b2b"   , &dphij1_b2b_   );
+#endif
     babyTree_->Branch("ptpfj1"       , &ptpfj1_       );
     babyTree_->Branch("npfj1"        , &npfj1_        );
     babyTree_->Branch("ptpfj1_b2b"   , &ptpfj1_b2b_   );
@@ -1485,10 +1502,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ptbtagpfcL1Fj1res"   , &ptbtagpfcL1Fj1res_   );
     babyTree_->Branch("dphibtagpfcL1Fj1res" , &dphibtagpfcL1Fj1res_ );
     
+#ifndef __CMS2_SLIM__
     // B Tagging
     babyTree_->Branch("nbjet"        , &nbjet_        );
     babyTree_->Branch("dRNear"       , &dRbNear_      );
     babyTree_->Branch("dRFar"        , &dRbFar_       );
+#endif
       
     babyTree_->Branch("nbpfcjet"     , &nbpfcjet_     );
     babyTree_->Branch("dRpfcNear"    , &dRbpfcNear_   );
@@ -1709,6 +1728,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 	  		// Loop over jets and see what is btagged
             // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
             int this_nbjet = 0;
+#ifndef __CMS2_SLIM__
             vector<unsigned int> bindex;
             for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
                 if (jets_p4().at(iJet).pt() < 15.) continue;
@@ -1716,6 +1736,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                 this_nbjet++;
                 bindex.push_back(iJet);
             }
+#endif
 
             // PF Jets
             int this_nbpfjet = 0;
@@ -2084,11 +2105,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     if( els_exp_innerlayers().at(iLep) == 0 ) conv0MissHits_ = true;
 
                     // HT
+#ifndef __CMS2_SLIM__
                     ht_calo_           = (float) sumPt (iLep, JETS_TYPE_CALO_UNCORR  , JETS_CLEAN_SINGLE_E );
                     ht_calo_L2L3_      = (float) sumPt (iLep, JETS_TYPE_CALO_CORR    , JETS_CLEAN_SINGLE_E );
+#endif
                     ht_pf_             = (float) sumPt (iLep, JETS_TYPE_PF_UNCORR    , JETS_CLEAN_SINGLE_E );
                     ht_pf_L2L3_        = (float) sumPt (iLep, JETS_TYPE_PF_CORR      , JETS_CLEAN_SINGLE_E );
-                    //ht_pf_L1FastL2L3_  = (float) sumPt (iLep, JETS_TYPE_PF_FAST_CORR , JETS_CLEAN_SINGLE_E );
+                    ht_pf_L1FastL2L3_  = (float) sumPt (iLep, JETS_TYPE_PF_FAST_CORR , JETS_CLEAN_SINGLE_E );
 
                     //////////////////////////// 
                     // End Lepton Information //
@@ -2156,6 +2179,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
                     // These are hardcoded to the value in Dima's table:
                     // http://dmytro.web.cern.ch/dmytro/trigger/triggerEvolution_all.html
+#ifndef __CMS2_SLIM__
                     l1ps_ele8_CaloIdL_CaloIsoVL_vstar_                                    = L1_prescale("L1_SingleEG5");
                     l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                   = L1_prescale("L1_SingleEG7");
                     l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_             = L1_prescale("L1_SingleEG7");
@@ -2166,6 +2190,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = L1_prescale("L1_SingleEG12");
                     l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_     = L1_prescale("L1_SingleEG20");
                     l1ps_ele27_WP80_vstar_                                                = L1_prescale("L1_SingleEG20");
+#endif
+
 
                     ///////////////////////  
                     // end 2012 Triggers //
@@ -2217,6 +2243,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
                     // Calo Jets
                     // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+#ifndef __CMS2_SLIM__
                     ptj1_       = -999.0;
                     ptj1_b2b_   = -999.0;
                     dphij1_b2b_ = -999.0;
@@ -2235,6 +2262,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             }
                         }
                     }
+#endif
     
                     // PF Jets
                     // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
@@ -2252,7 +2280,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), pfjets_p4().at(iJet) ) );
                             if( dphi > deltaPhiCut && pfjets_p4().at(iJet).pt() > ptpfj1_b2b_ ){ 
                                 ptpfj1_b2b_   = pfjets_p4().at(iJet).pt();
-                                dphij1_b2b_ = dphi;
+                                dphipfj1_b2b_ = dphi;
                             }
                         }
                     }
@@ -2424,6 +2452,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     ///////////////////
 
                     // The btag information
+#ifndef __CMS2_SLIM__
                     nbjet_ = this_nbjet;
                     dRbNear_ = 99.;
                     dRbFar_  = -99.;
@@ -2433,6 +2462,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if (dr < dRbNear_) dRbNear_ = dr;
                         if (dr > dRbFar_)   dRbFar_  = dr;
                     }
+#endif
 
                     // btag info for corrected pfjet
                     nbpfcjet_ = this_nbpfjet;
@@ -2590,7 +2620,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     run_    = evt_run();
                     ls_     = evt_lumiBlock();
                     evt_    = evt_event();
-                    weight_ = isData ? 1. : evt_scale1fb();
+                    weight_ = isData ? 1.0 : evt_scale1fb();
 
                     if(!isData){
                         // Pileup - PUSummaryInfoMaker
@@ -2706,8 +2736,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     pfmt_ = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
 
                     // HT
+#ifndef __CMS2_SLIM__
                     ht_calo_           = (float) sumPt (iLep, JETS_TYPE_CALO_UNCORR  , JETS_CLEAN_SINGLE_MU );
                     ht_calo_L2L3_      = (float) sumPt (iLep, JETS_TYPE_CALO_CORR    , JETS_CLEAN_SINGLE_MU );
+#endif
                     ht_pf_             = (float) sumPt (iLep, JETS_TYPE_PF_UNCORR    , JETS_CLEAN_SINGLE_MU );
                     ht_pf_L2L3_        = (float) sumPt (iLep, JETS_TYPE_PF_CORR      , JETS_CLEAN_SINGLE_MU );
 
@@ -2837,6 +2869,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
                     // These are hardcoded to the value in Dima's table:
                     // http://dmytro.web.cern.ch/dmytro/trigger/triggerEvolution_all.html 
+#ifndef __CMS2_SLIM__
                     l1ps_mu5_vstar_            = L1_prescale("L1_SingleMu3"         );
                     l1ps_mu8_vstar_            = L1_prescale("L1_SingleMu3"         );
                     l1ps_mu12_vstar_           = L1_prescale("L1_SingleMu7"         );
@@ -2849,6 +2882,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     l1ps_isoMu30_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
                     l1ps_relIso1p0Mu17_vstar_  = L1_prescale("L1_SingleMu12"        );
                     l1ps_relIso1p0Mu5_vstar_   = L1_prescale("L1_SingleMu3"         );
+#endif
+
 
                     ///////////////////////  
                     // End 2012 Triggers //
@@ -2904,6 +2939,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
                     // Calo Jets
                     // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+#ifndef __CMS2_SLIM__
                     ptj1_       = -999.0;
                     ptj1_b2b_   = -999.0;
                     dphij1_b2b_ = -999.0;
@@ -2922,6 +2958,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             }
                         }
                     }
+#endif
   
                     // PF Jets
                     // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
@@ -3114,6 +3151,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     // B Tagging     //
                     ///////////////////
 
+#ifndef __CMS2_SLIM__
                     // The btag information
                     nbjet_ = this_nbjet;
                     dRbNear_ =  99.;
@@ -3124,6 +3162,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if (dr < dRbNear_) dRbNear_ = dr;
                         if (dr > dRbFar_)  dRbFar_  = dr;
                     }
+#endif
  
                     // The btag information for pfjets
                     nbpfcjet_ = this_nbpfjet;
