@@ -146,6 +146,27 @@ bool muonId(unsigned int index, SelectionType type){
         }
         break;
 
+        ///////////////
+        // TTV 2012  //
+        ///////////////
+        
+        // Analysis
+    case NominalTTZ_loose_v1:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.15);
+    case NominalTTZ_tight_v1:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.10);
+
+      // Fakes
+    case NominalTTZ_looseFO_v1:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.40);
+    case NominalTTZ_tightFO_v1:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.40);
+
+
         /////////////
         // Default //
         /////////////
@@ -536,6 +557,39 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         return goodMuonGlobalMuon || goodMuonTrackerMuon;
         break;
     }
+    case NominalTTZ_loose_v1:
+        if (!passes_muid_wp2012(index, mu2012_tightness::TIGHT)) return false;
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false;
+        if (trkidx < 0 || vtxidx < 0) return false;
+        if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.02) return false;
+        return true;
+        break;
+    case NominalTTZ_tight_v1:
+        if (!passes_muid_wp2012(index, mu2012_tightness::TIGHT)) return false;
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false;
+        if (trkidx < 0 || vtxidx < 0) return false;
+        if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.02) return false;
+        if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.10) return false;
+        if (cms2.mus_iso_ecalvetoDep().at(index) > 4) return false; // ECalE < 4 
+        if (cms2.mus_iso_hcalvetoDep().at(index) > 6) return false; // HCalE < 6
+        return true;
+        break;
+    case NominalTTZ_looseFO_v1:
+        if (!passes_muid_wp2012(index, mu2012_tightness::TIGHT)) return false;
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false;
+        if (trkidx < 0 || vtxidx < 0) return false;
+        if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.20) return false;
+        return true;
+        break;
+    case NominalTTZ_tightFO_v1:
+        if (!passes_muid_wp2012(index, mu2012_tightness::TIGHT)) return false;
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false;
+        if (trkidx < 0 || vtxidx < 0) return false;
+        if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.20) return false;
+        if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.10) return false;
+        return true;
+        break;        
+
     default:
         std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
         return false;

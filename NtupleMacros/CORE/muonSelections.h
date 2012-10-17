@@ -66,7 +66,19 @@ enum SelectionType {
       muonSelectionFO_mu_smurf_04,
       muonSelectionFO_mu_smurf_10,
       ZMet2012_v1,
-      ZMet2012_detiso_v1
+      ZMet2012_detiso_v1,
+
+    ///////////////
+    // TTV 2012  //
+    ///////////////
+      
+      // Analysis
+      NominalTTZ_loose_v1,
+      NominalTTZ_tight_v1,
+
+      // Fakes
+      NominalTTZ_looseFO_v1,
+      NominalTTZ_tightFO_v1
 }; 
 
 ////////////////////
