@@ -231,6 +231,41 @@ private:
     Bool_t fo_mu_ssV5_;         // muonSelectionFO_mu_ssV5
     Bool_t fo_mu_ssV5_noIso_;   // muonSleectionFO_mu_ssV5 with no isolation applied
 
+    // TTZ
+
+    // Electrons
+    Bool_t num_el_TTZcuttightv1_;
+    Bool_t num_el_TTZcuttightv1_noIso_;
+    Bool_t fo_el_TTZcuttightv1_;
+    Bool_t fo_el_TTZcuttightv1_noIso_;
+
+    Bool_t num_el_TTZcutloosev1_;
+    Bool_t num_el_TTZcutloosev1_noIso_;
+    Bool_t fo_el_TTZcutloosev1_;
+    Bool_t fo_el_TTZcutloosev1_noIso_;
+
+    Bool_t num_el_TTZMVAtightv1_;
+    Bool_t num_el_TTZMVAtightv1_noIso_;
+    Bool_t fo_el_TTZMVAtightv1_;
+    Bool_t fo_el_TTZMVAtightv1_noIso_;
+
+    Bool_t num_el_TTZMVAloosev1_;
+    Bool_t num_el_TTZMVAloosev1_noIso_;
+    Bool_t fo_el_TTZMVAloosev1_;
+    Bool_t fo_el_TTZMVAloosev1_noIso_;
+
+    // Muons
+    Bool_t num_mu_TTZtightv1_;
+    Bool_t num_mu_TTZtightv1_noIso_;
+    Bool_t fo_mu_TTZtightv1_;
+    Bool_t fo_mu_TTZtightv1_noIso_;
+
+    Bool_t num_mu_TTZloosev1_;
+    Bool_t num_mu_TTZloosev1_noIso_;
+    Bool_t fo_mu_TTZloosev1_;
+    Bool_t fo_mu_TTZloosev1_noIso_;
+
+
     //////////
     // 2011 //
     //////////

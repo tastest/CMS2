@@ -719,6 +719,42 @@ void myBabyMaker::InitBabyNtuple()
     fo_mu_ssV5_        = false;         
     fo_mu_ssV5_noIso_  = false;   
 
+    // TTZ
+
+    // Electrons
+    num_el_TTZcuttightv1_       = false;
+    num_el_TTZcuttightv1_noIso_ = false;
+    fo_el_TTZcuttightv1_        = false;
+    fo_el_TTZcuttightv1_noIso_  = false;
+
+    num_el_TTZcutloosev1_       = false;
+    num_el_TTZcutloosev1_noIso_ = false;
+    fo_el_TTZcutloosev1_        = false;
+    fo_el_TTZcutloosev1_noIso_  = false;
+
+    num_el_TTZMVAtightv1_       = false;
+    num_el_TTZMVAtightv1_noIso_ = false;
+    fo_el_TTZMVAtightv1_        = false;
+    fo_el_TTZMVAtightv1_noIso_  = false;
+
+    num_el_TTZMVAloosev1_       = false;
+    num_el_TTZMVAloosev1_noIso_ = false;
+    fo_el_TTZMVAloosev1_        = false;
+    fo_el_TTZMVAloosev1_noIso_  = false;
+
+    // Muons
+    num_mu_TTZtightv1_       = false;
+    num_mu_TTZtightv1_noIso_ = false;
+    fo_mu_TTZtightv1_        = false;
+    fo_mu_TTZtightv1_noIso_  = false;
+
+    num_mu_TTZloosev1_       = false;
+    num_mu_TTZloosev1_noIso_ = false;
+    fo_mu_TTZloosev1_        = false;
+    fo_mu_TTZloosev1_noIso_  = false;
+
+
+
     //////////
     // 2011 //
     //////////
@@ -1218,6 +1254,40 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("num_mu_ssV5_noIso" , &num_mu_ssV5_noIso_ );
     babyTree_->Branch("fo_mu_ssV5"        , &fo_mu_ssV5_        );
     babyTree_->Branch("fo_mu_ssV5_noIso"  , &fo_mu_ssV5_noIso_  );
+
+	// TTZ
+    // Electrons
+    babyTree_->Branch("num_el_TTZcuttightv1",       &num_el_TTZcuttightv1_);
+    babyTree_->Branch("num_el_TTZcuttightv1_noIso", &num_el_TTZcuttightv1_noIso_);
+    babyTree_->Branch("fo_el_TTZcuttightv1",        &fo_el_TTZcuttightv1_);
+    babyTree_->Branch("fo_el_TTZcuttightv1_noIso",  &fo_el_TTZcuttightv1_noIso_);
+
+    babyTree_->Branch("num_el_TTZcutloosev1",       &num_el_TTZcutloosev1_);
+    babyTree_->Branch("num_el_TTZcutloosev1_noIso", &num_el_TTZcutloosev1_noIso_);
+    babyTree_->Branch("fo_el_TTZcutloosev1",        &fo_el_TTZcutloosev1_);
+    babyTree_->Branch("fo_el_TTZcutloosev1_noIso",  &fo_el_TTZcutloosev1_noIso_);
+
+    babyTree_->Branch("num_el_TTZMVAtightv1",       &num_el_TTZMVAtightv1_);
+    babyTree_->Branch("num_el_TTZMVAtightv1_noIso", &num_el_TTZMVAtightv1_noIso_);
+    babyTree_->Branch("fo_el_TTZMVAtightv1",        &fo_el_TTZMVAtightv1_);
+    babyTree_->Branch("fo_el_TTZMVAtightv1_noIso",  &fo_el_TTZMVAtightv1_noIso_);
+
+    babyTree_->Branch("num_el_TTZMVAloosev1",       &num_el_TTZMVAloosev1_);
+    babyTree_->Branch("num_el_TTZMVAloosev1_noIso", &num_el_TTZMVAloosev1_noIso_);
+    babyTree_->Branch("fo_el_TTZMVAloosev1",        &fo_el_TTZMVAloosev1_);
+    babyTree_->Branch("fo_el_TTZMVAloosev1_noIso",  &fo_el_TTZMVAloosev1_noIso_);
+
+    // Muons
+    babyTree_->Branch("num_mu_TTZtightv1",       &num_mu_TTZtightv1_);
+    babyTree_->Branch("num_mu_TTZtightv1_noIso", &num_mu_TTZtightv1_noIso_);
+    babyTree_->Branch("fo_mu_TTZtightv1",        &fo_mu_TTZtightv1_);
+    babyTree_->Branch("fo_mu_TTZtightv1_noIso",  &fo_mu_TTZtightv1_noIso_);
+
+    babyTree_->Branch("num_mu_TTZloosev1",       &num_mu_TTZloosev1_);
+    babyTree_->Branch("num_mu_TTZloosev1_noIso", &num_mu_TTZloosev1_noIso_);
+    babyTree_->Branch("fo_mu_TTZloosev1",        &fo_mu_TTZloosev1_);
+    babyTree_->Branch("fo_mu_TTZloosev1_noIso",  &fo_mu_TTZloosev1_noIso_);
+
 
 
     //////////
@@ -1844,6 +1914,36 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     v2_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v2     );
                     v3_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v3     );
 
+					// TTZ
+					//eventually replace this with something from electronSelections
+					bool pass_loose_id = passElectronSelection_ZMet2012_v2_NoIso(iLep, true, true);
+					bool pass_loose_iso = electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.15;
+
+					bool pass_loose_fo_id = (electronId_WP2012(iLep, LOOSE) & PassWP2012CutsNoIsoNoIP) == PassWP2012CutsNoIsoNoIP &&
+					  fabs(cms2.els_etaSC()[iLep]) < 1.4442 && fabs(cms2.els_etaSC()[iLep]) > 1.566 &&
+					  fabs(cms2.els_p4()[iLep].eta()) < 2.4 &&
+					  !overlapMuon_ZMet2012_v1(iLep,10.0);
+					
+					num_el_TTZcuttightv1_       = false;
+					num_el_TTZcuttightv1_noIso_ = false;
+					fo_el_TTZcuttightv1_        = false;
+					fo_el_TTZcuttightv1_noIso_  = false;
+
+					num_el_TTZcutloosev1_       = pass_loose_id && pass_loose_iso;
+					num_el_TTZcutloosev1_noIso_ = pass_loose_id;
+					fo_el_TTZcutloosev1_        = pass_loose_fo_id && pass_loose_iso;
+					fo_el_TTZcutloosev1_noIso_  = pass_loose_fo_id;
+					
+					num_el_TTZMVAtightv1_       = false;
+					num_el_TTZMVAtightv1_noIso_ = false;
+					fo_el_TTZMVAtightv1_        = false;
+					fo_el_TTZMVAtightv1_noIso_  = false;
+
+					num_el_TTZMVAloosev1_       = false;
+					num_el_TTZMVAloosev1_noIso_ = false;
+					fo_el_TTZMVAloosev1_        = false;
+					fo_el_TTZMVAloosev1_noIso_  = false;
+
                     //////////
                     // 2011 //
                     //////////
@@ -1874,10 +1974,12 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     ////////////////////////////////////////////////////////////
                     if (applyFOfilter) {  
                         if (
-                            !v1_el_ssV7_    && !v2_el_ssV7_    && !v3_el_ssV7_    &&                    // SS 2012
-                            !v1_el_ssV6_    && !v2_el_ssV6_    && !v3_el_ssV6_    &&                    // SS 2011
-                            !fo_el_OSV2_    && !fo_el_OSV3_    &&                                       // OS 2011
-                            !v1_el_smurfV1_ && !v1_el_smurfV1_ && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
+                            !v1_el_ssV7_          && !v2_el_ssV7_          && !v3_el_ssV7_    &&                    // SS 2012
+							!fo_el_TTZMVAtightv1_ && !fo_el_TTZMVAloosev1_ &&                                       // TTZ MVA 2012
+							!fo_el_TTZcuttightv1_ && !fo_el_TTZcutloosev1_ &&                                       // TTZ cut 2012
+                            !v1_el_ssV6_          && !v2_el_ssV6_          && !v3_el_ssV6_    &&                    // SS 2011
+                            !fo_el_OSV2_          && !fo_el_OSV3_          &&                                       // OS 2011
+                            !v1_el_smurfV1_       && !v1_el_smurfV1_       && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
                             ) 
                             continue;
                     }
@@ -2761,6 +2863,17 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     fo_mu_ssV5_        = muonId(iLep, muonSelectionFO_ssV5);
                     fo_mu_ssV5_noIso_  = muonIdNotIsolated(iLep, muonSelectionFO_ssV5);
 
+					// TTZ
+					num_mu_TTZtightv1_       = muonId(iLep, NominalTTZ_tight_v1);
+					num_mu_TTZtightv1_noIso_ = muonIdNotIsolated(iLep, NominalTTZ_tight_v1);
+					fo_mu_TTZtightv1_        = muonId(iLep, NominalTTZ_tightFO_v1);
+					fo_mu_TTZtightv1_noIso_  = muonIdNotIsolated(iLep, NominalTTZ_tightFO_v1);
+
+					num_mu_TTZloosev1_       = muonId(iLep, NominalTTZ_loose_v1);
+					num_mu_TTZloosev1_noIso_ = muonIdNotIsolated(iLep, NominalTTZ_loose_v1);
+					fo_mu_TTZloosev1_        = muonId(iLep, NominalTTZ_looseFO_v1);
+					fo_mu_TTZloosev1_noIso_  = muonIdNotIsolated(iLep, NominalTTZ_looseFO_v1);
+
                     //////////
                     // 2011 //
                     //////////
@@ -2786,9 +2899,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     ////////////////////////////////////////////////////////////
                     if (applyFOfilter) {
                         if (
-                            !fo_mussV4_04_   && !fo_mu_ssV5_     &&                    // SS
-                            !fo_mu_OSGV2_    && !fo_mu_OSGV3_    &&                    // OS
-                            !fo_mu_smurf_04_ && !fo_mu_smurf_10_                       // WW
+                            !fo_mussV4_04_     && !fo_mu_ssV5_       &&                    // SS
+							!fo_mu_TTZtightv1_ && !fo_mu_TTZloosev1_ &&                 // TTZ 2012
+                            !fo_mu_OSGV2_      && !fo_mu_OSGV3_      &&                    // OS
+                            !fo_mu_smurf_04_   && !fo_mu_smurf_10_                       // WW
                             )
                             continue;
                     }
