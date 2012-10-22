@@ -562,6 +562,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false;
         if (trkidx < 0 || vtxidx < 0) return false;
         if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.02) return false;
+		if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.10) return false;
         return true;
         break;
     case NominalTTZ_tight_v1:
@@ -579,6 +580,7 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 50) return false;
         if (trkidx < 0 || vtxidx < 0) return false;
         if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.20) return false;
+		if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.10) return false;
         return true;
         break;
     case NominalTTZ_tightFO_v1:

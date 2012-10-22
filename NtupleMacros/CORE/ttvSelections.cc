@@ -39,25 +39,29 @@ bool ttv::passesTrigger (int hyp_type)
     //----------------------------------------
   
     if (!cms2.evt_isRealData())
+	{
         return true; 
-  
+	}
     //---------------------------------
     // triggers for dilepton datasets
     //---------------------------------
     //mm
-    if (hyp_type == 0) {
-        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
+    if (hyp_type == 0) 
+	{
+	  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   { return true; }
     }
 
     //em
-    else if ((hyp_type == 1 || hyp_type == 2)) {
-        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )   return true;
-        if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )   return true;
+    else if ((hyp_type == 1 || hyp_type == 2)) 
+	{
+	  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
+	  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
     }
     
     //ee
-    else if (hyp_type == 3) {
-        if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+    else if (hyp_type == 3) 
+	{
+	  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) { return true; }
     }
     
     return false;
@@ -69,29 +73,30 @@ bool ttv::isGoodLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-		  if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )    return false;
-		  if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                          return false;
-		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 10.0) )                                                         return false; // is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )     { return false; }
+		  //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
+		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
 		  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
-		  if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIso) == wp2012::PassWP2012CutsNoIso) return true; 
-		  return false;
+		  if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIso) != wp2012::PassWP2012CutsNoIso) { return false; } 
+		  return true;
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-		  return pass_electronSelection(idx, electronSelection_ssV7_noIso);
+		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  return pass_electronSelection(idx, electronSelection_TTVTightv1_noIso);
         }
 		else if (lep_type == ttv::LeptonType::LOOSEMVA)
-		  {
+		{
 			std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, enum LOOSEMVA not supported for electrons yet."<<std::endl;
-		  }
+		}
 		else if (lep_type == ttv::LeptonType::TIGHTMVA)
-		  {
+		{
 			std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, enum TIGHTMVA not supported for electrons yet."<<std::endl;
-		  }
+		}
 		else
-		  {
+		{
 			std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, unsupported enum "<<lep_type<<" for electrons."<<std::endl;
-		  }
+		}
     }
     else if (abs(id) == 13)
     {
@@ -104,9 +109,9 @@ bool ttv::isGoodLepton (int id, int idx, LeptonType::value_type lep_type)
 		  return (muonIdNotIsolated(idx, NominalTTZ_tight_v1));
         }
 		else
-		  {
-			std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, unsupported enum "<<lep_type<<" for muons."<<endl;
-		  }
+		{
+		  std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, unsupported enum "<<lep_type<<" for muons."<<endl;
+		}
     }
 
     return false;
@@ -152,11 +157,17 @@ bool ttv::isDenominatorLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-		  // still need to do this one
+		  if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )             { return false; }
+		  //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
+		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
+		  if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIsoNoIP) != wp2012::PassWP2012CutsNoIsoNoIP) { return false; }  // if we add the d0 back in, change from NoIsoNoIP to NoIso
+		  return true;
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-		  return pass_electronSelection(idx, electronSelectionFOV7_v1);
+		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  return pass_electronSelection(idx, electronSelection_TTVTightFOv1);
         }
     }
     else if (abs(id) == 13)

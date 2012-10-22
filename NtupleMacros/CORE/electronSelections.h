@@ -88,6 +88,8 @@ enum EleSelectionType {
   ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdT_TrkIdVL
   ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
   ELEID_VBTF_95_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
+  // ELEID_WP2012_LOOSE_NOISO,          // WP2012 LOOSE ELECTRON ID, NO ISO
+  // ELEID_WP2012_LOOSE_NOISO_NOIP,     // WP2012 LOOSE ELECTRON ID, NO ISO, NO IP
   ELEID_WP2012_MEDIUM_NOISO,          // WP2012 MEDIUM ELECTRON ID, NO ISO
   ELEID_WP2012_MEDIUM_NOISO_NOIP,     // WP2012 MEDIUM ELECTRON ID, NO ISO, NO IP
 
@@ -947,12 +949,28 @@ static const cuts_t electronSelectionFOV7_v3 =       // V3 - relaxed isolation (
 
 
 
+// /////////////////////////////////////
+// // 2012 TTV Selections             //
+// /////////////////////////////////////
+
+// note, may need to change dz and d0 cuts
+static const cuts_t electronSelection_TTVTightv1_noIso =
+					   //					   (1ll<<ELEETA_240)                      |
+					   (1ll<<ELEID_WP2012_MEDIUM_NOISO)       |
+					   (1ll<<ELE_NOT_TRANSITION);
+
+//fakeable object definition
+static const cuts_t electronSelection_TTVTightFOv1 =
+							 //					   (1ll<<ELEETA_240)                     |
+					   (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP) |
+					   (1ll<<ELENOTCONV_HITPATTERN_0MHITS)   |
+					   (1ll<<ELE_NOT_TRANSITION)             |
+					   (1ll<<ELECHARGE_NOTFLIP3AGREE); 
 
 
-
-
-
-
+// /////////////////////////////////////
+// // End 2012 TTV Selections         //
+// /////////////////////////////////////
 
 
 

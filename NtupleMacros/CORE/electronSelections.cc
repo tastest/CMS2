@@ -110,6 +110,10 @@ cuts_t electronSelection( const unsigned int index, bool applyAlignmentCorrectio
     if (electronId_smurf_v2ss(index)) cuts_passed |= (1ll<<ELEID_SMURFV2SS_EXTRA);
 
     // 2012 ID
+    // electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, LOOSE);
+    // if ((answer_loose_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) cuts_passed |= (1ll<<ELEID_WP2012_LOOSE_NOISO);
+    // if ((answer_loose_2012 & PassWP2012CutsNoIsoNoIP) == PassWP2012CutsNoIsoNoIP) cuts_passed |= (1ll<<ELEID_WP2012_LOOSE_NOISO_NOIP);
+
     electronIdComponent_t answer_med_2012 = electronId_WP2012(index, MEDIUM);
     if ((answer_med_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO);
     if ((answer_med_2012 & PassWP2012CutsNoIsoNoIP) == PassWP2012CutsNoIsoNoIP) cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP);
