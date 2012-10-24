@@ -39,30 +39,71 @@ bool ttv::passesTrigger (int hyp_type)
     //----------------------------------------
   
     if (!cms2.evt_isRealData())
-	{
+    {
         return true; 
-	}
+    }
     //---------------------------------
     // triggers for dilepton datasets
     //---------------------------------
     //mm
     if (hyp_type == 0) 
-	{
-	  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   { return true; }
+    {
+        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   { return true; }
     }
 
     //em
     else if ((hyp_type == 1 || hyp_type == 2)) 
-	{
-	  if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
-	  if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
+    {
+        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
+        if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
     }
     
     //ee
     else if (hyp_type == 3) 
-	{
-	  if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) { return true; }
+    {
+        if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) { return true; }
     }
+    
+    return false;
+}
+
+bool ttv::passesTrigger (TrileptonInfo& trilep_info)
+{
+    //----------------------------------------
+    // no trigger requirements applied to MC
+    //----------------------------------------
+  
+    if (!cms2.evt_isRealData())
+    {
+        return true; 
+    }
+
+    //---------------------------------
+    // triggers for dilepton datasets
+    //---------------------------------
+    int lep1_id = trilep_info.z.lep1.id;
+    int lep2_id = trilep_info.z.lep2.id;
+    int lep3_id = trilep_info.w.id;
+
+    //mm
+    if (abs(lep1_id*lep2_id*lep3_id) == 13*13*13) 
+    {
+        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   { return true; }
+    }
+    
+    //ee
+    else if (abs(lep1_id*lep2_id*lep3_id) == 11*11*11)
+    {
+        if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) { return true; }
+    }
+
+    //em
+    else if (abs(lep1_id*lep2_id*lep3_id) == 11*11*13 || abs(lep1_id*lep2_id*lep3_id) == 11*13*13) 
+    {
+        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
+        if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )  { return true; }
+    }
+    
     
     return false;
 }
@@ -73,45 +114,45 @@ bool ttv::isGoodLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-		  if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )     { return false; }
-		  //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
-		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
-		  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
-		  if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIso) != wp2012::PassWP2012CutsNoIso) { return false; } 
-		  return true;
+            if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )     { return false; }
+            //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
+            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+            electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
+            if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIso) != wp2012::PassWP2012CutsNoIso) { return false; } 
+            return true;
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
-		  return pass_electronSelection(idx, electronSelection_TTVTightv1_noIso);
+            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+            return pass_electronSelection(idx, electronSelection_TTVTightv1_noIso);
         }
-		else if (lep_type == ttv::LeptonType::LOOSEMVA)
-		{
-			std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, enum LOOSEMVA not supported for electrons yet."<<std::endl;
-		}
-		else if (lep_type == ttv::LeptonType::TIGHTMVA)
-		{
-			std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, enum TIGHTMVA not supported for electrons yet."<<std::endl;
-		}
-		else
-		{
-			std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, unsupported enum "<<lep_type<<" for electrons."<<std::endl;
-		}
+        else if (lep_type == ttv::LeptonType::LOOSEMVA)
+        {
+            std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, enum LOOSEMVA not supported for electrons yet."<<std::endl;
+        }
+        else if (lep_type == ttv::LeptonType::TIGHTMVA)
+        {
+            std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, enum TIGHTMVA not supported for electrons yet."<<std::endl;
+        }
+        else
+        {
+            std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, unsupported enum "<<lep_type<<" for electrons."<<std::endl;
+        }
     }
     else if (abs(id) == 13)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-		  return (muonIdNotIsolated(idx, NominalTTZ_loose_v1));
+            return (muonIdNotIsolated(idx, NominalTTZ_loose_v1));
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-		  return (muonIdNotIsolated(idx, NominalTTZ_tight_v1));
+            return (muonIdNotIsolated(idx, NominalTTZ_tight_v1));
         }
-		else
-		{
-		  std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, unsupported enum "<<lep_type<<" for muons."<<endl;
-		}
+        else
+        {
+            std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, unsupported enum "<<lep_type<<" for muons."<<endl;
+        }
     }
 
     return false;
@@ -124,11 +165,11 @@ bool ttv::isIsolatedLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-		  return electronIsoValuePF2012_FastJetEffArea_v2( idx ) < 0.15;
+            return electronIsoValuePF2012_FastJetEffArea_v2( idx ) < 0.15;
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-		  return samesign::electronIsolationPF2012(idx) < 0.09;
+            return samesign::electronIsolationPF2012(idx) < 0.09;
         }
     }
     else if (abs(id) == 13)
@@ -157,17 +198,17 @@ bool ttv::isDenominatorLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-		  if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )             { return false; }
-		  //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
-		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
-		  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
-		  if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIsoNoIP) != wp2012::PassWP2012CutsNoIsoNoIP) { return false; }  // if we add the d0 back in, change from NoIsoNoIP to NoIso
-		  return true;
+            if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )             { return false; }
+            //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
+            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+            electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
+            if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIsoNoIP) != wp2012::PassWP2012CutsNoIsoNoIP) { return false; }  // if we add the d0 back in, change from NoIsoNoIP to NoIso
+            return true;
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-		  if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
-		  return pass_electronSelection(idx, electronSelection_TTVTightFOv1);
+            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+            return pass_electronSelection(idx, electronSelection_TTVTightFOv1);
         }
     }
     else if (abs(id) == 13)
@@ -185,15 +226,41 @@ bool ttv::isDenominatorLepton (int id, int idx, LeptonType::value_type lep_type)
     return false;
 }
 
-bool overlapMuon(int idx, LeptonType::value_type lep_type, float pt, float eta, float deltaR){
-  for( unsigned int muidx = 0; muidx < cms2.mus_p4().size(); muidx++){
+bool ttv::overlapMuon(int idx, LeptonType::value_type lep_type, float pt, float eta, float deltaR)
+{
+    for( unsigned int muidx = 0; muidx < cms2.mus_p4().size(); muidx++)
+    {
 	if (cms2.mus_p4()[muidx].pt() > pt &&
-		abs(cms2.mus_p4()[muidx].eta()) < eta &&
-		ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[muidx], cms2.els_p4()[idx]) < deltaR){ 
-	  return true; 
+            abs(cms2.mus_p4()[muidx].eta()) < eta &&
+            ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[muidx], cms2.els_p4()[idx]) < deltaR)
+        { 
+            return true; 
 	}
-  }
-  return false;
+    }
+    return false;
+}
+
+std::vector<LorentzVector> ttv::getGoodLeptons(LeptonType::value_type lep_type, float pt, float mu_eta, float ele_eta)
+{
+    std::vector<LorentzVector> good_leps;
+
+    for (unsigned int midx = 0; midx < cms2.mus_p4().size(); midx++)
+    {
+        if (cms2.mus_p4().at(midx).pt() < pt) continue;
+        if (fabs(cms2.mus_p4().at(midx).eta()) > mu_eta) continue;
+        if (!isGoodLepton(13, midx, lep_type)) continue;
+        good_leps.push_back(cms2.mus_p4().at(midx));
+    }
+
+    for (unsigned int eidx = 0; eidx < cms2.els_p4().size(); eidx++)
+    {
+        if (cms2.els_p4().at(eidx).pt() < pt) continue;
+        if (fabs(cms2.els_p4().at(eidx).eta()) > ele_eta) continue;
+        if (!isGoodLepton(11, eidx, lep_type)) continue;
+        good_leps.push_back(cms2.els_p4().at(eidx));
+    }
+
+    return good_leps;
 }
 
 std::vector<LorentzVector> ttv::getJets(std::vector<LorentzVector>& leps, enum JetType type, float deltaR, float min_pt, float max_eta, float rescale, int systFlag)
@@ -425,7 +492,7 @@ std::vector<LorentzVector> ttv::getBtaggedJets(std::vector<LorentzVector>& leps,
 
 std::vector<bool> ttv::getBtaggedJetFlags(std::vector<LorentzVector>& leps, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float rescale, int systFlag)
 {
-  std::vector<bool> tmp_jet_flags = getBtaggedJetFlags(999999, type, JETS_CLEAN_NONE, btag_type, (double)deltaR, (double)min_pt, (double)max_eta, (double)rescale, systFlag);
+    std::vector<bool> tmp_jet_flags = getBtaggedJetFlags(999999, type, JETS_CLEAN_NONE, btag_type, (double)deltaR, (double)min_pt, (double)max_eta, (double)rescale, systFlag);
     std::vector<LorentzVector> tmp_jets = getBtaggedJets(999999, false, type, JETS_CLEAN_NONE, btag_type, deltaR, min_pt, max_eta, (double) rescale, systFlag);
 
     // ok, now perform the rest of the lepton overlap removal
@@ -458,7 +525,7 @@ std::vector<bool> ttv::getBtaggedJetFlags(std::vector<LorentzVector>& leps, enum
 
 std::vector<bool> ttv::getBtaggedJetFlags(std::vector<LorentzVector>& leps, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float rescale, int systFlag)
 {
-  std::vector<bool> tmp_jet_flags = ttv::getBtaggedJetFlags(leps, type, btag_type, deltaR, 0., max_eta, 1., 0);
+    std::vector<bool> tmp_jet_flags = ttv::getBtaggedJetFlags(leps, type, btag_type, deltaR, 0., max_eta, 1., 0);
     std::vector<LorentzVector> *tmp_jets = NULL;
     if (type <= JETS_TYPE_PF_UNCORR)
         tmp_jets = &cms2.pfjets_p4();
@@ -509,3 +576,60 @@ int ttv::nBtaggedJets(std::vector<LorentzVector>& leps, FactorizedJetCorrector* 
     return tmp_jets.size();
 }
 
+LorentzVector ttv::LeptonInfo::p4()
+{
+    return (abs(id) == 11) ? cms2.els_p4().at(idx) : cms2.mus_p4().at(idx);
+}
+
+ttv::DileptonInfo::DileptonInfo (int id1_, int idx1_, int id2_, int idx2_)
+{
+    lep1.id  = id1_;
+    lep1.idx = idx1_;
+    lep2.id  = id2_;
+    lep2.idx = idx2_;
+    hyp_index = -1;
+}
+
+ttv::DileptonInfo::DileptonInfo (int hyp_index_)
+{
+    hyp_index = hyp_index_;
+    lep1.id   = cms2.hyp_lt_id().at(hyp_index);
+    lep1.idx  = cms2.hyp_lt_index().at(hyp_index);
+    lep2.id   = cms2.hyp_ll_id().at(hyp_index);
+    lep2.idx  = cms2.hyp_ll_index().at(hyp_index);
+}
+
+float ttv::DileptonInfo::sumpt ()
+{
+    return lep1.p4().pt() + lep2.p4().pt();
+}
+
+LorentzVector ttv::DileptonInfo::p4 ()
+{
+    return (lep1.p4() + lep2.p4());
+}
+
+float ttv::DileptonInfo::mass ()
+{
+    return p4().mass();
+}
+
+ttv::TrileptonInfo::TrileptonInfo (int id1_, int idx1_, int id2_, int idx2_, int id3_, int idx3_)
+{
+    z.lep1.id  = id1_;
+    z.lep1.idx = idx1_;
+    z.lep2.id  = id2_;
+    z.lep2.idx = idx2_;
+    w.id       = id3_;
+    w.idx      = idx3_;
+}
+
+ttv::TrileptonInfo::TrileptonInfo (int hyp_index_, int id3_, int idx3_) :
+    z(hyp_index_),
+    w(id3_, idx3_)
+{}
+
+float ttv::TrileptonInfo::sumpt ()
+{
+    return z.sumpt() + w.p4().pt();
+}
