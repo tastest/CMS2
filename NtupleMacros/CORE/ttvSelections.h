@@ -63,6 +63,8 @@ namespace ttv
     bool overlapMuon         (int idx, LeptonType::value_type lep_type, float pt = 20., float eta = 2.4, float deltaR = 0.1);
 
     std::vector<LorentzVector> getGoodLeptons(LeptonType::value_type lep_type, float pt = 20., float mu_eta = 2.4, float ele_eta = 2.5);
+    float getTrigMVAThreshold(int idx, ttv::LeptonType::value_type lep_type);
+    float getNonTrigMVAThreshold(int idx, ttv::LeptonType::value_type lep_type);
 
     std::vector<LorentzVector> getJets(std::vector<LorentzVector>& leps, enum JetType type, float deltaR = 0.5, float min_pt = 15., float max_eta = 2.4, float rescale = 1.0, int systFlag = 0);
     std::vector<LorentzVector> getJets(std::vector<LorentzVector>& leps, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.5, float min_pt = 15., float max_eta = 2.4, float rescale = 1.0, int systFlag = 0);

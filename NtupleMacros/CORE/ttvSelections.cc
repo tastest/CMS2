@@ -1,3 +1,4 @@
+
 #include <assert.h>
 #include <iostream>
 #include <algorithm>
@@ -114,16 +115,16 @@ bool ttv::isGoodLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-            if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )     { return false; }
-            //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
-            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
-            electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
-            if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIso) != wp2012::PassWP2012CutsNoIso) { return false; } 
-            return true;
+		  if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )     { return false; }
+		  if( fabs(cms2.els_p4()[idx].eta()) > 2.5 )                                            { return false; }
+		  if( ttv::overlapMuon(idx, ttv::LeptonType::LOOSE, (float)20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
+		  if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIso) != wp2012::PassWP2012CutsNoIso) { return false; } 
+		  return true;
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  if( ttv::overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                  { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
             return pass_electronSelection(idx, electronSelection_TTVTightv1_noIso);
         }
         else if (lep_type == ttv::LeptonType::LOOSEMVA)
@@ -165,11 +166,11 @@ bool ttv::isIsolatedLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-            return electronIsoValuePF2012_FastJetEffArea_v2( idx ) < 0.15;
+		  return (electronIsoValuePF2012_FastJetEffArea_v2( idx ) < 0.15);
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-            return samesign::electronIsolationPF2012(idx) < 0.09;
+		  return (samesign::electronIsolationPF2012(idx) < 0.09); // change this?
         }
     }
     else if (abs(id) == 13)
@@ -198,17 +199,17 @@ bool ttv::isDenominatorLepton (int id, int idx, LeptonType::value_type lep_type)
     {
         if (lep_type == ttv::LeptonType::LOOSE)
         {
-            if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )             { return false; }
-            //if( fabs(cms2.els_p4()[idx].eta()) > 2.4 )                                            { return false; }
-            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
-            electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
-            if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIsoNoIP) != wp2012::PassWP2012CutsNoIsoNoIP) { return false; }  // if we add the d0 back in, change from NoIsoNoIP to NoIso
-            return true;
+		  if( fabs(cms2.els_etaSC()[idx]) > 1.4442 && fabs(cms2.els_etaSC()[idx]) < 1.566 )             { return false; }
+		  if( fabs(cms2.els_p4()[idx].eta()) > 2.5 )                                                    { return false; }
+		  if( ttv::overlapMuon(idx, ttv::LeptonType::LOOSE, (float)20.0) )                              { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
+		  if ((answer_loose_2012 & wp2012::PassWP2012CutsNoIsoNoIP) != wp2012::PassWP2012CutsNoIsoNoIP) { return false; }  // if we add the d0 back in, change from NoIsoNoIP to NoIso
+		  return true;
         }
         else if (lep_type == ttv::LeptonType::TIGHT)
         {
-            if( overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                          { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
-            return pass_electronSelection(idx, electronSelection_TTVTightFOv1);
+		  if( ttv::overlapMuon(idx, ttv::LeptonType::LOOSE, 20.0) )                                     { return false; }// is 10 GeV, eta 2.4, and deltaR 0.4 good?
+		  return (pass_electronSelection(idx, electronSelection_TTVTightFOv1));
         }
     }
     else if (abs(id) == 13)
@@ -230,12 +231,13 @@ bool ttv::overlapMuon(int idx, LeptonType::value_type lep_type, float pt, float 
 {
     for( unsigned int muidx = 0; muidx < cms2.mus_p4().size(); muidx++)
     {
-	if (cms2.mus_p4()[muidx].pt() > pt &&
-            abs(cms2.mus_p4()[muidx].eta()) < eta &&
-            ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[muidx], cms2.els_p4()[idx]) < deltaR)
-        { 
-            return true; 
-	}
+	  if (cms2.mus_p4()[muidx].pt() > pt &&
+		  abs(cms2.mus_p4()[muidx].eta()) < eta &&
+		  ttv::isNumeratorLepton(13, muidx, lep_type) &&
+		  ROOT::Math::VectorUtil::DeltaR(cms2.mus_p4()[muidx], cms2.els_p4()[idx]) < deltaR)
+		{ 
+		  return true; 
+		}
     }
     return false;
 }
@@ -262,6 +264,95 @@ std::vector<LorentzVector> ttv::getGoodLeptons(LeptonType::value_type lep_type, 
 
     return good_leps;
 }
+
+float ttv::getTrigMVAThreshold(int idx, LeptonType::value_type lep_type)
+{
+  float looselowptValues[3] = { -0.756, -0.396, -0.276 };
+  float looseValues[3]      = { 0.949,  0.921,  0.956  };
+  float tightlowptValues[3] = { -0.524, 0.204,  0.292  };
+  float tightValues[3]      = { 0.956,  0.949,  0.968  };
+
+  if( lep_type == LeptonType::TIGHTMVA )
+	{
+	  if( cms2.els_p4()[idx].pt() > 10. && cms2.els_p4()[idx].pt() <= 20. )
+		{
+		  if( abs(cms2.els_p4()[idx].eta()) <= 0.8 )
+			{
+			  return tightlowptValues[0];
+			}
+		  else if( abs(cms2.els_p4()[idx].eta()) > 0.8 && abs(cms2.els_p4()[idx].eta()) <= 1.479 )
+			{
+			  return tightlowptValues[1];
+			}
+		  	else if( abs(cms2.els_p4()[idx].eta()) > 1.479 )
+			{
+			  return tightlowptValues[2];
+			}
+		} 
+	  else if( cms2.els_p4()[idx].pt() > 20. )
+		{
+		  if( abs(cms2.els_p4()[idx].eta()) <= 0.8 )
+			{
+			  return tightValues[0];
+			}
+		  else if( abs(cms2.els_p4()[idx].eta()) > 0.8 && abs(cms2.els_p4()[idx].eta()) <= 1.479 )
+			{
+			  return tightValues[1];
+			}
+		  	else if( abs(cms2.els_p4()[idx].eta()) > 1.479 )
+			{
+			  return tightValues[2];
+			}
+		}  
+	}
+  else if( lep_type == LeptonType::LOOSEMVA )
+	{
+	  if( cms2.els_p4()[idx].pt() > 10. && cms2.els_p4()[idx].pt() <= 20. )
+		{
+		  if( abs(cms2.els_p4()[idx].eta()) <= 0.8 )
+			{
+			  return looselowptValues[0];
+			}
+		  else if( abs(cms2.els_p4()[idx].eta()) > 0.8 && abs(cms2.els_p4()[idx].eta()) <= 1.479 )
+			{
+			  return looselowptValues[1];
+			}
+		  	else if( abs(cms2.els_p4()[idx].eta()) > 1.479 )
+			{
+			  return looselowptValues[2];
+			}
+		} 
+	  else if( cms2.els_p4()[idx].pt() > 20. )
+		{
+		  if( abs(cms2.els_p4()[idx].eta()) <= 0.8 )
+			{
+			  return looseValues[0];
+			}
+		  else if( abs(cms2.els_p4()[idx].eta()) > 0.8 && abs(cms2.els_p4()[idx].eta()) <= 1.479 )
+			{
+			  return looseValues[1];
+			}
+		  	else if( abs(cms2.els_p4()[idx].eta()) > 1.479 )
+			{
+			  return looseValues[2];
+			}
+		} 
+	}
+  else
+	{
+	  std::cout<<"Warning: In ttvSelections::getTrigMVAThreshold, unsupported enum "<<lep_type<<" was used as argument."<<endl;
+	}
+  return -1.; // or should this be a garbage value?
+}
+float ttv::getNonTrigMVAThreshold(int idx, LeptonType::value_type lep_type)
+{
+  // this one is not implemented yet and likely won't be used
+  return -1.; // or should this be a garbage value?
+}
+
+
+
+
 
 std::vector<LorentzVector> ttv::getJets(std::vector<LorentzVector>& leps, enum JetType type, float deltaR, float min_pt, float max_eta, float rescale, int systFlag)
 {
