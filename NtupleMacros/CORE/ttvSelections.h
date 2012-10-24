@@ -13,8 +13,10 @@ namespace ttv
         {
             LOOSE, // eg. lepton from Z
             TIGHT, // eg. lepton from W
-            LOOSEMVA,
-            TIGHTMVA,
+            LOOSEDILEPMVA,
+            TIGHTDILEPMVA,
+            LOOSETRILEPMVA,
+            TIGHTTRILEPMVA,
             static_size
         };
     };
