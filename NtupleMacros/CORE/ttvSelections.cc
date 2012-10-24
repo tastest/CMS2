@@ -26,7 +26,7 @@
 
 using namespace ttv;
 
-struct jet_pt_gt {
+struct jet_pt_gt_ttv {
     bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
     {
         return v1.pt() > v2.pt();
@@ -291,7 +291,7 @@ float ttv::getTrigMVAThreshold(int idx, LeptonType::value_type lep_type)
   float tightlowptValues[3] = { -0.524, 0.204,  0.292  };
   float tightValues[3]      = { 0.956,  0.949,  0.968  };
 
-  if( lep_type == LeptonType::TIGHTMVA )
+  if( lep_type == LeptonType::TIGHTDILEPMVA || lep_type == LeptonType::TIGHTTRILEPMVA )
 	{
 	  if( cms2.els_p4()[idx].pt() > 10. && cms2.els_p4()[idx].pt() <= 20. )
 		{
@@ -324,7 +324,7 @@ float ttv::getTrigMVAThreshold(int idx, LeptonType::value_type lep_type)
 			}
 		}  
 	}
-  else if( lep_type == LeptonType::LOOSEMVA )
+  else if( lep_type == LeptonType::LOOSEDILEPMVA || lep_type == LeptonType::LOOSETRILEPMVA )
 	{
 	  if( cms2.els_p4()[idx].pt() > 10. && cms2.els_p4()[idx].pt() <= 20. )
 		{
@@ -401,7 +401,7 @@ std::vector<LorentzVector> ttv::getJets(std::vector<LorentzVector>& leps, enum J
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt_ttv());
     return final_jets;    
 }
 
@@ -430,7 +430,7 @@ std::vector<LorentzVector> ttv::getJets(std::vector<LorentzVector>& leps, Factor
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt_ttv());
     return final_jets;
 }
 
@@ -567,7 +567,7 @@ std::vector<LorentzVector> ttv::getBtaggedJets(std::vector<LorentzVector>& leps,
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt_ttv());
     return final_jets;    
 }
 
@@ -596,7 +596,7 @@ std::vector<LorentzVector> ttv::getBtaggedJets(std::vector<LorentzVector>& leps,
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt_ttv());
     return final_jets;
 }
 
