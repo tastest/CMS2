@@ -999,7 +999,7 @@ bool passes_muid_wp2012 (const unsigned int index, const mu2012_tightness::value
         if (cms2.mus_numberOfMatchedStations().at(index) < 2) return false;
 
         int ctfidx = cms2.mus_trkidx().at(index);
-        if (ctfidx < 0) return false;
+        if (ctfidx < 0 || vtxidx < 0) return false;
         std::pair<double, double> cord0 = trks_d0_pv(ctfidx, vtxidx);
         std::pair<double, double> cordz = trks_dz_pv(ctfidx, vtxidx);
         if (fabs(cord0.first) > 0.2) return false;
