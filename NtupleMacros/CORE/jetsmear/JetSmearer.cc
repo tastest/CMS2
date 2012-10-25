@@ -349,3 +349,13 @@ JetSmearer::~JetSmearer ()
     delete ptResol_;
     delete phiResol_;
 }
+
+//-----------------------------------------------------
+// get (relative) resolution of a jet
+// NOTE: this gets the resolution of a MC jet only
+//-----------------------------------------------------
+double JetSmearer::getJetResolution(LorentzVector p4)
+{
+    double rjet = getRjet(p4);
+    return rjet/p4.energy();
+}

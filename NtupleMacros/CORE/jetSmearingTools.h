@@ -12,6 +12,8 @@ JetSmearer* makeJetSmearer(const char* ptFileName="$CMSSW_BASE/src/CondFormats/J
                            const char* resFileName="$CMSSW_BASE/src/RecoMET/METProducers/python/METSigParams_cfi.py");
 JetSmearer* makeJetSmearer(std::vector<std::string> &vector_of_file_names);
 LorentzVector smearJet(LorentzVector p4, JetSmearer* jetSmearer);
+double getJetResolution(LorentzVector p4, JetSmearer* jetSmearer);
+std::vector<double> getJetResolutions(std::vector<LorentzVector>& vp4s, JetSmearer* jetSmearer);
 std::vector<LorentzVector> smearJets(std::vector<LorentzVector>& vp4s, JetSmearer* jetSmearer);
 
 //-----------------------------------------------------

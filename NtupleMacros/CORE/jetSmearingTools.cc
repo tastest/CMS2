@@ -85,3 +85,24 @@ std::pair<double, double> smearMETforJER(std::pair<double, double> in_met, JetSm
 
     return (std::make_pair(sqrt(met_x * met_x + met_y * met_y), atan2(met_y, met_x)));
 }
+
+
+//-----------------------------------------------------
+// get (relative) resolution of a jet
+// NOTE: this gets the resolution of a MC jet only
+//-----------------------------------------------------
+double getJetResolution(LorentzVector p4, JetSmearer* jetSmearer)
+{
+    return jetSmearer->getJetResolution(p4);
+}
+
+std::vector<double> getJetResolutions(std::vector<LorentzVector>& vp4s, JetSmearer* jetSmearer)
+{
+    std::vector<double> jet_rel_res;
+    for (unsigned int idx = 0; idx < vp4s.size(); idx++)
+    {
+        jet_rel_res.push_back(getJetResolution(vp4s.at(idx), jetSmearer));
+    }
+
+    return jet_rel_res;
+}

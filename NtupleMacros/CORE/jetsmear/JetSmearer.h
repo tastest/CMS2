@@ -26,6 +26,7 @@ public:
     ~JetSmearer ();
     void setResFileNames (const std::string ptFileName, const std::string phiFileName, const std::string resFileName);
     LorentzVector smearJet (LorentzVector p4);
+    double getJetResolution(LorentzVector p4);
     void setDeltaR (double dr);
     double getJetPtThreshold ();
     void setDelimiter (std::string);
