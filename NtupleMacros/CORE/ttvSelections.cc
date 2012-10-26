@@ -136,10 +136,20 @@ bool ttv::isGoodLepton (int id, int idx, LeptonType::value_type lep_type)
 		  // h/e : < 0.12 (0.10) in EB (EE)
 		  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(idx, LOOSE);
 		  electronIdComponent_t fiducialMask = wp2012::DETAIN | wp2012::DPHIIN | wp2012::SIGMAIETAIETA | wp2012::HOE;
-		  if( (answer_loose_2012 & fiducialMask) != fiducialMask ){ return false; }
+		  if( (answer_loose_2012 & fiducialMask) != fiducialMask )                         { return false; }
 		  // Iso_track = dr03TkSumPt/pt: < 0.2
 		  // Iso_ecal = { max(dr03EcalRecHitSumEt - 1, 0)/pt in EB; dr03EcalRecHitSumEt/pt in EE}: < 0.2
 		  // Iso_hcal = dr03HcalTowerSumEt/pt: < 0.2 
+		  if (abs(cms2.els_etaSC().at(idx)) < 1.479) {
+			if( cms2.els_tkIso().at(idx)/cms2.els_p4().at(idx).pt() > 0.2 )                     { return false; }
+			if( max((cms2.els_ecalIso().at(idx) - 1.0)/cms2.els_p4().at(idx).pt() , 0. ) > 0.2 ){ return false; }
+			if( cms2.els_hcalIso().at(idx)/cms2.els_p4().at(idx).pt() > 0.2 )                   { return false; } 
+		  }else{
+			if( cms2.els_tkIso().at(idx)/cms2.els_p4().at(idx).pt() > 0.2 )                     { return false; }			
+			if( cms2.els_ecalIso().at(idx)/cms2.els_p4().at(idx).pt() > 0.2 )                   { return false; } 		
+			if( cms2.els_hcalIso().at(idx)/cms2.els_p4().at(idx).pt() > 0.2 )                   { return false; } 
+		  }
+		  return true;
             std::cout<<"Warning: in ttvSelections bool ttv::isGoodLepton, enum LOOSEDILEPMVA or TIGHTDILEPMVA not supported for electrons yet."<<std::endl;
         }
         else if (lep_type == ttv::LeptonType::LOOSETRILEPMVA || lep_type == ttv::LeptonType::TIGHTTRILEPMVA)
