@@ -1,3 +1,4 @@
+#define __CMS2_SLIM__ // this is now assumed to be default since moving forward all data is slimmed
 #include "myBabyMaker.h"
 
  // C++ includes
@@ -43,6 +44,7 @@
 #include "ssSelections.h"
 #include "susySelections.h"
 #include "jetcorr/FactorizedJetCorrector.h"
+#include "ttvSelection.h"
 #else
 // for compiling in ACLiC (.L myBabyMaker.c++ method)
 // since the source files are included
@@ -63,6 +65,7 @@
 #include "../CORE/ssSelections.cc"
 #include "../CORE/susySelections.cc"
 #include "../CORE/jetcorr/FactorizedJetCorrector.h"
+#include "../CORE/ttvSelections.cc"
 #endif // __CINT__
 #endif // __NON_ROOT_BUILD__
 
@@ -1798,15 +1801,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 	  		// Loop over jets and see what is btagged
             // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
             int this_nbjet = 0;
-#ifndef __CMS2_SLIM__
-            vector<unsigned int> bindex;
-            for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-                if (jets_p4().at(iJet).pt() < 15.) continue;
-                if (cms2.jets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
-                this_nbjet++;
-                bindex.push_back(iJet);
-            }
-#endif
+
+// #ifndef __CMS2_SLIM__
+//             vector<unsigned int> bindex;
+//             for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+//                 if (jets_p4().at(iJet).pt() < 15.) continue;
+//                 if (cms2.jets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
+//                 this_nbjet++;
+//                 bindex.push_back(iJet);
+//             }
+// #endif
 
             // PF Jets
             int this_nbpfjet = 0;
@@ -1915,24 +1919,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     v3_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v3     );
 
 					// TTZ
-					//eventually replace this with something from electronSelections
-					bool pass_loose_id = passElectronSelection_ZMet2012_v2_NoIso(iLep, true, true);
-					bool pass_loose_iso = electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.15;
-
-					bool pass_loose_fo_id = (electronId_WP2012(iLep, LOOSE) & PassWP2012CutsNoIsoNoIP) == PassWP2012CutsNoIsoNoIP &&
-					  fabs(cms2.els_etaSC()[iLep]) < 1.4442 && fabs(cms2.els_etaSC()[iLep]) > 1.566 &&
-					  fabs(cms2.els_p4()[iLep].eta()) < 2.4 &&
-					  !overlapMuon_ZMet2012_v1(iLep,10.0);
 					
-					num_el_TTZcuttightv1_       = false;
-					num_el_TTZcuttightv1_noIso_ = false;
-					fo_el_TTZcuttightv1_        = false;
-					fo_el_TTZcuttightv1_noIso_  = false;
+					num_el_TTZcuttightv1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::TIGHT);
+					num_el_TTZcuttightv1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::TIGHT);
+					fo_el_TTZcuttightv1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
+					fo_el_TTZcuttightv1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT);
 
-					num_el_TTZcutloosev1_       = pass_loose_id && pass_loose_iso;
-					num_el_TTZcutloosev1_noIso_ = pass_loose_id;
-					fo_el_TTZcutloosev1_        = pass_loose_fo_id && pass_loose_iso;
-					fo_el_TTZcutloosev1_noIso_  = pass_loose_fo_id;
+					num_el_TTZcutloosev1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::LOOSE);
+					num_el_TTZcutloosev1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::LOOSE);
+					fo_el_TTZcutloosev1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
+					fo_el_TTZcutloosev1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE);
 					
 					num_el_TTZMVAtightv1_       = false;
 					num_el_TTZMVAtightv1_noIso_ = false;
@@ -2345,26 +2341,26 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
                     // Calo Jets
                     // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
-#ifndef __CMS2_SLIM__
-                    ptj1_       = -999.0;
-                    ptj1_b2b_   = -999.0;
-                    dphij1_b2b_ = -999.0;
-                    nj1_        = 0;
-                    for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-                        double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet) );
-                        if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
-                        if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
-                            ptj1_ = jets_p4().at(iJet).pt();
+// #ifndef __CMS2_SLIM__
+//                     ptj1_       = -999.0;
+//                     ptj1_b2b_   = -999.0;
+//                     dphij1_b2b_ = -999.0;
+//                     nj1_        = 0;
+//                     for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+//                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet) );
+//                         if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
+//                         if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+//                             ptj1_ = jets_p4().at(iJet).pt();
           
-                            // back to back in phi
-                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jets_p4().at(iJet) ) );
-                            if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){ 
-                                ptj1_b2b_   = jets_p4().at(iJet).pt();
-                                dphij1_b2b_ = dphi;
-                            }
-                        }
-                    }
-#endif
+//                             // back to back in phi
+//                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jets_p4().at(iJet) ) );
+//                             if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){ 
+//                                 ptj1_b2b_   = jets_p4().at(iJet).pt();
+//                                 dphij1_b2b_ = dphi;
+//                             }
+//                         }
+//                     }
+// #endif
     
                     // PF Jets
                     // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
@@ -2554,17 +2550,17 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     ///////////////////
 
                     // The btag information
-#ifndef __CMS2_SLIM__
-                    nbjet_ = this_nbjet;
-                    dRbNear_ = 99.;
-                    dRbFar_  = -99.;
-                    for (int ii=0; ii<nbjet_; ii++) {
-                        unsigned int iJet = bindex[ii];
-                        float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet));
-                        if (dr < dRbNear_) dRbNear_ = dr;
-                        if (dr > dRbFar_)   dRbFar_  = dr;
-                    }
-#endif
+// #ifndef __CMS2_SLIM__
+//                     nbjet_ = this_nbjet;
+//                     dRbNear_ = 99.;
+//                     dRbFar_  = -99.;
+//                     for (int ii=0; ii<nbjet_; ii++) {
+//                         unsigned int iJet = bindex[ii];
+//                         float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet));
+//                         if (dr < dRbNear_) dRbNear_ = dr;
+//                         if (dr > dRbFar_)   dRbFar_  = dr;
+//                     }
+// #endif
 
                     // btag info for corrected pfjet
                     nbpfcjet_ = this_nbpfjet;
@@ -2864,15 +2860,17 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     fo_mu_ssV5_noIso_  = muonIdNotIsolated(iLep, muonSelectionFO_ssV5);
 
 					// TTZ
-					num_mu_TTZtightv1_       = muonId(iLep, NominalTTZ_tight_v1);
-					num_mu_TTZtightv1_noIso_ = muonIdNotIsolated(iLep, NominalTTZ_tight_v1);
+					num_mu_TTZtightv1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::TIGHT);
+					num_mu_TTZtightv1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::TIGHT);
 					fo_mu_TTZtightv1_        = muonId(iLep, NominalTTZ_tightFO_v1);
-					fo_mu_TTZtightv1_noIso_  = muonIdNotIsolated(iLep, NominalTTZ_tightFO_v1);
+					fo_mu_TTZtightv1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::TIGHT);
 
-					num_mu_TTZloosev1_       = muonId(iLep, NominalTTZ_loose_v1);
-					num_mu_TTZloosev1_noIso_ = muonIdNotIsolated(iLep, NominalTTZ_loose_v1);
+					num_mu_TTZloosev1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::LOOSE);
+					num_mu_TTZloosev1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::LOOSE);
 					fo_mu_TTZloosev1_        = muonId(iLep, NominalTTZ_looseFO_v1);
-					fo_mu_TTZloosev1_noIso_  = muonIdNotIsolated(iLep, NominalTTZ_looseFO_v1);
+					fo_mu_TTZloosev1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::LOOSE);
+
+
 
                     //////////
                     // 2011 //
@@ -3053,26 +3051,26 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
                     // Calo Jets
                     // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
-#ifndef __CMS2_SLIM__
-                    ptj1_       = -999.0;
-                    ptj1_b2b_   = -999.0;
-                    dphij1_b2b_ = -999.0;
-                    nj1_        = 0;
-                    for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-                        double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet) );
-                        if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
-                        if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
-                            ptj1_ = jets_p4().at(iJet).pt();
+// #ifndef __CMS2_SLIM__
+//                     ptj1_       = -999.0;
+//                     ptj1_b2b_   = -999.0;
+//                     dphij1_b2b_ = -999.0;
+//                     nj1_        = 0;
+//                     for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+//                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet) );
+//                         if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
+//                         if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+//                             ptj1_ = jets_p4().at(iJet).pt();
         
-                            // back to back in phi
-                            float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jets_p4().at(iJet) ) );
-                            if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){        
-                                ptj1_b2b_   = jets_p4().at(iJet).pt();
-                                dphij1_b2b_ = dphi;
-                            }
-                        }
-                    }
-#endif
+//                             // back to back in phi
+//                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jets_p4().at(iJet) ) );
+//                             if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){        
+//                                 ptj1_b2b_   = jets_p4().at(iJet).pt();
+//                                 dphij1_b2b_ = dphi;
+//                             }
+//                         }
+//                     }
+// #endif
   
                     // PF Jets
                     // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
@@ -3265,18 +3263,18 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     // B Tagging     //
                     ///////////////////
 
-#ifndef __CMS2_SLIM__
-                    // The btag information
-                    nbjet_ = this_nbjet;
-                    dRbNear_ =  99.;
-                    dRbFar_  = -99.;
-                    for (int ii=0; ii<nbjet_; ii++) {
-                        unsigned int iJet = bindex[ii];
-                        float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet));
-                        if (dr < dRbNear_) dRbNear_ = dr;
-                        if (dr > dRbFar_)  dRbFar_  = dr;
-                    }
-#endif
+// #ifndef __CMS2_SLIM__
+//                     // The btag information
+//                     nbjet_ = this_nbjet;
+//                     dRbNear_ =  99.;
+//                     dRbFar_  = -99.;
+//                     for (int ii=0; ii<nbjet_; ii++) {
+//                         unsigned int iJet = bindex[ii];
+//                         float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet));
+//                         if (dr < dRbNear_) dRbNear_ = dr;
+//                         if (dr > dRbFar_)  dRbFar_  = dr;
+//                     }
+// #endif
  
                     // The btag information for pfjets
                     nbpfcjet_ = this_nbpfjet;
