@@ -44,7 +44,7 @@
 #include "ssSelections.h"
 #include "susySelections.h"
 #include "jetcorr/FactorizedJetCorrector.h"
-#include "ttvSelection.h"
+#include "ttvSelections.h"
 #else
 // for compiling in ACLiC (.L myBabyMaker.c++ method)
 // since the source files are included
@@ -545,10 +545,10 @@ void myBabyMaker::InitBabyNtuple()
     ///////////////////////////
     
     // Basic Event Information
-    run_    = -1;
-    ls_     = -1;
-    evt_    = 0;
-    weight_ = 1.0;
+    run_          = -1;
+    ls_           = -1;
+    evt_          = 0;
+    weight_       = 1.0;
   
     // Pileup - PUSummaryInfoMaker
     pu_nPUvertices_ = -1;
