@@ -549,6 +549,9 @@ void myBabyMaker::InitBabyNtuple()
     ls_           = -1;
     evt_          = 0;
     weight_       = 1.0;
+    dataset_      = "";
+    filename_     = "";
+    is_real_data_ = false;
   
     // Pileup - PUSummaryInfoMaker
     pu_nPUvertices_ = -1;
@@ -884,6 +887,7 @@ void myBabyMaker::InitBabyNtuple()
     isoMu24_eta2p1_vstar_       = 0;
     isoMu30_eta2p1_vstar_       = 0;
     relIso1p0Mu17_vstar_        = 0;
+    relIso1p0Mu20_vstar_        = 0;
     relIso1p0Mu5_vstar_         = 0;
 
     mu5_version_                = -1;
@@ -897,6 +901,7 @@ void myBabyMaker::InitBabyNtuple()
     isoMu24_eta2p1_version_     = -1;
     isoMu30_eta2p1_version_     = -1;
     relIso1p0Mu17_version_      = -1;
+    relIso1p0Mu20_version_      = -1;
     relIso1p0Mu5_version_       = -1;
 
     dr_mu8_vstar_               = 99.0;
@@ -910,6 +915,7 @@ void myBabyMaker::InitBabyNtuple()
     dr_isoMu24_eta2p1_vstar_    = 99.0;
     dr_isoMu30_eta2p1_vstar_    = 99.0;
     dr_relIso1p0Mu17_vstar_     = 99.0;
+    dr_relIso1p0Mu20_vstar_     = 99.0;
     dr_relIso1p0Mu5_vstar_      = 99.0;
 
     hltps_mu8_vstar_            = -1;
@@ -923,6 +929,7 @@ void myBabyMaker::InitBabyNtuple()
     hltps_isoMu24_eta2p1_vstar_ = -1;
     hltps_isoMu30_eta2p1_vstar_ = -1;
     hltps_relIso1p0Mu17_vstar_  = -1;
+    hltps_relIso1p0Mu20_vstar_  = -1;
     hltps_relIso1p0Mu5_vstar_   = -1;
 
 #ifndef __CMS2_SLIM__
@@ -1094,10 +1101,13 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     // Event Information     //
     ///////////////////////////
 
-    babyTree_->Branch("run"            , &run_            );
-    babyTree_->Branch("ls"             , &ls_             );
-    babyTree_->Branch("evt"            , &evt_            );
-    babyTree_->Branch("weight"         , &weight_         );
+    babyTree_->Branch("run"            , &run_                );
+    babyTree_->Branch("ls"             , &ls_                 );
+    babyTree_->Branch("evt"            , &evt_                );
+    babyTree_->Branch("weight"         , &weight_             );
+    babyTree_->Branch("is_real_data"   , &is_real_data_       );
+    babyTree_->Branch("dataset"        , "TString", &dataset_ );
+    babyTree_->Branch("filename"       , "TString", &filename_);
   
     // Pileup
     babyTree_->Branch("pu_nPUvertices" , &pu_nPUvertices_ );
@@ -1444,6 +1454,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("isoMu24_eta2p1_vstar"       , &isoMu24_eta2p1_vstar_       ); 
     babyTree_->Branch("isoMu30_eta2p1_vstar"       , &isoMu30_eta2p1_vstar_       ); 
     babyTree_->Branch("relIso1p0Mu17_vstar"        , &relIso1p0Mu17_vstar_        ); 
+    babyTree_->Branch("relIso1p0Mu20_vstar"        , &relIso1p0Mu20_vstar_        ); 
     babyTree_->Branch("relIso1p0Mu5_vstar"         , &relIso1p0Mu5_vstar_         ); 
 
     babyTree_->Branch("mu3_version"                , &mu3_version_                ); 
@@ -1463,6 +1474,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("isoMu24_eta2p1_version"     , &isoMu24_eta2p1_version_     ); 
     babyTree_->Branch("isoMu30_eta2p1_version"     , &isoMu30_eta2p1_version_     ); 
     babyTree_->Branch("relIso1p0Mu17_version"      , &relIso1p0Mu17_version_      ); 
+    babyTree_->Branch("relIso1p0Mu20_version"      , &relIso1p0Mu20_version_      ); 
     babyTree_->Branch("relIso1p0Mu5_version"       , &relIso1p0Mu5_version_       ); 
 
     babyTree_->Branch("dr_mu3_vstar"               , &dr_mu3_vstar_               ); 
@@ -1482,6 +1494,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("dr_isoMu24_eta2p1_vstar"    , &dr_isoMu24_eta2p1_vstar_    ); 
     babyTree_->Branch("dr_isoMu30_eta2p1_vstar"    , &dr_isoMu30_eta2p1_vstar_    ); 
     babyTree_->Branch("dr_relIso1p0Mu17_vstar"     , &dr_relIso1p0Mu17_vstar_     ); 
+    babyTree_->Branch("dr_relIso1p0Mu20_vstar"     , &dr_relIso1p0Mu20_vstar_     ); 
     babyTree_->Branch("dr_relIso1p0Mu5_vstar"      , &dr_relIso1p0Mu5_vstar_      ); 
 
     babyTree_->Branch("hltps_mu3_vstar"            , &hltps_mu3_vstar_            ); 
@@ -1501,6 +1514,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("hltps_isoMu24_eta2p1_vstar" , &hltps_isoMu24_eta2p1_vstar_ ); 
     babyTree_->Branch("hltps_isoMu30_eta2p1_vstar" , &hltps_isoMu30_eta2p1_vstar_ ); 
     babyTree_->Branch("hltps_relIso1p0Mu17_vstar"  , &hltps_relIso1p0Mu17_vstar_  ); 
+    babyTree_->Branch("hltps_relIso1p0Mu20_vstar"  , &hltps_relIso1p0Mu20_vstar_  ); 
     babyTree_->Branch("hltps_relIso1p0Mu5_vstar"   , &hltps_relIso1p0Mu5_vstar_   ); 
 
 #ifndef __CMS2_SLIM__
@@ -1645,6 +1659,7 @@ myBabyMaker::myBabyMaker ()
     , isoMu24_eta2p1_regexp ("HLT_IsoMu24_eta2p1_v(\\d+)", "o")
     , isoMu30_eta2p1_regexp ("HLT_IsoMu30_eta2p1_v(\\d+)", "o")
     , relIso1p0Mu17_regexp  ("HLT_RelIso1p0Mu17_v(\\d+)" , "o")
+    , relIso1p0Mu20_regexp  ("HLT_RelIso1p0Mu20_v(\\d+)" , "o")
     , relIso1p0Mu5_regexp   ("HLT_RelIso1p0Mu5_v(\\d+)"  , "o")
 {
 }
@@ -2056,10 +2071,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     ///////////////////////////
 
                     // Load the electron and event quantities
-                    run_    = evt_run();
-                    ls_     = evt_lumiBlock();
-                    evt_    = evt_event();
-                    weight_ = isData ? 1.0 : evt_scale1fb();
+                    run_          = evt_run();
+                    ls_           = evt_lumiBlock();
+                    evt_          = evt_event();
+                    weight_       = isData ? 1.0 : evt_scale1fb();
+                    filename_     = f->GetName();
+                    dataset_      = evt_dataset().front();
+                    is_real_data_ = evt_isRealData();
   
                     if(!isData){
                         // Pileup - PUSummaryInfoMaker                        
@@ -2715,10 +2733,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     ///////////////////////////
 
                     // Load the electron and event quantities
-                    run_    = evt_run();
-                    ls_     = evt_lumiBlock();
-                    evt_    = evt_event();
-                    weight_ = isData ? 1.0 : evt_scale1fb();
+                    run_          = evt_run();
+                    ls_           = evt_lumiBlock();
+                    evt_          = evt_event();
+                    weight_       = isData ? 1.0 : evt_scale1fb();
+                    filename_     = f->GetName();
+                    dataset_      = evt_dataset().front();
+                    is_real_data_ = evt_isRealData();
 
                     if(!isData){
                         // Pileup - PUSummaryInfoMaker
@@ -2925,6 +2946,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     triggerMatchStruct struct_isoMu24_eta2p1_vstar  = MatchTriggerClass( mus_p4().at(iLep), &isoMu24_eta2p1_regexp , 13);
                     triggerMatchStruct struct_isoMu30_eta2p1_vstar  = MatchTriggerClass( mus_p4().at(iLep), &isoMu30_eta2p1_regexp , 13);
                     triggerMatchStruct struct_relIso1p0Mu17_vstar   = MatchTriggerClass( mus_p4().at(iLep), &relIso1p0Mu17_regexp  , 13);
+                    triggerMatchStruct struct_relIso1p0Mu20_vstar   = MatchTriggerClass( mus_p4().at(iLep), &relIso1p0Mu20_regexp  , 13);
                     triggerMatchStruct struct_relIso1p0Mu5_vstar    = MatchTriggerClass( mus_p4().at(iLep), &relIso1p0Mu5_regexp   , 13);
 
                     mu5_vstar_                  = struct_mu5_vstar.nHLTObjects_;
@@ -2938,6 +2960,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     isoMu24_eta2p1_vstar_       = struct_isoMu24_eta2p1_vstar.nHLTObjects_;
                     isoMu30_eta2p1_vstar_       = struct_isoMu30_eta2p1_vstar.nHLTObjects_;
                     relIso1p0Mu17_vstar_        = struct_relIso1p0Mu17_vstar.nHLTObjects_;
+                    relIso1p0Mu20_vstar_        = struct_relIso1p0Mu20_vstar.nHLTObjects_;
                     relIso1p0Mu5_vstar_         = struct_relIso1p0Mu5_vstar.nHLTObjects_;
 
                     mu5_version_                = struct_mu5_vstar.version_;
@@ -2951,6 +2974,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     isoMu24_eta2p1_version_     = struct_isoMu24_eta2p1_vstar.version_;
                     isoMu30_eta2p1_version_     = struct_isoMu30_eta2p1_vstar.version_;
                     relIso1p0Mu17_version_      = struct_relIso1p0Mu17_vstar.version_;
+                    relIso1p0Mu20_version_      = struct_relIso1p0Mu20_vstar.version_;
                     relIso1p0Mu5_version_       = struct_relIso1p0Mu5_vstar.version_;
 
                     dr_mu5_vstar_               = struct_mu5_vstar.dR_;
@@ -2964,6 +2988,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dr_isoMu24_eta2p1_vstar_    = struct_isoMu24_eta2p1_vstar.dR_;
                     dr_isoMu30_eta2p1_vstar_    = struct_isoMu30_eta2p1_vstar.dR_;
                     dr_relIso1p0Mu17_vstar_     = struct_relIso1p0Mu17_vstar.dR_;
+                    dr_relIso1p0Mu20_vstar_     = struct_relIso1p0Mu20_vstar.dR_;
                     dr_relIso1p0Mu5_vstar_      = struct_relIso1p0Mu5_vstar.dR_;
 
                     hltps_mu5_vstar_            = struct_mu5_vstar.hltps_;
@@ -2977,6 +3002,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     hltps_isoMu24_eta2p1_vstar_ = struct_isoMu24_eta2p1_vstar.hltps_;
                     hltps_isoMu30_eta2p1_vstar_ = struct_isoMu30_eta2p1_vstar.hltps_;
                     hltps_relIso1p0Mu17_vstar_  = struct_relIso1p0Mu17_vstar.hltps_;
+                    hltps_relIso1p0Mu20_vstar_  = struct_relIso1p0Mu20_vstar.hltps_;
                     hltps_relIso1p0Mu5_vstar_   = struct_relIso1p0Mu5_vstar.hltps_;
 
                     // These are hardcoded to the value in Dima's table:
@@ -3311,7 +3337,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
         //printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
 
         f->Close();
-        delete f;
+        //delete f;
 
     }  // closes loop over files
 

@@ -1,3 +1,8 @@
+11-13-2012 - Ryan Kelley 
+	* added branches for HLT_RelIso1p0Mu20_v trigger
+	* added branches for dataset, filename and is_real_data
+	* Ian added some branches for the TTV analysis fake rate
+
 05-20-2012 - Ryan Kelley 
 	* updated jets to use residiual corrections 
 

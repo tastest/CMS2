@@ -20,7 +20,7 @@ public:
     myBabyMaker();
     ~myBabyMaker()
     {
-        if(babyFile_) delete babyFile_;
+        //if(babyFile_) delete babyFile_;
     };
     void MakeBabyNtuple (const char *);
     void InitBabyNtuple ();
@@ -51,6 +51,9 @@ private:
     Int_t   ls_;
     UInt_t  evt_;
     Float_t weight_;
+	TString dataset_;
+	TString filename_;
+	Bool_t is_real_data_;
 
     // Pileup - PUSummaryInfoMaker
     Int_t pu_nPUvertices_;
@@ -391,6 +394,7 @@ private:
     Int_t isoMu24_eta2p1_vstar_;       // HLT_IsoMu24_eta2p1_v*
     Int_t isoMu30_eta2p1_vstar_;       // HLT_IsoMu30_eta2p1_v*
     Int_t relIso1p0Mu17_vstar_;        // HLT_RelIso1p0Mu17_v*
+    Int_t relIso1p0Mu20_vstar_;        // HLT_RelIso1p0Mu20_v*
     Int_t relIso1p0Mu5_vstar_;         // HLT_RelIso1p0Mu5_v*
 
     Int_t mu5_version_;                // HLT_Mu5_v*            // also in 2011
@@ -404,6 +408,7 @@ private:
     Int_t isoMu24_eta2p1_version_;     // HLT_IsoMu24_eta2p1_v*
     Int_t isoMu30_eta2p1_version_;     // HLT_IsoMu30_eta2p1_v*
     Int_t relIso1p0Mu17_version_;      // HLT_RelIso1p0Mu17_v*
+    Int_t relIso1p0Mu20_version_;      // HLT_RelIso1p0Mu20_v*
     Int_t relIso1p0Mu5_version_;       // HLT_RelIso1p0Mu5_v*
 
     Float_t dr_mu5_vstar_;             // HLT_Mu5_v*            // also in 2011
@@ -417,6 +422,7 @@ private:
     Float_t dr_isoMu24_eta2p1_vstar_;  // HLT_IsoMu24_eta2p1_v*
     Float_t dr_isoMu30_eta2p1_vstar_;  // HLT_IsoMu30_eta2p1_v*
     Float_t dr_relIso1p0Mu17_vstar_;   // HLT_RelIso1p0Mu17_v*
+    Float_t dr_relIso1p0Mu20_vstar_;   // HLT_RelIso1p0Mu20_v*
     Float_t dr_relIso1p0Mu5_vstar_;    // HLT_RelIso1p0Mu5_v*
 
     Int_t hltps_mu5_vstar_;            // HLT_Mu5_v*            // also in 2011
@@ -430,6 +436,7 @@ private:
     Int_t hltps_isoMu24_eta2p1_vstar_; // HLT_IsoMu24_eta2p1_v*
     Int_t hltps_isoMu30_eta2p1_vstar_; // HLT_IsoMu30_eta2p1_v*
     Int_t hltps_relIso1p0Mu17_vstar_;  // HLT_RelIso1p0Mu17_v*
+    Int_t hltps_relIso1p0Mu20_vstar_;  // HLT_RelIso1p0Mu20_v*
     Int_t hltps_relIso1p0Mu5_vstar_;   // HLT_RelIso1p0Mu5_v*
 
 #ifndef __CMS2_SLIM__
@@ -649,8 +656,8 @@ private:
     TPMERegexp isoMu24_eta2p1_regexp;
     TPMERegexp isoMu30_eta2p1_regexp;
     TPMERegexp relIso1p0Mu17_regexp;
+    TPMERegexp relIso1p0Mu20_regexp;
     TPMERegexp relIso1p0Mu5_regexp;
-
 
     // electron ID MVA
     class ElectronIDMVA* electronIdMVA;
