@@ -1,3 +1,6 @@
+11-14-2012 - Ryan Kelley 
+	* nFOmus/nFOels were set to 2011 values --> changed to 2012 values 
+
 11-13-2012 - Ryan Kelley 
 	* added branches for HLT_RelIso1p0Mu20_v trigger
 	* added branches for dataset, filename and is_real_data

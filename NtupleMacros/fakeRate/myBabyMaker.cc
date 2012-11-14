@@ -1872,10 +1872,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if (cms2.els_p4().at(iel).pt() < 10.)
                             continue;
 
-                        if (pass_electronSelection(iel, electronSelectionFOV6_ssVBTF80_v3, false, false))
+                        if (pass_electronSelection(iel, electronSelectionFOV7_v3, false, false))
                             ++ngsfs_;
 
-                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::DET_ISO)) {
+                        if (samesign::isDenominatorLepton(11, iel)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -1883,7 +1883,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             }
                             continue;
                         }
-                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::COR_DET_ISO)) {
+                        if (samesign::isDenominatorLepton(11, iel)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -1901,10 +1901,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
 
-                        if (muonIdNotIsolated(imu, NominalSSv4))
+                        if (muonIdNotIsolated(imu, muonSelectionFO_ssV5))
                             ++nmus_;
 
-                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::DET_ISO)) {
+                        if (samesign::isDenominatorLepton(13, imu)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
@@ -1912,7 +1912,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             }
                             continue;
                         }
-                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::COR_DET_ISO)) {
+                        if (samesign::isDenominatorLepton(13, imu)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
@@ -2645,10 +2645,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if (cms2.els_p4().at(iel).pt() < 10.)
                             continue;
 
-                        if (pass_electronSelection(iel, electronSelectionFOV6_ssVBTF80_v3, false, false))
+                        if (pass_electronSelection(iel, electronSelectionFOV7_v3, false, false))
                             ++ngsfs_;
 
-                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::DET_ISO)) {
+                        if (samesign::isDenominatorLepton(11, iel)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -2656,7 +2656,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             }
                             continue;
                         }
-                        if (samesign2011::isDenominatorLepton(11, iel, samesign2011::COR_DET_ISO)) {
+                        if (samesign::isDenominatorLepton(11, iel)) {
                             ++nFOels_;
                             if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
                                 foel_p4_ = cms2.els_p4().at(iel);
@@ -2676,10 +2676,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if (cms2.mus_p4().at(imu).pt() < 10.)
                             continue;
 
-                        if (muonIdNotIsolated(imu, NominalSSv4))
+                        if (muonIdNotIsolated(imu, muonSelectionFO_ssV5))
                             ++nmus_;
 
-                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::DET_ISO)) {
+                        if (samesign::isDenominatorLepton(13, imu)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
@@ -2687,7 +2687,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             }
                             continue;
                         }
-                        if (samesign2011::isDenominatorLepton(13, imu, samesign2011::COR_DET_ISO)) {
+                        if (samesign::isDenominatorLepton(13, imu)) {
                             ++nFOmus_;
                             if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
                                 fomu_p4_ = cms2.mus_p4().at(imu);
