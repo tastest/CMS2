@@ -1,7 +1,7 @@
 #define __CMS2_SLIM__ // this is now assumed to be default since moving forward all data is slimmed
 #include "myBabyMaker.h"
 
- // C++ includes
+// C++ includes
 #include <iostream>
 #include <fstream>
 #include <set>
@@ -39,7 +39,8 @@
 #include "muonSelections.h"
 #include "trackSelections.h"
 #include "triggerUtils.h"
-#include "at/GoodRun.h"
+//#include "at/GoodRun.h"
+#include "Tools/goodrun.h"
 #include "mcSelections.h"
 #include "ssSelections.h"
 #include "susySelections.h"
@@ -109,7 +110,7 @@ void PrintTriggerDebugLine
     const string& trigString, 
     int nTrig, 
     const string& outfileName
-)
+    )
 {
     ofstream outfile( Form("triggerStudy/%s", outfileName.c_str() ), ios::app );
 
@@ -671,7 +672,11 @@ void myBabyMaker::InitBabyNtuple()
     d0PV_wwV1_       = -999.;
     dzPV_wwV1_       = -999.;
 
-    mu_isCosmic_ = false;;
+    mu_isCosmic_ = false;
+
+    mu_ecal_veto_dep_ = -999.;
+    mu_hcal_veto_dep_ = -999.;
+    mu_nchi2_         = -999.;
 
     mt_                   = -999;
     pfmt_                 = -999;
@@ -1052,6 +1057,7 @@ void myBabyMaker::InitBabyNtuple()
     npfc30L1Fj1_       = 0;
     npfc40L1Fj1_       = 0;
     btagpfcL1F_        = false;
+    npfc50L1Fj1_eth_   = 0;
 
     // PF L1FastL2L3Residual Corrected jets
     emfpfcL1Fj1res_       = -999.;
@@ -1063,6 +1069,7 @@ void myBabyMaker::InitBabyNtuple()
     npfc30L1Fj1res_       = 0;
     npfc40L1Fj1res_       = 0;
     btagpfcL1Fres_        = false;
+    npfc50L1Fj1res_eth_   = 0;
 
     // btag PF L1FastL2L3 Corrected jets
     ptbtagpfcL1Fj1_        = 0.;
@@ -1190,9 +1197,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("cpfiso03_db"           , &cpfiso03_db_           ); 
     babyTree_->Branch("id"                    , &id_                    ); 
     babyTree_->Branch("closestMuon"           , &closestMuon_           ); 
-   	babyTree_->Branch("el_id_sieie" 		  , &el_id_sieie_ 			);
-   	babyTree_->Branch("el_id_detain" 		  , &el_id_detain_			);
-   	babyTree_->Branch("el_id_dphiin" 		  , &el_id_dphiin_			);
+    babyTree_->Branch("el_id_sieie" 		  , &el_id_sieie_ 			);
+    babyTree_->Branch("el_id_detain" 		  , &el_id_detain_			);
+    babyTree_->Branch("el_id_dphiin" 		  , &el_id_dphiin_			);
     babyTree_->Branch("el_id_smurfV5"         , &el_id_smurfV5_         ); 
     babyTree_->Branch("el_id_vbtf80"          , &el_id_vbtf80_          ); 
     babyTree_->Branch("el_id_vbtf90"          , &el_id_vbtf90_          ); 
@@ -1233,6 +1240,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("mc3dr"                 , &mc3dr_                 ); 
     babyTree_->Branch("leptonIsFromW"         , &leptonIsFromW_         ); 
     babyTree_->Branch("mu_isCosmic"           , &mu_isCosmic_           ); 
+    babyTree_->Branch("mu_ecal_veto_dep"      , &mu_ecal_veto_dep_      );
+    babyTree_->Branch("mu_hcal_veto_dep"      , &mu_hcal_veto_dep_      );
+    babyTree_->Branch("mu_nchi2"              , &mu_nchi2_              );
 
     // Z mass variables
     babyTree_->Branch("mz_fo_gsf"      , &mz_fo_gsf_      );
@@ -1268,7 +1278,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("fo_mu_ssV5"        , &fo_mu_ssV5_        );
     babyTree_->Branch("fo_mu_ssV5_noIso"  , &fo_mu_ssV5_noIso_  );
 
-	// TTZ
+    // TTZ
     // Electrons
     babyTree_->Branch("num_el_TTZcuttightv1",       &num_el_TTZcuttightv1_);
     babyTree_->Branch("num_el_TTZcuttightv1_noIso", &num_el_TTZcuttightv1_noIso_);
@@ -1569,6 +1579,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ptpfcL1Fj1_b2b"  , &ptpfcL1Fj1_b2b_   );       
     babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
     babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
+    babyTree_->Branch("npfc50L1Fj1_eth" , &npfc50L1Fj1_eth_  );
 
     // PF L1FastL2L3Residual Corrected jets         
     babyTree_->Branch("emfpfcL1Fj1res"     , &emfpfcL1Fj1res_      );
@@ -1580,6 +1591,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("ptpfcL1Fj1res_b2b"  , &ptpfcL1Fj1res_b2b_   );       
     babyTree_->Branch("dphipfcL1Fj1res_b2b", &dphipfcL1Fj1res_b2b_ );     
     babyTree_->Branch("btagpfcL1Fres"      , &btagpfcL1Fres_       );
+    babyTree_->Branch("npfc50L1Fj1res_eth" , &npfc50L1Fj1res_eth_  );
 
     // B-tagged PF L1FastL2L3 Corrected jets         
     babyTree_->Branch("ptbtagpfcL1Fj1"   , &ptbtagpfcL1Fj1_   );
@@ -1681,12 +1693,12 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
     // Jet Corrections
     std::vector<std::string> jetcorr_pf_L2L3_filenames;
     //if (isData) {        
-        string data_pf_l2 = jetcorrPath;
-        data_pf_l2.append("/GR_R_52_V7_L2Relative_AK5PF.txt");
-        string data_pf_l3 = jetcorrPath;
-        data_pf_l3.append("/GR_R_52_V7_L3Absolute_AK5PF.txt");
-        jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
-        jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
+    string data_pf_l2 = jetcorrPath;
+    data_pf_l2.append("/GR_R_52_V7_L2Relative_AK5PF.txt");
+    string data_pf_l3 = jetcorrPath;
+    data_pf_l3.append("/GR_R_52_V7_L3Absolute_AK5PF.txt");
+    jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
+    jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
     //}
     //else {
     //    string mc_pf_l2 = jetcorrPath;
@@ -1799,12 +1811,12 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
             // looper progress
             ++nEventsTotal;
             ++nGoodEvents;
-             int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
-             if (i_permille != i_permilleOld) {
-                 printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-                 fflush(stdout);
-                 i_permilleOld = i_permille;
-             }
+            int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+            if (i_permille != i_permilleOld) {
+                printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+                fflush(stdout);
+                i_permilleOld = i_permille;
+            }
       
             // Event cleaning (careful, it requires technical bits)
             //if (!cleaning_BPTX(isData))   continue;
@@ -1813,7 +1825,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
             //if (!cleaning_goodTracks()) continue;
             if (!cleaning_standardApril2011()) continue;
 
-	  		// Loop over jets and see what is btagged
+            // Loop over jets and see what is btagged
             // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
             int this_nbjet = 0;
 
@@ -1933,27 +1945,27 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     v2_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v2     );
                     v3_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v3     );
 
-					// TTZ
+                    // TTZ
 					
-					num_el_TTZcuttightv1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::TIGHT);
-					num_el_TTZcuttightv1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::TIGHT);
-					fo_el_TTZcuttightv1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
-					fo_el_TTZcuttightv1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT);
+                    num_el_TTZcuttightv1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::TIGHT);
+                    num_el_TTZcuttightv1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::TIGHT);
+                    fo_el_TTZcuttightv1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
+                    fo_el_TTZcuttightv1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT);
 
-					num_el_TTZcutloosev1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::LOOSE);
-					num_el_TTZcutloosev1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::LOOSE);
-					fo_el_TTZcutloosev1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
-					fo_el_TTZcutloosev1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE);
+                    num_el_TTZcutloosev1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::LOOSE);
+                    num_el_TTZcutloosev1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::LOOSE);
+                    fo_el_TTZcutloosev1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
+                    fo_el_TTZcutloosev1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE);
 					
-					num_el_TTZMVAtightv1_       = false;
-					num_el_TTZMVAtightv1_noIso_ = false;
-					fo_el_TTZMVAtightv1_        = false;
-					fo_el_TTZMVAtightv1_noIso_  = false;
+                    num_el_TTZMVAtightv1_       = false;
+                    num_el_TTZMVAtightv1_noIso_ = false;
+                    fo_el_TTZMVAtightv1_        = false;
+                    fo_el_TTZMVAtightv1_noIso_  = false;
 
-					num_el_TTZMVAloosev1_       = false;
-					num_el_TTZMVAloosev1_noIso_ = false;
-					fo_el_TTZMVAloosev1_        = false;
-					fo_el_TTZMVAloosev1_noIso_  = false;
+                    num_el_TTZMVAloosev1_       = false;
+                    num_el_TTZMVAloosev1_noIso_ = false;
+                    fo_el_TTZMVAloosev1_        = false;
+                    fo_el_TTZMVAloosev1_noIso_  = false;
 
                     //////////
                     // 2011 //
@@ -1986,8 +1998,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     if (applyFOfilter) {  
                         if (
                             !v1_el_ssV7_          && !v2_el_ssV7_          && !v3_el_ssV7_    &&                    // SS 2012
-							!fo_el_TTZMVAtightv1_ && !fo_el_TTZMVAloosev1_ &&                                       // TTZ MVA 2012
-							!fo_el_TTZcuttightv1_ && !fo_el_TTZcutloosev1_ &&                                       // TTZ cut 2012
+                            !fo_el_TTZMVAtightv1_ && !fo_el_TTZMVAloosev1_ &&                                       // TTZ MVA 2012
+                            !fo_el_TTZcuttightv1_ && !fo_el_TTZcutloosev1_ &&                                       // TTZ cut 2012
                             !v1_el_ssV6_          && !v2_el_ssV6_          && !v3_el_ssV6_    &&                    // SS 2011
                             !fo_el_OSV2_          && !fo_el_OSV3_          &&                                       // OS 2011
                             !v1_el_smurfV1_       && !v1_el_smurfV1_       && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
@@ -2093,16 +2105,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     bool first_good_vertex_found         = false;
                     unsigned int first_good_vertex_index = 0;
                     for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
-					{
+                    {
                         if (!isGoodVertex(vidx))
                         {
                             continue;
                         }
-						if (!first_good_vertex_found)
-						{
-							first_good_vertex_found = true;
-							first_good_vertex_index = vidx;
-						}
+                        if (!first_good_vertex_found)
+                        {
+                            first_good_vertex_found = true;
+                            first_good_vertex_index = vidx;
+                        }
                        	++evt_nvtxs_;
                     }
     
@@ -2182,9 +2194,9 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     }
 
                     // ID
-                	el_id_sieie_   = cms2.els_sigmaIEtaIEta().at(iLep);
-                	el_id_detain_  = cms2.els_dEtaIn().at(iLep);
-                	el_id_dphiin_  = cms2.els_dPhiIn().at(iLep);
+                    el_id_sieie_   = cms2.els_sigmaIEtaIEta().at(iLep);
+                    el_id_detain_  = cms2.els_dEtaIn().at(iLep);
+                    el_id_dphiin_  = cms2.els_dPhiIn().at(iLep);
                     el_id_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5_id );
                     el_id_vbtf80_  = electronId_VBTF(iLep, VBTF_35X_80, false, false);
                     el_id_vbtf90_  = electronId_VBTF(iLep, VBTF_35X_90, false, false);
@@ -2438,7 +2450,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dphipfcL1Fj1_b2b_ = -999.0;
                     npfcL1Fj1_        = 0;
                     npfc30L1Fj1_      = 0;
-                    npfc30L1Fj1_      = 0;
+                    npfc40L1Fj1_      = 0;
+                    npfc50L1Fj1_eth_  = 0;
                     btagpfcL1F_       = false;
                     rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
@@ -2456,6 +2469,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
+                        if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1_eth_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
                             ptpfcL1Fj1_ = jp4cor.pt();
@@ -2479,7 +2493,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dphipfcL1Fj1res_b2b_ = -999.0;
                     npfcL1Fj1res_        = 0;
                     npfc30L1Fj1res_      = 0;
-                    npfc30L1Fj1res_      = 0;
+                    npfc40L1Fj1res_      = 0;
+                    npfc50L1Fj1res_eth_  = 0;
                     btagpfcL1Fres_       = false;
                     rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
@@ -2497,6 +2512,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
                         if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                        if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1res_eth_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
                             emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
                             ptpfcL1Fj1res_ = jp4cor.pt();
@@ -2511,7 +2527,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         }
                     }
 
-					// *** Doing B-tagging correctly ***
+                    // *** Doing B-tagging correctly ***
                     // B-tagged L1FastL2L3 PF Jets
                     // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
                     ptbtagpfcL1Fj1_       = -999.0;
@@ -2531,11 +2547,11 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
                             ptbtagpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
-							dphibtagpfcL1Fj1_ = dphi; 
+                            dphibtagpfcL1Fj1_ = dphi; 
                         }
                     }
 
-					// *** Doing B-tagging correctly ***
+                    // *** Doing B-tagging correctly ***
                     // B-tagged L1FastL2L3Residual PF Jets
                     // Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
                     ptbtagpfcL1Fj1res_       = -999.0;
@@ -2555,7 +2571,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
                             ptbtagpfcL1Fj1res_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
-							dphibtagpfcL1Fj1res_ = dphi; 
+                            dphibtagpfcL1Fj1res_ = dphi; 
                         }
                     }
                     //////////////
@@ -2601,11 +2617,11 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 
 
 
-                  // Time to fill the baby for the electrons
-                  FillBabyNtuple();
+                    // Time to fill the baby for the electrons
+                    FillBabyNtuple();
 
-              } // closes loop over electrons
-          } // closes if statements about whether we want to fill electrons
+                } // closes loop over electrons
+            } // closes if statements about whether we want to fill electrons
 
 
             // Muons
@@ -2754,16 +2770,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     bool first_good_vertex_found         = false;
                     unsigned int first_good_vertex_index = 0;
                     for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
-					{
+                    {
                         if (!isGoodVertex(vidx))
                         {
                             continue;
                         }
-						if (!first_good_vertex_found)
-						{
-							first_good_vertex_found = true;
-							first_good_vertex_index = vidx;
-						}
+                        if (!first_good_vertex_found)
+                        {
+                            first_good_vertex_found = true;
+                            first_good_vertex_index = vidx;
+                        }
                        	++evt_nvtxs_;
                     }
     
@@ -2850,6 +2866,11 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     // cosmics
                     mu_isCosmic_           = isCosmics(iLep);
 
+                    // some muon quantities
+                    mu_ecal_veto_dep_ = cms2.mus_iso_ecalvetoDep().at(iLep);
+                    mu_hcal_veto_dep_ = cms2.mus_iso_hcalvetoDep().at(iLep);
+                    mu_nchi2_         = cms2.mus_chi2().at(iLep) / cms2.mus_ndof().at(iLep);
+
                     // W transverse mass
                     mt_   = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
                     pfmt_ = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
@@ -2880,16 +2901,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     fo_mu_ssV5_        = muonId(iLep, muonSelectionFO_ssV5);
                     fo_mu_ssV5_noIso_  = muonIdNotIsolated(iLep, muonSelectionFO_ssV5);
 
-					// TTZ
-					num_mu_TTZtightv1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::TIGHT);
-					num_mu_TTZtightv1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::TIGHT);
-					fo_mu_TTZtightv1_        = muonId(iLep, NominalTTZ_tightFO_v1);
-					fo_mu_TTZtightv1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::TIGHT);
+                    // TTZ
+                    num_mu_TTZtightv1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::TIGHT);
+                    num_mu_TTZtightv1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::TIGHT);
+                    fo_mu_TTZtightv1_        = muonId(iLep, NominalTTZ_tightFO_v1);
+                    fo_mu_TTZtightv1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::TIGHT);
 
-					num_mu_TTZloosev1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::LOOSE);
-					num_mu_TTZloosev1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::LOOSE);
-					fo_mu_TTZloosev1_        = muonId(iLep, NominalTTZ_looseFO_v1);
-					fo_mu_TTZloosev1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::LOOSE);
+                    num_mu_TTZloosev1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::LOOSE);
+                    num_mu_TTZloosev1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::LOOSE);
+                    fo_mu_TTZloosev1_        = muonId(iLep, NominalTTZ_looseFO_v1);
+                    fo_mu_TTZloosev1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::LOOSE);
 
 
 
@@ -2919,7 +2940,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     if (applyFOfilter) {
                         if (
                             !fo_mussV4_04_     && !fo_mu_ssV5_       &&                    // SS
-							!fo_mu_TTZtightv1_ && !fo_mu_TTZloosev1_ &&                 // TTZ 2012
+                            !fo_mu_TTZtightv1_ && !fo_mu_TTZloosev1_ &&                 // TTZ 2012
                             !fo_mu_OSGV2_      && !fo_mu_OSGV3_      &&                    // OS
                             !fo_mu_smurf_04_   && !fo_mu_smurf_10_                       // WW
                             )
@@ -3158,6 +3179,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     npfcL1Fj1_        = 0;
                     npfc30L1Fj1_      = 0;
                     npfc40L1Fj1_      = 0;
+                    npfc50L1Fj1_eth_  = 0;
                     btagpfcL1F_       = false;
                     rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
@@ -3176,6 +3198,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
                         if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
+                        if( dr > 0.4       && jp4cor.pt() > 40 ) npfc50L1Fj1_eth_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                             emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
                             ptpfcL1Fj1_ = jp4cor.pt();
@@ -3200,6 +3223,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     npfcL1Fj1res_        = 0;
                     npfc30L1Fj1res_      = 0;
                     npfc40L1Fj1res_      = 0;
+                    npfc50L1Fj1res_eth_  = 0;
                     btagpfcL1Fres_       = false;
                     rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
@@ -3218,6 +3242,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
                         if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
                         if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                        if( dr > 0.4       && jp4cor.pt() > 40 ) npfc50L1Fj1res_eth_++;
                         if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
                             emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
                             ptpfcL1Fj1res_ = jp4cor.pt();
@@ -3232,7 +3257,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         }
                     }
 
-					//***  Doing B-tagging correctly ***
+                    //***  Doing B-tagging correctly ***
                     // B-tagged L1FastL2L3 PF Jets
                     // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
                     ptbtagpfcL1Fj1_       = -999.0;
@@ -3252,11 +3277,11 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
                             ptbtagpfcL1Fj1_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
-							dphibtagpfcL1Fj1_ = dphi; 
+                            dphibtagpfcL1Fj1_ = dphi; 
                         }
                     }
 
-					//***  Doing B-tagging correctly ***
+                    //***  Doing B-tagging correctly ***
                     // B-tagged L1FastL2L3Residual PF Jets
                     // Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
                     ptbtagpfcL1Fj1res_       = -999.0;
@@ -3276,7 +3301,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
                             ptbtagpfcL1Fj1res_ = jp4cor.pt();
                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
-							dphibtagpfcL1Fj1res_ = dphi; 
+                            dphibtagpfcL1Fj1res_ = dphi; 
                         }
                     }
 

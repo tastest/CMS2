@@ -51,9 +51,9 @@ private:
     Int_t   ls_;
     UInt_t  evt_;
     Float_t weight_;
-	TString dataset_;
-	TString filename_;
-	Bool_t is_real_data_;
+    TString dataset_;
+    TString filename_;
+    Bool_t is_real_data_;
 
     // Pileup - PUSummaryInfoMaker
     Int_t pu_nPUvertices_;
@@ -151,9 +151,9 @@ private:
 
     // Id
     Bool_t  closestMuon_;      // true if els_closestMuon().at(index) == -1
-	Float_t el_id_sieie_;
-	Float_t el_id_detain_;
-	Float_t el_id_dphiin_;
+    Float_t el_id_sieie_;
+    Float_t el_id_detain_;
+    Float_t el_id_dphiin_;
     Bool_t  el_id_smurfV5_;
     Bool_t  el_id_vbtf80_;
     Bool_t  el_id_vbtf90_;
@@ -183,6 +183,10 @@ private:
 
     Bool_t mu_isCosmic_;
 
+    Float_t mu_ecal_veto_dep_;
+    Float_t mu_hcal_veto_dep_;
+    Float_t mu_nchi2_;
+
     // Conversion Rejection
     Bool_t convHitPattern_;   // isFromConversionHitPattern(iEl)
     Bool_t convPartnerTrack_; // isFromConversionPartnerTrack(iEl)
@@ -204,7 +208,7 @@ private:
     Int_t mc3id_;
     Float_t mc3pt_;
     Float_t mc3dr_;
-	LorentzVector mc3p4_;
+    LorentzVector mc3p4_;
     Int_t leptonIsFromW_;
 
     //////////////////////////
@@ -583,6 +587,7 @@ private:
     Bool_t  btagpfcL1F_;
     Int_t   npfc30L1Fj1_;      // number of jets above 30 GeV and away from lepton by dR >= 1.0
     Int_t   npfc40L1Fj1_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
+    Int_t   npfc50L1Fj1_eth_;      // number of jets above 40 GeV and away from lepton by dR >= 0.4
 
     // Same for btagged PF Corrected jets L1FastL2L3
     Float_t ptbtagpfcL1Fj1_;       // highest pt btagged jet well separated from the lepton
@@ -598,6 +603,7 @@ private:
     Bool_t  btagpfcL1Fres_;
     Int_t   npfc30L1Fj1res_;      // number of jets above 30 GeV and away from lepton by dR >= 1.0
     Int_t   npfc40L1Fj1res_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
+    Int_t   npfc50L1Fj1res_eth_;      // number of jets above 40 GeV and away from lepton by dR >= 0.4
 
     // Same for btagged PF Corrected jets L1FastL2L3Residual
     Float_t ptbtagpfcL1Fj1res_;       // highest pt btagged jet well separated from the lepton
