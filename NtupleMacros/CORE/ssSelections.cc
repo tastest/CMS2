@@ -152,7 +152,7 @@ float samesign::electronIsolationPF2012(int idx)
 
     // pf iso
     // calculate from the ntuple for now...
-#ifdef SS_USE_OLD_ISO
+#ifdef SS_USE_OLD_ISO // for 52X 
     float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
     float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
     float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
@@ -174,33 +174,71 @@ float samesign::electronIsolationPF2012(int idx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 // passes dilepton trigger
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool samesign::passesTrigger(int hyp_type)
+bool samesign::passesTrigger(int hyp_type, bool is_high_pt)
 {
     //----------------------------------------
     // no trigger requirements applied to MC
     //----------------------------------------
-  
-    // removed for HCP preapproval -- RWK
-    //if (!cms2.evt_isRealData())
-    //    return true; 
-  
+
+    if (!cms2.evt_isRealData())
+        return true; 
+
     //---------------------------------
     // triggers for dilepton datasets
     //---------------------------------
-    //mm
-    if (hyp_type == 0) {
-        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )   return true;
-    }
 
-    //em
-    else if ((hyp_type == 1 || hyp_type == 2)) {
-        if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )   return true;
-        if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") )   return true;
+    // get the dataset name
+    if (is_high_pt)
+    {
+        // mm
+        if (hyp_type == 0) {
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v")) {return true;}
+        }
+
+        // em
+        else if ((hyp_type == 1 || hyp_type == 2)) {
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
+        }
+
+        // ee
+        else if (hyp_type == 3) {
+            if (passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
+        }
     }
-    
-    //ee
-    else if (hyp_type == 3) {
-        if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
+    else
+    {
+        // mm
+        if (hyp_type == 0) {
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v"                             )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET40_v8"            )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET50_v8"            )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT175_v4"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT225_v4"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT175_v4")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT225_v4")) {return true;}
+        }
+
+        // em
+        else if ((hyp_type == 1 || hyp_type == 2)) {
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v"        )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v"        )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v4"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v4"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8"           )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8"           )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v4")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v4")) {return true;}
+        }
+
+        // ee
+        else if (hyp_type == 3) {
+            if (passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v4"                                   )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v4"                                   )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8"                                      )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8"                                      )) {return true;}
+        }
     }
 
     return false;
