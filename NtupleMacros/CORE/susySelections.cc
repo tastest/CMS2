@@ -80,6 +80,23 @@ bool overlapMuon_ZMet2012_v1(int index , float ptcut = 10.0 ){
 
 }
 
+bool overlapMuon_ZMet2012_v2(int index , float ptcut = 10.0 ){
+
+  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+
+    float dr = ROOT::Math::VectorUtil::DeltaR( cms2.els_p4().at(index) , cms2.mus_p4().at(imu) );
+    
+    if( dr > 0.1                           ) continue;
+    if( cms2.mus_p4().at(imu).pt() < ptcut ) continue;
+    if ( (((cms2.mus_type().at(imu)) & (1<<1)) == 0) && (((cms2.mus_type().at(imu)) & (1<<2)) == 0) ) continue;
+    
+    return true;
+  }
+
+  return false;
+
+}
+
 bool passElectronSelection_ZMet2012_v2_NoIso(int index, bool vetoTransition, bool eta24, bool useOldIsolation ){
 
   if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
@@ -125,6 +142,42 @@ bool passElectronSelection_ZMet2012_v2_DetIso(int index, bool vetoTransition, bo
 
   electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, LOOSE, useOldIsolation);
   if ((answer_loose_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) return true;
+  
+  return false;
+}
+
+bool passElectronSelection_ZMet2012_v3_NoIso(int index, bool vetoTransition, bool eta24, bool useOldIsolation ){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+  if( overlapMuon_ZMet2012_v2(index,10.0) )                                                               return false;
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, LOOSE, useOldIsolation);
+  if ((answer_loose_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) return true;
+  
+  return false;
+}
+
+bool passElectronSelection_ZMet2012_v3_Iso(int index, bool vetoTransition, bool eta24, bool useOldIsolation ){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+  if( overlapMuon_ZMet2012_v2(index,10.0) )                                                               return false;
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, LOOSE, useOldIsolation);
+  if ((answer_loose_2012 & PassWP2012CutsIso) == PassWP2012CutsIso) return true;
+  
+  return false;
+}
+
+bool passElectronSelection_ZMet2012_v3(int index, bool vetoTransition, bool eta24, bool useOldIsolation ){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+  if( overlapMuon_ZMet2012_v2(index,10.0) )                                                               return false;
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, LOOSE, useOldIsolation);
+  if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
   
   return false;
 }
