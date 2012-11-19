@@ -957,15 +957,17 @@ static const cuts_t electronSelectionFOV7_v3 =       // V3 - relaxed isolation (
 static const cuts_t electronSelection_TTVTightv1_noIso =
 					   //					   (1ll<<ELEETA_240)                      |
 					   (1ll<<ELEID_WP2012_MEDIUM_NOISO)       |
+                       (1ll<<ELENOTCONV_HITPATTERN_0MHITS)    |
 					   (1ll<<ELE_NOT_TRANSITION);
+					   
 
 //fakeable object definition
 static const cuts_t electronSelection_TTVTightFOv1 =
 							 //					   (1ll<<ELEETA_240)                     |
-					   (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP) |
-					   (1ll<<ELENOTCONV_HITPATTERN_0MHITS)   |
-					   (1ll<<ELE_NOT_TRANSITION)             |
-					   (1ll<<ELECHARGE_NOTFLIP3AGREE); 
+					   (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP)  |
+					   (1ll<<ELENOTCONV_HITPATTERN_0MHITS)    |
+					   (1ll<<ELE_NOT_TRANSITION);              
+
 
 
 // /////////////////////////////////////
