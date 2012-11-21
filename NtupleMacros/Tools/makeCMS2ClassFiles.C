@@ -634,7 +634,7 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
     headerf << "};" << endl << endl;
     
     headerf << "#ifndef __CINT__" << endl;
-    headerf << "extern " << Classname << " cms2;" << endl;
+    headerf << "extern " << Classname << " " << objName << ";" << endl;
     headerf << "#endif" << endl << endl;
 
     // Create namespace that can be used to access the extern'd cms2
