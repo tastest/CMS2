@@ -78,6 +78,23 @@ bool samesign::isIsolatedLepton(int id, int idx)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
+// 2012 lepton isolation value
+////////////////////////////////////////////////////////////////////////////////////////////     
+double samesign::leptonIsolation(int id, int idx)
+{
+    // electrons
+    if (abs(id) == 11)
+        return samesign::electronIsolationPF2012(idx);
+
+    // muons
+    if (abs(id) == 13)
+        return muonIsoValuePF2012_deltaBeta(idx);
+
+    return -999999.0;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 numerator lepton
 ////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isNumeratorLepton(int id, int idx)
@@ -174,7 +191,7 @@ float samesign::electronIsolationPF2012(int idx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 // passes dilepton trigger
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool samesign::passesTrigger(int hyp_type, bool is_high_pt)
+bool samesign::passesTrigger(int hyp_type, bool use_high_pt_triggers)
 {
     //----------------------------------------
     // no trigger requirements applied to MC
@@ -188,7 +205,7 @@ bool samesign::passesTrigger(int hyp_type, bool is_high_pt)
     //---------------------------------
 
     // get the dataset name
-    if (is_high_pt)
+    if (use_high_pt_triggers)
     {
         // mm
         if (hyp_type == 0) {
@@ -210,34 +227,40 @@ bool samesign::passesTrigger(int hyp_type, bool is_high_pt)
     {
         // mm
         if (hyp_type == 0) {
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v"                             )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET40_v8"            )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET50_v8"            )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT175_v4"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT225_v4"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT175_v4")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT225_v4")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET40_v"            )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET50_v"            )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT175_v"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT225_v"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT175_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT225_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFHT175_v"             )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFHT225_v"             )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT175_v"    )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT225_v"    )) {return true;}
         }
 
         // em
         else if ((hyp_type == 1 || hyp_type == 2)) {
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v"        )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v"        )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v4"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v4"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8"           )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8"           )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v4")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v4")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v"           )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v"           )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v"         )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"             )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225_v"             )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225_v"    )) {return true;}
         }
 
         // ee
         else if (hyp_type == 3) {
-            if (passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v4"                                   )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v4"                                   )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET40_v8"                                      )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET50_v8"                                      )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v")) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT225_v"    )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET40_v"   )) {return true;}
+            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET50_v"   )) {return true;}
         }
     }
 
