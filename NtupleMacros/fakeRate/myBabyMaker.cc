@@ -33,19 +33,18 @@
 #include "electronSelections.h"
 #include "electronSelectionsParameters.h"
 #include "eventSelections.h"
-//#include "jetSelections.h"
+#include "jetSelections.h"
 #include "metSelections.h"
 #include "MITConversionUtilities.h"
 #include "muonSelections.h"
 #include "trackSelections.h"
 #include "triggerUtils.h"
-//#include "at/GoodRun.h"
-#include "Tools/goodrun.h"
+#include "goodrun.h"
 #include "mcSelections.h"
-#include "ssSelections.h"
 #include "susySelections.h"
-#include "jetcorr/FactorizedJetCorrector.h"
+#include "ssSelections.h"
 #include "ttvSelections.h"
+#include "jetcorr/FactorizedJetCorrector.h"
 #else
 // for compiling in ACLiC (.L myBabyMaker.c++ method)
 // since the source files are included
@@ -352,12 +351,15 @@ float Mt( LorentzVector p4, float met, float met_phi )
 // set good run list
 void myBabyMaker::SetGoodRunList(const char* fileName, bool goodRunIsJson)
 {
-    if (goodRunIsJson)
-        set_goodrun_file_json(fileName);
-    else
-        set_goodrun_file(fileName);
+    if (!std::string(fileName).empty())
+    {
+        if (goodRunIsJson)
+            set_goodrun_file_json(fileName);
+        else
+            set_goodrun_file(fileName);
 
-    goodrun_is_json = goodRunIsJson;
+        goodrun_is_json = goodRunIsJson;
+    }
 }
 
 // lepton effecitve area
@@ -1684,7 +1686,6 @@ myBabyMaker::myBabyMaker ()
 //-----------------------------------
 void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, bool applyFOfilter, const std::string& jetcorrPath)
 {
-
     already_seen.clear();
 
     // Make a baby ntuple
@@ -1845,7 +1846,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
             vector<unsigned int> bpfindex;
             for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                 if ( !passesPFJetID(iJet)) continue;
-                LorentzVector jp4 = pfjets_p4()[iJet];
+                LorentzVector jp4 = pfjets_p4().at(iJet);
                 //jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
                 //jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
                 //jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -2129,16 +2130,16 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     ////////////////////////////
 
                     // Basic Quantities
-                    lp4_ = cms2.els_p4().at(iLep);
-                    pt_             = els_p4().at(iLep).pt();
-                    eta_            = els_p4().at(iLep).eta();
-                    sceta_          = els_etaSC().at(iLep);
-                    phi_            = els_p4().at(iLep).phi();
-                    scet_           = els_eSC()[iLep] / cosh( els_etaSC()[iLep] );
-                    hoe_            = els_hOverE().at(iLep);
-                    id_             = 11*els_charge().at(iLep);
-                    pfmet_          = evt_pfmet();
-                    pfmetphi_       = evt_pfmetPhi();
+                    lp4_       = cms2.els_p4().at(iLep);
+                    pt_        = els_p4().at(iLep).pt();
+                    eta_       = els_p4().at(iLep).eta();
+                    sceta_     = els_etaSC().at(iLep);
+                    phi_       = els_p4().at(iLep).phi();
+                    scet_      = els_eSC().at(iLep) / cosh( els_etaSC().at(iLep));
+                    hoe_       = els_hOverE().at(iLep);
+                    id_        = 11*els_charge().at(iLep);
+                    pfmet_     = evt_pfmet();
+                    pfmetphi_  = evt_pfmetPhi();
                     foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
                     fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
 
@@ -2422,7 +2423,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     btagpfc_       = false;
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
                         float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
                         //float jet_cor = pfjets_corL2L3().at(iJet);
                         LorentzVector jp4cor = jp4 * jet_cor;
@@ -2456,8 +2457,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
                         //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -2499,8 +2500,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     rho_ = cms2.evt_rho();
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
                         //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -2534,8 +2535,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dphibtagpfcL1Fj1_       = -999.0;
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
                         //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -2558,8 +2559,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dphibtagpfcL1Fj1res_       = -999.0;
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
                         //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -2589,7 +2590,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 //                     dRbNear_ = 99.;
 //                     dRbFar_  = -99.;
 //                     for (int ii=0; ii<nbjet_; ii++) {
-//                         unsigned int iJet = bindex[ii];
+//                         unsigned int iJet = bindex.at(ii);
 //                         float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet));
 //                         if (dr < dRbNear_) dRbNear_ = dr;
 //                         if (dr > dRbFar_)   dRbFar_  = dr;
@@ -2601,8 +2602,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dRbpfcNear_ = 99.;
                     dRbpfcFar_  = -99.;
                     for (int ii=0; ii<nbpfcjet_; ii++) {
-                        unsigned int iJet = bpfindex[ii];
-                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        unsigned int iJet = bpfindex.at(ii);
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
                         float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
                         //float jet_corr = pfjets_corL2L3().at(iJet);
                         LorentzVector jp4cor = jp4 * jet_cor;
@@ -3150,7 +3151,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         // JetID
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
                         float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
                         //float jet_cor = pfjets_corL2L3().at(iJet);
                         LorentzVector jp4cor = jp4 * jet_cor;
@@ -3185,8 +3186,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         // JetID
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
                         //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -3229,8 +3230,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         // JetID
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
                         //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -3264,8 +3265,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dphibtagpfcL1Fj1_       = -999.0;
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
                         //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -3288,8 +3289,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dphibtagpfcL1Fj1res_     = -999.0;
                     for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                         if ( !passesPFJetID(iJet)) continue;
-                        LorentzVector jp4 = pfjets_p4()[iJet];
-                        float jet_cor = cms2.pfjets_corL1FastL2L3residual()[iJet];
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
+                        float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
                         //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
@@ -3320,7 +3321,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 //                     dRbNear_ =  99.;
 //                     dRbFar_  = -99.;
 //                     for (int ii=0; ii<nbjet_; ii++) {
-//                         unsigned int iJet = bindex[ii];
+//                         unsigned int iJet = bindex.at(ii);
 //                         float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet));
 //                         if (dr < dRbNear_) dRbNear_ = dr;
 //                         if (dr > dRbFar_)  dRbFar_  = dr;
@@ -3333,8 +3334,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     dRbpfcFar_  = -99.;
                     //FactorizedJetCorrector* jet_pf_corrector = evt_isRealData() ? jet_pf_L1FastJetL2L3Residual_corrector : jet_pf_L1FastJetL2L3_corrector; 
                     for (int ii=0; ii<nbpfcjet_; ii++) {
-                        unsigned int iJet = bpfindex[ii];
-                        LorentzVector jp4 = pfjets_p4()[iJet];
+                        unsigned int iJet = bpfindex.at(ii);
+                        LorentzVector jp4 = pfjets_p4().at(iJet);
                         //jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
                         //jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
                         //jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
