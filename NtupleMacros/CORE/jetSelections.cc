@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.37 2012/10/10 17:56:29 fgolf Exp $
+// $Id: jetSelections.cc,v 1.38 2012/11/30 16:38:51 vimartin Exp $
 
 #include <algorithm>
 #include <utility>
@@ -463,8 +463,9 @@ float jetDz(int ijet, int ivtx) {
 
 float dz_trk_vtx( const unsigned int trkidx, const unsigned int vtxidx ){
   
-  return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
-  
+  //return ((cms2.trks_vertex_p4()[trkidx].z()-cms2.vtxs_position()[vtxidx].z()) - ((cms2.trks_vertex_p4()[trkidx].x()-cms2.vtxs_position()[vtxidx].x()) * cms2.trks_trk_p4()[trkidx].px() + (cms2.trks_vertex_p4()[trkidx].y() - cms2.vtxs_position()[vtxidx].y()) * cms2.trks_trk_p4()[trkidx].py())/cms2.trks_trk_p4()[trkidx].pt() * cms2.trks_trk_p4()[trkidx].pz()/cms2.trks_trk_p4()[trkidx].pt());
+  return trks_dz_pv(trkidx,vtxidx).first;
+
 }
 
 float pfjet_beta(int ijet, int power , float dzcut , int ivtx , bool verbose ) {
@@ -517,7 +518,7 @@ float pfjet_beta(int ijet, int power , float dzcut , int ivtx , bool verbose ) {
     // require dz(trk,vtx) < dzcut
     //-------------------------------------------------------------------
 
-    float dz = dz_trk_vtx(itrk,ivtx);    
+    float dz = trks_dz_pv(itrk,ivtx).first;  
     if ( fabs(dz) > dzcut )     continue;
 
     //-------------------------------------------------------------------
