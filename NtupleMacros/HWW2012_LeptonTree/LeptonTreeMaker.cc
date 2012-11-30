@@ -421,30 +421,14 @@ void LeptonTreeMaker::ScanChain(TString outfileid,
 			//
 			// electron FR
 			//
-			TPMERegexp regexp_ele8					(	"HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)", "o"								);
-			TPMERegexp regexp_ele8trkidiso			(	"HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)", "o"			);
-			TPMERegexp regexp_ele8trkidiso_jet30	(	"HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)", "o"	);
-			TPMERegexp regexp_ele17trkidiso			(	"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)", "o"			);
-			TPMERegexp regexp_ele17trkidiso_jet30	(	"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)", "o"	);
 
-			unsigned int eleFRMask = LeptonTree::QCDFakeEle;
-			if (passedTriggerRegExp(regexp_ele8) 				||            		
-					passedTriggerRegExp(regexp_ele8trkidiso) 		||            
-					passedTriggerRegExp(regexp_ele8trkidiso_jet30) 	||      
-					passedTriggerRegExp(regexp_ele17trkidiso) 		||           
-					passedTriggerRegExp(regexp_ele17trkidiso_jet30) )     	eventSelection |= LeptonTree::QCDFakeEle;
-			if (eventSelection & eleFRMask)                 			MakeElectronFakeRateTree(leptonTree, weight, sample, eventSelection);
+            MakeElectronFakeRateTree(leptonTree, weight, sample);
 
 			//
 			// muon FR
             //
-            TPMERegexp regexp_mu8	("HLT_Mu8_v(\\d+)", "o"	);
-            TPMERegexp regexp_mu17	("HLT_Mu17_v(\\d+)", "o");
 
-            unsigned int muonFRMask = LeptonTree::QCDFakeMu;
-            if (	passedTriggerRegExp(regexp_mu8) || 
-					passedTriggerRegExp(regexp_mu17) ) 		eventSelection |= LeptonTree::QCDFakeMu;
-            if (eventSelection & muonFRMask)               	MakeMuonFakeRateTree(leptonTree, weight, sample, eventSelection);
+            MakeMuonFakeRateTree(leptonTree, weight, sample);
 
             //
             // electron tag and probe
@@ -746,8 +730,16 @@ void LeptonTreeMaker::MakeMuonTagAndProbeTree(LeptonTree &leptonTree, const doub
 // fake rates
 //
 
-void LeptonTreeMaker::MakeMuonFakeRateTree(LeptonTree &leptonTree, const double &weight, SmurfTree::DataType sample, const unsigned int eventSelection)
+void LeptonTreeMaker::MakeMuonFakeRateTree(LeptonTree &leptonTree, const double &weight, SmurfTree::DataType sample)
 {
+
+   // check trigger
+   TPMERegexp regexp_mu8   ("HLT_Mu8_v(\\d+)", "o" );
+   TPMERegexp regexp_mu17  ("HLT_Mu17_v(\\d+)", "o");
+   if( passedTriggerRegExp(regexp_mu8) )   HLT_Mu8_ = true;
+   if( passedTriggerRegExp(regexp_mu17))   HLT_Mu17_ = true;
+   if (!(HLT_Mu8_ || HLT_Mu17_)) return;
+
 	std::vector<Int_t> nullMu; // null identified muons // FIXME
 	std::vector<Int_t> nullEle; // null identified electrons  // FIXME
 
@@ -764,6 +756,7 @@ void LeptonTreeMaker::MakeMuonFakeRateTree(LeptonTree &leptonTree, const double 
     //
     // require exactly one FO
     //
+
 
     if (nfo == 1) {
 
@@ -784,17 +777,8 @@ void LeptonTreeMaker::MakeMuonFakeRateTree(LeptonTree &leptonTree, const double 
         leptonTree.qProbe_      = cms2.mus_charge()[fo];
         leptonTree.met_         = cms2.evt_pfmet();
         leptonTree.metPhi_      = cms2.evt_pfmetPhi();
-
         LorentzVector nullvector(0.0, 0.0, 0.0, 0.0);
-
-        leptonTree.eventSelection_ = eventSelection;
-
-		// FR triggers
-        TPMERegexp regexp_mu8	("HLT_Mu8_v(\\d+)", "o"	);
-        TPMERegexp regexp_mu17	("HLT_Mu17_v(\\d+)", "o");
-
-        if(	passedTriggerRegExp(regexp_mu8)	)  	HLT_Mu8_ = true;
-		if(	passedTriggerRegExp(regexp_mu17)) 	HLT_Mu17_ = true;
+        leptonTree.eventSelection_ = LeptonTree::QCDFakeMu;
 
        	if ( fakableMuon(fo, MuFOV2, muonMVAEstimator_leptree,  nullMu, nullEle) ) 
           	leptonTree.leptonSelection_     |= LeptonTree::PassMuFO;
@@ -814,8 +798,24 @@ void LeptonTreeMaker::MakeMuonFakeRateTree(LeptonTree &leptonTree, const double 
 
 }
 
-void LeptonTreeMaker::MakeElectronFakeRateTree(LeptonTree &leptonTree, const double &weight, SmurfTree::DataType sample, const unsigned int eventSelection)
+void LeptonTreeMaker::MakeElectronFakeRateTree(LeptonTree &leptonTree, const double &weight, SmurfTree::DataType sample)
 {
+
+    // check trigger
+
+    TPMERegexp regexp_ele8                  (   "HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)", "o"                             );
+    TPMERegexp regexp_ele8trkidiso          (   "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)", "o"          );
+    TPMERegexp regexp_ele8trkidiso_jet30    (   "HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)", "o"    );
+    TPMERegexp regexp_ele17trkidiso         (   "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)", "o"         );
+    TPMERegexp regexp_ele17trkidiso_jet30   (   "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)", "o"   );
+    if( passedTriggerRegExp(regexp_ele8) )                      HLT_Ele8_CaloIdL_TrkIdVL_ = true;
+    if( passedTriggerRegExp(regexp_ele8trkidiso) )              HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_ = true;
+    if( passedTriggerRegExp(regexp_ele8trkidiso_jet30))         HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_ = true;
+    if( passedTriggerRegExp(regexp_ele17trkidiso) )             HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_ = true;
+    if( passedTriggerRegExp(regexp_ele17trkidiso_jet30) )       HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_ = true;
+
+    if (!(HLT_Ele8_CaloIdL_TrkIdVL_ || HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_ || HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_ 
+        || HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_ || HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_)) return;
 
 	//
 	// count FO
@@ -852,20 +852,7 @@ void LeptonTreeMaker::MakeElectronFakeRateTree(LeptonTree &leptonTree, const dou
         	leptonTree.met_         = cms2.evt_pfmet();
         	leptonTree.metPhi_      = cms2.evt_pfmetPhi();
 			LorentzVector nullvector(0.0, 0.0, 0.0, 0.0);
-			leptonTree.eventSelection_ = eventSelection;
-
-			// FR triggers
-            TPMERegexp regexp_ele8					(	"HLT_Ele8_CaloIdL_TrkIdVL_v(\\d+)", "o"								);
-            TPMERegexp regexp_ele8trkidiso			(	"HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)", "o"			);
-            TPMERegexp regexp_ele8trkidiso_jet30	(	"HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)", "o"	);
-            TPMERegexp regexp_ele17trkidiso			(	"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v(\\d+)", "o"			);
-            TPMERegexp regexp_ele17trkidiso_jet30	(	"HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_v(\\d+)", "o"	);
-
-            if( passedTriggerRegExp(regexp_ele8) )			           	HLT_Ele8_CaloIdL_TrkIdVL_ = true;
-            if(	passedTriggerRegExp(regexp_ele8trkidiso) )		        HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_ = true;
-            if(	passedTriggerRegExp(regexp_ele8trkidiso_jet30)) 		HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_ = true;
-           	if(	passedTriggerRegExp(regexp_ele17trkidiso) )				HLT_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_ = true;
-            if(	passedTriggerRegExp(regexp_ele17trkidiso_jet30) )     	HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_ = true;
+			leptonTree.eventSelection_ = LeptonTree::QCDFakeEle;
 
 			const std::vector<JetPair> &jets = getJets(jetType(), cms2.els_p4()[fo], nullvector, 0, 4.7, true, jet_corrector_pfL1FastJetL2L3_);
 			if (jets.size()>0)	leptonTree.jet1_ = jets.at(0).first;
