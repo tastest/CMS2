@@ -495,15 +495,12 @@ unsigned int numberOfExtraLeptons(	int i_hyp, double minPt, bool useLHeleId, int
 
 bool passedTriggerRegExp(TPMERegexp trigName)
 {
-
     for (unsigned int tidx = 0; tidx < cms2.hlt_trigNames().size(); tidx++) {
         if (trigName.Match(cms2.hlt_trigNames().at(tidx)) != 0) {
-            return true;
+            return cms2.hlt_bits().TestBitNumber(tidx);
         }
     }
-
     return false;
-
 }
 
 bool passedTrigger(TString trigName, unsigned int minRun, unsigned int maxRun) 
