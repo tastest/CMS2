@@ -20,7 +20,8 @@
 
 using namespace wp2012;
 
-struct jet_pt_gt {
+struct jet_pt_gt 
+{
     bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
     {
         return v1.pt() > v2.pt();
@@ -116,6 +117,7 @@ bool samesign::isNumeratorHypothesis(int idx)
     return true;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 denominator lepton
 ////////////////////////////////////////////////////////////////////////////////////////////     
@@ -130,6 +132,20 @@ bool samesign::isDenominatorLepton(int id, int idx)
         return (muonId(idx, muonSelectionFO_ssV5));
 
     return false;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////     
+// 2012 denominator hypothesis
+////////////////////////////////////////////////////////////////////////////////////////////     
+bool samesign::isDenominatorHypothesis(int idx)
+{
+    if (!samesign::isDenominatorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx)))
+        return false;
+    if (!samesign::isDenominatorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx)))
+        return false;
+
+    return true;
 }
 
 
@@ -148,6 +164,7 @@ bool samesign::passThreeChargeRequirement(int elIdx)
 
     return false;
 }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // calculate PF-based isolation for electrons with rho*Aeff correction
