@@ -10,12 +10,20 @@ inline bool sortByPt(const LorentzVector &vec1, const LorentzVector &vec2 ) {
     return vec1.pt() > vec2.pt();
 }
 
-// Delat Phi
+// Delta Phi
 inline float deltaPhi( float phi1 , float phi2 ) {
   float dphi = fabs( phi1 - phi2 );
   if( dphi > TMath::Pi() ) dphi = TMath::TwoPi() - dphi;
   return dphi;
 }
+
+// Delta R
+inline double deltaR(float eta1 , float phi1 , float eta2 , float phi2) {
+  double dphi = std::min(::fabs(phi1 - phi2), 2 * M_PI - fabs(phi1 - phi2));
+  double deta = eta1 - eta2;
+  return sqrt(dphi*dphi + deta*deta);
+}
+
 
 bool   hypsOverlap(int, int );
 
