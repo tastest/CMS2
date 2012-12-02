@@ -5,19 +5,21 @@ using namespace std;
 
 QGLikelihoodCalculator::QGLikelihoodCalculator( const std::string& fileName_nCharged, const std::string& fileName_nNeutral, const std::string& fileName_ptD ) {
 
+  /*
   // those input files are hard coded for now
   std::string path_nCharged = "CORE/QuarkGluonTagger/QGTaggerConfig_nCharged_AK5PF.txt";
   std::string path_nNeutral = "CORE/QuarkGluonTagger/QGTaggerConfig_nNeutral_AK5PF.txt";
   std::string path_ptD = "CORE/QuarkGluonTagger/QGTaggerConfig_ptD_AK5PF.txt";
+  */
 
-  jcp_nCharged_quark_ = new JetCorrectorParameters(path_nCharged, "quark");
-  jcp_nCharged_gluon_ = new JetCorrectorParameters(path_nCharged, "gluon");
+  jcp_nCharged_quark_ = new JetCorrectorParameters(fileName_nCharged, "quark");
+  jcp_nCharged_gluon_ = new JetCorrectorParameters(fileName_nCharged, "gluon");
 
-  jcp_nNeutral_quark_ = new JetCorrectorParameters(path_nNeutral, "quark");
-  jcp_nNeutral_gluon_ = new JetCorrectorParameters(path_nNeutral, "gluon");
+  jcp_nNeutral_quark_ = new JetCorrectorParameters(fileName_nNeutral, "quark");
+  jcp_nNeutral_gluon_ = new JetCorrectorParameters(fileName_nNeutral, "gluon");
 
-  jcp_ptD_quark_ = new JetCorrectorParameters(path_ptD, "quark");
-  jcp_ptD_gluon_ = new JetCorrectorParameters(path_ptD, "gluon");
+  jcp_ptD_quark_ = new JetCorrectorParameters(fileName_ptD, "quark");
+  jcp_ptD_gluon_ = new JetCorrectorParameters(fileName_ptD, "gluon");
 
   /*
   //
