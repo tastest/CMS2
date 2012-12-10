@@ -95,8 +95,9 @@ bool select (bool isData)
     if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
     
     //electron ID
-    if (abs(hyp_ll_id()[hypIdx]) == 11  && (!passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx])) && !passElectronSelection_ZMet2012_v3(hyp_ll_index()[hypIdx])) ) continue;
-    if (abs(hyp_lt_id()[hypIdx]) == 11  && (!passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx])) && !passElectronSelection_ZMet2012_v3(hyp_lt_index()[hypIdx])) ) continue;
+    if (abs(hyp_ll_id()[hypIdx]) == 11  && (!passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx]) && !passElectronSelection_ZMet2012_v3(hyp_ll_index()[hypIdx]) ) ) continue;
+
+    if (abs(hyp_lt_id()[hypIdx]) == 11  && (!passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx]) && !passElectronSelection_ZMet2012_v3(hyp_lt_index()[hypIdx]) ) ) continue;
     
     return true;
   }
