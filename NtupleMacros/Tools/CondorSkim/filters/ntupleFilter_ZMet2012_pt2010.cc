@@ -34,12 +34,9 @@ using namespace tas;
 // please be careful you don't create a file which is enormous (unless
 // you can handle enormous files)
 
-bool passElectronSelection_ZMet2012_v1(int index, bool vetoTransition=false, bool eta24=false){
+bool passElectronSelection_ZMet2012_v2(int index){
 
-  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
-  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
-
-  electronIdComponent_t answer_loose_2012 = electronId_WP2012(index, LOOSE);
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, LOOSE);
   if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
   
   return false;
@@ -90,8 +87,8 @@ bool select (bool isData)
     if (abs(hyp_lt_id()[hypIdx]) == 13  && !( muonId( hyp_lt_index()[hypIdx] , ZMet2012_v1 )))   continue;
     
     //electron ID
-    if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v1(hyp_ll_index()[hypIdx])) ) continue;
-    if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v1(hyp_lt_index()[hypIdx])) ) continue;
+    if (abs(hyp_ll_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_ll_index()[hypIdx])) ) continue;
+    if (abs(hyp_lt_id()[hypIdx]) == 11  && (! passElectronSelection_ZMet2012_v2(hyp_lt_index()[hypIdx])) ) continue;
     
     return true;
   }
