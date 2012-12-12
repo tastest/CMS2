@@ -32,37 +32,24 @@ class Thrust {
   typedef ROOT::Math::PositionVector3D<ROOT::Math::Cartesian3D<double> > XYZPoint;
   typedef ROOT::Math::DisplacementVector3D<ROOT::Math::Cartesian3D<double> > XYZVector;
 
+  //  const std::vector<LorentzVector> & inputVectors;
+
   /// constructor from first and last iterators
-  template<typename const_iterator>
-    Thrust(const_iterator begin, const_iterator end) :
+  //  template<typename const_iterator>
+  Thrust(const std::vector<LorentzVector> & inputVec) :
     thrust_(0), axis_(0, 0, 0), pSum_(0), 
-    n_(end - begin), p_(n_) {
+    n_(inputVec.size()), p_(n_) {
     if (n_ == 0) return;
-
-    /*
-    std::vector<const reco::Candidate*> cands;
-    for(const_iterator i = begin; i != end; ++i) {
-      cands.push_back(&*i);
-    }
-    init(cands);
-    */
     
-    const std::vector<LorentzVector> & inputVectors;
-
-    /*
-    for(const_i i = begin; i != end; ++i) {
-      cands.push_back(&*i);
-    }
-    */
-
-    init(inputVectors);
-
+    init(inputVec);
+    
   } 
+
     /// thrust value (in the range [0.5, 1.0])
     double thrust() const { return thrust_; } 
     /// thrust axis (with magnitude = 1)
     const XYZVector& axis() const { return axis_; } 
-
+    
  private:
     double thrust_;
     XYZVector axis_;
