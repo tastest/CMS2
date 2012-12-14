@@ -266,7 +266,7 @@ bool passElectronSelection_Stop2012_v2(int index, bool vetoTransition, bool eta2
 //------------------------------------------------------------------------------------------------
 // medium electron WP of:
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification
-// v3: relax selection applied to muons used for overlap removal
+// v3: relax selection applied to muons used for overlap removal and update effective areas
 //------------------------------------------------------------------------------------------------
 
 bool passElectronSelection_Stop2012_v3_NoIso(int index, bool vetoTransition, bool eta24, bool useOldIsolation ){
@@ -275,7 +275,7 @@ bool passElectronSelection_Stop2012_v3_NoIso(int index, bool vetoTransition, boo
   if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
   if( overlapMuon_ZMet2012_v2(index,10.0) )                                                               return false;
 
-  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, MEDIUM, useOldIsolation);
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v3(index, MEDIUM, useOldIsolation);
   if ((answer_loose_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) return true;
   
   return false;
@@ -287,7 +287,7 @@ bool passElectronSelection_Stop2012_v3_Iso(int index, bool vetoTransition, bool 
   if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
   if( overlapMuon_ZMet2012_v2(index,10.0) )                                                               return false;
 
-  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, MEDIUM, useOldIsolation);
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v3(index, MEDIUM, useOldIsolation);
   if ((answer_loose_2012 & PassWP2012CutsIso) == PassWP2012CutsIso) return true;
   
   return false;
@@ -299,7 +299,7 @@ bool passElectronSelection_Stop2012_v3(int index, bool vetoTransition, bool eta2
   if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
   if( overlapMuon_ZMet2012_v2(index,10.0) )                                                               return false;
 
-  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v2(index, MEDIUM, useOldIsolation);
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v3(index, MEDIUM, useOldIsolation);
   if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
   
   return false;
