@@ -1,20 +1,18 @@
 // Original author: Puneeth Kalavase (UCSB)
 // Updates: Frank Golf (UCSD)
-// Updates: Ryan Kelley (UCSD)
 // 
 /*
   ROOT macro to make CMS2.h and ScanChain.C files for basic analysis
   of CMS2 ntuples. Usage:
 
   root [0] .L makeCMS2ClassFiles.C++
-  root [1] makeCMS2ClassFiles(filename, paranoia, treename, branchfilename, classname, namespace, objname)
+  root [1] makeCMS2ClassFiles(filename, paranoia, branchfilename, classname )
   
   filename = location+name of ntuple file
   paranoia = boolean. If true, will add checks for branches that have nans
   branchfilename = See http://www.t2.ucsd.edu/tastwiki/bin/view/CMS/SkimNtuples
   classname = you can change the default name of the class "CMS2" to whatever you want
-  namespace = you can change the default namepace of "tas" to whatever you want
-  ojbname = you can change the default classname object of "cms2" to whatever you want
+
 */
 
 
@@ -37,16 +35,15 @@ ofstream codef;
 ofstream implf;
 ofstream branchfile;
 
-void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const string& Classname, const string& nameSpace, const string& objName);
-void makeSrcFile(const string& Classname, const string& nameSpace, const string& objName, const string& branchNamesFile, const string& treeName);
-void makeBranchFile(string branchNamesFile, string treeName);
-void makeDriverFile(string fname, string treeName);
+void makeHeaderFile(TFile *f, std::string treeName, bool paranoid, string Classname);
+void makeSrcFile(std::string Classname, std::string branchNamesFile, std::string treeName);
+void makeBranchFile(std::string branchNamesFile, std::string treeName);
+void makeDriverFile(std::string fname, std::string treeName);
 
 
 //-------------------------------------------------------------------------------------------------
-void makeCMS2ClassFiles (const std::string& fname, bool paranoid = true, const std::string& treeName="",
-                         const std::string& branchNamesFile="", const std::string& className="CMS2",
-                         const std::string& nameSpace="tas", const std::string& objName="cms2") {
+void makeCMS2ClassFiles (std::string fname, bool paranoid = true, std::string treeName="",
+                         std::string branchNamesFile="", std::string className = "CMS2") {
 
     using namespace std;
   
@@ -82,9 +79,9 @@ void makeCMS2ClassFiles (const std::string& fname, bool paranoid = true, const s
     implf.open((className+".cc").c_str());
     codef.open("ScanChain.C");
   
-    implf << "#include \"" << className+".h" << "\"\n" << className << " " << objName << ";" << endl;
-    makeHeaderFile(f, treeName, paranoid, className, nameSpace, objName);
-    makeSrcFile(className, nameSpace, branchNamesFile, treeName, objName);
+    implf << "#include \"" << className+".h" << "\"\n" << className << " cms2;" << endl;
+    makeHeaderFile(f, treeName, paranoid, className);
+    makeSrcFile(className, branchNamesFile, treeName);
     if(branchNamesFile!="")
         makeBranchFile(branchNamesFile, treeName);
     implf << "}" << endl;
@@ -103,7 +100,7 @@ void makeCMS2ClassFiles (const std::string& fname, bool paranoid = true, const s
 
 
 //-------------------------------------------------------------------------------------------------
-void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const string& Classname, const string& nameSpace, const string& objName) {
+void makeHeaderFile(TFile *f, std::string treeName, bool paranoid, string Classname) {
 	
   
   
@@ -191,23 +188,16 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
            !branchtitle.EndsWith("/O") &&
            !branchtitle.BeginsWith("TString") &&
            !branchtitle.BeginsWith("TBits") &&
-           !branchclass.Contains("LorentzVector") &&
-           !branchclass.Contains("int") &&   
-           !branchclass.Contains("uint") &&  
-           !branchclass.Contains("bool") &&  
-           !branchclass.Contains("float") && 
-           !branchclass.Contains("double") &&
-           !branchclass.Contains("TString"))
+           !branchclass.Contains("LorentzVector"))
             continue;
 
-        // if (branchclass.Contains("TString"))
-        // {
-        //     std::cout << "Adding branch " << branchtitle.Data() << " to list." << std::endl;
-        //     std::cout.flush();
-        // }
+//        if (branchclass.Contains("LorentzVector"))
+        // std::cout << "Adding branch " << branchtitle.Data() << " to list." << std::endl;
+        // std::cout.flush();
 
         aliasarray->Add(fullarray->At(i));
     }
+  
   
     for(Int_t i = 0; i< aliasarray->GetSize(); ++i) {
     
@@ -227,11 +217,7 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
                 classname = classname(0,classname.Length()-2);
                 classname.ReplaceAll("edm::Wrapper<","");
                 headerf << "\t" << classname << " " << aliasname << "_;" << endl;
-            } 
-            //else if (classname.Contains("TString")) {
-            //    headerf << "\t" << classname << " " << aliasname << "_;" << endl;
-            //} 
-            else {
+            } else {
                 headerf << "\t" << classname << " *" << aliasname << "_;" << endl;
             }
         } else {
@@ -241,11 +227,7 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
                     classname = classname(0,classname.Length()-1);
                     classname.ReplaceAll("edm::Wrapper<","");
                     headerf << "\t" << classname << " " << aliasname << "_;" << endl;
-                }
-                //else if (classname.Contains("TString")) {
-                //    headerf << "\t" << classname << " " << aliasname << "_;" << endl;
-                //} 
-                else {
+                } else {
                     headerf << "\t" << classname << " *" << aliasname << "_;" << endl;
                 }
             } else {
@@ -280,21 +262,18 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
             branch = (TBranch*)aliasarray->At(i);
 
         TString classname = branch->GetClassName();
-        TString branch_ptr = Form("%s_branch",aliasname.Data());
         if ( !classname.Contains("vector<vector") ) {
             if ( classname.Contains("Lorentz") || classname.Contains("PositionVector") || classname.Contains("TBits")) {
                 headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = 0;" << endl;
                 if (have_aliases) {
                     headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
                     headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
-                    //headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
-                    headerf << Form("\t\tif (%s) {%s->SetAddress(&%s_);}\n\t}", branch_ptr.Data(), branch_ptr.Data(), aliasname.Data()) << endl;
+                    headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
                 }
                 else {
                     headerf << "\t" << "if (tree->GetBranch(\"" << aliasname << "\") != 0) {" << endl;
                     headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(\"" << aliasname << "\");" << endl;
-                    //headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
-                    headerf << Form("\t\tif (%s) {%s->SetAddress(&%s_);}\n\t}", branch_ptr.Data(), branch_ptr.Data(), aliasname.Data()) << endl;
+                    headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
                 }
             }
         }
@@ -313,20 +292,17 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
             branch = (TBranch*)aliasarray->At(i);
 
         TString classname = branch->GetClassName();
-        TString branch_ptr = Form("%s_branch",aliasname.Data());
         if ( ! (classname.Contains("Lorentz") || classname.Contains("PositionVector") || classname.Contains("TBits")) || classname.Contains("vector<vector") ) {
             headerf << "\t" << Form("%s_branch",aliasname.Data()) << " = 0;" << endl;
             if (have_aliases) {
                 headerf << "\t" << "if (tree->GetAlias(\"" << aliasname << "\") != 0) {" << endl;
                 headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(tree->GetAlias(\"" << aliasname << "\"));" << endl;
-                //headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
-                headerf << Form("\t\tif (%s) {%s->SetAddress(&%s_);}\n\t}", branch_ptr.Data(), branch_ptr.Data(), aliasname.Data()) << endl;
+                headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
             }
                 else {
                     headerf << "\t" << "if (tree->GetBranch(\"" << aliasname << "\") != 0) {" << endl;
                     headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << " = tree->GetBranch(\"" << aliasname << "\");" << endl;
-                    //headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
-                    headerf << Form("\t\tif (%s) {%s->SetAddress(&%s_);}\n\t}", branch_ptr.Data(), branch_ptr.Data(), aliasname.Data()) << endl;
+                    headerf << "\t\t" << Form("%s_branch",aliasname.Data()) << "->SetAddress(&" << aliasname << "_);" << endl << "\t}" << endl;
                 }
         }
     }
@@ -500,9 +476,6 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
         if(isSkimmedNtuple) {
             headerf << "\t\t" << "return *" << aliasname << "_;" << endl << "\t}" << endl;
         }
-        else if(classname == "TString") {
-            headerf << "\t\t" << "return *" << aliasname << "_;" << endl << "\t}" << endl;
-        }
         else {
             headerf << "\t\t" << "return " << aliasname << "_;" << endl << "\t}" << endl;
         }
@@ -634,15 +607,15 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
     headerf << "};" << endl << endl;
     
     headerf << "#ifndef __CINT__" << endl;
-    headerf << "extern " << Classname << " " << objName << ";" << endl;
+    headerf << "extern " << Classname << " cms2;" << endl;
     headerf << "#endif" << endl << endl;
 
     // Create namespace that can be used to access the extern'd cms2
     // object methods without having to type cms2. everywhere.
     // Does not include cms2.Init and cms2.GetEntry because I think
     // it is healthy to leave those methods as they are
-    headerf << "namespace " << nameSpace << " {" << endl;
-    implf   << "namespace " << nameSpace << " {" << endl;
+    headerf << "namespace tas {" << endl;
+    implf   << "namespace tas {" << endl;
     for (Int_t i = 0; i< aliasarray->GetSize(); i++) {
         TString aliasname(aliasarray->At(i)->GetName());
         // TBranch *branch = ev->GetBranch(ev->GetAlias(aliasname.Data()));
@@ -689,28 +662,28 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
             }
         }
         headerf << ";" << endl;
-        implf   << " { return " << objName << "." << aliasname << "(); }" << endl;
+        implf   << " { return cms2." << aliasname << "(); }" << endl;
     }
     if(haveHLTInfo) {
         //functions to return whether or not trigger fired - HLT
         headerf << "\t" << "bool passHLTTrigger(TString trigName);" << endl;
-        implf   << "\t" << "bool passHLTTrigger(TString trigName) { return " << objName << ".passHLTTrigger(trigName); }" << endl;
+        implf   << "\t" << "bool passHLTTrigger(TString trigName) { return cms2.passHLTTrigger(trigName); }" << endl;
     }//if(haveHLTInfo) 
     if(haveHLT8E29Info) {
         //functions to return whether or not trigger fired - HLT
         headerf << "\t" << "bool passHLT8E29Trigger(TString trigName);" << endl;
-        implf   << "\t" << "bool passHLT8E29Trigger(TString trigName) { return " << objName << ".passHLT8E29Trigger(trigName); }" << endl;
+        implf   << "\t" << "bool passHLT8E29Trigger(TString trigName) { return cms2.passHLT8E29Trigger(trigName); }" << endl;
     }//if(haveHLT8E29Info) 
     if(haveL1Info) {
         //functions to return whether or not trigger fired - L1
         headerf << "\t" << "bool passL1Trigger(TString trigName);" << endl;
-        implf   << "\t" << "bool passL1Trigger(TString trigName) { return " << objName << ".passL1Trigger(trigName); }" << endl;
+        implf   << "\t" << "bool passL1Trigger(TString trigName) { return cms2.passL1Trigger(trigName); }" << endl;
     }//if(haveL1Info)
  
 }
   
 //-------------------------------------------------------------------------------------------------
-void makeSrcFile(const string& Classname, const string& nameSpace, const string& branchNamesFile, const string& treeName, const string& objName) {
+void makeSrcFile(std::string Classname, std::string branchNamesFile, std::string treeName) {
 
     // TTree *ev = (TTree*)f->Get("Events");
   
@@ -729,13 +702,13 @@ void makeSrcFile(const string& Classname, const string& nameSpace, const string&
     codef << "#include \"TROOT.h\"" << endl;
     codef << "#include \"TTreeCache.h\"" << endl;
     codef << "" << endl;
-    codef << "// " << Classname << endl;
+    codef << "// CMS2" << endl;
     codef << "#include \"" + Classname+".cc\"" << endl;
     if(branchNamesFile!="")
         codef << "#include \"branches.h\"" << endl;
     codef << "" << endl;
     codef << "using namespace std;" << endl;
-    codef << "using namespace " << nameSpace << ";" << endl;
+    codef << "using namespace tas;" << endl;
     codef << endl;
     codef << "int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFilePrefix = \"test\") {" << endl;
     codef << "" << endl;
@@ -766,7 +739,7 @@ void makeSrcFile(const string& Classname, const string& nameSpace, const string&
     codef << "    TTree *tree = (TTree*)file->Get(\"" << treeName << "\");" << endl;
     codef << "    if(fast) TTreeCache::SetLearnEntries(10);" << endl;
     codef << "    if(fast) tree->SetCacheSize(128*1024*1024);" << endl;
-    codef << "    " << objName << ".Init(tree);" << endl;
+    codef << "    cms2.Init(tree);" << endl;
     codef << "    " << endl;
     codef << "    // Loop over Events in current file" << endl;
     codef << "    if( nEventsTotal >= nEventsChain ) continue;" << endl;
@@ -776,11 +749,11 @@ void makeSrcFile(const string& Classname, const string& nameSpace, const string&
     codef << "      // Get Event Content" << endl;
     codef << "      if( nEventsTotal >= nEventsChain ) continue;" << endl;
     codef << "      if(fast) tree->LoadTree(event);" << endl;
-    codef << "      " << objName << ".GetEntry(event);" << endl;
+    codef << "      cms2.GetEntry(event);" << endl;
     codef << "      ++nEventsTotal;" << endl;
     codef << "    " << endl;
     codef << "      // Progress" << endl;
-    codef << "      " << Classname << "::progress( nEventsTotal, nEventsChain );" << endl << endl;
+    codef << "      CMS2::progress( nEventsTotal, nEventsChain );" << endl << endl;
     codef << "      // Analysis Code" << endl << endl;
     codef << "    }" << endl;
     codef << "  " << endl;
@@ -955,4 +928,6 @@ void makeDriverFile(std::string fname, std::string treeName) {
     driverF << "  ScanChain(ch); " << endl;
     driverF << "}";
     driverF.close();
+
+  
 }
