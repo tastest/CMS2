@@ -20,7 +20,7 @@ global_tag_flag = '';
 sParms = [];
 
 fastSim = False;
-
+MCatNLO = False;
 
 def makeCrabConfig():
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
@@ -132,6 +132,10 @@ def makeCMSSWConfig(cmsswSkelFile):
     if fastSim:
         outFile.write('process.cms2WithEverything.remove( process.cms2HBHENoiseFilterResultProducer ) #need to remove this produce for fastsim\n')
 
+    if MCatNLO:
+        outFile.write('process.cms2WithEverything.remove(process.CMS2FlavorHistorySequence)\n')
+
+
     outFile.close()
 
 
@@ -156,6 +160,7 @@ if len(sys.argv) < 5 :
     print '\t-gtag\t\tglobal tag. Default is MC_31X_V3::All'
     print '\t-sParms\t\tComma seperated, ordered list of Susy Parameter names.'
     print '\t-fastSim\t\tUse a subset of the sequence that is compatible with FastSim. Default is to not use it.'
+    print '\t-MCatNLO\t\tUse a subset of the sequence that is compatible with MC@NLO samples. Default is to not use it.'
     sys.exit()
 
 
@@ -186,6 +191,8 @@ for i in range(0, len(sys.argv)):
         sParms = str(sys.argv[i+1]).split(',')
     if sys.argv[i] == '-fastSim':
         fastSim = True
+    if sys.argv[i] == '-MCatNLO':
+        MCatNLO = True
 
 if os.path.exists(cmsswSkelFile) == False:
     print 'CMSSW skeleton file does not exist. Exiting'
