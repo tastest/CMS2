@@ -5,17 +5,6 @@
 #include <vector>
 
 //
-// 2012 cut based WP
-//
-
-enum wp2012_tightness {
-    VETO,
-    LOOSE,
-    MEDIUM,
-    TIGHT,
-};
-
-//
 // Data required for V02 of 
 // Branson/Sani electron ID
 //
@@ -56,8 +45,7 @@ enum vbtf_tightness {
     VBTF_85,
     VBTF_70_NOHOEEND,
     VBTF_90_HLT,
-    VBTF_90_HLT_CALOIDT_TRKIDVL,
-    VBTF_95_NOHOEEND
+    VBTF_90_HLT_CALOIDT_TRKIDVL
 };
 //--------------------------------
 
@@ -72,8 +60,6 @@ enum cand_tightness {
     CAND_02,
 };
 //--------------------------------
-
-void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutsee, std::vector<double> &cutooemoop, std::vector<double> &cutd0vtx, std::vector<double> &cutdzvtx, std::vector<bool> &cutvtxfit, std::vector<int> &cutmhit, std::vector<double> &cutrelisohighpt, std::vector<double> &cutrelisolowpt);
 
 void eidGetCand(const cand_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutslat);
 
@@ -90,8 +76,6 @@ void eidGetCIC_V03(const cic_tightness tightness, std::vector<double> &cutdcotdi
 void eidGetCIC_V02(const cic_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuteopin, std::vector<double> &cutet, std::vector<double> &cuthoe, std::vector<double> &cutip, std::vector<double> &cutisoecal, std::vector<double> &cutisohcal, std::vector<double> &cutisotk, std::vector<double> &cutmishits, std::vector<double> &cutsee);
 
 void eidAssign(std::vector<double> &cutarr, double cutvals[], unsigned int size);
-void eidAssign(std::vector<int> &cutarr, int cutvals[], unsigned int size);
-void eidAssign(std::vector<bool> &cutarr, bool cutvals[], unsigned int size);
 
 #endif
 

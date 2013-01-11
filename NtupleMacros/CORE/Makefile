@@ -4,7 +4,7 @@ include Makefile.arch
 # stuff to make
 #
 
-SOURCES=$(wildcard *.cc) $(wildcard jetsmear/*.cc) $(wildcard MT2/*.cc)
+SOURCES=$(wildcard *.cc)
 OBJECTS=$(SOURCES:.cc=.o)
 LIB=libCMS2NtupleMacrosCORE.so
 
@@ -26,7 +26,5 @@ $(LIB): $(OBJECTS)
 all: $(LIB) 
 clean:
 	rm -f *.o \ 
-	rm -f jetsmear/*.o \ 
-	rm -f MT2/*.o \
 	rm -f *.d \
 	rm -f *.so

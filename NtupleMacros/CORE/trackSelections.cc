@@ -1,4 +1,3 @@
-#include "Math/VectorUtil.h"
 #include <math.h>
 #include "CMS2.h"
 #include "trackSelections.h"
@@ -265,56 +264,3 @@ std::pair<double, double> gsftrks_dz_dapv (int itrk, int idapv)
     return std::pair<double, double>(value, error);
 }
 
-
-float ctfIsoValuePF(const unsigned int itrk, unsigned int ivtx, float coner, float minptn, float dzcut) {
-
-    float trkdz = trks_dz_pv(itrk,ivtx).first;
-    //float trketa = cms2.trks_trk_p4().at(itrk).eta();
-
-    float pfciso = 0.;
-    float pfniso = 0.;
-    //float pffootprint = 0.;
-    for (unsigned int ipf = 0; ipf < cms2.pfcands_p4().size(); ++ipf) {
-
-        float dR = ROOT::Math::VectorUtil::DeltaR(cms2.pfcands_p4().at(ipf), cms2.trks_trk_p4().at(itrk));
-
-        if (dR > coner) continue;
-
-        float pfpt  = cms2.pfcands_p4().at(ipf).pt();
-        //float pfeta = cms2.pfcands_p4().at(ipf).eta();    
-        //float deta  = fabs(pfeta - trketa);
-        //int pfid    = abs(cms2.pfcands_particleId().at(ipf));
-        if (cms2.pfcands_charge().at(ipf) == 0) { 
-            if (pfpt > minptn)
-                pfniso += pfpt;           
-        }
-        else {
-            int pftkid = cms2.pfcands_trkidx().at(ipf);
-            if (pftkid >= 0 && static_cast<int>(itrk) == pftkid)
-                continue;
-
-            if (pftkid >= 0) {
-                if ( fabs(trks_dz_pv(cms2.pfcands_trkidx().at(ipf), ivtx).first - trkdz) < dzcut) 
-                    pfciso += pfpt;
-            }
-        }
-    } // end loop over particle flow candidates
-
-    return (pfciso+pfniso)/cms2.trks_trk_p4().at(itrk).pt();
-}
-
-int associateTrackToVertex(const unsigned int itrk) {
-    
-    int best_vtx = -1;
-    float dz = -999.;
-    for (unsigned int ivtx = 0; ivtx < cms2.vtxs_position().size(); ivtx++) {
-        float tmp_dz = trks_dz_pv(itrk, ivtx).first;
-        if (fabs(tmp_dz) > fabs(dz))
-            continue;
-
-        dz = tmp_dz;
-        best_vtx = ivtx;
-    }
-
-    return best_vtx;
-}

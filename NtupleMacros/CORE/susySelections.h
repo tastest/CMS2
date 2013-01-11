@@ -9,12 +9,6 @@ typedef ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > LorentzVector;
 
 int leptonOrTauIsFromW(int idx, int id, bool alsoSusy = false);
 
-//---------------------------------------------
-// single muon triggers for lljj bump search
-//---------------------------------------------
-
-bool passMuMuJJTrigger_v1( bool isData );
-
 /*****************************************************************************************/
 //print event info
 /*****************************************************************************************/
@@ -32,17 +26,9 @@ bool vetoZmumuGamma( unsigned int hypIdx , float emax = 6. ,
 bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt );
 
 /*****************************************************************************************/
-//passes the SUSY 2012 trigger selections
-/*****************************************************************************************/
-bool passSUSYTrigger2012_v1( bool isData , int hypType );
-
-/*****************************************************************************************/
 //passes the single-lepton SUSY 2011 trigger selections
 /*****************************************************************************************/
 bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType );
-bool passSingleLep2JetSUSYTrigger2011( bool isData , int lepType );
-bool passSingleLep3JetSUSYTrigger2011( bool isData , int lepType );
-bool passSingleMuTrigger2011( bool isData , int lepType );
 
 /*****************************************************************************************/
 //passes the SUSY trigger selections
@@ -64,13 +50,10 @@ unsigned int selectBestZHyp(const vector<unsigned int> &v_goodHyps);
 /*****************************************************************************************/
 bool ZVetoGeneral( float ptcut = 20 , float minmass = 76 ,  float maxmass = 106 , SelectionType = OSGeneric_v3 );
 
-//---------------------------------------------
-// Check if trigger is unprescaled and passes
-//---------------------------------------------
-bool passUnprescaledHLTTriggerPattern(const char* arg);
-bool passHLTTriggerPattern(const char* arg);
-int passTriggerPrescale(const char* arg);
-TString triggerName(TString triggerPattern);
+/*****************************************************************************************/
+//get k-factor for LM points
+/*****************************************************************************************/
+//float kfactorSUSY(string sample);
 
 #endif
 

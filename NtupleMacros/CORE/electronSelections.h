@@ -50,7 +50,6 @@ enum EleSelectionType {
   ELEISO_FASTJET_REL005,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
   ELEISO_FASTJET_REL010,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
   ELEISO_FASTJET_REL015,     // truncated reliso < 0.05, 0.3 cone size, 1 GeV pedestal subtraction, fastjet-corrected
-  ELEISO_COR_RELNT010,       // truncated correction reliso < 0.1, cor_iso = ntiso - (ln(pt) * nvtx)/(30+pt)
 
 //////////////////////
 // Impact Parameter //
@@ -87,9 +86,6 @@ enum EleSelectionType {
   ELEID_VBTF_90_HLT,                  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdL_TrkIdVL
   ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL,  // VBTF90 electron ID with HoE and dPhiIn cuts tuned to represent HLT requirements for CaloIdT_TrkIdVL
   ELEID_CIC_V03_MEDIUM,               // CIC_MEDIUM electron ID (V03)
-  ELEID_VBTF_95_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
-  ELEID_WP2012_MEDIUM_NOISO,          // WP2012 MEDIUM ELECTRON ID, NO ISO
-  ELEID_WP2012_MEDIUM_NOISO_NOIP,     // WP2012 MEDIUM ELECTRON ID, NO ISO, NO IP
 
 //////////////////////////
 // Conversion Rejection //
@@ -99,7 +95,6 @@ enum EleSelectionType {
   ELENOTCONV_DISTDCOT002,        // dist < 0.02 && dcot(theta) < 0.02
   ELENOTCONV_HITPATTERN,         // < 2 missing hits
   ELENOTCONV_HITPATTERN_0MHITS,  // < 1 missing hits
-  ELENOTCONV_DISTDCOT002_OLD,    // dist < 0.02 && dcot(theta) < 0.02 using dist/dcot taken from the GsfElectron object
 
 //////////////////////
 // Basic Selections //
@@ -180,12 +175,6 @@ static const cuts_t electronSelection_el_OSV2_FO =
   (1ll<<ELEISO_ECAL_RELNT020_NPS)          | // ecal/pt < 0.2 (matches HLT requirement)
   (1ll<<ELEISO_REL040)                     | // reliso < 0.4, truncated, 1 GeV EB PS
   (1ll<<ELEETA_250);                         // |eta| < 2.5
-
-static const cuts_t electronSelection_el_VBTF90 = 
-  (1ll<<ELEID_VBTF_90_HLT);                  // VBTF90, tightened to match CaloIdT+TrkIdVL
-
-static const cuts_t electronSelection_el_VBTF95_NOHOEEND = 
-  (1ll<<ELEID_VBTF_95_NOHOEEND);             // VBTF95, no H/E endcap requirement
 
 static const cuts_t electronSelection_el_OSV3_noiso = 
   (1ll<<ELEID_VBTF_90_HLT_CALOIDT_TRKIDVL) | // VBTF90, tightened to match CaloIdT+TrkIdVL
@@ -803,147 +792,13 @@ static const cuts_t electronSelectionFOV5_ssVBTF80_v3 =       // V3 - relaxed is
                  (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
                  (1ll<<ELESEED_ECAL);
 
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-
-// Analysis Selection (fake rate numerator)
-static const cuts_t electronSelection_ssV5_noIso_noConvCuts = 
-           electronSelectionFO_SS_baselineV2   |
-           electronSelection_smurfV1ss_id      |
-           (1ll<<ELEIP_SS200)                  |
-           (1ll<<ELESEED_ECAL)                 |
-           (1ll<<ELE_NOT_TRANSITION)           |
-           (1ll<<ELECHARGE_NOTFLIP3AGREE);
-
-static const cuts_t electronSelection_ssV5_iso_noConvCuts =
-                 (1ll<<ELEISO_RELNT015);
-
-static const cuts_t electronSelection_ssV5_noConvCuts = 
-                       electronSelection_ssV5_noIso_noConvCuts |
-                       electronSelection_ssV5_iso_noConvCuts;
-
-// Loose "Fakeable Object" Selection (fake rate denominators)
-
-static const cuts_t electronSelectionFOV5_ssVBTF80_noConvCuts_v1 =       // V1 - relaxed Id & Isolation
-                 electronSelectionFO_SS_baselineV2   |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-                 (1ll<<ELESEED_ECAL);
-
-static const cuts_t electronSelectionFOV5_ssVBTF80_noConvCuts_v2 =       // V2 - relaxed Id
-                 electronSelectionFO_SS_baselineV2   |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-                 (1ll<<ELESEED_ECAL)                 |
-                 (1ll<<ELEISO_RELNT015);
-
-static const cuts_t electronSelectionFOV5_ssVBTF80_noConvCuts_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
-                 electronSelectionFO_SS_baselineV2   |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 electronSelection_smurfV1ss_id      |              
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-                 (1ll<<ELESEED_ECAL);
-
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////
-
-// Analysis Selection (fake rate numerator)
-static const cuts_t electronSelection_ssV6_noIso = 
-           electronSelectionFO_SS_baselineV2   |
-           electronSelection_smurfV1ss_id      |
-           (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
-           (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-           (1ll<<ELEIP_SS200)                  |
-           (1ll<<ELESEED_ECAL)                 |
-           (1ll<<ELE_NOT_TRANSITION)           |
-           (1ll<<ELECHARGE_NOTFLIP3AGREE);
-
-static const cuts_t electronSelection_ssV6_iso =
-                 (1ll<<ELEISO_RELNT015);
-
-static const cuts_t electronSelection_ssV6 = 
-                       electronSelection_ssV6_noIso |
-                       electronSelection_ssV6_iso;
-
-// Loose "Fakeable Object" Selection (fake rate denominators)
-
-static const cuts_t electronSelectionFOV6_ssVBTF80_v1 =       // V1 - relaxed Id & Isolation
-                 electronSelectionFO_SS_baselineV2   |
-                 (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
-                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-                 (1ll<<ELESEED_ECAL);
-
-static const cuts_t electronSelectionFOV6_ssVBTF80_v2 =       // V2 - relaxed Id
-                 electronSelectionFO_SS_baselineV2   |
-                 (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
-                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-                 (1ll<<ELESEED_ECAL)                 |
-                 (1ll<<ELEISO_RELNT015);
-
-static const cuts_t electronSelectionFOV6_ssVBTF80_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
-                 electronSelectionFO_SS_baselineV2   |
-                 electronSelection_smurfV1ss_id      |
-                 (1ll<<ELENOTCONV_DISTDCOT002_OLD)   |
-                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE)      |
-                 (1ll<<ELESEED_ECAL);
-
 /////////////////////////////////////
 // End 2011 SS Selections          //
 /////////////////////////////////////
 
 
-/////////////////////////////////////
-// 2012 SS Selections              //
-/////////////////////////////////////
 
-// Analysis Selection (fake rate numerator)
-static const cuts_t electronSelection_ssV7_noIso = 
-                       electronSelectionFO_SS_baselineV2   |
-                       (1ll<<ELEID_WP2012_MEDIUM_NOISO)    |
-                       (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-                       (1ll<<ELE_NOT_TRANSITION)           |
-                       (1ll<<ELECHARGE_NOTFLIP3AGREE);
 
-static const cuts_t electronSelection_ssV7_iso =
-                       (1ll<<ELEISO_RELNT015);
-
-static const cuts_t electronSelection_ssV7 = 
-                       electronSelection_ssV7_noIso |
-                       electronSelection_ssV7_iso;
-
-// Loose "Fakeable Object" Selection (fake rate denominators)
-
-static const cuts_t electronSelectionFOV7_v1 =       // V1 - relaxed Id & Isolation
-                 electronSelectionFO_SS_baselineV2   |
-                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
-
-static const cuts_t electronSelectionFOV7_v2 =       // V2 - relaxed Id
-                 electronSelectionFO_SS_baselineV2   |
-                 electronSelection_ssV7_iso          |
-                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS) |
-                 (1ll<<ELE_NOT_TRANSITION)           |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
-
-static const cuts_t electronSelectionFOV7_v3 =       // V3 - relaxed isolation (relaxed all the way; we store the relIso and can cut on it separately in the babies or elsewhere)
-                 electronSelectionFO_SS_baselineV2     |
-                 (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP) |
-                 (1ll<<ELENOTCONV_HITPATTERN_0MHITS)   |
-                 (1ll<<ELE_NOT_TRANSITION)             |
-                 (1ll<<ELECHARGE_NOTFLIP3AGREE);
-
-/////////////////////////////////////
-// End 2012 SS Selections          //
-/////////////////////////////////////
 
 
 
@@ -994,34 +849,10 @@ enum ElectronIDComponent {
   ELEID_IP,
 };
 
-namespace wp2012 {
-enum ElectronIDComponentWP2012 {
-    DETAIN          = (1<<0),
-    DPHIIN          = (1<<1),
-    SIGMAIETAIETA   = (1<<2),
-    HOE             = (1<<3),
-    OOEMOOP         = (1<<4),
-    D0VTX           = (1<<5),
-    DZVTX           = (1<<6),
-    ISO             = (1<<7),
-    VTXFIT          = (1<<8),
-    MHITS           = (1<<9)
-};
-static const electronIdComponent_t PassAllWP2012Cuts = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
-                                | OOEMOOP | D0VTX | DZVTX | ISO | VTXFIT | MHITS;
-
-static const electronIdComponent_t PassWP2012CutsNoIso = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
-                                | OOEMOOP | D0VTX | DZVTX | VTXFIT | MHITS;
-
-static const electronIdComponent_t PassWP2012CutsNoIsoNoIP = DETAIN | DPHIIN | SIGMAIETAIETA | HOE 
-                                | OOEMOOP | DZVTX | VTXFIT | MHITS;
-};
-
-
 // master selection function
 bool pass_electronSelectionCompareMask(const cuts_t cuts_passed, const cuts_t selectionType);
-bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true);
-cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true);
+bool pass_electronSelection(const unsigned int index, const cuts_t selectionType, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true, int vertex_index = -1);
+cuts_t electronSelection(const unsigned int index, bool applyAlignmentCorrection = false, bool removedEtaCutInEndcap = false, bool useGsfTrack = true, int vertex_index = -1);
 
 // "smurf" electron id
 // WARNING!!! this is not the full smurf selection, just the additional ID on top of VBTF80 for low pt guys
@@ -1035,9 +866,6 @@ bool electronId_smurf_v2ss(const unsigned int index);
 //bool electronId_cand(const unsigned int index, const cand_tightness tightness, bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 //bool electronId_extra(const unsigned int index);
 
-// WP2012
-electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_tightness tightness);
-
 // "VBTF" id
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);
 
@@ -1049,8 +877,6 @@ bool eidComputeCut(double x, double et, double cut_min, double cut_max, bool gtn
 
 //electron ID WP as of June 8th 2011
 electronIdComponent_t passLikelihoodId(unsigned int index, float lhValue, int workingPoint);
-//electron ID WP as of September 8th 2011
-bool passLikelihoodId_v2(unsigned int index, float lhValue, int workingPoint);
 
 // relative isolation 
 // - standard track isolation from CMSSW
@@ -1071,8 +897,7 @@ float electronIsolation_rel_v1_FastJet(const unsigned int, bool);
 float el_fastjet_rel_offset(const unsigned int);
 float electronIsolation_rel_ww(const unsigned int index, bool use_calo_iso);  // the difference from above is that the pedestal sub is applied on both EB/EE
 float electronIsoValuePF(const unsigned int iel, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, 
-			 float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=-999., int filterId = 0);
-float electronIsolation_cor_rel_v1(const unsigned int, bool);
+float footprintdr=0.07, float gammastripveto=0.025, float elestripveto=-999.);
 
 // remove electrons that are overlapping with a muon
 bool electronId_noMuon(const unsigned int index);
@@ -1081,7 +906,6 @@ bool electronId_noMuon_SS(const unsigned int index);
 // conversion rejection
 bool isFromConversionHitPattern(const unsigned int index);
 bool isFromConversionPartnerTrack(const unsigned int index);
-bool isFromConversionPartnerTrack_v2(const unsigned int index);
 bool isFromConversionMIT(const unsigned int index);
 
 //electron charge using the majority logic of the egamma group
@@ -1107,23 +931,6 @@ double electron_dzPV_smurfV3(unsigned int index);
 
 // dz
 double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVector& pv);
-
-//
-// 2012 PF Iso
-//
-
-void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, bool barrelVetoes = false);
-void electronIsoValuePF2012reco(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, float neutral_threshold = 0.5);
-float electronIsoValuePF2012_FastJetEffArea( int index , float conesize = 0.3 , int ivtx = 0);
-float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold = 1.0, float cone_size = 0.3, bool barrelVetoes = false, bool verbose = false);
-
-//
-// 2012 cut based ID
-//
-
-
-
-
 
 #endif
 
