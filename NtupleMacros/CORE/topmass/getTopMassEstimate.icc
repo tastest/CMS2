@@ -27,7 +27,7 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   //  int SM_JetMET = 1000; // recommended value for data
   
   TRandom3* rand3;
-  string JR_Standalone_Path = "CORE/topmass/JR_Standalone/txts/";
+  string JR_Standalone_Path = "../CORE/topmass/JR_Standalone/txts/";
   string ptFileName;
   string etaFileName;  
   string phiFileName;
@@ -40,20 +40,10 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
     //TRandom 3 class
     rand3 = new TRandom3();
     
-    ptFileName  = JR_Standalone_Path+"Spring10_PtResolution_AK5JPT.txt";
-    etaFileName = JR_Standalone_Path+"Spring10_EtaResolution_AK5JPT.txt";
-    phiFileName = JR_Standalone_Path+"Spring10_PhiResolution_AK5JPT.txt";
-    
-    //   if (JetMET_TYPE == 0){
-    //     ptFileName  = JR_Standalone_Path+"Spring10_PtResolution_AK5Calo.txt";
-    //     etaFileName = JR_Standalone_Path+"Spring10_EtaResolution_AK5Calo.txt";
-    //     phiFileName = JR_Standalone_Path+"Spring10_PhiResolution_AK5Calo.txt";
-    //   }
-    //   if (JetMET_TYPE == 2){
-    //     ptFileName  = JR_Standalone_Path+"Spring10_PtResolution_AK5PF.txt";
-    //     etaFileName = JR_Standalone_Path+"Spring10_EtaResolution_AK5PF.txt";
-    //     phiFileName = JR_Standalone_Path+"Spring10_PhiResolution_AK5PF.txt";
-    //   }  
+    ptFileName  = JR_Standalone_Path+"Spring10_PtResolution_AK5PF.txt";
+    etaFileName = JR_Standalone_Path+"Spring10_EtaResolution_AK5PF.txt";
+    phiFileName = JR_Standalone_Path+"Spring10_PhiResolution_AK5PF.txt";
+
     
     ptResol  = new JetResolution(ptFileName,doGaussian);
     etaResol = new JetResolution(etaFileName,doGaussian);
