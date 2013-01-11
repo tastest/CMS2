@@ -1,18 +1,23 @@
 #! /bin/bash
 # preamble to set up cms things
 # don't know if all of these are necessary
-export CMS_PATH=/code/osgcode/cmssoft/cms
-export SCRAM_ARCH=slc5_amd64_gcc434
-source /code/osgcode/cmssoft/cmsset_default.sh
-#export a second time since above line changes the scram_arch
-export SCRAM_ARCH=slc5_amd64_gcc434
-export CVSROOT=:gserver:cmscvs.cern.ch:/cvs_server/repositories/CMSSW
-source /code/osgcode/ucsdt2/gLite/etc/profile.d/grid_env.sh
-export ROOTSYS=/code/osgcode/cmssoft/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms21/
-export LD_LIBRARY_PATH=$ROOTSYS/lib:/code/osgcode/cmssoft/cms/slc5_amd64_gcc434/external/gcc/4.3.4-cms/lib64:$LD_LIBRARY_PATH
-#export PATH=$HOME/bin:$ROOTSYS/bin:/opt/d-cache/dcap/bin:$PATH
-export PATH=$HOME/bin:$ROOTSYS/bin:$PATH
-export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH
+source /code/osgcode/cmssoft/cmsset_default.sh  > /dev/null 2>&1
+export SCRAM_ARCH=slc5_amd64_gcc462
+
+CMSSWRelease="CMSSW_5_3_2_patch4"
+
+#checkout cmssw and setup release
+scram project -n $CMSSWRelease CMSSW $CMSSWRelease
+if [ $? != 0 ]; then
+       echo "ERROR: Failed to check out CMSSW release $CMSSWRelease.
+Exiting job without running."
+               scram list
+               exit 1
+fi
+
+cd $CMSSWRelease
+eval `scramv1 ru -sh`
+cd ..
 
 
 
