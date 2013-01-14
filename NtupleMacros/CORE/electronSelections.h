@@ -134,7 +134,7 @@ enum EleSelectionType {
 // Assuming the constants in EleSelectionType have default numeric values ( 0, 1, 2, ... N ),
 // the last enum constant will have integer value N
 // For the bitmasks to work, N must be <= 63
-static bool shown = false;
+static bool shown = true;
 inline void checkElectronSelections(void){
   int n    = (int) EleSelectionType(ELE_LAST);
   int nMax = (int) 8*sizeof(1ll) - 1;
@@ -947,8 +947,6 @@ static const cuts_t electronSelectionFOV7_v3 =       // V3 - relaxed isolation (
 // End 2012 SS Selections          //
 /////////////////////////////////////
 
-
-
 // /////////////////////////////////////
 // // 2012 TTV Selections             //
 // /////////////////////////////////////
@@ -1061,6 +1059,7 @@ bool electronId_smurf_v2ss(const unsigned int index);
 electronIdComponent_t electronId_WP2012(const unsigned int index, const wp2012_tightness tightness);
 electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp2012_tightness tightness, bool useOldIsolation = false);
 electronIdComponent_t electronId_WP2012_v3(const unsigned int index, const wp2012_tightness tightness, bool useOldIsolation = false);
+electronIdComponent_t electronId_WP2012_noIso_useElEtaForIsEB(const unsigned int index, const wp2012_tightness tightness);  // same as v2 except uses el->eta() to determine isEB and no iso
 
 // "VBTF" id
 electronIdComponent_t electronId_VBTF(const unsigned int index, const vbtf_tightness tightness,  bool applyAlignementCorrection = false, bool removedEtaCutInEndcap = false);

@@ -913,7 +913,6 @@ electronIdComponent_t electronId_WP2012_v2(const unsigned int index, const wp201
 
 // WP2012_v3: same as above function WP2012_v2 but with effective areas updated according to:
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection
-
 electronIdComponent_t electronId_WP2012_v3(const unsigned int index, const wp2012_tightness tightness, bool useOldIsolation)
 {
 
@@ -1020,6 +1019,78 @@ electronIdComponent_t electronId_WP2012_v3(const unsigned int index, const wp201
     return mask;
 
 }
+
+// This function is the same as electronId_WP2012_v2 except that it uses Super Cluster eta to 
+// determine where barrel vs endcap -- this was done to synchronize with ETH/FL.
+// no isolation decision
+electronIdComponent_t electronId_WP2012_noIso_useElEtaForIsEB(const unsigned int index, const wp2012_tightness tightness)
+{
+    // set return value
+    unsigned int mask = 0;
+
+    // cut values
+    std::vector<double> dEtaInThresholds;
+    std::vector<double> dPhiInThresholds;
+    std::vector<double> sigmaIEtaIEtaThresholds;
+    std::vector<double> hoeThresholds;
+    std::vector<double> ooemoopThresholds;
+    std::vector<double> d0VtxThresholds;
+    std::vector<double> dzVtxThresholds;
+    std::vector<bool> vtxFitThresholds;
+    std::vector<int> mHitsThresholds;
+    std::vector<double> isoHiThresholds;
+    std::vector<double> isoLoThresholds;
+
+    // set cut values
+    eidGetWP2012(tightness, dEtaInThresholds, dPhiInThresholds, hoeThresholds, sigmaIEtaIEtaThresholds, 
+            ooemoopThresholds, d0VtxThresholds, dzVtxThresholds, vtxFitThresholds, mHitsThresholds, 
+            isoHiThresholds, isoLoThresholds);
+
+    // determine which subdector: 0 is barrel, 1 is endcap 
+    unsigned int det = (fabs(cms2.els_p4().at(index).eta()) < 1.4442)  ? 0 : 1;
+
+    // |1/E - 1/p|
+    float ooemoop = fabs( (1.0/cms2.els_ecalEnergy()[index]) - (cms2.els_eOverPIn()[index]/cms2.els_ecalEnergy()[index]) );
+
+    // MIT conversion vtx fit
+    bool vtxFitConversion = isMITConversion(index, 0,   1e-6,   2.0,   true,  false);
+
+    int elgsftkid = cms2.els_gsftrkidx().at(index);
+    int eltkid    = cms2.els_trkidx().at(index);
+    int ivtx      = firstGoodVertex();
+
+    // sanity check
+    if( elgsftkid < 0 ){
+        std::cout << __FILE__ << " " << __LINE__                                                                           << std::endl;
+        std::cout << "WARNING! found electron without valid GSF track index"                                               << std::endl;
+        std::cout << cms2.evt_dataset().at(0) << " " << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << std::endl;
+        std::cout << "Electron pT eta phi " << Form("%.1f   %.1f   %.1f",cms2.els_p4().at(index).pt(),cms2.els_p4().at(index).phi(),cms2.els_p4().at(index).eta()) << std::endl;
+    }
+
+    //take dz from gsf, and if it does not exist (should always exist) take it from ctf track
+    float dzvtx = 100.0;
+    float d0vtx = 100.0;
+
+    if( ivtx >= 0 ){
+        dzvtx = elgsftkid>=0 ? gsftrks_dz_pv( elgsftkid,ivtx ).first : trks_dz_pv(eltkid,ivtx).first;
+        d0vtx = elgsftkid>=0 ? gsftrks_d0_pv( elgsftkid,ivtx ).first : trks_d0_pv(eltkid,ivtx).first;
+    }
+
+    // test cuts
+    if (fabs(cms2.els_dEtaIn()[index]) < dEtaInThresholds[det])             mask |= wp2012::DETAIN;
+    if (fabs(cms2.els_dPhiIn()[index]) < dPhiInThresholds[det])             mask |= wp2012::DPHIIN;
+    if (cms2.els_sigmaIEtaIEta()[index] < sigmaIEtaIEtaThresholds[det])     mask |= wp2012::SIGMAIETAIETA;
+    if (cms2.els_hOverE()[index] < hoeThresholds[det])                      mask |= wp2012::HOE;
+    if (ooemoop < ooemoopThresholds[det])                                   mask |= wp2012::OOEMOOP;
+    if (fabs(d0vtx) < d0VtxThresholds[det])                                 mask |= wp2012::D0VTX;
+    if (fabs(dzvtx) < dzVtxThresholds[det])                                 mask |= wp2012::DZVTX;
+    if (!vtxFitThresholds[det] || !vtxFitConversion)                        mask |= wp2012::VTXFIT;
+    if (cms2.els_exp_innerlayers()[index] <= mHitsThresholds[det])          mask |= wp2012::MHITS;
+
+    // return the mask
+    return mask;
+}
+
 
 float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int ivtx ){
 
