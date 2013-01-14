@@ -12,6 +12,8 @@
 #include "metSelections.h"
 #include "ssSelections.h"
 #include "jetSelections.h"
+#include "trackSelections.h"
+#include "MITConversionUtilities.h"
 #include "triggerUtils.h"
 #include "eventSelections.h"
 #include "utilities.h"
@@ -41,21 +43,54 @@ struct jet_pt_gt
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 good lepton
 ////////////////////////////////////////////////////////////////////////////////////////////     
-bool samesign::isGoodLepton(int id, int idx)
+bool samesign::isGoodLepton(int id, int idx, bool use_el_eta)
 {
     // electrons
-    if (abs(id) == 11) {
-        if (!pass_electronSelection(idx, electronSelection_ssV7_noIso, false, false))
-            return false;
-        if ((cms2.els_fiduciality().at(idx) & (1<<ISEB)) == (1<<ISEB))
-            return (cms2.els_hOverE().at(idx) < 0.10);
-        else
-            return (cms2.els_hOverE().at(idx) < 0.075);
+    if (abs(id) == 11)
+    {
+        if (use_el_eta)
+        {
+            cuts_t cuts_passed = electronSelection(idx, /*applyAlignmentCorrection=*/false, /*removedEtaCutInEndcap=*/false, /*useGsfTrack=*/true); 
+            electronIdComponent_t answer_med_2012 = electronId_WP2012_noIso_useElEtaForIsEB(idx, MEDIUM);
+            if ((answer_med_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) 
+            {
+                cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO);
+            }
+            if ((cuts_passed & electronSelection_ssV7_noIso) != electronSelection_ssV7_noIso) 
+            {
+                return false;
+            }
+            if (abs(cms2.els_p4().at(idx).eta()) < 1.4442)
+            {
+                return (cms2.els_hOverE().at(idx) < 0.10);
+            }
+            else
+            {
+                return (cms2.els_hOverE().at(idx) < 0.075);
+            }
+        }
+        else 
+        {
+            if (!pass_electronSelection(idx, electronSelection_ssV7_noIso, false, false))
+            {
+                return false;
+            }
+            if ((cms2.els_fiduciality().at(idx) & (1<<ISEB)) == (1<<ISEB))
+            {
+                return (cms2.els_hOverE().at(idx) < 0.10);
+            }
+            else
+            {
+                return (cms2.els_hOverE().at(idx) < 0.075);
+            }
+        }
     }
 
     // muons
     if (abs(id) == 13)
+    {
         return (muonIdNotIsolated(idx, NominalSSv5));
+    }
 
     return false;
 }
@@ -85,15 +120,40 @@ double samesign::leptonIsolation(int id, int idx)
 {
     // electrons
     if (abs(id) == 11)
+    {
         return samesign::electronIsolationPF2012(idx);
+    }
 
     // muons
     if (abs(id) == 13)
+    {
         return muonIsoValuePF2012_deltaBeta(idx);
+    }
 
     return -999999.0;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////     
+// 2012 effective area 
+////////////////////////////////////////////////////////////////////////////////////////////     
+float samesign::EffectiveArea03(int id, int idx)
+{
+    if (abs(id)!=11)
+        return -999990.0;
+
+    float etaAbs = fabs(cms2.els_etaSC().at(idx));
+
+    // get effective area
+    float AEff = 0.;
+    if (etaAbs <= 1.0) AEff = 0.10;
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
+    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
+    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
+    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
+    else if (etaAbs > 2.4) AEff = 0.13;
+    return AEff;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 numerator lepton
@@ -110,9 +170,13 @@ bool samesign::isNumeratorLepton(int id, int idx)
 bool samesign::isNumeratorHypothesis(int idx)
 {
     if (!samesign::isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx)))
+    {
         return false;
+    }
     if (!samesign::isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx)))
+    {
         return false;
+    }
 
     return true;
 }
@@ -121,15 +185,45 @@ bool samesign::isNumeratorHypothesis(int idx)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 denominator lepton
 ////////////////////////////////////////////////////////////////////////////////////////////     
-bool samesign::isDenominatorLepton(int id, int idx)
+bool samesign::isDenominatorLepton(int id, int idx, bool use_el_eta)
 {
     // electrons
     if (abs(id) == 11)
-        return (pass_electronSelection(idx, electronSelectionFOV7_v3) && samesign::electronIsolationPF2012(idx) < 0.60);
+    {
+        if (use_el_eta)
+        {
+            // check the id
+            cuts_t cuts_passed = electronSelection(idx, /*applyAlignmentCorrection=*/false, /*removedEtaCutInEndcap=*/false, /*useGsfTrack=*/true); 
+            electronIdComponent_t answer_med_2012 = electronId_WP2012_noIso_useElEtaForIsEB(idx, MEDIUM);
+            if ((answer_med_2012 & PassWP2012CutsNoIso) == PassWP2012CutsNoIso) 
+            {
+                cuts_passed |= (1ll<<ELEID_WP2012_MEDIUM_NOISO_NOIP);
+            }
+            if ((cuts_passed & electronSelectionFOV7_v3) != electronSelectionFOV7_v3) 
+            {
+                return false;
+            }
+
+            // check the isolation
+            if (samesign::electronIsolationPF2012(idx) > 0.60)
+            {
+                return false;
+            } 
+
+            // passes if we get here
+            return true;
+        }
+        else
+        {
+            return (pass_electronSelection(idx, electronSelectionFOV7_v3) && samesign::electronIsolationPF2012(idx) < 0.60);
+        }
+    }
 
     // muons
     if (abs(id) == 13)
+    {
         return (muonId(idx, muonSelectionFO_ssV5));
+    }
 
     return false;
 }
@@ -171,18 +265,19 @@ bool samesign::passThreeChargeRequirement(int elIdx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 float samesign::electronIsolationPF2012(int idx)
 {
-    float etaAbs = fabs(cms2.els_etaSC()[idx]);
-    float pt     = cms2.els_p4()[idx].pt();
+    //float etaAbs = fabs(cms2.els_etaSC()[idx]);
+    float pt     = cms2.els_p4().at(idx).pt();
 
     // get effective area
-    float AEff = 0.;
-    if (etaAbs <= 1.0) AEff = 0.10;
-    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
-    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
-    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
-    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
-    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
-    else if (etaAbs > 2.4) AEff = 0.13;
+    float AEff = EffectiveArea03(11, idx);
+    //0.;
+    //if (etaAbs <= 1.0) AEff = 0.10;
+    //else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
+    //else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
+    //else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
+    //else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
+    //else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
+    //else if (etaAbs > 2.4) AEff = 0.13;
 
     // pf iso
     // calculate from the ntuple for now...
