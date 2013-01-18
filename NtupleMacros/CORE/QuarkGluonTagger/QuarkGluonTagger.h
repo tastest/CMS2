@@ -14,6 +14,7 @@
 
 // CMS2
 #include "../CMS2.h"
+#include "../trackSelections.h"
 
 // Header
 #include "QGLikelihoodCalculator.h"

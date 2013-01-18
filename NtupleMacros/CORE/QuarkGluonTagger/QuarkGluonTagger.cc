@@ -1,19 +1,6 @@
 #include "./QuarkGluonTagger.h"
 
-/*
-Jet::Constituents Jet::getJetConstituents () const {
-
-   Jet::Constituents result;
-   for (unsigned i = 0; i < numberOfDaughters(); i++) {
-     result.push_back (daughterPtr (i));
-   }
-   return result;
-
-}
-*/
-
 // Liner Radial Momentum taken from http://arxiv.org/abs/1106.3076v2
-// Maria: for now used only the charged component with a dz constaint.
 
 float getLRM(int ijet ) {
 
@@ -28,6 +15,27 @@ float getLRM(int ijet ) {
 
     if ( pfcands_charge().at(ican)==0 ) continue;
 
+    /////// dz constraint
+
+    int itrk = -1;
+    float dz=9999.;
+
+    if (abs(pfcands_particleId().at(ican))!=11) {
+      itrk = pfcands_trkidx().at(ican);
+      if( itrk >= (int)trks_trk_p4().size() || itrk < 0 ) continue;
+      dz=trks_dz_pv(itrk,0).first;
+    }
+
+    if (abs(pfcands_particleId().at(ican))==11 && pfcands_pfelsidx().at(ican)>=0) {
+      itrk = els_gsftrkidx().at(pfcands_pfelsidx().at(ican));
+      if( itrk >= (int)gsftrks_p4().size() || itrk < 0 ) continue;
+      dz=gsftrks_dz_pv(itrk,0).first;
+    }
+
+    if(fabs(dz)>0.05) continue; 
+
+    /////// STORE pt and dr
+
     float pt = pfcands_p4().at(ican).pt();
     float ri=deltaR(pfcands_p4().at(ican).Rapidity(), pfcands_p4().at(ican).Phi(), pfjets_p4().at(ijet).Rapidity(), pfjets_p4().at(ijet).Phi());
 
@@ -38,7 +46,7 @@ float getLRM(int ijet ) {
 
   }    
 
-  float lrm = (sum_pt > 0.) ? (sum_pt_ri / sum_pt ) : 0.;
+  float lrm = (sum_pt > 0.) ? (sum_pt_ri / sum_pt ) : 9999.;
 
   return lrm;
 
