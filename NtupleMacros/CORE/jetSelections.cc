@@ -1,4 +1,4 @@
-// $Id: jetSelections.cc,v 1.38 2012/11/30 16:38:51 vimartin Exp $
+// $Id: jetSelections.cc,v 1.39 2013/01/19 20:48:44 benhoob Exp $
 
 #include <algorithm>
 #include <utility>
@@ -487,6 +487,11 @@ float pfjet_beta(int ijet, int power , float dzcut , int ivtx , bool verbose ) {
 
     int ican = cands[ivc];
 
+    if( ican > cms2.pfcands_charge().size() ){
+      cout << __FILE__ << " " << __LINE__ << " ERROR! ican, numCandidates " << ican << ", " << cms2.pfcands_charge().size() << endl;
+      return -3.0;
+    }
+
     //--------------------
     // skip neutrals 
     //--------------------
@@ -534,8 +539,8 @@ float pfjet_beta(int ijet, int power , float dzcut , int ivtx , bool verbose ) {
   // calculate beta, the ratio of pt_vtx to pt_tot
   //-------------------------------------------------------------------
 
-  float beta = 0.0;
-  if( pt_tot > 0.0 ) beta = pt_vtx / pt_tot;
+  float beta = -2.0;
+  if( pt_tot > 1e-5 ) beta = pt_vtx / pt_tot;
   return beta;
 
 }
