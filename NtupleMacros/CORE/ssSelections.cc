@@ -136,6 +136,8 @@ double samesign::leptonIsolation(int id, int idx)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 effective area 
 ////////////////////////////////////////////////////////////////////////////////////////////     
+
+// used for ICHEP and HCP
 float samesign::EffectiveArea03(int id, int idx)
 {
     if (abs(id)!=11)
@@ -144,36 +146,56 @@ float samesign::EffectiveArea03(int id, int idx)
     float etaAbs = fabs(cms2.els_etaSC().at(idx));
 
     // get effective area
-    float AEff = 0.;
-    if (etaAbs <= 1.0) AEff = 0.10;
+    float AEff = 0.0;
+    if (etaAbs <= 1.0)                        AEff = 0.10;
     else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
     else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
-    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
-    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
-    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
-    else if (etaAbs > 2.4) AEff = 0.13;
+    else if (etaAbs > 2.0 && etaAbs <= 2.2)   AEff = 0.11;
+    else if (etaAbs > 2.2 && etaAbs <= 2.3)   AEff = 0.12;
+    else if (etaAbs > 2.3 && etaAbs <= 2.4)   AEff = 0.12;
+    else if (etaAbs > 2.4)                    AEff = 0.13;
+    return AEff;
+}
+
+// used for Moriond?
+float samesign::EffectiveArea03_v2(int id, int idx)
+{
+    if (abs(id)!=11)
+        return -999990.0;
+
+    float etaAbs = fabs(cms2.els_etaSC().at(idx));
+
+    // get effective area
+    float AEff = 0.0;
+    if (etaAbs <= 1.0)                        AEff = 0.13;
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.14;
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.07;
+    else if (etaAbs > 2.0 && etaAbs <= 2.2)   AEff = 0.09;
+    else if (etaAbs > 2.2 && etaAbs <= 2.3)   AEff = 0.11;
+    else if (etaAbs > 2.3 && etaAbs <= 2.4)   AEff = 0.11;
+    else if (etaAbs > 2.4)                    AEff = 0.14;
     return AEff;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 numerator lepton
 ////////////////////////////////////////////////////////////////////////////////////////////     
-bool samesign::isNumeratorLepton(int id, int idx)
+bool samesign::isNumeratorLepton(int id, int idx, bool use_el_eta)
 {
-    return (samesign::isGoodLepton(id, idx) && samesign::isIsolatedLepton(id, idx));
+    return (samesign::isGoodLepton(id, idx, use_el_eta) && samesign::isIsolatedLepton(id, idx));
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 numerator hypothesis
 ////////////////////////////////////////////////////////////////////////////////////////////     
-bool samesign::isNumeratorHypothesis(int idx)
+bool samesign::isNumeratorHypothesis(int idx, bool use_el_eta)
 {
-    if (!samesign::isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx)))
+    if (!samesign::isNumeratorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), use_el_eta))
     {
         return false;
     }
-    if (!samesign::isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx)))
+    if (!samesign::isNumeratorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), use_el_eta))
     {
         return false;
     }
@@ -232,11 +254,11 @@ bool samesign::isDenominatorLepton(int id, int idx, bool use_el_eta)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 denominator hypothesis
 ////////////////////////////////////////////////////////////////////////////////////////////     
-bool samesign::isDenominatorHypothesis(int idx)
+bool samesign::isDenominatorHypothesis(int idx, bool use_el_eta)
 {
-    if (!samesign::isDenominatorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx)))
+    if (!samesign::isDenominatorLepton(cms2.hyp_lt_id().at(idx), cms2.hyp_lt_index().at(idx), use_el_eta))
         return false;
-    if (!samesign::isDenominatorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx)))
+    if (!samesign::isDenominatorLepton(cms2.hyp_ll_id().at(idx), cms2.hyp_ll_index().at(idx), use_el_eta))
         return false;
 
     return true;
@@ -270,14 +292,6 @@ float samesign::electronIsolationPF2012(int idx)
 
     // get effective area
     float AEff = EffectiveArea03(11, idx);
-    //0.;
-    //if (etaAbs <= 1.0) AEff = 0.10;
-    //else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
-    //else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
-    //else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
-    //else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
-    //else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
-    //else if (etaAbs > 2.4) AEff = 0.13;
 
     // pf iso
     // calculate from the ntuple for now...
