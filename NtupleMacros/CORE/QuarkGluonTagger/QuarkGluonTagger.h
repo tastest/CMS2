@@ -29,7 +29,7 @@ using namespace tas;
 //  int p4ind;
 //};
 
-float getLRM (int ijet );
+float getLRM (int ijet , int power);
 
 float constituentPtDistribution(int ijet);
 

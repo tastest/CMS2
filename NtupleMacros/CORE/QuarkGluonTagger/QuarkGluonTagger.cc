@@ -2,7 +2,7 @@
 
 // Liner Radial Momentum taken from http://arxiv.org/abs/1106.3076v2
 
-float getLRM(int ijet ) {
+float getLRM(int ijet , index power) {
 
   float sum_pt_ri=0;
   float sum_pt=0;
@@ -39,8 +39,8 @@ float getLRM(int ijet ) {
     float pt = pfcands_p4().at(ican).pt();
     float ri=deltaR(pfcands_p4().at(ican).Rapidity(), pfcands_p4().at(ican).Phi(), pfjets_p4().at(ijet).Rapidity(), pfjets_p4().at(ijet).Phi());
 
-    sum_pt_ri += pt * ri;
-    sum_pt += pt ;
+    sum_pt_ri += pow(pt,power) * pow(ri,power);
+    sum_pt += pow(pt,power) ;
     
     //    int ipfel = cms2.pfcands_pfelsidx().at(ican);
 
