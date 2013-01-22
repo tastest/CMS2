@@ -18,10 +18,8 @@ class myBabyMaker {
 public:
 
     myBabyMaker();
-    ~myBabyMaker()
-    {
-        //if(babyFile_) delete babyFile_;
-    };
+    ~myBabyMaker() {}
+
     void MakeBabyNtuple (const char *);
     void InitBabyNtuple ();
     void FillBabyNtuple ();
@@ -85,6 +83,14 @@ private:
     Float_t scet_;
     Int_t   id_;  // \pm 11 or \pm 13
     Float_t hoe_;
+
+	// ip
+	Float_t d0_;
+	Float_t d0err_;
+	Float_t dz_;
+	Float_t dzerr_;
+	Float_t ip3d_;
+	Float_t ip3derr_;
   
     // some useful lepton 4 vectors
     LorentzVector lp4_;     // 4-vector of the lepton

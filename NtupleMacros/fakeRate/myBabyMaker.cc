@@ -577,15 +577,21 @@ void myBabyMaker::InitBabyNtuple()
     // Lepton Information     //
     ////////////////////////////
 
-    id_               = -1;
-    pt_               = -999.;
-    eta_              = -999.;
-    sceta_            = -999.;
-    phi_              = -999.;
-    scet_             = -999.;
-    pfmet_            = -999.;
-    pfmetphi_         = -999.;
-    hoe_              = -999.;
+    id_       = -1;
+    pt_       = -999.;
+    eta_      = -999.;
+    sceta_    = -999.;
+    phi_      = -999.;
+    scet_     = -999.;
+    pfmet_    = -999.;
+    pfmetphi_ = -999.;
+    hoe_      = -999.;
+    d0_       = -999.;
+    dz_       = -999.;
+    ip3d_     = -999.;
+    d0err_    = -999.;
+    dzerr_    = -999.;
+    ip3derr_  = -999.;
 
     lp4_.SetCoordinates(0,0,0,0);     // 4-vector of the lepton
     foel_p4_.SetCoordinates(0,0,0,0); // 4-vector of the highest pt additional FO in the event
@@ -1152,6 +1158,12 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("sceta"                 , &sceta_                 ); 
     babyTree_->Branch("phi"                   , &phi_                   ); 
     babyTree_->Branch("scet"                  , &scet_                  ); 
+    babyTree_->Branch("d0"                    , &d0_                    ); 
+    babyTree_->Branch("dz"                    , &dz_                    ); 
+    babyTree_->Branch("ip3d"                  , &ip3d_                  ); 
+    babyTree_->Branch("d0err"                 , &d0err_                 ); 
+    babyTree_->Branch("dzerr"                 , &dzerr_                 ); 
+    babyTree_->Branch("ip3derr"               , &ip3derr_               ); 
     babyTree_->Branch("hoe"                   , &hoe_                   ); 
     babyTree_->Branch("pfmet"                 , &pfmet_                 ); 
     babyTree_->Branch("pfmetphi"              , &pfmetphi_              ); 
@@ -2138,6 +2150,29 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     scet_      = els_eSC().at(iLep) / cosh( els_etaSC().at(iLep));
                     hoe_       = els_hOverE().at(iLep);
                     id_        = 11*els_charge().at(iLep);
+
+					// ip (2d and 3d)
+					const int elgsftkid = cms2.els_gsftrkidx().at(iLep);
+    				const int eltkid    = cms2.els_trkidx().at(iLep);
+    				const int ivtx      = firstGoodVertex();
+					if (ivtx >= 0 && eltkid >= 0) 
+					{
+						d0_        = elgsftkid>=0 ? gsftrks_d0_pv(elgsftkid,ivtx).first  : trks_d0_pv(eltkid,ivtx).first;
+						d0err_     = elgsftkid>=0 ? gsftrks_d0_pv(elgsftkid,ivtx).second : trks_d0_pv(eltkid,ivtx).second;
+						dz_        = elgsftkid>=0 ? gsftrks_dz_pv(elgsftkid,ivtx).first  : trks_dz_pv(eltkid,ivtx).first;
+						dzerr_     = elgsftkid>=0 ? gsftrks_dz_pv(elgsftkid,ivtx).second : trks_dz_pv(eltkid,ivtx).second;
+					}
+					else
+					{
+						d0_        = cms2.els_d0().at(iLep);
+						d0err_     = cms2.els_d0Err().at(iLep);
+						dz_        = cms2.els_z0().at(iLep);
+						dzerr_     = cms2.els_z0Err().at(iLep);
+					}
+					ip3d_      = els_ip3d().at(iLep);;
+					ip3derr_   = els_ip3derr().at(iLep);;
+ 
+
                     pfmet_     = evt_pfmet();
                     pfmetphi_  = evt_pfmetPhi();
                     foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
@@ -2804,6 +2839,26 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                     pfmetphi_  = evt_pfmetPhi();
                     foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
                     fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
+
+					// ip (2d and 3d)
+    				const int mutkid = cms2.mus_trkidx().at(iLep);
+    				const int ivtx   = firstGoodVertex();
+					if (ivtx >= 0 && mutkid >= 0) 
+					{
+						d0_        = trks_d0_pv(mutkid,ivtx).first;
+						d0err_     = trks_d0_pv(mutkid,ivtx).second;
+						dz_        = trks_dz_pv(mutkid,ivtx).first;
+						dzerr_     = trks_dz_pv(mutkid,ivtx).second;
+					}
+					else
+					{
+						d0_        = cms2.mus_d0().at(iLep);
+						d0err_     = cms2.mus_d0Err().at(iLep);
+						dz_        = cms2.mus_z0().at(iLep);
+						dzerr_     = cms2.mus_z0Err().at(iLep);
+					}
+					ip3d_      = mus_ip3d().at(iLep);;
+					ip3derr_   = mus_ip3derr().at(iLep);;
 
                     // Isolation
                     iso_      = muonIsoValue     (iLep, /*truncated=*/false);
