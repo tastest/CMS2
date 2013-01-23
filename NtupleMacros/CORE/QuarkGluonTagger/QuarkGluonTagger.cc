@@ -2,7 +2,7 @@
 
 // Liner Radial Momentum taken from http://arxiv.org/abs/1106.3076v2
 
-float getLRM(int ijet , index power) {
+float getLRM(int ijet , int power) {
 
   float sum_pt_ri=0;
   float sum_pt=0;
