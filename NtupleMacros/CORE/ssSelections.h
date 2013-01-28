@@ -86,9 +86,9 @@ namespace samesign {
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 // analysis type:
-//   0 --> high pT analysis
-//   1 --> low pT analysis
-//   2 --> very low pT analysis
+//   0 --> use high pT analysis triggers
+//   1 --> use low pT analysis triggers
+//   2 --> use very low pT analysis triggers
 //   anything else will return false
 
     bool passesTrigger(int hyp_type, int analysis_type);
