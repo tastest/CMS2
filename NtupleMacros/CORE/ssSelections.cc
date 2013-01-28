@@ -45,9 +45,28 @@ struct jet_pt_gt
 ////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isGoodLepton(int id, int idx, bool use_el_eta)
 {
+    // require a valid vertex
+    // needed for the d0 calculation 
+    const int vtxidx = firstGoodVertex();
+    if (vtxidx < 0)
+    {
+        return false;
+    }
+
     // electrons
     if (abs(id) == 11)
     {
+        // tightened |d0| cut wrt standard ID cut
+        const int gsfidx = cms2.els_gsftrkidx().at(idx);
+        if (gsfidx >= 0) 
+        {
+            const float d0 = gsftrks_d0_pv(gsfidx, vtxidx).first;
+            if (fabs(d0) > 0.01) // 100 microns (units are cm)
+            {
+                return false;
+            }
+        }
+
         if (use_el_eta)
         {
             cuts_t cuts_passed = electronSelection(idx, /*applyAlignmentCorrection=*/false, /*removedEtaCutInEndcap=*/false, /*useGsfTrack=*/true); 
@@ -84,11 +103,23 @@ bool samesign::isGoodLepton(int id, int idx, bool use_el_eta)
                 return (cms2.els_hOverE().at(idx) < 0.075);
             }
         }
+
     }
 
     // muons
     if (abs(id) == 13)
     {
+        // tightened |d0| cut wrt standard ID cut
+        const int trkidx = cms2.mus_trkidx().at(idx);
+        if (trkidx >= 0) 
+        {
+            const float d0 = trks_d0_pv(trkidx, vtxidx).first;
+            if (fabs(d0) > 0.005) // 50 microns (units are cm)
+            {
+                return false;
+            }
+        }
+
         return (muonIdNotIsolated(idx, NominalSSv5));
     }
 
@@ -287,28 +318,29 @@ bool samesign::passThreeChargeRequirement(int elIdx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 float samesign::electronIsolationPF2012(int idx)
 {
-    //float etaAbs = fabs(cms2.els_etaSC()[idx]);
-    float pt     = cms2.els_p4().at(idx).pt();
+    // electron pT
+    const float pt = cms2.els_p4().at(idx).pt();
 
     // get effective area
-    float AEff = EffectiveArea03(11, idx);
+    const float AEff = EffectiveArea03_v2(11, idx); // used for 2013 (switched on Jan 28, 2013)
+    //const float AEff = EffectiveArea03(11, idx);  // used for HPC and ICHEP
 
     // pf iso
     // calculate from the ntuple for now...
 #ifdef SS_USE_OLD_ISO // for 52X 
-    float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
-    float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
-    float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
+    const float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
+    const float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
+    const float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
 #else
-    float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
-    float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
-    float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
+    const float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
+    const float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
+    const float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
 #endif
 
     // rho
-    float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
-    float pfiso = (pfiso_ch + pfiso_n) / pt;
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
 }
@@ -317,7 +349,14 @@ float samesign::electronIsolationPF2012(int idx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 // passes dilepton trigger
 ///////////////////////////////////////////////////////////////////////////////////////////
-bool samesign::passesTrigger(int hyp_type, bool use_high_pt_triggers)
+
+// analysis type:
+//   0 --> use high pT analysis triggers
+//   1 --> use low pT analysis triggers
+//   2 --> use very low pT analysis triggers
+//   anything else will return false
+
+bool samesign::passesTrigger(int hyp_type, int analysis_type)
 {
     //----------------------------------------
     // no trigger requirements applied to MC
@@ -326,68 +365,12 @@ bool samesign::passesTrigger(int hyp_type, bool use_high_pt_triggers)
     if (!cms2.evt_isRealData())
         return true; 
 
-    //---------------------------------
-    // triggers for dilepton datasets
-    //---------------------------------
-
-    // get the dataset name
-    if (use_high_pt_triggers)
+    switch(analysis_type)
     {
-        // mm
-        if (hyp_type == 0) {
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v")) {return true;}
-        }
-
-        // em
-        else if ((hyp_type == 1 || hyp_type == 2)) {
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
-        }
-
-        // ee
-        else if (hyp_type == 3) {
-            if (passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
-        }
-    }
-    else
-    {
-        // mm
-        if (hyp_type == 0) {
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET40_v"            )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu14_Mass8_PFMET50_v"            )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT175_v"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT225_v"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT175_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT225_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFHT175_v"             )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFHT225_v"             )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT175_v"    )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT225_v"    )) {return true;}
-        }
-
-        // em
-        else if ((hyp_type == 1 || hyp_type == 2)) {
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET40_v"           )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu14_Ele14_CaloIdT_TrkIdVL_Mass8_PFMET50_v"           )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v"         )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"             )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225_v"             )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT225_v"    )) {return true;}
-        }
-
-        // ee
-        else if (hyp_type == 3) {
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT225_v")) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT225_v"    )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET40_v"   )) {return true;}
-            if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle14_CaloIdT_TrkIdVL_Mass8_PFMET50_v"   )) {return true;}
-        }
+        case 0: return passesTriggerHighPt(hyp_type); break;
+        case 1: return passesTriggerLowPt(hyp_type); break;
+        case 2: return passesTriggerVeryLowPt(hyp_type); break;
+        default: return false;
     }
 
     return false;
@@ -440,14 +423,14 @@ bool samesign::passesTriggerLowPt(int hyp_type)
 
     // mm
     if (hyp_type == 0) {
-        if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT175_v"         )) {return true;}
-        if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFHT175_v"             )) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT175_v")) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFHT175_v"    )) {return true;}
     }
 
     // em
     else if ((hyp_type == 1 || hyp_type == 2)) {
-        if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v"         )) {return true;}
-        if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"             )) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
     }
 
     // ee

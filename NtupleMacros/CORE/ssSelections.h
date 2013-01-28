@@ -42,7 +42,7 @@ namespace samesign {
 // 2012 effective area 
 ////////////////////////////////////////////////////////////////////////////////////////////     
     float EffectiveArea03(int id, int idx);     // old effective areas (ICHEP and HCP)
-    float EffectiveArea03_v2(int id, int idx);  // new affective areas (Moriond?)
+    float EffectiveArea03_v2(int id, int idx);  // new affective areas (2013 analysis)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
@@ -84,7 +84,14 @@ namespace samesign {
 ///////////////////////////////////////////////////////////////////////////////////////////
 // passes dilepton trigger
 ///////////////////////////////////////////////////////////////////////////////////////////
-    bool passesTrigger(int hyp_type, bool use_high_pt_triggers = true);
+
+// analysis type:
+//   0 --> high pT analysis
+//   1 --> low pT analysis
+//   2 --> very low pT analysis
+//   anything else will return false
+
+    bool passesTrigger(int hyp_type, int analysis_type);
     bool passesTriggerHighPt(int hyp_type);
     bool passesTriggerLowPt (int hyp_type);
     bool passesTriggerVeryLowPt(int hyp_type);

@@ -583,7 +583,7 @@ std::vector<bool> ttv::getJetFlags(std::vector<LorentzVector>& leps, enum JetTyp
 std::vector<bool> ttv::getJetFlags(std::vector<LorentzVector>& leps, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float rescale, int systFlag)
 {
   std::vector<bool> tmp_jet_flags = ttv::getJetFlags(leps, type, deltaR, 0., max_eta, 1., 0);
-  std::vector<LorentzVector> *tmp_jets = NULL;
+  std::vector<LorentzVector> const * tmp_jets = NULL;
   if (type <= JETS_TYPE_PF_UNCORR)
 	{ tmp_jets = &cms2.pfjets_p4(); }
   else if (type <= JETS_TYPE_CALO_UNCORR)
@@ -752,7 +752,7 @@ std::vector<bool> ttv::getBtaggedJetFlags(std::vector<LorentzVector>& leps, enum
 std::vector<bool> ttv::getBtaggedJetFlags(std::vector<LorentzVector>& leps, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float rescale, int systFlag)
 {
   std::vector<bool> tmp_jet_flags = ttv::getBtaggedJetFlags(leps, type, btag_type, deltaR, 0., max_eta, 1., 0);
-  std::vector<LorentzVector> *tmp_jets = NULL;
+  std::vector<LorentzVector> const *tmp_jets = NULL;
   if (type <= JETS_TYPE_PF_UNCORR)
 	{ tmp_jets = &cms2.pfjets_p4(); }
   else if (type <= JETS_TYPE_CALO_UNCORR)
