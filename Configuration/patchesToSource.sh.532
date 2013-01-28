@@ -16,7 +16,7 @@ cvs co -r V00-03-23   CommonTools/RecoAlgos
 # MVA JetId #
 #############
  
-cvs co -r V00-00-09 -d CMGTools/External UserCode/CMG/CMGTools/External
+cvs co -r V00-03-01 -d CMGTools/External UserCode/CMG/CMGTools/External
 
 ##############
 # do stuff with PF candidates
@@ -77,6 +77,16 @@ mv blah $CMSSW_BASE/src/PhysicsTools/JetMCAlgos/plugins/PartonSelector.cc
 sed '32 s/GenParticleCandidate/GenParticle/' <$CMSSW_BASE/src/PhysicsTools/JetMCAlgos/plugins/GenJetBCEnergyRatio.cc >blah
 mv blah $CMSSW_BASE/src/PhysicsTools/JetMCAlgos/plugins/GenJetBCEnergyRatio.cc
 
+#######################
+# TAUs
+#######################
+
+cvs co -r V01-04-23 RecoTauTag/RecoTau #HCP + new discriminants
+cvs co -r V01-04-10 RecoTauTag/Configuration
+cvs co -r V00-04-00 CondFormats/EgammaObjects
+
+
+#######################
 
 #
 echo;echo checkingdeps;echo
