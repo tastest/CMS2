@@ -477,6 +477,9 @@ float ttv::getTrigMVAThreshold(int idx, LeptonType::value_type lep_type)
 float ttv::getNonTrigMVAThreshold(int idx, LeptonType::value_type lep_type)
 {
   // this one is not implemented yet and likely won't be used
+  // dummy assignment to suppress warning
+  idx = -9999;  
+  lep_type = LeptonType::static_size;
   return 2.; // or should this be a garbage value? this will guarentee that a comparison to a legitimate value will fail.
 }
 
@@ -798,7 +801,7 @@ int ttv::nBtaggedJets(std::vector<LorentzVector>& leps, enum JetType type, enum 
 
 int ttv::nBtaggedJets(std::vector<LorentzVector>& leps, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float rescale, int systFlag)
 {
-  std::vector<LorentzVector> tmp_jets = ttv::getBtaggedJets(leps, type, btag_type, deltaR, min_pt, max_eta, rescale, systFlag);
+  std::vector<LorentzVector> tmp_jets = ttv::getBtaggedJets(leps, jet_corrector, type, btag_type, deltaR, min_pt, max_eta, rescale, systFlag);
   return tmp_jets.size();
 }
 

@@ -168,44 +168,30 @@ double samesign::leptonIsolation(int id, int idx)
 // 2012 effective area 
 ////////////////////////////////////////////////////////////////////////////////////////////     
 
-// used for ICHEP and HCP
 float samesign::EffectiveArea03(int id, int idx)
 {
     if (abs(id)!=11)
         return -999990.0;
 
-    float etaAbs = fabs(cms2.els_etaSC().at(idx));
+    // use SC eta
+    float eta = fabs(cms2.els_etaSC().at(idx));
 
-    // get effective area
-    float AEff = 0.0;
-    if (etaAbs <= 1.0)                        AEff = 0.10;
-    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
-    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
-    else if (etaAbs > 2.0 && etaAbs <= 2.2)   AEff = 0.11;
-    else if (etaAbs > 2.2 && etaAbs <= 2.3)   AEff = 0.12;
-    else if (etaAbs > 2.3 && etaAbs <= 2.4)   AEff = 0.12;
-    else if (etaAbs > 2.4)                    AEff = 0.13;
-    return AEff;
+    // get effective area from electronSelections.h
+    //return fastJetEffArea03_v1(eta);  // used for HCP and ICHEP
+    return fastJetEffArea03_v2(eta);    // 2013
 }
 
-// used for Moriond?
-float samesign::EffectiveArea03_v2(int id, int idx)
+float samesign::EffectiveArea04(int id, int idx)
 {
     if (abs(id)!=11)
         return -999990.0;
 
-    float etaAbs = fabs(cms2.els_etaSC().at(idx));
+    // use SC eta
+    float eta = fabs(cms2.els_etaSC().at(idx));
 
-    // get effective area
-    float AEff = 0.0;
-    if (etaAbs <= 1.0)                        AEff = 0.13;
-    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.14;
-    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.07;
-    else if (etaAbs > 2.0 && etaAbs <= 2.2)   AEff = 0.09;
-    else if (etaAbs > 2.2 && etaAbs <= 2.3)   AEff = 0.11;
-    else if (etaAbs > 2.3 && etaAbs <= 2.4)   AEff = 0.11;
-    else if (etaAbs > 2.4)                    AEff = 0.14;
-    return AEff;
+    // get effective area from electronSelections.h
+    //return fastJetEffArea04_v1(eta);  // used for HCP and ICHEP
+    return fastJetEffArea04_v2(eta);    // 2013
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
@@ -318,12 +304,16 @@ bool samesign::passThreeChargeRequirement(int elIdx)
 ///////////////////////////////////////////////////////////////////////////////////////////
 float samesign::electronIsolationPF2012(int idx)
 {
+    return samesign::electronIsolationPF2012_cone03(idx);
+}
+
+float samesign::electronIsolationPF2012_cone03(int idx)
+{
     // electron pT
     const float pt = cms2.els_p4().at(idx).pt();
 
     // get effective area
-    const float AEff = EffectiveArea03_v2(11, idx); // used for 2013 (switched on Jan 28, 2013)
-    //const float AEff = EffectiveArea03(11, idx);  // used for HPC and ICHEP
+    const float AEff = EffectiveArea03(11, idx);
 
     // pf iso
     // calculate from the ntuple for now...
@@ -335,6 +325,34 @@ float samesign::electronIsolationPF2012(int idx)
     const float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(idx);
     const float pfiso_em = cms2.els_iso03_pf2012ext_em().at(idx);
     const float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(idx);
+#endif
+
+    // rho
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float pfiso = (pfiso_ch + pfiso_n) / pt;
+
+    return pfiso;
+}
+
+float samesign::electronIsolationPF2012_cone04(int idx)
+{
+    // electron pT
+    const float pt = cms2.els_p4().at(idx).pt();
+
+    // get effective area
+    const float AEff = EffectiveArea04(11, idx);
+
+    // pf iso
+    // calculate from the ntuple for now...
+#ifdef SS_USE_OLD_ISO // for 52X 
+    const float pfiso_ch = cms2.els_iso04_pf2012_ch().at(idx);
+    const float pfiso_em = cms2.els_iso04_pf2012_em().at(idx);
+    const float pfiso_nh = cms2.els_iso04_pf2012_nh().at(idx);
+#else
+    const float pfiso_ch = cms2.els_iso04_pf2012ext_ch().at(idx);
+    const float pfiso_em = cms2.els_iso04_pf2012ext_em().at(idx);
+    const float pfiso_nh = cms2.els_iso04_pf2012ext_nh().at(idx);
 #endif
 
     // rho

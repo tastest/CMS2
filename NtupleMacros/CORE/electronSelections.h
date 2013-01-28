@@ -1137,12 +1137,21 @@ double dzPV(const LorentzVector& vtx, const LorentzVector& p4, const LorentzVect
 
 void electronIsoValuePF2012(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, bool barrelVetoes = false);
 void electronIsoValuePF2012reco(float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int iel, const int ivtx, float neutral_threshold = 0.5);
-float electronIsoValuePF2012_FastJetEffArea( int index , float conesize = 0.3 , int ivtx = 0);
-float electronIsoValuePF2012_FastJetEffArea_v2( int index , float conesize = 0.3 , int ivtx = 0 , bool useOldIsolation = false );
-float electronIsoValuePF2012_FastJetEffArea_v3( int index , float conesize = 0.3 , int ivtx = 0 , bool useOldIsolation = false );
+float electronIsoValuePF2012_FastJetEffArea( int index , float conesize = 0.3, int ivtx = 0);
+float electronIsoValuePF2012_FastJetEffArea_v2(int index, float conesize = 0.3, int ivtx = 0, bool useOldIsolation = false);
+float electronIsoValuePF2012_FastJetEffArea_v3(int index, float conesize = 0.3, int ivtx = 0, bool useOldIsolation = false);
 float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold = 1.0, float cone_size = 0.3, bool barrelVetoes = false, bool verbose = false);
 
 float electronIsoValuePF2012_FastJetEffArea_HWW( int index );
+
+// calculate Effective area (updated to value from Egamma)
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection
+// Topic revision: r12 - 28-Nov-2012
+float fastJetEffArea03_v2(const float eta);
+float fastJetEffArea04_v2(const float eta);
+
+float fastJetEffArea03_v1(const float eta);
+float fastJetEffArea04_v1(const float eta);
 
 //
 // 2012 cut based ID

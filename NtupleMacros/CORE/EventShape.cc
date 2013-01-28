@@ -85,7 +85,7 @@ double  EventShape::sphericity(double r) const {
 double  EventShape::circularity(const unsigned int& numberOfSteps) const {
 
    const double deltaPhi=2*TMath::Pi()/numberOfSteps;
-   double circularity=-1, phi=0, area = 0;
+   double circ=-1, phi=0, area = 0;
    for(unsigned int i=0;i<inputVectors_.size();i++) {
      area+=TMath::Sqrt(inputVectors_[i].x()*inputVectors_[i].x()+inputVectors_[i].y()*inputVectors_[i].y());
    }
@@ -96,11 +96,11 @@ double  EventShape::circularity(const unsigned int& numberOfSteps) const {
        sum+=TMath::Abs(TMath::Cos(phi)*inputVectors_[j].x()+TMath::Sin(phi)*inputVectors_[j].y());
      }
      tmp=TMath::Pi()/2*sum/area;
-     if( circularity<0 || tmp<circularity ){
-       circularity=tmp;
+     if( circ<0 || tmp<circ ){
+       circ=tmp;
      }
    }
-   return circularity;
+   return circ;
 }
 
 double 

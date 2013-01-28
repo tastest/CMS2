@@ -1091,117 +1091,168 @@ electronIdComponent_t electronId_WP2012_noIso_useElEtaForIsEB(const unsigned int
     return mask;
 }
 
+// do be used in the functions below for consize parameter
+bool is_equal(float lhs, float rhs)
+{
+	static const float epsilon = 0.0001;
+	return (fabs(lhs-rhs) < epsilon);
+}
 
-float electronIsoValuePF2012_FastJetEffArea( int index , float conesize , int ivtx ){
+// valid values for conesize is 0.3 and 0.4
+float electronIsoValuePF2012_FastJetEffArea(int index, float conesize, int ivtx){
 
-    float etaAbs = fabs(cms2.els_etaSC()[index]);
-    float pt     = cms2.els_p4()[index].pt();
+	// dummy call to suppress warning on unused ivtx (do we even need this?)
+	{ivtx = -9999;}
+
+    const float etaAbs = fabs(cms2.els_etaSC()[index]);
+    const float pt     = cms2.els_p4()[index].pt();
 
     // get effective area
-    float AEff = 0.;
-    if (etaAbs <= 1.0) AEff = 0.10;
-    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
-    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
-    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
-    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
-    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
-    else if (etaAbs > 2.4) AEff = 0.13;
+	float AEff = -9999.0f;
+	if      (is_equal(conesize,0.3f)) {AEff = fastJetEffArea03_v1(etaAbs);}
+	else if (is_equal(conesize,0.3f)) {AEff = fastJetEffArea04_v1(etaAbs);}
+	else                              {AEff = fastJetEffArea03_v1(etaAbs);} // default
 
     // pf iso
     // calculate from the ntuple for now...
-    float pfiso_ch = cms2.els_iso03_pf2012_ch().at(index);
-    float pfiso_em = cms2.els_iso03_pf2012_em().at(index);
-    float pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
+    const float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
+    const float pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
+    const float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
 
     // rho
-    float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
-    float pfiso = (pfiso_ch + pfiso_n) / pt;
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
 }
 
-// same as above function, but with updated electron isolation branches
-float electronIsoValuePF2012_FastJetEffArea_v2( int index , float conesize , int ivtx , bool useOldIsolation ){
+// same as above function, but with updated electron isolation branches toggle
+float electronIsoValuePF2012_FastJetEffArea_v2(int index, float conesize, int ivtx, bool useOldIsolation){
 
-    float etaAbs = fabs(cms2.els_etaSC()[index]);
-    float pt     = cms2.els_p4()[index].pt();
+	// dummy call to suppress warning on unused ivtx (do we even need this?)
+	{ivtx = -9999;}
+
+    const float etaAbs = fabs(cms2.els_etaSC()[index]);
+    const float pt     = cms2.els_p4()[index].pt();
 
     // get effective area
-    float AEff = 0.;
-    if (etaAbs <= 1.0) AEff = 0.10;
-    else if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.12;
-    else if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.085;
-    else if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.11;
-    else if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.12;
-    else if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.12;
-    else if (etaAbs > 2.4) AEff = 0.13;
+	float AEff = -9999.0f;
+	if      (is_equal(conesize,0.3f)) {AEff = fastJetEffArea03_v1(etaAbs);}
+	else if (is_equal(conesize,0.3f)) {AEff = fastJetEffArea04_v1(etaAbs);}
+	else                              {AEff = fastJetEffArea03_v1(etaAbs);} // default
 
     // pf iso
     // calculate from the ntuple for now...
-    float pfiso_ch = 0.0;
-    float pfiso_em = 0.0;
-    float pfiso_nh = 0.0;
-
-    if( useOldIsolation ){
-      pfiso_ch = cms2.els_iso03_pf2012_ch().at(index);
-      pfiso_em = cms2.els_iso03_pf2012_em().at(index);
-      pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
-    }
-
-    else{
-      pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
-      pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
-      pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
-    }
+    const float pfiso_ch = useOldIsolation ? cms2.els_iso03_pf2012_ch().at(index) : cms2.els_iso03_pf2012ext_ch().at(index);
+    const float pfiso_em = useOldIsolation ? cms2.els_iso03_pf2012_em().at(index) : cms2.els_iso03_pf2012ext_em().at(index);
+    const float pfiso_nh = useOldIsolation ? cms2.els_iso03_pf2012_nh().at(index) : cms2.els_iso03_pf2012ext_nh().at(index);
 
     // rho
-    float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
-    float pfiso = (pfiso_ch + pfiso_n) / pt;
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
 }
+
 // same as above function, but with updated effective areas
-float electronIsoValuePF2012_FastJetEffArea_v3( int index , float conesize , int ivtx , bool useOldIsolation ){
+float electronIsoValuePF2012_FastJetEffArea_v3(int index, float conesize, int ivtx, bool useOldIsolation){
 
-    float etaAbs = fabs(cms2.els_etaSC()[index]);
-    float pt     = cms2.els_p4()[index].pt();
+	// dummy call to suppress warning on unused ivtx (do we even need this?)
+	{ivtx = -9999;}
+
+    const float etaAbs = fabs(cms2.els_etaSC()[index]);
+    const float pt     = cms2.els_p4()[index].pt();
 
     // get effective area
-    float AEff = 0.;
-    if      (etaAbs <= 1.0                    ) AEff = 0.13;
-    else if (etaAbs > 1.0   && etaAbs <= 1.479) AEff = 0.14;
-    else if (etaAbs > 1.479 && etaAbs <= 2.0  ) AEff = 0.07;
-    else if (etaAbs > 2.0   && etaAbs <= 2.2  ) AEff = 0.09;
-    else if (etaAbs > 2.2   && etaAbs <= 2.3  ) AEff = 0.11;
-    else if (etaAbs > 2.3   && etaAbs <= 2.4  ) AEff = 0.11;
-    else if (etaAbs > 2.4                     ) AEff = 0.14;
+	float AEff = -9999.0f;
+	if      (is_equal(conesize,0.3f)) {AEff = fastJetEffArea03_v2(etaAbs);}
+	else if (is_equal(conesize,0.3f)) {AEff = fastJetEffArea04_v2(etaAbs);}
+	else                              {AEff = fastJetEffArea03_v2(etaAbs);} // default
 
     // pf iso
     // calculate from the ntuple for now...
-    float pfiso_ch = 0.0;
-    float pfiso_em = 0.0;
-    float pfiso_nh = 0.0;
-
-    if( useOldIsolation ){
-      pfiso_ch = cms2.els_iso03_pf2012_ch().at(index);
-      pfiso_em = cms2.els_iso03_pf2012_em().at(index);
-      pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
-    }
-
-    else{
-      pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
-      pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
-      pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
-    }
+    const float pfiso_ch = useOldIsolation ? cms2.els_iso03_pf2012_ch().at(index) : cms2.els_iso03_pf2012ext_ch().at(index);
+    const float pfiso_em = useOldIsolation ? cms2.els_iso03_pf2012_em().at(index) : cms2.els_iso03_pf2012ext_em().at(index);
+    const float pfiso_nh = useOldIsolation ? cms2.els_iso03_pf2012_nh().at(index) : cms2.els_iso03_pf2012ext_nh().at(index);
 
     // rho
-    float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));
-    float pfiso = (pfiso_ch + pfiso_n) / pt;
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
+}
+
+// calculate Effective area (updated to value from Egamma)
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection
+// Topic revision: r12 - 28-Nov-2012
+float fastJetEffArea03_v2(const float eta)
+{
+	// use absolute eta
+    const float etaAbs = fabs(eta);
+
+    // get effective area
+    if      (etaAbs <= 1.0                  ) {return 0.13;}
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) {return 0.14;}
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) {return 0.07;}
+    else if (etaAbs > 2.0 && etaAbs <= 2.2  ) {return 0.09;}
+    else if (etaAbs > 2.2 && etaAbs <= 2.3  ) {return 0.11;}
+    else if (etaAbs > 2.3 && etaAbs <= 2.4  ) {return 0.11;}
+    else if (etaAbs > 2.4                   ) {return 0.14;}
+    return -9999.0f;
+}
+
+float fastJetEffArea04_v2(const float eta)
+{
+	// use absolute eta
+    const float etaAbs = fabs(eta);
+
+    // get effective area
+    if      (etaAbs <= 1.0                  ) {return 0.21;}
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) {return 0.21;}
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) {return 0.11;}
+    else if (etaAbs > 2.0 && etaAbs <= 2.2  ) {return 0.14;}
+    else if (etaAbs > 2.2 && etaAbs <= 2.3  ) {return 0.18;}
+    else if (etaAbs > 2.3 && etaAbs <= 2.4  ) {return 0.19;}
+    else if (etaAbs > 2.4                   ) {return 0.26;}
+    return -9999.0f;
+}
+
+// calculate Effective area (updated to value from Egamma)
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaEARhoCorrection
+// Topic revision: r10 - 11-Apr-2012
+float fastJetEffArea03_v1(const float eta)
+{
+	// use absolute eta
+    const float etaAbs = fabs(eta);
+
+    // get effective area
+    if      (etaAbs <= 1.0                  ) {return 0.10; }
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) {return 0.12; }
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) {return 0.085;}
+    else if (etaAbs > 2.0 && etaAbs <= 2.2  ) {return 0.11; }
+    else if (etaAbs > 2.2 && etaAbs <= 2.3  ) {return 0.12; }
+    else if (etaAbs > 2.3 && etaAbs <= 2.4  ) {return 0.12; }
+    else if (etaAbs > 2.4                   ) {return 0.13; }
+    return -9999.0f;
+}
+
+float fastJetEffArea04_v1(const float eta)
+{
+	// use absolute eta
+    const float etaAbs = fabs(eta);
+
+    // get effective area
+    if      (etaAbs <= 1.0                  ) {return 0.19;}
+    else if (etaAbs > 1.0 && etaAbs <= 1.479) {return 0.25;}
+    else if (etaAbs > 1.479 && etaAbs <= 2.0) {return 0.12;}
+    else if (etaAbs > 2.0 && etaAbs <= 2.2  ) {return 0.21;}
+    else if (etaAbs > 2.2 && etaAbs <= 2.3  ) {return 0.27;}
+    else if (etaAbs > 2.3 && etaAbs <= 2.4  ) {return 0.44;}
+    else if (etaAbs > 2.4                   ) {return 0.52;}
+    return -9999.0f;
 }
 
 // VBTF stuff
@@ -1978,33 +2029,31 @@ float electronRadialIsolation(int index, float &chiso, float &nhiso, float &emis
         }
     }
 
+	// dummy assignment to suppress warning for unsused variable (probably should remove but didn't want to break interface)
+	verbose = false;
+
     return (chiso+nhiso+emiso);
 }
 
-float electronIsoValuePF2012_FastJetEffArea_HWW( int index ){
+// this is now redundant
+float electronIsoValuePF2012_FastJetEffArea_HWW(int index){
 
-    float etaAbs = fabs(cms2.els_etaSC()[index]);
-    float pt     = cms2.els_p4()[index].pt();
+    const float etaAbs = fabs(cms2.els_etaSC()[index]);
+    const float pt     = cms2.els_p4()[index].pt();
 
     // get effective area
-    float AEff = 0.19;
-    if (etaAbs > 1.0 && etaAbs <= 1.479) AEff = 0.25;
-    if (etaAbs > 1.479 && etaAbs <= 2.0) AEff = 0.12;
-    if (etaAbs > 2.0 && etaAbs <= 2.2) AEff = 0.21;
-    if (etaAbs > 2.2 && etaAbs <= 2.3) AEff = 0.27;
-    if (etaAbs > 2.3 && etaAbs <= 2.4) AEff = 0.44;
-    if (etaAbs > 2.4) AEff = 0.52;
+    const float AEff = fastJetEffArea04_v1(etaAbs);
 
     // pf iso
     // calculate from the ntuple for now...
-    float pfiso_ch = cms2.els_iso04_pf2012_ch().at(index);
-    float pfiso_em = cms2.els_iso04_pf2012_em().at(index);
-    float pfiso_nh = cms2.els_iso04_pf2012_nh().at(index);
+    const float pfiso_ch = cms2.els_iso04_pf2012_ch().at(index);
+    const float pfiso_em = cms2.els_iso04_pf2012_em().at(index);
+    const float pfiso_nh = cms2.els_iso04_pf2012_nh().at(index);
 
     // rho
-    float rhoPrime = std::max(cms2.evt_ww_rho(), float(0.0));
-    float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, float(0.0));  
-    float pfiso = (pfiso_ch + pfiso_n) / pt;   
+    const float rhoPrime = std::max(cms2.evt_ww_rho(), 1.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);  
+    const float pfiso = (pfiso_ch + pfiso_n) / pt;   
 
 	// debug
 	if(0) {

@@ -1,6 +1,6 @@
 //
 // Original Author:  Fedor Ratnikov Nov 9, 2007
-// $Id: JetCorrectorParameters.icc,v 1.4 2012/04/25 19:01:42 dbarge Exp $
+// $Id: JetCorrectorParameters.icc,v 1.5 2013/01/28 23:44:27 kelley Exp $
 //
 // Generic parameters for Jet corrections
 //
@@ -129,18 +129,18 @@ JetCorrectorParameters::JetCorrectorParameters(const std::string& fFile, const s
               currentDefinitions = tmp;
               continue; 
             }
-          Definitions definitions(currentDefinitions);
-          if (!(definitions.nBinVar()==0 && definitions.formula()==""))
-            mDefinitions = definitions;
-          Record record(line,mDefinitions.nBinVar());
+          Definitions def(currentDefinitions);
+          if (!(def.nBinVar()==0 && def.formula()==""))
+            mDefinitions = def;
+          Record rec(line,mDefinitions.nBinVar());
           bool check(true);
           for(unsigned i=0;i<mDefinitions.nBinVar();++i)
-            if (record.xMin(i)==0 && record.xMax(i)==0)
+            if (rec.xMin(i)==0 && rec.xMax(i)==0)
               check = false;
-          if (record.nParameters() == 0)
+          if (rec.nParameters() == 0)
             check = false;  
           if (check)
-            mRecords.push_back(record);
+            mRecords.push_back(rec);
         } 
     }
   if (currentDefinitions=="")
@@ -439,8 +439,11 @@ JetCorrectorParameters const & JetCorrectorParametersCollection::operator[]( key
   for ( ; i != iend; ++i ) {
     if ( k == i->first ) return i->second;
   }
-  std::cout << " cannot find key " << static_cast<int>(k) << std::endl;
-  assert(0);
+  //std::cout << " cannot find key " << static_cast<int>(k) << std::endl;
+  //assert(0);
+  // if we got this far, we didn't have a proper index
+  throw std::out_of_range(Form("[JetCorrectorParameterCollecion::operator[]]: cannot find key %i", static_cast<int>(k)));
+
 }
 
 // Get a list of valid keys. These will contain hashed keys
@@ -521,9 +524,9 @@ JetCorrectorParametersCollection::findKey( std::string const & label ) const {
   } 
 
   // Didn't find default corrections, throw exception
-  std::cout << " Cannot find label " << label << std::endl;
-  assert(0);
-
+  throw std::out_of_range(Form("[JetCorrectorParameterCollecion::findKey()]: cannot find label %s", label.c_str()));
+  //std::cout << " Cannot find label " << label << std::endl;
+  //assert(0); 
 }
 
 

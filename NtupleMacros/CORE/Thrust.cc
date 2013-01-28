@@ -1,4 +1,4 @@
-// $Id: Thrust.cc,v 1.1 2012/12/12 11:31:39 dalfonso Exp $
+// $Id: Thrust.cc,v 1.2 2013/01/28 23:44:26 kelley Exp $
 #include "./Thrust.h"
 
 const double pi = TMath::Pi(), pi2 = 2 * TMath::Pi(), pi_2 = TMath::Pi() / 2, pi_4 = TMath::Pi() / 4;
@@ -140,11 +140,11 @@ Thrust::XYZVector Thrust::axis(double theta, double phi) const {
   return XYZVector(theSin * cos(phi), theSin * sin(phi), cos(theta));
 }
 
-double Thrust::thrust(const XYZVector & axis) const {
+double Thrust::thrust(const XYZVector & ax) const {
   double result = 0;
   double sum = 0;
   for (unsigned int i = 0; i < n_; ++i)
-    sum += fabs(axis.Dot(p_[i]));
+    sum += fabs(ax.Dot(p_[i]));
   if (pSum_ > 0) result = sum / pSum_;
   return result;
 }
