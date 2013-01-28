@@ -393,6 +393,106 @@ bool samesign::passesTrigger(int hyp_type, bool use_high_pt_triggers)
     return false;
 }
 
+bool samesign::passesTriggerHighPt(int hyp_type)
+{
+    //----------------------------------------
+    // no trigger requirements applied to MC
+    //----------------------------------------
+
+    if (!cms2.evt_isRealData())
+        return true; 
+
+    //---------------------------------
+    // triggers for dilepton datasets
+    //---------------------------------
+
+    // mm
+    if (hyp_type == 0) {
+        if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v")) {return true;}
+    }
+
+    // em
+    else if ((hyp_type == 1 || hyp_type == 2)) {
+        if (passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
+    }
+
+    // ee
+    else if (hyp_type == 3) {
+        if (passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v")) {return true;}
+    }
+
+    return false;
+}
+
+bool samesign::passesTriggerLowPt(int hyp_type)
+{
+    //----------------------------------------
+    // no trigger requirements applied to MC
+    //----------------------------------------
+
+    if (!cms2.evt_isRealData())
+        return true; 
+
+    //---------------------------------
+    // triggers for dilepton datasets
+    //---------------------------------
+
+    // mm
+    if (hyp_type == 0) {
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFNoPUHT175_v"         )) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleMu8_Mass8_PFHT175_v"             )) {return true;}
+    }
+
+    // em
+    else if ((hyp_type == 1 || hyp_type == 2)) {
+        if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v"         )) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"             )) {return true;}
+    }
+
+    // ee
+    else if (hyp_type == 3) {
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
+    }
+
+    return false;
+}
+
+bool samesign::passesTriggerVeryLowPt(int hyp_type)
+{
+    //----------------------------------------
+    // no trigger requirements applied to MC
+    //----------------------------------------
+
+    if (!cms2.evt_isRealData())
+        return true; 
+
+    //---------------------------------
+    // triggers for dilepton datasets
+    //---------------------------------
+
+    // mm
+    if (hyp_type == 0) {
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFNoPUHT175_v")) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleRelIso1p0Mu5_Mass8_PFHT175_v"    )) {return true;}
+    }
+
+    // em
+    else if ((hyp_type == 1 || hyp_type == 2)) {
+        if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_RelIso1p0Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
+    }
+
+    // ee
+    else if (hyp_type == 3) {
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFNoPUHT175_v")) {return true;}
+        if (passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_PFHT175_v"    )) {return true;}
+    }
+
+    return false;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // extra Z veto for b-tagged same sign analysis

@@ -85,6 +85,9 @@ namespace samesign {
 // passes dilepton trigger
 ///////////////////////////////////////////////////////////////////////////////////////////
     bool passesTrigger(int hyp_type, bool use_high_pt_triggers = true);
+    bool passesTriggerHighPt(int hyp_type);
+    bool passesTriggerLowPt (int hyp_type);
+    bool passesTriggerVeryLowPt(int hyp_type);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
