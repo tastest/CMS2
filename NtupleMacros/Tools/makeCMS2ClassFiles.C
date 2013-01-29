@@ -374,7 +374,7 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
                 classname = classname(0,classname.Length()-2);
                 classname.ReplaceAll("edm::Wrapper<","");
             }
-            headerf << "\t" << classname << " &" << aliasname << "()" << endl;
+            headerf << "\tconst " << classname << " &" << aliasname << "()" << endl;
         } else {
             if(classname.Contains("edm::Wrapper<") ) {
                 classname = classname(0,classname.Length()-1);
@@ -659,32 +659,32 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
                 classname = classname(0,classname.Length()-2);
                 classname.ReplaceAll("edm::Wrapper<","");
             }
-            headerf << "\t" << classname << " &" << aliasname << "()";
-            implf   << "\t" << classname << " &" << aliasname << "()";
+            headerf << "\tconst " << classname << " &" << aliasname << "()";
+            implf   << "\tconst " << classname << " &" << aliasname << "()";
         } else {
             if(classname.Contains("edm::Wrapper<") ) {
                 classname = classname(0,classname.Length()-1);
                 classname.ReplaceAll("edm::Wrapper<","");
             }
             if(classname != "" ) {
-                headerf << "\t" << classname << " &" << aliasname << "()";
-                implf   << "\t" << classname << " &" << aliasname << "()";
+                headerf << "\tconst " << classname << " &" << aliasname << "()";
+                implf   << "\tconst " << classname << " &" << aliasname << "()";
             } else {
                 if(title.EndsWith("/i")){
-                    headerf << "\tunsigned int &" << aliasname << "()";
-                    implf   << "\tunsigned int &" << aliasname << "()";
+                    headerf << "\tconst unsigned int &" << aliasname << "()";
+                    implf   << "\tconst unsigned int &" << aliasname << "()";
                 }
                 if(title.EndsWith("/F")){
-                    headerf << "\tfloat &" << aliasname << "()";
-                    implf   << "\tfloat &" << aliasname << "()";
+                    headerf << "\tconst float &" << aliasname << "()";
+                    implf   << "\tconst float &" << aliasname << "()";
                 }
                 if(title.EndsWith("/I")){
-                    headerf << "\tint &" << aliasname << "()";
-                    implf   << "\tint &" << aliasname << "()";
+                    headerf << "\tconst int &" << aliasname << "()";
+                    implf   << "\tconst int &" << aliasname << "()";
                 }
                 if(title.EndsWith("/O")){
-                    headerf << "\tbool &" << aliasname << "()";
-                    implf   << "\tbool &" << aliasname << "()";
+                    headerf << "\tconst bool &" << aliasname << "()";
+                    implf   << "\tconst bool &" << aliasname << "()";
                 }
             }
         }
