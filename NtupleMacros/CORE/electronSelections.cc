@@ -1115,9 +1115,9 @@ float electronIsoValuePF2012_FastJetEffArea(int index, float conesize, int ivtx)
 
     // pf iso
     // calculate from the ntuple for now...
-    const float pfiso_ch = cms2.els_iso03_pf2012ext_ch().at(index);
-    const float pfiso_em = cms2.els_iso03_pf2012ext_em().at(index);
-    const float pfiso_nh = cms2.els_iso03_pf2012ext_nh().at(index);
+    const float pfiso_ch = cms2.els_iso03_pf2012_ch().at(index);
+    const float pfiso_em = cms2.els_iso03_pf2012_em().at(index);
+    const float pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
 
     // rho
     const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
