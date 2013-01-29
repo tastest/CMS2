@@ -55,6 +55,7 @@ private:
 
     // Pileup - PUSummaryInfoMaker
     Int_t pu_nPUvertices_;
+    Int_t pu_nPUtrueint_;
   
     // Pileup - VertexMaker
     Int_t evt_nvtxs_;
