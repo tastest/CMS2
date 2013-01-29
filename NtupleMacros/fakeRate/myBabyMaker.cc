@@ -2225,8 +2225,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 						//radiso_et1p0_bv_ = electronRadialIsolation(iLep, ch_radiso_et1p0_bv_, nh_radiso_et1p0_bv_, em_radiso_et1p0_bv_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
 						//radiso_et0p5_bv_ = electronRadialIsolation(iLep, ch_radiso_et0p5_bv_, nh_radiso_et0p5_bv_, em_radiso_et0p5_bv_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
 
-						// correct isolaion (for SS2012)
-						cpfiso03_rho_ = samesign::electronIsolationPF2012(iLep);
+						// correct isolaion (using fastjet effective area)
+						cpfiso03_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep);
 
 						// mc information
 						if (!isData) {
