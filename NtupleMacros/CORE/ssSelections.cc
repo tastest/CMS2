@@ -328,8 +328,8 @@ float samesign::electronIsolationPF2012_cone03(int idx)
 #endif
 
     // rho
-    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
-    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 0.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 0.0f);
     const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
@@ -356,8 +356,8 @@ float samesign::electronIsolationPF2012_cone04(int idx)
 #endif
 
     // rho
-    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
-    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 0.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 0.0f);
     const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;

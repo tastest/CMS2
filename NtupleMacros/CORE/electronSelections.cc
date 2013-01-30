@@ -1120,8 +1120,8 @@ float electronIsoValuePF2012_FastJetEffArea(int index, float conesize, int ivtx)
     const float pfiso_nh = cms2.els_iso03_pf2012_nh().at(index);
 
     // rho
-    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
-    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 0.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 0.0f);
     const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
@@ -1149,8 +1149,8 @@ float electronIsoValuePF2012_FastJetEffArea_v2(int index, float conesize, int iv
     const float pfiso_nh = useOldIsolation ? cms2.els_iso03_pf2012_nh().at(index) : cms2.els_iso03_pf2012ext_nh().at(index);
 
     // rho
-    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
-    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 0.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 0.0f);
     const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
@@ -1178,8 +1178,8 @@ float electronIsoValuePF2012_FastJetEffArea_v3(int index, float conesize, int iv
     const float pfiso_nh = useOldIsolation ? cms2.els_iso03_pf2012_nh().at(index) : cms2.els_iso03_pf2012ext_nh().at(index);
 
     // rho
-    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 1.0f);
-    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);
+    const float rhoPrime = std::max(cms2.evt_kt6pf_foregiso_rho(), 0.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 0.0f);
     const float pfiso = (pfiso_ch + pfiso_n) / pt;
 
     return pfiso;
@@ -2051,8 +2051,8 @@ float electronIsoValuePF2012_FastJetEffArea_HWW(int index){
     const float pfiso_nh = cms2.els_iso04_pf2012_nh().at(index);
 
     // rho
-    const float rhoPrime = std::max(cms2.evt_ww_rho(), 1.0f);
-    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 1.0f);  
+    const float rhoPrime = std::max(cms2.evt_ww_rho(), 0.0f);
+    const float pfiso_n = std::max(pfiso_em + pfiso_nh - rhoPrime * AEff, 0.0f);  
     const float pfiso = (pfiso_ch + pfiso_n) / pt;   
 
 	// debug
