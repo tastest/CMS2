@@ -894,7 +894,7 @@ void ScanChain( TChain* chain,
       tree->LoadTree(event);
       cms2.GetEntry(event);  // get entries for Event number event from branches of TTree tree
 	
-	  if (cms2.evt_run()<beginrun || cms2.evt_run()>=endrun) continue;
+          if (int(cms2.evt_run())<beginrun || int(cms2.evt_run())>=endrun) continue;
 	  if (cms2.evt_event()%prescale!=0) continue;
 	  //if (cms2.evt_event()!=20494961 && cms2.evt_event()!=787812949 && cms2.evt_event()!=73349194 && cms2.evt_event()!=68905080) continue;
 	  //cout << "event: " << cms2.evt_event() << endl;
