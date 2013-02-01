@@ -378,30 +378,30 @@ bool hypo (int i_hyp, double weight, bool realData)
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
     if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LT_FINAL;
-    if ( fakableMuon(index,MuFOV1, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LT_FO_MU1;
+//    if ( fakableMuon(index,MuFOV1, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LT_FO_MU1;
     if ( fakableMuon(index,MuFOV2, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LT_FO_MU2;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 13){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
     if ( goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle) )   cuts_passed |= PASSED_LL_FINAL;
-    if ( fakableMuon(index, MuFOV1, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LL_FO_MU1;
+//    if ( fakableMuon(index, MuFOV1, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LL_FO_MU1;
     if ( fakableMuon(index, MuFOV2, muonMVAEstimator,  nullMu, nullEle) && !goodMuonIsolated(index, lockToCoreSelectors, useMVAmuId, muonIdMVA, muonMVAEstimator,  nullMu, nullEle)) cuts_passed |= PASSED_LL_FO_MU2;
   } 
   // Electron quality cuts, including isolation
   if (TMath::Abs(cms2.hyp_lt_id()[i_hyp]) == 11){
     unsigned int index = cms2.hyp_lt_index()[i_hyp];
     if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) cuts_passed |= PASSED_LT_FINAL;
-    if ( fakableElectron(index,EleFOV1) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) )   cuts_passed |= PASSED_LT_FO_ELEV1;
-    if ( fakableElectron(index,EleFOV2) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV2;
-    if ( fakableElectron(index,EleFOV3) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV3;
+//    if ( fakableElectron(index,EleFOV1) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) )   cuts_passed |= PASSED_LT_FO_ELEV1;
+//    if ( fakableElectron(index,EleFOV2) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV2;
+//    if ( fakableElectron(index,EleFOV3) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV3;
     if ( fakableElectron(index,EleFOV4) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LT_FO_ELEV4;
   }
   if (TMath::Abs(cms2.hyp_ll_id()[i_hyp]) == 11){
     unsigned int index = cms2.hyp_ll_index()[i_hyp];
     if ( goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) ) cuts_passed |= PASSED_LL_FINAL;
-    if ( fakableElectron(index,EleFOV1) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV1;
-    if ( fakableElectron(index,EleFOV2) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV2;
-    if ( fakableElectron(index,EleFOV3) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV3;
+//    if ( fakableElectron(index,EleFOV1) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV1;
+//    if ( fakableElectron(index,EleFOV2) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV2;
+//    if ( fakableElectron(index,EleFOV3) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors))   cuts_passed |= PASSED_LL_FO_ELEV3;
     if ( fakableElectron(index,EleFOV4) && !goodElectronIsolated(index, useLHeleId, useMVAeleId, egammaMvaEleEstimator, lockToCoreSelectors) )   cuts_passed |= PASSED_LL_FO_ELEV4;
   }
 
@@ -623,19 +623,19 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
 	ss.Remove(0,3);//get rid of hww
 	tree.sfWeightHPt_ = getHiggsPtWeight(pt,ss.Atoi(), HiggsPtKFactor);
       }
-    }
-
-    if (doDYNNLOw) {
-      if (sample==SmurfTree::dyee||sample==SmurfTree::dymm||sample==SmurfTree::dytt) {
-	if (isDYee()||isDYmm()||isDYtt()) {
-	  float pt = getZPt();
-	  float rap = getZRapidity();
-	  float mass = getZMass();
-	  float kfact =  getDYNNLOWeight(pt,rap,mass, fDYNNLOKFactorHists);
-	  tree.scale1fb_ *= kfact;
 	}
-      }
-    }
+
+	if (doDYNNLOw) {
+		if (sample==SmurfTree::dyee||sample==SmurfTree::dymm||sample==SmurfTree::dytt) {
+			if (isDYee()||isDYmm()||isDYtt()) {
+				float pt = getZPt();
+				float rap = getZRapidity();
+				float mass = getZMass();
+				float kfact =  getDYNNLOWeight(pt,rap,mass, fDYNNLOKFactorHists);
+				tree.scale1fb_ *= kfact;
+			}
+		}
+	}
 
     for (unsigned int nbc=0;nbc<cms2.puInfo_nPUvertices().size();++nbc) {
       if (cms2.puInfo_bunchCrossing().at(nbc)==0) tree.npu_ = cms2.puInfo_nPUvertices().at(nbc);
@@ -813,8 +813,8 @@ void ScanChain( TChain* chain,
   unsigned int nEventsTotal = 0;
   
   // make smurf ntuples
-  gSystem->MakeDirectory(Form("smurf_%d_%d", beginrun, endrun));
-  TFile* fSmurf = TFile::Open(Form("smurf_%d_%d/%s.root", beginrun, endrun, prefix.c_str()),"RECREATE");
+  gSystem->MakeDirectory(Form("smurf", beginrun, endrun));
+  TFile* fSmurf = TFile::Open(Form("smurf/%s_%d_%d.root", prefix.c_str(), beginrun, endrun),"RECREATE");
   assert(fSmurf);
   SmurfTree smurfTree;
   smurfTree.CreateTree();
@@ -834,14 +834,14 @@ void ScanChain( TChain* chain,
   try { 
     jetcorr_filenames_pfL1FastJetL2L3.clear();
     if (realData) {
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L1FastJet_AK5PF.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L2Relative_AK5PF.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L3Absolute_AK5PF.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_R_52_V7_L2L3Residual_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_P_V42_AN3_L1FastJet_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_P_V42_AN3_L2Relative_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_P_V42_AN3_L3Absolute_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/GR_P_V42_AN3_L2L3Residual_AK5PF.txt");
     } else {
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L1FastJet_AK5PF.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L2Relative_AK5PF.txt");
-      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START52_V9_L3Absolute_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START53_V15_L1FastJet_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START53_V15_L2Relative_AK5PF.txt");
+      jetcorr_filenames_pfL1FastJetL2L3.push_back("files/START53_V15_L3Absolute_AK5PF.txt");
     }
     jet_corrector_pfL1FastJetL2L3= makeJetCorrector(jetcorr_filenames_pfL1FastJetL2L3);
   } catch (...){
@@ -925,9 +925,9 @@ void ScanChain( TChain* chain,
 	 int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
 	 if (i_permille != i_permille_old) {
 	   // xterm magic from L. Vacavant and A. Cerri
-	   printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
-	   "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-	   fflush(stdout);
+//	   printf("\015\033[32m ---> \033[1m\033[31m%4.1f%%"
+//	   "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+//	   fflush(stdout);
 	   i_permille_old = i_permille;
 	 }
 
@@ -993,8 +993,8 @@ void ScanChain( TChain* chain,
   fSmurf->Close();
 
   if (realData){
-      ofstream json(Form("processed_%d_%d.json", beginrun, endrun));
-      ofstream json2(Form("processed_detailed_%d_%d.json", beginrun, endrun));
+      ofstream json(Form("processedjson/processed_%d_%d.json", beginrun, endrun));
+      ofstream json2(Form("processedjson/processed_detailed_%d_%d.json", beginrun, endrun));
       json << "{";
       json2 << "{";
       bool firstRun(true);
@@ -1135,6 +1135,8 @@ void ProcessSample( std::vector<std::string> file_patterns,
   for ( std::vector<std::string>::const_iterator pattern = file_patterns.begin();
 	pattern != file_patterns.end(); ++pattern )
     tchain->Add(pattern->c_str());
+
+  std::cout << "Number of events to process : " << tchain->GetEntries() << endl;
 
   std::cout << "Processing " << SmurfTree::name(sample) << ".." << std::endl;
   ScanChain(tchain,sample,integratedLumi,xsec,nProcessedEvents,identifyEvents,realData,cms2_json_file,beginrun,endrun);
