@@ -31,45 +31,45 @@ int main(int argc, char *argv[])
   if (argc == 4) {
   
     std::vector<string> dataSamples;
-/* 
- 	// 2012A
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleElectron_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleMu_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/MuEG_Run2012A-PromptReco-v1/V05-02-28/vvfilter/preprocessing/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleElectron_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleMu_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
 
- 	// 2012B
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
- 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	// 2012A
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleElectron_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleMu_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/MuEG_Run2012A-PromptReco-v1/V05-02-28/vvfilter/preprocessing/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleElectron_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleMu_Run2012A-PromptReco-v1/V05-02-28/vvfilter/*.root");
 
-	dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-    dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
-*/
+//  	// 2012B
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun11_from195538/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun17_from195904/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+ 	
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+//  	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/jun20_from196357/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/DoubleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/MuEG_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleElectron_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+// 	dataSamples.push_back("/nfs-6/userdata/jaehyeok/missing/SingleMu_Run2012B-PromptReco-v1/V05-02-28/vvfilter/*.root");
+
     SmurfTree::DataType dataType = (SmurfTree::DataType)atoi(argv[1]);
     int beginrun = atoi(argv[2]);
     int endrun = atoi(argv[3]);
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     if (dataType == 0) realData = true;
     const std::string cms2_json_file = "Cert_190456-202016_8TeV_PromptReco_Collisions12_JSON_cms2.txt";
 	
-	for(unsigned int run = beginrun; run<=endrun; run++) { 
+    for(int run = beginrun; run<=endrun; run++) { 
 //		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/DoubleElectron_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
 //		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/DoubleMu_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
 //		dataSamples.push_back(Form("/hadoop/cms/store/user/yanjuntu/CMSSW_5_3_2_patch4_V05-03-13/MuEG_Run2012C-PromptReco-v1_AOD/merged/*%d*.root",run));
