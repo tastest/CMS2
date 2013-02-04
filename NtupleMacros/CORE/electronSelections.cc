@@ -1110,7 +1110,7 @@ float electronIsoValuePF2012_FastJetEffArea(int index, float conesize, int ivtx)
     // get effective area
 	float AEff = -9999.0f;
 	if      (is_equal(conesize,0.3f)) {AEff = fastJetEffArea03_v1(etaAbs);}
-	else if (is_equal(conesize,0.3f)) {AEff = fastJetEffArea04_v1(etaAbs);}
+	else if (is_equal(conesize,0.4f)) {AEff = fastJetEffArea04_v1(etaAbs);}
 	else                              {AEff = fastJetEffArea03_v1(etaAbs);} // default
 
     // pf iso
@@ -1139,7 +1139,7 @@ float electronIsoValuePF2012_FastJetEffArea_v2(int index, float conesize, int iv
     // get effective area
 	float AEff = -9999.0f;
 	if      (is_equal(conesize,0.3f)) {AEff = fastJetEffArea03_v1(etaAbs);}
-	else if (is_equal(conesize,0.3f)) {AEff = fastJetEffArea04_v1(etaAbs);}
+	else if (is_equal(conesize,0.4f)) {AEff = fastJetEffArea04_v1(etaAbs);}
 	else                              {AEff = fastJetEffArea03_v1(etaAbs);} // default
 
     // pf iso
@@ -1168,7 +1168,7 @@ float electronIsoValuePF2012_FastJetEffArea_v3(int index, float conesize, int iv
     // get effective area
 	float AEff = -9999.0f;
 	if      (is_equal(conesize,0.3f)) {AEff = fastJetEffArea03_v2(etaAbs);}
-	else if (is_equal(conesize,0.3f)) {AEff = fastJetEffArea04_v2(etaAbs);}
+	else if (is_equal(conesize,0.4f)) {AEff = fastJetEffArea04_v2(etaAbs);}
 	else                              {AEff = fastJetEffArea03_v2(etaAbs);} // default
 
     // pf iso
