@@ -1999,10 +1999,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             if (fabs(cms2.mus_p4().at(imu).eta()) > 2.4f)
                                 continue;
 
-                            const bool is_global  = ((cms2.mus_type().at(imu) & (1<<1)) != 0);
-                            const bool is_tracker = ((cms2.mus_type().at(imu) & (1<<2)) != 0);
-                            const bool is_pfmu    = ((cms2.mus_type().at(imu) & (1<<5)) != 0);
-                            bool passes_mu_type = ((is_global or is_tracker) and is_pfmu);
+                            const bool is_global      = ((cms2.mus_type().at(imu) & (1<<1)) != 0);
+                            const bool is_tracker     = ((cms2.mus_type().at(imu) & (1<<2)) != 0);
+                            const bool is_pfmu        = ((cms2.mus_type().at(imu) & (1<<5)) != 0);
+                            const bool passes_mu_type = ((is_global or is_tracker) and is_pfmu);
                             if (not passes_mu_type)
                                 continue;
 
@@ -2836,10 +2836,10 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             if (fabs(cms2.mus_p4().at(imu).eta()) > 2.4f)
                                 continue;
 
-                            const bool is_global  = ((cms2.mus_type().at(imu) & (1<<1)) != 0);
-                            const bool is_tracker = ((cms2.mus_type().at(imu) & (1<<2)) != 0);
-                            const bool is_pfmu    = ((cms2.mus_type().at(imu) & (1<<5)) != 0);
-                            bool passes_mu_type = ((is_global or is_tracker) and is_pfmu);
+                            const bool is_global      = ((cms2.mus_type().at(imu) & (1<<1)) != 0);
+                            const bool is_tracker     = ((cms2.mus_type().at(imu) & (1<<2)) != 0);
+                            const bool is_pfmu        = ((cms2.mus_type().at(imu) & (1<<5)) != 0);
+                            const bool passes_mu_type = ((is_global or is_tracker) and is_pfmu);
                             if (not passes_mu_type)
                                 continue;
 
