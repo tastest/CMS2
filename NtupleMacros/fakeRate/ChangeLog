@@ -1,3 +1,8 @@
+02-04-2013 - Ryan Kelley 
+	* fixed bug in pfiso constituents for electons 
+	* added branch for el_effarea03/04 --> removed el_effarea
+	* added branch for cpriso04_rho
+
 01-21-2013 - Ryan Kelley 
 	* added d0/dz/ip3d + errors 
 

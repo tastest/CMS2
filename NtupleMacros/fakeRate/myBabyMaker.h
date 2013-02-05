@@ -150,6 +150,7 @@ private:
 
     // Corrected Isolation
     Float_t cpfiso03_rho_;       // PF Isolation with a cone size of 0.3 (corrected using rho*area_eff -- only filled for electrons)
+    Float_t cpfiso04_rho_;       // PF Isolation with a cone size of 0.4 (corrected using rho*area_eff -- only filled for electrons)
     Float_t cpfiso03_db_;        // PF Isolation with a cone size of 0.3 (corrected using #DeltaBeta -- only filled for muons)
 
     // PV
@@ -166,7 +167,8 @@ private:
     Bool_t  el_id_vbtf90_;
 
     // effective area
-    Float_t el_effarea_;            // 2012 working point effective area (cone = 0.3)
+    Float_t el_effarea03_;          // 2012 working point effective area (cone = 0.3)
+    Float_t el_effarea04_;          // 2012 working point effective area (cone = 0.4)
     Float_t mu_effarea03_;          // 2012 working point effective area (combined       , cone = 0.3 , loose)
     Float_t mu_nh_effarea03_;       // 2012 working point effective area (neutral hadron , cone = 0.3 , loose)
     Float_t mu_em_effarea03_;       // 2012 working point effective area (E&M            , cone = 0.3 , loose)

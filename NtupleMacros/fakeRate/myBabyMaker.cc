@@ -651,6 +651,7 @@ void myBabyMaker::InitBabyNtuple()
     pfpupt03_           = -999.;
     pfpupt04_           = -999.;
     cpfiso03_rho_       = -999.;
+    cpfiso04_rho_       = -999.;
     cpfiso03_db_        = -999.;
 
     closestMuon_      = false;
@@ -664,7 +665,8 @@ void myBabyMaker::InitBabyNtuple()
     convPartnerTrack_ = false;
     convMIT_          = false;
 
-    el_effarea_            = -999.;
+    el_effarea03_          = -999.;
+    el_effarea04_          = -999.;
     mu_effarea03_          = -999.;
     mu_nh_effarea03_       = -999.;
     mu_em_effarea03_       = -999.;
@@ -1219,6 +1221,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("pfpupt03"              , &pfpupt03_              ); 
     babyTree_->Branch("pfpupt04"              , &pfpupt04_              ); 
     babyTree_->Branch("cpfiso03_rho"          , &cpfiso03_rho_          ); 
+    babyTree_->Branch("cpfiso04_rho"          , &cpfiso04_rho_          ); 
     babyTree_->Branch("cpfiso03_db"           , &cpfiso03_db_           ); 
     babyTree_->Branch("id"                    , &id_                    ); 
     babyTree_->Branch("closestMuon"           , &closestMuon_           ); 
@@ -1228,7 +1231,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("el_id_smurfV5"         , &el_id_smurfV5_         ); 
     babyTree_->Branch("el_id_vbtf80"          , &el_id_vbtf80_          ); 
     babyTree_->Branch("el_id_vbtf90"          , &el_id_vbtf90_          ); 
-    babyTree_->Branch("el_effarea"            , &el_effarea_            ); 
+    babyTree_->Branch("el_effarea03"          , &el_effarea03_          ); 
+    babyTree_->Branch("el_effarea04"          , &el_effarea04_          ); 
     babyTree_->Branch("mu_effarea03"          , &mu_effarea03_          ); 
     babyTree_->Branch("mu_nh_effarea03"       , &mu_nh_effarea03_       ); 
     babyTree_->Branch("mu_em_effarea03"       , &mu_em_effarea03_       ); 
@@ -2201,32 +2205,19 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 						hcal_iso_     = electronIsolation_HCAL_rel    (iLep                        ) * els_p4().at(iLep).pt(); 
 
 						// PF Isolation
-						ch_pfiso03_ = els_iso03_pf_ch().at(iLep);
-						nh_pfiso03_ = els_iso03_pf_nhad05().at(iLep);
-						em_pfiso03_ = els_iso03_pf_gamma05().at(iLep);
+    					ch_pfiso03_ = cms2.els_iso03_pf2012ext_ch().at(iLep);
+    					em_pfiso03_ = cms2.els_iso03_pf2012ext_em().at(iLep);
+    					nh_pfiso03_ = cms2.els_iso03_pf2012ext_nh().at(iLep);
 						pfiso03_ = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/els_p4().at(iLep).pt(); 
 
-						ch_pfiso04_ = els_iso04_pf_ch().at(iLep);
-						nh_pfiso04_ = els_iso04_pf_nhad05().at(iLep);
-						em_pfiso04_ = els_iso04_pf_gamma05().at(iLep);
+    					ch_pfiso04_ = cms2.els_iso04_pf2012ext_ch().at(iLep);
+    					em_pfiso04_ = cms2.els_iso04_pf2012ext_em().at(iLep);
+    					nh_pfiso04_ = cms2.els_iso04_pf2012ext_nh().at(iLep);
 						pfiso04_ = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/els_p4().at(iLep).pt(); 
 
-						// PF Isolation
-						//electronIsoValuePF2012(ch_pfiso03_bv_, em_pfiso03_bv_, nh_pfiso03_bv_, 0.3, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
-						//pfiso03_bv_ = (ch_pfiso03_bv_ + em_pfiso03_bv_ + nh_pfiso03_bv_)/els_p4().at(iLep).pt(); 
-						//electronIsoValuePF2012(ch_pfiso04_bv_, em_pfiso04_bv_, nh_pfiso04_bv_, 0.4, iLep, first_good_vertex_index, /*barrelVetoes=*/true);
-						//pfiso04_bv_ = (ch_pfiso04_bv_ + em_pfiso04_bv_ + nh_pfiso04_bv_)/els_p4().at(iLep).pt(); 
-
-						// Radial Isolation
-						//radiso_et1p0_ = electronRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
-						//radiso_et0p5_ = electronRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/false, verbose_); 
-
-						// Radial Isolation with Barrel Veto
-						//radiso_et1p0_bv_ = electronRadialIsolation(iLep, ch_radiso_et1p0_bv_, nh_radiso_et1p0_bv_, em_radiso_et1p0_bv_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
-						//radiso_et0p5_bv_ = electronRadialIsolation(iLep, ch_radiso_et0p5_bv_, nh_radiso_et0p5_bv_, em_radiso_et0p5_bv_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, /*barrelVetoes=*/true, verbose_); 
-
 						// correct isolaion (using fastjet effective area)
-						cpfiso03_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep);
+						cpfiso03_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep, /*conesize=*/0.3, /*vtx=*/-999, /*52X iso=*/false);
+						cpfiso04_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep, /*conesize=*/0.4, /*vtx=*/-999, /*52X iso=*/false);
 
 						// mc information
 						if (!isData) {
@@ -2254,7 +2245,8 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
 							closestMuon_ = true;
 
 						// electron ID effective area
-						el_effarea_ = EffectiveArea(eta_, /*cone=*/0.3, /*eormu=*/11, /*use_tight=*/false);
+						el_effarea03_ = EffectiveArea(eta_, /*cone=*/0.3, /*eormu=*/11, /*use_tight=*/false);
+						el_effarea04_ = EffectiveArea(eta_, /*cone=*/0.4, /*eormu=*/11, /*use_tight=*/false);
 
 						// PV
 						d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
