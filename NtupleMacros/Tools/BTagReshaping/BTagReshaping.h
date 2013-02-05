@@ -12,13 +12,8 @@
 #include "Math/Interpolator.h"
 #define MAXPOINTS 200
 
-/*#if PROJECT_NAME == CMSSW
-#include "VHbbAnalysis/VHbbDataFormats/interface/btag_payload_b.h"
-#include "VHbbAnalysis/VHbbDataFormats/interface/btag_payload_light.h"
-#else*/
 #include "btag_payload_b.h"
 #include "btag_payload_light.h"
-//#endif
 
 class BTagShape 
 {
@@ -39,18 +34,18 @@ class BTagShape
       float sf=cutsAndSF[i].second;
       float originalIntegral = m_h->Integral(m_h->FindBin(oldCut),lastbin);
       float originalLowEdge = m_h->GetBinLowEdge(m_h->FindBin(oldCut));
-      std::cout << std::endl<<    " Scale Factor : " << sf << std::endl;
-//      float target=originalIntegral/sf;
+      //std::cout << std::endl<<    " Scale Factor : " << sf << std::endl;
+
       float target=originalIntegral*sf;
-      std::cout << " Target " << target << " orig " << originalIntegral << std::endl;
+      //std::cout << " Target " << target << " orig " << originalIntegral << std::endl;
       for(int j=lastbin; j> -1; j--)
       {
         if(m_h->Integral(j,lastbin)>= target)
           {
              //equivalents.push_back(std::pair<float,float>(originalLowEdge,h->GetBinLowEdge(j))); 
              eq.push_back(std::pair<float,float>(m_h->GetBinLowEdge(j),originalLowEdge)); 
-	     std::cout << "Found at " << j << " was " << m_h->FindBin(oldCut) <<  std::endl;
-	     std::cout << m_h->GetBinLowEdge(j) << " was " << originalLowEdge << " cut: " << oldCut <<  std::endl;
+	     //std::cout << "Found at " << j << " was " << m_h->FindBin(oldCut) <<  std::endl;
+	     //std::cout << m_h->GetBinLowEdge(j) << " was " << originalLowEdge << " cut: " << oldCut <<  std::endl;
              break;
           }
       }
@@ -168,7 +163,7 @@ class BTagShapeInterface
       sfl+=scaleBC * beff::CSVL_SFb_error[i]*charmFactor; // charm additional error
       cutsAndSFbinC.push_back(std::pair<float, float>(0.244,sfl));
 
-      std::cout << "SFs "  << i << " " << sfl << " " << sfm << " " << sft << std::endl;
+      //std::cout << "SFs "  << i << " " << sfl << " " << sfm << " " << sft << std::endl;
       cutsAndSFB.push_back(cutsAndSFbinB);
       cutsAndSFC.push_back(cutsAndSFbinC);
     }  
@@ -196,7 +191,7 @@ class BTagShapeInterface
       sfl+=scaleBC * 0.12*charmFactor; // charm additional error
       cutsAndSFbinC.push_back(std::pair<float, float>(0.244,sfl));
 
-      std::cout << "Firstbin SFs " << sfl << " " << sfm << " " << sft << std::endl;
+      //std::cout << "Firstbin SFs " << sfl << " " << sfm << " " << sft << std::endl;
       cutsAndSFB.push_back(cutsAndSFbinB);
       cutsAndSFC.push_back(cutsAndSFbinC);
 
@@ -225,7 +220,7 @@ class BTagShapeInterface
       sfl+=scaleBC * beff::CSVL_SFb_error[beff::bins-1]*charmFactor; // charm additional error
       cutsAndSFbinC.push_back(std::pair<float, float>(0.244,sfl));
 
-      std::cout << "Lastbin SFs " << sfl << " " << sfm << " " << sft << std::endl;
+      //std::cout << "Lastbin SFs " << sfl << " " << sfm << " " << sft << std::endl;
       cutsAndSFB.push_back(cutsAndSFbinB);
       cutsAndSFC.push_back(cutsAndSFbinC);
     }
@@ -260,7 +255,7 @@ class BTagShapeInterface
       float sfl = mistag_CSVL(bin.centerEta(),bin.centerPt(),scaleL);
       cutsAndSFbinL.push_back(std::pair<float, float>(0.244,sfl));
    
-      std::cout << "SFs light " << j << " " << i << " " << sfl << " " << sfm << " " << sft << std::endl;
+      //std::cout << "SFs light " << j << " " << i << " " << sfl << " " << sfm << " " << sft << std::endl;
       cutsAndSFL.push_back(cutsAndSFbinL);
     }
 
@@ -278,7 +273,7 @@ class BTagShapeInterface
 
       
    
-      std::cout << "SFs light " << sfl << " " << sfm << " " << sft << std::endl;
+      //std::cout << "SFs light " << sfl << " " << sfm << " " << sft << std::endl;
       cutsAndSFL.push_back(cutsAndSFbinL);
     }
 
