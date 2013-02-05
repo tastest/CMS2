@@ -297,11 +297,11 @@ triggerMatchStruct MatchTriggerClass(LorentzVector lepton_p4, TPMERegexp& regexp
     }
 
     //assert (loopCounts < 2);
-	// check that we counted at least two matches
+    // check that we counted at least two matches
     if (loopCounts >= 2)
-	{
-		throw std::logic_error(Form("[FR baby maker]: MatchTriggerClass - looper cout is greater than two. loopCounts = %u", loopCounts));
-	}
+    {
+        throw std::logic_error(Form("[FR baby maker]: MatchTriggerClass - looper cout is greater than two. loopCounts = %u", loopCounts));
+    }
     return triggerMatchInfo;
 }
 
@@ -379,13 +379,13 @@ Float_t EffectiveArea(float eta, float cone_size, int eormu, bool use_tight)
     if (abs(eormu) == 11)
     {
         if (abs(cone_size - 0.3) < 0.01)
-		{
-			eff_area = fastJetEffArea03_v2(etaAbs); 
-		}
-		else if (abs(cone_size - 0.4) < 0.01)
-		{
-			eff_area = fastJetEffArea04_v2(etaAbs); 
-		}
+        {
+            eff_area = fastJetEffArea03_v2(etaAbs); 
+        }
+        else if (abs(cone_size - 0.4) < 0.01)
+        {
+            eff_area = fastJetEffArea04_v2(etaAbs); 
+        }
     }
     else if (abs(eormu) == 13)
     {
@@ -577,6 +577,8 @@ void myBabyMaker::InitBabyNtuple()
     nFOmus_ = 0;
     ngsfs_  = 0;
     nmus_   = 0;
+    nvetomus_ = 0;
+    nvetoels_ = 0;
 
     /////////////////////////// 
     // End Event Information //
@@ -655,9 +657,9 @@ void myBabyMaker::InitBabyNtuple()
     cpfiso03_db_        = -999.;
 
     closestMuon_      = false;
-    el_id_sieie_   	  = -999.;
-    el_id_detain_  	  = -999.;
-    el_id_dphiin_  	  = -999.;
+    el_id_sieie_      = -999.;
+    el_id_detain_     = -999.;
+    el_id_dphiin_     = -999.;
     el_id_smurfV5_    = false;
     el_id_vbtf80_     = false;
     el_id_vbtf90_     = false;
@@ -1146,6 +1148,8 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("nFOmus"         , &nFOmus_         );
     babyTree_->Branch("ngsfs"          , &ngsfs_          );
     babyTree_->Branch("nmus"           , &nmus_           );
+    babyTree_->Branch("nvetoels"       , &nvetoels_       );
+    babyTree_->Branch("nvetomus"       , &nvetomus_       );
 
     /////////////////////////// 
     // End Event Information //
@@ -1225,9 +1229,9 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("cpfiso03_db"           , &cpfiso03_db_           ); 
     babyTree_->Branch("id"                    , &id_                    ); 
     babyTree_->Branch("closestMuon"           , &closestMuon_           ); 
-    babyTree_->Branch("el_id_sieie" 		  , &el_id_sieie_ 			);
-    babyTree_->Branch("el_id_detain" 		  , &el_id_detain_			);
-    babyTree_->Branch("el_id_dphiin" 		  , &el_id_dphiin_			);
+    babyTree_->Branch("el_id_sieie"           , &el_id_sieie_           );
+    babyTree_->Branch("el_id_detain"          , &el_id_detain_          );
+    babyTree_->Branch("el_id_dphiin"          , &el_id_dphiin_          );
     babyTree_->Branch("el_id_smurfV5"         , &el_id_smurfV5_         ); 
     babyTree_->Branch("el_id_vbtf80"          , &el_id_vbtf80_          ); 
     babyTree_->Branch("el_id_vbtf90"          , &el_id_vbtf90_          ); 
@@ -1713,1743 +1717,1835 @@ myBabyMaker::myBabyMaker ()
 //-----------------------------------
 void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, bool applyFOfilter, const std::string& jetcorrPath)
 {
-	try
-	{
-		already_seen.clear();
-
-		// Make a baby ntuple
-		MakeBabyNtuple(babyFilename);
-
-		// Jet Corrections
-		std::vector<std::string> jetcorr_pf_L2L3_filenames;
-		//if (isData) {        
-		string data_pf_l2 = jetcorrPath;
-		data_pf_l2.append("/GR_R_52_V7_L2Relative_AK5PF.txt");
-		string data_pf_l3 = jetcorrPath;
-		data_pf_l3.append("/GR_R_52_V7_L3Absolute_AK5PF.txt");
-		jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
-		jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
-		//}
-		//else {
-		//    string mc_pf_l2 = jetcorrPath;
-		//    mc_pf_l2.append("/START41_V0_AK5PF_L2Relative.txt");
-		//    string mc_pf_l3 = jetcorrPath;
-		//    mc_pf_l3.append("/START41_V0_AK5PF_L3Absolute.txt");
-		//    jetcorr_pf_L2L3_filenames.push_back(mc_pf_l2.c_str());
-		//    jetcorr_pf_L2L3_filenames.push_back(mc_pf_l3.c_str());
-		//}    
-
-		std::cout << "making jet corrector with the following files: " << std::endl;
-		for (unsigned int idx = 0; idx < jetcorr_pf_L2L3_filenames.size(); idx++)
-			std::cout << jetcorr_pf_L2L3_filenames.at(idx) << std::endl;
-		FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
-
-		//// set up on-the-fly L1FastJetL2L3 JEC
-		//std::vector<std::string> jetcorr_pf_L1FastJetL2L3_filenames;
-		//jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L1FastJet_AK5PF.txt"   , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
-		//jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L2Relative_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
-		//jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L3Absolute_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
-		//FactorizedJetCorrector* jet_pf_L1FastJetL2L3_corrector = makeJetCorrector(jetcorr_pf_L1FastJetL2L3_filenames); 
-
-		//// set up on-the-fly L1FastJetL2L3 residual JEC
-		//std::vector<std::string> jetcorr_pf_L1FastJetL2L3Residual_filenames;
-		//jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L1FastJet_AK5PF.txt"   , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
-		//jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L2Relative_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
-		//jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L3Absolute_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
-		//jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L2L3Residual_AK5PF.txt", jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
-		//FactorizedJetCorrector* jet_pf_L1FastJetL2L3Residual_corrector = makeJetCorrector(jetcorr_pf_L1FastJetL2L3Residual_filenames); 
-
-		// The deltaR requirement between objects and jets to remove the jet trigger dependence
-		float deltaRCut   = 1.0;
-		float deltaPhiCut = 2.5;
-
-		//--------------------------
-		// File and Event Loop
-		//---------------------------
-
-		// benchmark
-		TBenchmark bmark;
-		bmark.Start("benchmark");
-
-		int i_permilleOld = 0;
-		unsigned int nEventsTotal = 0;
-		unsigned int nEventsChain = 0;
-		int nEvents = nEvents_; 
-		if (nEvents==-1){
-			nEventsChain = chain->GetEntries();
-		} else {
-			nEventsChain = nEvents;
-		}
-		TObjArray *listOfFiles = chain->GetListOfFiles();
-		TIter fileIter(listOfFiles);
-		bool finish_looping = false;
-
-		std::cout << "looping on " << nEventsChain << " out of " << chain->GetEntries() << " events..." << std::endl;
-		std::cout << "nEventTotal = " << nEventsTotal << endl;
-		std::cout << "nEventChain = " << nEventsChain << endl;
-
-		while(TChainElement *currentFile = (TChainElement*)fileIter.Next())
-		{
-			if (finish_looping) {
-				break;
-			}
-
-			TString filename = currentFile->GetTitle();
-			if (verbose_)
-			{
-				cout << filename << endl;
-			}
-
-			TFile* f = TFile::Open(filename.Data());
-			TTree* tree = (TTree*)f->Get("Events");
-			cms2.Init(tree);
-
-			unsigned int nEntries = tree->GetEntries();
-			unsigned int nGoodEvents(0);
-			unsigned int nLoop = nEntries;
-			unsigned int z;
-
-			// Event Loop
-			for( z = 0; z < nLoop; z++)
-			{ 
-				cms2.GetEntry(z);
-
-				if (nEventsTotal >= nEventsChain) {
-					finish_looping = true;
-					break;
-				}
-
-				bool isData = evt_isRealData();
-
-				if(isData){
-					// Good  Runs
-					if (goodrun_is_json) {
-						if(!goodrun_json(evt_run(), evt_lumiBlock())) continue;   
-					}
-					else {
-						if(!goodrun(evt_run(), evt_lumiBlock())) continue;   
-					}
-
-					// check for duplicated
-					DorkyEventIdentifier id = {evt_run(), evt_event(), evt_lumiBlock()};
-					if (is_duplicate(id) ) { 
-						cout << "\t! ERROR: found duplicate." << endl;
-						continue;
-					}
-				}
-
-				// looper progress
-				++nEventsTotal;
-				++nGoodEvents;
-				int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
-				if (i_permille != i_permilleOld) {
-					printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
-					fflush(stdout);
-					i_permilleOld = i_permille;
-				}
-
-				// Event cleaning (careful, it requires technical bits)
-				//if (!cleaning_BPTX(isData))   continue;
-				//if (!cleaning_beamHalo())   continue;
-				//if (!cleaning_goodVertexAugust2010()) continue;
-				//if (!cleaning_goodTracks()) continue;
-				if (!cleaning_standardApril2011()) continue;
-
-				// Loop over jets and see what is btagged
-				// Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
-
-				// #ifndef __CMS2_SLIM__
-				//          int this_nbjet = 0;
-				//             vector<unsigned int> bindex;
-				//             for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-				//                 if (jets_p4().at(iJet).pt() < 15.) continue;
-				//                 if (cms2.jets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
-				//                 this_nbjet++;
-				//                 bindex.push_back(iJet);
-				//             }
-				// #endif
-
-				// PF Jets
-				int this_nbpfjet = 0;
-				//FactorizedJetCorrector* jet_pf_corrector = evt_isRealData() ? jet_pf_L1FastJetL2L3Residual_corrector : jet_pf_L1FastJetL2L3_corrector; 
-				vector<unsigned int> bpfindex;
-				for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-					if ( !passesPFJetID(iJet)) continue;
-					LorentzVector jp4 = pfjets_p4().at(iJet);
-					//jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
-					//jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
-					//jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-					//jet_pf_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-					//float jet_cor = jetCorrection(jp4, jet_pf_corrector);
-					float jet_cor = evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(iJet) : cms2.pfjets_corL1FastL2L3().at(iJet);
-					LorentzVector jp4cor = jp4 * jet_cor;
-					if (jp4cor.pt() < 15) continue;
-					if (cms2.pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
-					this_nbpfjet++;
-					bpfindex.push_back(iJet);
-				}
-
-				// Electrons
-				if (eormu == -1 || eormu==11) {
-					for (unsigned int iLep = 0 ; iLep < els_p4().size(); iLep++) {
-
-						// Apply a pt cut (Changed it from 5 GeV to 10 GeV...Claudio 10 July 2010)
-						if ( els_p4().at(iLep).pt() < 10.) continue;
-
-						// Initialize baby ntuple
-						InitBabyNtuple();
-
-						//////////////////////////////////////////////////////
-						// Fake Rate Numerator & Denominator Selections     //
-						//////////////////////////////////////////////////////
-
-						// store number of electron FOs in event (use SS FO definition)
-						nFOels_ = 0;
-						ngsfs_ = 0;
-						for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++)
-						{
-							if (iel == iLep)
-								continue;
-
-							if (cms2.els_p4().at(iel).pt() < 10.)
-								continue;
-
-							if (pass_electronSelection(iel, electronSelectionFOV7_v3, false, false))
-								++ngsfs_;
-
-							if (samesign::isDenominatorLepton(11, iel)) {
-								++nFOels_;
-								if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
-									foel_p4_ = cms2.els_p4().at(iel);
-									foel_id_ = 11*cms2.els_charge().at(iel);
-								}
-								continue;
-							}
-							if (samesign::isDenominatorLepton(11, iel)) {
-								++nFOels_;
-								if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
-									foel_p4_ = cms2.els_p4().at(iel);
-									foel_id_ = 11*cms2.els_charge().at(iel);
-								}
-								continue;
-							}
-						}
-
-						// store number of muon FOs in event (use SS FO definition)
-						nFOmus_ = 0;
-						nmus_ = 0;
-						for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++)
-						{
-							if (cms2.mus_p4().at(imu).pt() < 10.)
-								continue;
-
-							if (muonIdNotIsolated(imu, muonSelectionFO_ssV5))
-								++nmus_;
-
-							if (samesign::isDenominatorLepton(13, imu)) {
-								++nFOmus_;
-								if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
-									fomu_p4_ = cms2.mus_p4().at(imu);
-									fomu_id_ = 13*cms2.mus_charge().at(imu);
-								}
-								continue;
-							}
-							if (samesign::isDenominatorLepton(13, imu)) {
-								++nFOmus_;
-								if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
-									fomu_p4_ = cms2.mus_p4().at(imu);
-									fomu_id_ = 13*cms2.mus_charge().at(imu);
-								}
-								continue;
-							}
-						}
-
-						//////////
-						// 2012 //
-						//////////
-
-						// SS
-						num_el_ssV7_       = pass_electronSelection(iLep, electronSelection_ssV7       );
-						num_el_ssV7_noIso_ = pass_electronSelection(iLep, electronSelection_ssV7_noIso );
-						v1_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v1     );
-						v2_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v2     );
-						v3_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v3     );
-
-						// TTZ
-
-						num_el_TTZcuttightv1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::TIGHT);
-						num_el_TTZcuttightv1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::TIGHT);
-						fo_el_TTZcuttightv1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
-						fo_el_TTZcuttightv1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT);
-
-						num_el_TTZcutloosev1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::LOOSE);
-						num_el_TTZcutloosev1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::LOOSE);
-						fo_el_TTZcutloosev1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
-						fo_el_TTZcutloosev1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE);
-
-						num_el_TTZMVAtightv1_       = false;
-						num_el_TTZMVAtightv1_noIso_ = false;
-						fo_el_TTZMVAtightv1_        = false;
-						fo_el_TTZMVAtightv1_noIso_  = false;
-
-						num_el_TTZMVAloosev1_       = false;
-						num_el_TTZMVAloosev1_noIso_ = false;
-						fo_el_TTZMVAloosev1_        = false;
-						fo_el_TTZMVAloosev1_noIso_  = false;
-
-						//////////
-						// 2011 //
-						//////////
-
-						// SS
-						num_el_ssV6_       = pass_electronSelection( iLep, electronSelection_ssV6            );
-						num_el_ssV6_noIso_ = pass_electronSelection( iLep, electronSelection_ssV6_noIso      );
-						v1_el_ssV6_        = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v1 );
-						v2_el_ssV6_        = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v2 );
-						v3_el_ssV6_        = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v3 );
-
-						// WW
-						num_el_smurfV6_ = pass_electronSelection( iLep, electronSelection_smurfV6          );
-						v1_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v1    );
-						v2_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v2    );
-						v3_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v3    );
-						v4_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v4    );
-
-						//OS
-						num_el_OSV2_   = pass_electronSelection( iLep, electronSelection_el_OSV2          );
-						fo_el_OSV2_    = pass_electronSelection( iLep, electronSelection_el_OSV2_FO       );
-						num_el_OSV3_   = pass_electronSelection( iLep, electronSelection_el_OSV3          );
-						fo_el_OSV3_    = pass_electronSelection( iLep, electronSelection_el_OSV3_FO       );
-
-						////////////////////////////////////////////////////////////
-						// Skip this muon if it fails the loosest denominator.    //
-						// Ignore this OR if applyFOfilter is set to false.       //
-						////////////////////////////////////////////////////////////
-						if (applyFOfilter) {  
-							if (
-									!v1_el_ssV7_          && !v2_el_ssV7_          && !v3_el_ssV7_    &&                    // SS 2012
-									!fo_el_TTZMVAtightv1_ && !fo_el_TTZMVAloosev1_ &&                                       // TTZ MVA 2012
-									!fo_el_TTZcuttightv1_ && !fo_el_TTZcutloosev1_ &&                                       // TTZ cut 2012
-									!v1_el_ssV6_          && !v2_el_ssV6_          && !v3_el_ssV6_    &&                    // SS 2011
-									!fo_el_OSV2_          && !fo_el_OSV3_          &&                                       // OS 2011
-									!v1_el_smurfV1_       && !v1_el_smurfV1_       && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
-							   ) 
-								continue;
-						}
-
-						//////////////////////////////////////////////////////
-						// End Fake Rate Numerator & Denominator Selections //
-						//////////////////////////////////////////////////////
-
-
-						////////////////////////////////////////////////////////////////////////
-						// NEED TO THINK ABOUT THIS... Z'S ARE VETOED BASED ON TOP SELECTIONS //
-						////////////////////////////////////////////////////////////////////////
-
-						// If it is above 20 GeV see if we can make a 
-						// Z with another pt>20 FO.  Will use the v1 FO since 
-						// these are the loosest
-						bool isaZ = false;
-						if (els_p4().at(iLep).pt() > 20.) {
-							for (unsigned int jEl = 0 ; jEl < els_p4().size(); jEl++) {
-								if (iLep == jEl)                             continue;
-								if (els_p4().at(jEl).pt() < 20.)            continue;
-								if ( ! pass_electronSelection( jEl, electronSelection_el_OSV3_FO ) ) continue;
-								if ( ! fo_el_OSV3_ ) continue;
-								LorentzVector w = els_p4().at(iLep) + els_p4().at(jEl);
-								if (abs(w.mass()-91.) > 20.) continue;
-								isaZ = true;
-							}
-						}
-						if (isaZ) continue;
-
-						////////////////////////////////////////////////////////////////////////
-						// STORE SOME Z MASS VARIABLES //
-						////////////////////////////////////////////////////////////////////////
-						mz_fo_gsf_  = -999.;
-						mz_gsf_iso_ = -999.;
-						LorentzVector p4fo = cms2.els_p4().at(iLep);
-						for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
-							if (iel == iLep) continue;
-
-							if (fabs(cms2.els_p4().at(iel).eta()) > 2.5)
-								continue;
-
-							if (cms2.els_p4().at(iel).pt() < 10.)
-								continue;
-
-							LorentzVector zp4 = p4fo + cms2.els_p4().at(iel);
-							float zcandmass = sqrt(fabs(zp4.mass2()));
-							if ( fabs(zcandmass - 91.) > fabs(mz_fo_gsf_ - 91.) )
-								continue;
-
-							mz_fo_gsf_  = zcandmass;
-							mz_gsf_iso_ = electronIsolation_rel_v1(iel, true);
-						}
-
-						mz_fo_ctf_  = -999.;
-						mz_ctf_iso_ = -999.;
-						for (int ictf = 0; ictf < static_cast<int>(cms2.trks_trk_p4().size()); ictf++) {
-							if (ictf == cms2.els_trkidx().at(iLep)) continue;
-
-							if (fabs(cms2.trks_trk_p4().at(ictf).eta()) > 2.5)
-								continue;
-
-							if (cms2.trks_trk_p4().at(ictf).pt() < 10.)
-								continue;
-
-							LorentzVector zp4 = p4fo + cms2.trks_trk_p4().at(ictf);
-							float zcandmass = sqrt(fabs(zp4.mass2()));
-							if ( fabs(zcandmass - 91.) > fabs(mz_fo_ctf_ - 91.) )
-								continue;
-
-							mz_fo_ctf_  = zcandmass;
-							mz_ctf_iso_ = ctfIsoValuePF(ictf, associateTrackToVertex(ictf));
-						}
-
-
-						/////////////////////////// 
-						// Event Information     //
-						///////////////////////////
-
-						// Load the electron and event quantities
-						run_          = evt_run();
-						ls_           = evt_lumiBlock();
-						evt_          = evt_event();
-						weight_       = isData ? 1.0 : evt_scale1fb();
-						filename_     = f->GetName();
-						dataset_      = evt_dataset().front();
-						is_real_data_ = evt_isRealData();
-
-						if(!isData){
-							// Pileup - PUSummaryInfoMaker                        
-							for (unsigned int vidx = 0; vidx < cms2.puInfo_nPUvertices().size(); vidx++) {
-								if (cms2.puInfo_bunchCrossing().at(vidx) != 0)
-									continue;
-								pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
-								pu_nPUtrueint_  = cms2.puInfo_trueNumInteractions().at(vidx);
-							}
-
-						}
-
-						// Pileup - VertexMaker
-						bool first_good_vertex_found         = false;
-						unsigned int first_good_vertex_index = 0;
-						for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
-						{
-							if (!isGoodVertex(vidx))
-							{
-								continue;
-							}
-							if (!first_good_vertex_found)
-							{
-								first_good_vertex_found = true;
-								first_good_vertex_index = vidx;
-							}
-							++evt_nvtxs_;
-						}
-
-						/////////////////////////// 
-						// End Event Information //
-						///////////////////////////
-
-
-
-						//////////////////////////// 
-						// Lepton Information     //
-						////////////////////////////
-
-						// Basic Quantities
-						lp4_       = cms2.els_p4().at(iLep);
-						pt_        = els_p4().at(iLep).pt();
-						eta_       = els_p4().at(iLep).eta();
-						sceta_     = els_etaSC().at(iLep);
-						phi_       = els_p4().at(iLep).phi();
-						scet_      = els_eSC().at(iLep) / cosh( els_etaSC().at(iLep));
-						hoe_       = els_hOverE().at(iLep);
-						id_        = 11*els_charge().at(iLep);
-
-						// ip (2d and 3d)
-						const int elgsftkid = cms2.els_gsftrkidx().at(iLep);
-						const int eltkid    = cms2.els_trkidx().at(iLep);
-						const int ivtx      = firstGoodVertex();
-						if (ivtx >= 0 && eltkid >= 0) 
-						{
-							d0_        = elgsftkid>=0 ? gsftrks_d0_pv(elgsftkid,ivtx).first  : trks_d0_pv(eltkid,ivtx).first;
-							d0err_     = elgsftkid>=0 ? gsftrks_d0_pv(elgsftkid,ivtx).second : trks_d0_pv(eltkid,ivtx).second;
-							dz_        = elgsftkid>=0 ? gsftrks_dz_pv(elgsftkid,ivtx).first  : trks_dz_pv(eltkid,ivtx).first;
-							dzerr_     = elgsftkid>=0 ? gsftrks_dz_pv(elgsftkid,ivtx).second : trks_dz_pv(eltkid,ivtx).second;
-						}
-						else
-						{
-							d0_        = cms2.els_d0().at(iLep);
-							d0err_     = cms2.els_d0Err().at(iLep);
-							dz_        = cms2.els_z0().at(iLep);
-							dzerr_     = cms2.els_z0Err().at(iLep);
-						}
-						ip3d_      = els_ip3d().at(iLep);;
-						ip3derr_   = els_ip3derr().at(iLep);;
-
-
-						pfmet_     = evt_pfmet();
-						pfmetphi_  = evt_pfmetPhi();
-						foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
-						fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
-
-						// Isolation
-						iso_          = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/true ); 
-						iso_nps_      = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/true ); 
-						trck_iso_     = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/false) * els_p4().at(iLep).pt(); 
-						ecal_iso_     = electronIsolation_ECAL_rel_v1 (iLep, /*use EBps=*/true     ) * els_p4().at(iLep).pt(); 
-						ecal_iso_nps_ = electronIsolation_ECAL_rel_v1 (iLep, /*use EBps=*/false    ) * els_p4().at(iLep).pt(); 
-						hcal_iso_     = electronIsolation_HCAL_rel    (iLep                        ) * els_p4().at(iLep).pt(); 
-
-						// PF Isolation
-    					ch_pfiso03_ = cms2.els_iso03_pf2012ext_ch().at(iLep);
-    					em_pfiso03_ = cms2.els_iso03_pf2012ext_em().at(iLep);
-    					nh_pfiso03_ = cms2.els_iso03_pf2012ext_nh().at(iLep);
-						pfiso03_ = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/els_p4().at(iLep).pt(); 
-
-    					ch_pfiso04_ = cms2.els_iso04_pf2012ext_ch().at(iLep);
-    					em_pfiso04_ = cms2.els_iso04_pf2012ext_em().at(iLep);
-    					nh_pfiso04_ = cms2.els_iso04_pf2012ext_nh().at(iLep);
-						pfiso04_ = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/els_p4().at(iLep).pt(); 
-
-						// correct isolaion (using fastjet effective area)
-						cpfiso03_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep, /*conesize=*/0.3, /*vtx=*/-999, /*52X iso=*/false);
-						cpfiso04_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep, /*conesize=*/0.4, /*vtx=*/-999, /*52X iso=*/false);
-
-						// mc information
-						if (!isData) {
-							mcid_       = els_mc_id().at(iLep);
-							mcmotherid_ = els_mc_motherid().at(iLep);
-							int status3_index = mc3idx_eormu(11, iLep);
-							if (status3_index >= 0)
-							{
-								mc3id_ = cms2.genps_id().at(status3_index);
-								mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
-								mc3p4_ = cms2.genps_p4().at(status3_index);                            
-							}
-							mc3dr_ = mc3dr_eormu(11, iLep);            
-							leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
-						}
-
-						// ID
-						el_id_sieie_   = cms2.els_sigmaIEtaIEta().at(iLep);
-						el_id_detain_  = cms2.els_dEtaIn().at(iLep);
-						el_id_dphiin_  = cms2.els_dPhiIn().at(iLep);
-						el_id_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5_id );
-						el_id_vbtf80_  = electronId_VBTF(iLep, VBTF_35X_80, false, false);
-						el_id_vbtf90_  = electronId_VBTF(iLep, VBTF_35X_90, false, false);
-						if( els_closestMuon().at(iLep) == -1 )
-							closestMuon_ = true;
-
-						// electron ID effective area
-						el_effarea03_ = EffectiveArea(eta_, /*cone=*/0.3, /*eormu=*/11, /*use_tight=*/false);
-						el_effarea04_ = EffectiveArea(eta_, /*cone=*/0.4, /*eormu=*/11, /*use_tight=*/false);
-
-						// PV
-						d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
-						dzPV_wwV1_ = electron_dzPV_wwV1(iLep);
-
-						// W transverse mass
-						mt_   = Mt( els_p4().at(iLep), pfmet_, pfmetphi_ );
-						pfmt_ = Mt( els_p4().at(iLep), pfmet_, pfmetphi_ );
-
-						// Do the 3 electron charges agree?
-						int iCTF = els_trkidx().at(iLep);
-						if( iCTF >= 0 ){
-							int qCTF = trks_charge().at( iCTF );
-							int qGSF = els_trk_charge().at(iLep);
-							int qPIX = els_sccharge().at(iLep);
-							if( qCTF == qGSF && qCTF == qPIX && qGSF == qPIX ) q3_ = true;
-						}
-
-						// Missing hits info
-						els_exp_innerlayers_ = els_exp_innerlayers().at(iLep);
-
-						// Conversion Rejection  
-						convHitPattern_   = isFromConversionHitPattern(iLep);
-						convPartnerTrack_ = isFromConversionPartnerTrack(iLep);
-						convMIT_          = isFromConversionMIT(iLep);
-						if( els_exp_innerlayers().at(iLep) == 0 ) conv0MissHits_ = true;
-
-						// HT
+    try
+    {
+        already_seen.clear();
+
+        // Make a baby ntuple
+        MakeBabyNtuple(babyFilename);
+
+        // Jet Corrections
+        std::vector<std::string> jetcorr_pf_L2L3_filenames;
+        //if (isData) {        
+        string data_pf_l2 = jetcorrPath;
+        data_pf_l2.append("/GR_R_52_V7_L2Relative_AK5PF.txt");
+        string data_pf_l3 = jetcorrPath;
+        data_pf_l3.append("/GR_R_52_V7_L3Absolute_AK5PF.txt");
+        jetcorr_pf_L2L3_filenames.push_back(data_pf_l2.c_str());
+        jetcorr_pf_L2L3_filenames.push_back(data_pf_l3.c_str());
+        //}
+        //else {
+        //    string mc_pf_l2 = jetcorrPath;
+        //    mc_pf_l2.append("/START41_V0_AK5PF_L2Relative.txt");
+        //    string mc_pf_l3 = jetcorrPath;
+        //    mc_pf_l3.append("/START41_V0_AK5PF_L3Absolute.txt");
+        //    jetcorr_pf_L2L3_filenames.push_back(mc_pf_l2.c_str());
+        //    jetcorr_pf_L2L3_filenames.push_back(mc_pf_l3.c_str());
+        //}    
+
+        std::cout << "making jet corrector with the following files: " << std::endl;
+        for (unsigned int idx = 0; idx < jetcorr_pf_L2L3_filenames.size(); idx++)
+            std::cout << jetcorr_pf_L2L3_filenames.at(idx) << std::endl;
+        FactorizedJetCorrector *jet_pf_L2L3corrector = makeJetCorrector(jetcorr_pf_L2L3_filenames);
+
+        //// set up on-the-fly L1FastJetL2L3 JEC
+        //std::vector<std::string> jetcorr_pf_L1FastJetL2L3_filenames;
+        //jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L1FastJet_AK5PF.txt"   , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+        //jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L2Relative_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+        //jetcorr_pf_L1FastJetL2L3_filenames.push_back(Form("%s/GR_R_52_V7_L3Absolute_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+        //FactorizedJetCorrector* jet_pf_L1FastJetL2L3_corrector = makeJetCorrector(jetcorr_pf_L1FastJetL2L3_filenames); 
+
+        //// set up on-the-fly L1FastJetL2L3 residual JEC
+        //std::vector<std::string> jetcorr_pf_L1FastJetL2L3Residual_filenames;
+        //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L1FastJet_AK5PF.txt"   , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+        //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L2Relative_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+        //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L3Absolute_AK5PF.txt"  , jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+        //jetcorr_pf_L1FastJetL2L3Residual_filenames.push_back(Form("%s/GR_R_52_V7_L2L3Residual_AK5PF.txt", jetcorrPath.empty() ? "." : jetcorrPath.c_str()));
+        //FactorizedJetCorrector* jet_pf_L1FastJetL2L3Residual_corrector = makeJetCorrector(jetcorr_pf_L1FastJetL2L3Residual_filenames); 
+
+        // The deltaR requirement between objects and jets to remove the jet trigger dependence
+        float deltaRCut   = 1.0;
+        float deltaPhiCut = 2.5;
+
+        //--------------------------
+        // File and Event Loop
+        //---------------------------
+
+        // benchmark
+        TBenchmark bmark;
+        bmark.Start("benchmark");
+
+        int i_permilleOld = 0;
+        unsigned int nEventsTotal = 0;
+        unsigned int nEventsChain = 0;
+        int nEvents = nEvents_; 
+        if (nEvents==-1){
+            nEventsChain = chain->GetEntries();
+        } else {
+            nEventsChain = nEvents;
+        }
+        TObjArray *listOfFiles = chain->GetListOfFiles();
+        TIter fileIter(listOfFiles);
+        bool finish_looping = false;
+
+        std::cout << "looping on " << nEventsChain << " out of " << chain->GetEntries() << " events..." << std::endl;
+        std::cout << "nEventTotal = " << nEventsTotal << endl;
+        std::cout << "nEventChain = " << nEventsChain << endl;
+
+        while(TChainElement *currentFile = (TChainElement*)fileIter.Next())
+        {
+            if (finish_looping) {
+                break;
+            }
+
+            TString filename = currentFile->GetTitle();
+            if (verbose_)
+            {
+                cout << filename << endl;
+            }
+
+            TFile* f = TFile::Open(filename.Data());
+            TTree* tree = (TTree*)f->Get("Events");
+            cms2.Init(tree);
+
+            unsigned int nEntries = tree->GetEntries();
+            unsigned int nGoodEvents(0);
+            unsigned int nLoop = nEntries;
+            unsigned int z;
+
+            // Event Loop
+            for( z = 0; z < nLoop; z++)
+            { 
+                cms2.GetEntry(z);
+
+                if (nEventsTotal >= nEventsChain) {
+                    finish_looping = true;
+                    break;
+                }
+
+                bool isData = evt_isRealData();
+
+                if(isData){
+                    // Good  Runs
+                    if (goodrun_is_json) {
+                        if(!goodrun_json(evt_run(), evt_lumiBlock())) continue;   
+                    }
+                    else {
+                        if(!goodrun(evt_run(), evt_lumiBlock())) continue;   
+                    }
+
+                    // check for duplicated
+                    DorkyEventIdentifier id = {evt_run(), evt_event(), evt_lumiBlock()};
+                    if (is_duplicate(id) ) { 
+                        cout << "\t! ERROR: found duplicate." << endl;
+                        continue;
+                    }
+                }
+
+                // looper progress
+                ++nEventsTotal;
+                ++nGoodEvents;
+                int i_permille = (int)floor(1000 * nEventsTotal / float(nEventsChain));
+                if (i_permille != i_permilleOld) {
+                    printf("  \015\033[32m ---> \033[1m\033[31m%4.1f%%" "\033[0m\033[32m <---\033[0m\015", i_permille/10.);
+                    fflush(stdout);
+                    i_permilleOld = i_permille;
+                }
+
+                // Event cleaning (careful, it requires technical bits)
+                //if (!cleaning_BPTX(isData))   continue;
+                //if (!cleaning_beamHalo())   continue;
+                //if (!cleaning_goodVertexAugust2010()) continue;
+                //if (!cleaning_goodTracks()) continue;
+                if (!cleaning_standardApril2011()) continue;
+
+                // Loop over jets and see what is btagged
+                // Medium operating point from https://twiki.cern.ch/twiki/bin/view/CMS/BTagPerformanceOP
+
+                // #ifndef __CMS2_SLIM__
+                //          int this_nbjet = 0;
+                //             vector<unsigned int> bindex;
+                //             for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+                //                 if (jets_p4().at(iJet).pt() < 15.) continue;
+                //                 if (cms2.jets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
+                //                 this_nbjet++;
+                //                 bindex.push_back(iJet);
+                //             }
+                // #endif
+
+                // PF Jets
+                int this_nbpfjet = 0;
+                //FactorizedJetCorrector* jet_pf_corrector = evt_isRealData() ? jet_pf_L1FastJetL2L3Residual_corrector : jet_pf_L1FastJetL2L3_corrector; 
+                vector<unsigned int> bpfindex;
+                for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                    if ( !passesPFJetID(iJet)) continue;
+                    LorentzVector jp4 = pfjets_p4().at(iJet);
+                    //jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
+                    //jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                    //jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                    //jet_pf_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                    //float jet_cor = jetCorrection(jp4, jet_pf_corrector);
+                    float jet_cor = evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(iJet) : cms2.pfjets_corL1FastL2L3().at(iJet);
+                    LorentzVector jp4cor = jp4 * jet_cor;
+                    if (jp4cor.pt() < 15) continue;
+                    if (cms2.pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
+                    this_nbpfjet++;
+                    bpfindex.push_back(iJet);
+                }
+
+                // Electrons
+                if (eormu == -1 || eormu==11) {
+                    for (unsigned int iLep = 0 ; iLep < els_p4().size(); iLep++) {
+
+                        // Apply a pt cut (Changed it from 5 GeV to 10 GeV...Claudio 10 July 2010)
+                        if ( els_p4().at(iLep).pt() < 10.) continue;
+
+                        // Initialize baby ntuple
+                        InitBabyNtuple();
+
+                        //////////////////////////////////////////////////////
+                        // Fake Rate Numerator & Denominator Selections     //
+                        //////////////////////////////////////////////////////
+
+                        // store number of electron FOs in event (use SS FO definition)
+                        nFOels_ = 0;
+                        ngsfs_ = 0;
+                        for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++)
+                        {
+                            if (iel == iLep)
+                                continue;
+
+                            if (cms2.els_p4().at(iel).pt() < 10.)
+                                continue;
+
+                            if (pass_electronSelection(iel, electronSelectionFOV7_v3, false, false))
+                                ++ngsfs_;
+
+                            if (samesign::isDenominatorLepton(11, iel)) {
+                                ++nFOels_;
+                                if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
+                                    foel_p4_ = cms2.els_p4().at(iel);
+                                    foel_id_ = 11*cms2.els_charge().at(iel);
+                                }
+                                continue;
+                            }
+                            if (samesign::isDenominatorLepton(11, iel)) {
+                                ++nFOels_;
+                                if (cms2.els_p4().at(iel).pt() > foel_p4_.pt() && iel != iLep) {
+                                    foel_p4_ = cms2.els_p4().at(iel);
+                                    foel_id_ = 11*cms2.els_charge().at(iel);
+                                }
+                                continue;
+                            }
+                        }
+
+                        // store number of muon FOs in event (use SS FO definition)
+                        nFOmus_ = 0;
+                        nmus_ = 0;
+                        for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++)
+                        {
+                            if (cms2.mus_p4().at(imu).pt() < 10.)
+                                continue;
+
+                            if (muonIdNotIsolated(imu, muonSelectionFO_ssV5))
+                                ++nmus_;
+
+                            if (samesign::isDenominatorLepton(13, imu)) {
+                                ++nFOmus_;
+                                if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
+                                    fomu_p4_ = cms2.mus_p4().at(imu);
+                                    fomu_id_ = 13*cms2.mus_charge().at(imu);
+                                }
+                                continue;
+                            }
+                            if (samesign::isDenominatorLepton(13, imu)) {
+                                ++nFOmus_;
+                                if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt()) {
+                                    fomu_p4_ = cms2.mus_p4().at(imu);
+                                    fomu_id_ = 13*cms2.mus_charge().at(imu);
+                                }
+                                continue;
+                            }
+                        }
+
+                        // store number of "veto" electrons in event
+                        nvetoels_ = 0;
+                        for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++)
+                        {
+                            if (iel == iLep) // skip the current electron
+                                continue;
+
+                            if (cms2.els_p4().at(iel).pt() < 5.0f)
+                                continue;
+
+                            if (fabs(cms2.els_p4().at(iel).eta()) > 2.4f)
+                                continue;
+
+                            const float iso = electronIsoValuePF2012_FastJetEffArea_v3(iel, /*conesize=*/0.3, /*vtx=*/-999, /*52X iso=*/false);
+                            if (iso > 1.0)
+                                continue;
+
+                            // if we get here, then count it
+                            nvetoels_++;
+                        }
+
+                        // store number of "veto" muons in event
+                        nvetomus_ = 0;
+                        for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++)
+                        {
+                            if (cms2.mus_p4().at(imu).pt() < 5.0f)
+                                continue;
+
+                            if (fabs(cms2.mus_p4().at(imu).eta()) > 2.4f)
+                                continue;
+
+                            const bool is_global  = ((cms2.mus_type().at(imu) & (1<<1)) != 0);
+                            const bool is_tracker = ((cms2.mus_type().at(imu) & (1<<2)) != 0);
+                            const bool is_pfmu    = ((cms2.mus_type().at(imu) & (1<<5)) != 0);
+                            bool passes_mu_type = ((is_global or is_tracker) and is_pfmu);
+                            if (not passes_mu_type)
+                                continue;
+
+                            const float iso = muonIsoValuePF2012_deltaBeta(imu); 
+                            if (iso > 1.0)
+                                continue;
+
+                            // if we get here, then count it
+                            nvetomus_++;
+                        }
+
+                        //////////
+                        // 2012 //
+                        //////////
+
+                        // SS
+                        num_el_ssV7_       = pass_electronSelection(iLep, electronSelection_ssV7       );
+                        num_el_ssV7_noIso_ = pass_electronSelection(iLep, electronSelection_ssV7_noIso );
+                        v1_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v1     );
+                        v2_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v2     );
+                        v3_el_ssV7_        = pass_electronSelection(iLep, electronSelectionFOV7_v3     );
+
+                        // TTZ
+
+                        num_el_TTZcuttightv1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::TIGHT);
+                        num_el_TTZcuttightv1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::TIGHT);
+                        fo_el_TTZcuttightv1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
+                        fo_el_TTZcuttightv1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::TIGHT);
+
+                        num_el_TTZcutloosev1_       = ttv::isNumeratorLepton(11, iLep, ttv::LeptonType::LOOSE);
+                        num_el_TTZcutloosev1_noIso_ = ttv::isGoodLepton(11, iLep, ttv::LeptonType::LOOSE);
+                        fo_el_TTZcutloosev1_        = (ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE) && electronIsoValuePF2012_FastJetEffArea_v2( iLep ) < 0.6);
+                        fo_el_TTZcutloosev1_noIso_  = ttv::isDenominatorLepton(11, iLep, ttv::LeptonType::LOOSE);
+
+                        num_el_TTZMVAtightv1_       = false;
+                        num_el_TTZMVAtightv1_noIso_ = false;
+                        fo_el_TTZMVAtightv1_        = false;
+                        fo_el_TTZMVAtightv1_noIso_  = false;
+
+                        num_el_TTZMVAloosev1_       = false;
+                        num_el_TTZMVAloosev1_noIso_ = false;
+                        fo_el_TTZMVAloosev1_        = false;
+                        fo_el_TTZMVAloosev1_noIso_  = false;
+
+                        //////////
+                        // 2011 //
+                        //////////
+
+                        // SS
+                        num_el_ssV6_       = pass_electronSelection( iLep, electronSelection_ssV6            );
+                        num_el_ssV6_noIso_ = pass_electronSelection( iLep, electronSelection_ssV6_noIso      );
+                        v1_el_ssV6_        = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v1 );
+                        v2_el_ssV6_        = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v2 );
+                        v3_el_ssV6_        = pass_electronSelection( iLep, electronSelectionFOV6_ssVBTF80_v3 );
+
+                        // WW
+                        num_el_smurfV6_ = pass_electronSelection( iLep, electronSelection_smurfV6          );
+                        v1_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v1    );
+                        v2_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v2    );
+                        v3_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v3    );
+                        v4_el_smurfV1_  = pass_electronSelection( iLep, electronSelectionFO_el_smurf_v4    );
+
+                        //OS
+                        num_el_OSV2_   = pass_electronSelection( iLep, electronSelection_el_OSV2          );
+                        fo_el_OSV2_    = pass_electronSelection( iLep, electronSelection_el_OSV2_FO       );
+                        num_el_OSV3_   = pass_electronSelection( iLep, electronSelection_el_OSV3          );
+                        fo_el_OSV3_    = pass_electronSelection( iLep, electronSelection_el_OSV3_FO       );
+
+                        ////////////////////////////////////////////////////////////
+                        // Skip this muon if it fails the loosest denominator.    //
+                        // Ignore this OR if applyFOfilter is set to false.       //
+                        ////////////////////////////////////////////////////////////
+                        if (applyFOfilter) {  
+                            if (
+                                    !v1_el_ssV7_          && !v2_el_ssV7_          && !v3_el_ssV7_    &&                    // SS 2012
+                                    !fo_el_TTZMVAtightv1_ && !fo_el_TTZMVAloosev1_ &&                                       // TTZ MVA 2012
+                                    !fo_el_TTZcuttightv1_ && !fo_el_TTZcutloosev1_ &&                                       // TTZ cut 2012
+                                    !v1_el_ssV6_          && !v2_el_ssV6_          && !v3_el_ssV6_    &&                    // SS 2011
+                                    !fo_el_OSV2_          && !fo_el_OSV3_          &&                                       // OS 2011
+                                    !v1_el_smurfV1_       && !v1_el_smurfV1_       && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
+                               ) 
+                                continue;
+                        }
+
+                        //////////////////////////////////////////////////////
+                        // End Fake Rate Numerator & Denominator Selections //
+                        //////////////////////////////////////////////////////
+
+
+                        ////////////////////////////////////////////////////////////////////////
+                        // NEED TO THINK ABOUT THIS... Z'S ARE VETOED BASED ON TOP SELECTIONS //
+                        ////////////////////////////////////////////////////////////////////////
+
+                        // If it is above 20 GeV see if we can make a 
+                        // Z with another pt>20 FO.  Will use the v1 FO since 
+                        // these are the loosest
+                        bool isaZ = false;
+                        if (els_p4().at(iLep).pt() > 20.) {
+                            for (unsigned int jEl = 0 ; jEl < els_p4().size(); jEl++) {
+                                if (iLep == jEl)                             continue;
+                                if (els_p4().at(jEl).pt() < 20.)            continue;
+                                if ( ! pass_electronSelection( jEl, electronSelection_el_OSV3_FO ) ) continue;
+                                if ( ! fo_el_OSV3_ ) continue;
+                                LorentzVector w = els_p4().at(iLep) + els_p4().at(jEl);
+                                if (abs(w.mass()-91.) > 20.) continue;
+                                isaZ = true;
+                            }
+                        }
+                        if (isaZ) continue;
+
+                        ////////////////////////////////////////////////////////////////////////
+                        // STORE SOME Z MASS VARIABLES //
+                        ////////////////////////////////////////////////////////////////////////
+                        mz_fo_gsf_  = -999.;
+                        mz_gsf_iso_ = -999.;
+                        LorentzVector p4fo = cms2.els_p4().at(iLep);
+                        for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
+                            if (iel == iLep) continue;
+
+                            if (fabs(cms2.els_p4().at(iel).eta()) > 2.5)
+                                continue;
+
+                            if (cms2.els_p4().at(iel).pt() < 10.)
+                                continue;
+
+                            LorentzVector zp4 = p4fo + cms2.els_p4().at(iel);
+                            float zcandmass = sqrt(fabs(zp4.mass2()));
+                            if ( fabs(zcandmass - 91.) > fabs(mz_fo_gsf_ - 91.) )
+                                continue;
+
+                            mz_fo_gsf_  = zcandmass;
+                            mz_gsf_iso_ = electronIsolation_rel_v1(iel, true);
+                        }
+
+                        mz_fo_ctf_  = -999.;
+                        mz_ctf_iso_ = -999.;
+                        for (int ictf = 0; ictf < static_cast<int>(cms2.trks_trk_p4().size()); ictf++) {
+                            if (ictf == cms2.els_trkidx().at(iLep)) continue;
+
+                            if (fabs(cms2.trks_trk_p4().at(ictf).eta()) > 2.5)
+                                continue;
+
+                            if (cms2.trks_trk_p4().at(ictf).pt() < 10.)
+                                continue;
+
+                            LorentzVector zp4 = p4fo + cms2.trks_trk_p4().at(ictf);
+                            float zcandmass = sqrt(fabs(zp4.mass2()));
+                            if ( fabs(zcandmass - 91.) > fabs(mz_fo_ctf_ - 91.) )
+                                continue;
+
+                            mz_fo_ctf_  = zcandmass;
+                            mz_ctf_iso_ = ctfIsoValuePF(ictf, associateTrackToVertex(ictf));
+                        }
+
+
+                        /////////////////////////// 
+                        // Event Information     //
+                        ///////////////////////////
+
+                        // Load the electron and event quantities
+                        run_          = evt_run();
+                        ls_           = evt_lumiBlock();
+                        evt_          = evt_event();
+                        weight_       = isData ? 1.0 : evt_scale1fb();
+                        filename_     = f->GetName();
+                        dataset_      = evt_dataset().front();
+                        is_real_data_ = evt_isRealData();
+
+                        if(!isData){
+                            // Pileup - PUSummaryInfoMaker                        
+                            for (unsigned int vidx = 0; vidx < cms2.puInfo_nPUvertices().size(); vidx++) {
+                                if (cms2.puInfo_bunchCrossing().at(vidx) != 0)
+                                    continue;
+                                pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
+                                pu_nPUtrueint_  = cms2.puInfo_trueNumInteractions().at(vidx);
+                            }
+
+                        }
+
+                        // Pileup - VertexMaker
+                        bool first_good_vertex_found         = false;
+                        unsigned int first_good_vertex_index = 0;
+                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
+                        {
+                            if (!isGoodVertex(vidx))
+                            {
+                                continue;
+                            }
+                            if (!first_good_vertex_found)
+                            {
+                                first_good_vertex_found = true;
+                                first_good_vertex_index = vidx;
+                            }
+                            ++evt_nvtxs_;
+                        }
+
+                        /////////////////////////// 
+                        // End Event Information //
+                        ///////////////////////////
+
+
+
+                        //////////////////////////// 
+                        // Lepton Information     //
+                        ////////////////////////////
+
+                        // Basic Quantities
+                        lp4_       = cms2.els_p4().at(iLep);
+                        pt_        = els_p4().at(iLep).pt();
+                        eta_       = els_p4().at(iLep).eta();
+                        sceta_     = els_etaSC().at(iLep);
+                        phi_       = els_p4().at(iLep).phi();
+                        scet_      = els_eSC().at(iLep) / cosh( els_etaSC().at(iLep));
+                        hoe_       = els_hOverE().at(iLep);
+                        id_        = 11*els_charge().at(iLep);
+
+                        // ip (2d and 3d)
+                        const int elgsftkid = cms2.els_gsftrkidx().at(iLep);
+                        const int eltkid    = cms2.els_trkidx().at(iLep);
+                        const int ivtx      = firstGoodVertex();
+                        if (ivtx >= 0 && eltkid >= 0) 
+                        {
+                            d0_        = elgsftkid>=0 ? gsftrks_d0_pv(elgsftkid,ivtx).first  : trks_d0_pv(eltkid,ivtx).first;
+                            d0err_     = elgsftkid>=0 ? gsftrks_d0_pv(elgsftkid,ivtx).second : trks_d0_pv(eltkid,ivtx).second;
+                            dz_        = elgsftkid>=0 ? gsftrks_dz_pv(elgsftkid,ivtx).first  : trks_dz_pv(eltkid,ivtx).first;
+                            dzerr_     = elgsftkid>=0 ? gsftrks_dz_pv(elgsftkid,ivtx).second : trks_dz_pv(eltkid,ivtx).second;
+                        }
+                        else
+                        {
+                            d0_        = cms2.els_d0().at(iLep);
+                            d0err_     = cms2.els_d0Err().at(iLep);
+                            dz_        = cms2.els_z0().at(iLep);
+                            dzerr_     = cms2.els_z0Err().at(iLep);
+                        }
+                        ip3d_      = els_ip3d().at(iLep);;
+                        ip3derr_   = els_ip3derr().at(iLep);;
+
+
+                        pfmet_     = evt_pfmet();
+                        pfmetphi_  = evt_pfmetPhi();
+                        foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
+                        fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
+
+                        // Isolation
+                        iso_          = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/true ); 
+                        iso_nps_      = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/true ); 
+                        trck_iso_     = electronIsolation_rel_v1      (iLep, /*use_calo_iso=*/false) * els_p4().at(iLep).pt(); 
+                        ecal_iso_     = electronIsolation_ECAL_rel_v1 (iLep, /*use EBps=*/true     ) * els_p4().at(iLep).pt(); 
+                        ecal_iso_nps_ = electronIsolation_ECAL_rel_v1 (iLep, /*use EBps=*/false    ) * els_p4().at(iLep).pt(); 
+                        hcal_iso_     = electronIsolation_HCAL_rel    (iLep                        ) * els_p4().at(iLep).pt(); 
+
+                        // PF Isolation
+                        ch_pfiso03_ = cms2.els_iso03_pf2012ext_ch().at(iLep);
+                        em_pfiso03_ = cms2.els_iso03_pf2012ext_em().at(iLep);
+                        nh_pfiso03_ = cms2.els_iso03_pf2012ext_nh().at(iLep);
+                        pfiso03_ = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/els_p4().at(iLep).pt(); 
+
+                        ch_pfiso04_ = cms2.els_iso04_pf2012ext_ch().at(iLep);
+                        em_pfiso04_ = cms2.els_iso04_pf2012ext_em().at(iLep);
+                        nh_pfiso04_ = cms2.els_iso04_pf2012ext_nh().at(iLep);
+                        pfiso04_ = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/els_p4().at(iLep).pt(); 
+
+                        // correct isolaion (using fastjet effective area)
+                        cpfiso03_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep, /*conesize=*/0.3, /*vtx=*/-999, /*52X iso=*/false);
+                        cpfiso04_rho_ = electronIsoValuePF2012_FastJetEffArea_v3(iLep, /*conesize=*/0.4, /*vtx=*/-999, /*52X iso=*/false);
+
+                        // mc information
+                        if (!isData) {
+                            mcid_       = els_mc_id().at(iLep);
+                            mcmotherid_ = els_mc_motherid().at(iLep);
+                            int status3_index = mc3idx_eormu(11, iLep);
+                            if (status3_index >= 0)
+                            {
+                                mc3id_ = cms2.genps_id().at(status3_index);
+                                mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
+                                mc3p4_ = cms2.genps_p4().at(status3_index);                            
+                            }
+                            mc3dr_ = mc3dr_eormu(11, iLep);            
+                            leptonIsFromW_ = leptonIsFromW(iLep, -11 * cms2.els_charge().at(iLep), true);
+                        }
+
+                        // ID
+                        el_id_sieie_   = cms2.els_sigmaIEtaIEta().at(iLep);
+                        el_id_detain_  = cms2.els_dEtaIn().at(iLep);
+                        el_id_dphiin_  = cms2.els_dPhiIn().at(iLep);
+                        el_id_smurfV5_ = pass_electronSelection( iLep, electronSelection_smurfV5_id );
+                        el_id_vbtf80_  = electronId_VBTF(iLep, VBTF_35X_80, false, false);
+                        el_id_vbtf90_  = electronId_VBTF(iLep, VBTF_35X_90, false, false);
+                        if( els_closestMuon().at(iLep) == -1 )
+                            closestMuon_ = true;
+
+                        // electron ID effective area
+                        el_effarea03_ = EffectiveArea(eta_, /*cone=*/0.3, /*eormu=*/11, /*use_tight=*/false);
+                        el_effarea04_ = EffectiveArea(eta_, /*cone=*/0.4, /*eormu=*/11, /*use_tight=*/false);
+
+                        // PV
+                        d0PV_wwV1_ = electron_d0PV_wwV1(iLep);
+                        dzPV_wwV1_ = electron_dzPV_wwV1(iLep);
+
+                        // W transverse mass
+                        mt_   = Mt( els_p4().at(iLep), pfmet_, pfmetphi_ );
+                        pfmt_ = Mt( els_p4().at(iLep), pfmet_, pfmetphi_ );
+
+                        // Do the 3 electron charges agree?
+                        int iCTF = els_trkidx().at(iLep);
+                        if( iCTF >= 0 ){
+                            int qCTF = trks_charge().at( iCTF );
+                            int qGSF = els_trk_charge().at(iLep);
+                            int qPIX = els_sccharge().at(iLep);
+                            if( qCTF == qGSF && qCTF == qPIX && qGSF == qPIX ) q3_ = true;
+                        }
+
+                        // Missing hits info
+                        els_exp_innerlayers_ = els_exp_innerlayers().at(iLep);
+
+                        // Conversion Rejection  
+                        convHitPattern_   = isFromConversionHitPattern(iLep);
+                        convPartnerTrack_ = isFromConversionPartnerTrack(iLep);
+                        convMIT_          = isFromConversionMIT(iLep);
+                        if( els_exp_innerlayers().at(iLep) == 0 ) conv0MissHits_ = true;
+
+                        // HT
 #ifndef __CMS2_SLIM__
-						ht_calo_           = (float) sumPt (iLep, JETS_TYPE_CALO_UNCORR  , JETS_CLEAN_SINGLE_E );
-						ht_calo_L2L3_      = (float) sumPt (iLep, JETS_TYPE_CALO_CORR    , JETS_CLEAN_SINGLE_E );
+                        ht_calo_           = (float) sumPt (iLep, JETS_TYPE_CALO_UNCORR  , JETS_CLEAN_SINGLE_E );
+                        ht_calo_L2L3_      = (float) sumPt (iLep, JETS_TYPE_CALO_CORR    , JETS_CLEAN_SINGLE_E );
 #endif
-						ht_pf_             = (float) sumPt (iLep, JETS_TYPE_PF_UNCORR    , JETS_CLEAN_SINGLE_E );
-						ht_pf_L2L3_        = (float) sumPt (iLep, JETS_TYPE_PF_CORR      , JETS_CLEAN_SINGLE_E );
-						ht_pf_L1FastL2L3_  = (float) sumPt (iLep, JETS_TYPE_PF_FAST_CORR , JETS_CLEAN_SINGLE_E );
+                        ht_pf_             = (float) sumPt (iLep, JETS_TYPE_PF_UNCORR    , JETS_CLEAN_SINGLE_E );
+                        ht_pf_L2L3_        = (float) sumPt (iLep, JETS_TYPE_PF_CORR      , JETS_CLEAN_SINGLE_E );
+                        ht_pf_L1FastL2L3_  = (float) sumPt (iLep, JETS_TYPE_PF_FAST_CORR , JETS_CLEAN_SINGLE_E );
 
-						//////////////////////////// 
-						// End Lepton Information //
-						////////////////////////////
+                        //////////////////////////// 
+                        // End Lepton Information //
+                        ////////////////////////////
 
-						///////////////////////  
-						// 2012 Triggers     //
-						///////////////////////
+                        ///////////////////////  
+                        // 2012 Triggers     //
+                        ///////////////////////
 
-						// Electrons
-						triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                                = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_regexp                               );
-						triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar               = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp              );
-						triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar         = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp        );
-						triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_vstar                                  = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_TrkIdVL_regexp                                 );
-						triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar                            = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_TrkIdVL_Jet30_regexp                           );
-						triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                               = MatchTriggerClass(els_p4().at(iLep), ele17_CaloIdL_CaloIsoVL_regexp                              );
-						triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar              = MatchTriggerClass(els_p4().at(iLep), ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp             );
-						triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar        = MatchTriggerClass(els_p4().at(iLep), ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp       );
-						triggerMatchStruct struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar = MatchTriggerClass(els_p4().at(iLep), ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_rexexp);
-						triggerMatchStruct struct_ele27_WP80_vstar                                            = MatchTriggerClass(els_p4().at(iLep), ele27_WP80_rexexp                                           );
+                        // Electrons
+                        triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_vstar                                = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_regexp                               );
+                        triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar               = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp              );
+                        triggerMatchStruct struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar         = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp        );
+                        triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_vstar                                  = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_TrkIdVL_regexp                                 );
+                        triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar                            = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_TrkIdVL_Jet30_regexp                           );
+                        triggerMatchStruct struct_ele17_CaloIdL_CaloIsoVL_vstar                               = MatchTriggerClass(els_p4().at(iLep), ele17_CaloIdL_CaloIsoVL_regexp                              );
+                        triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar              = MatchTriggerClass(els_p4().at(iLep), ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_regexp             );
+                        triggerMatchStruct struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar        = MatchTriggerClass(els_p4().at(iLep), ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_regexp       );
+                        triggerMatchStruct struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar = MatchTriggerClass(els_p4().at(iLep), ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_rexexp);
+                        triggerMatchStruct struct_ele27_WP80_vstar                                            = MatchTriggerClass(els_p4().at(iLep), ele27_WP80_rexexp                                           );
 
-						ele8_CaloIdL_CaloIsoVL_vstar_                                      = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-						ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                     = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
-						ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
-						ele8_CaloIdT_TrkIdVL_vstar_                                        = struct_ele8_CaloIdT_TrkIdVL_vstar.nHLTObjects_;
-						ele8_CaloIdT_TrkIdVL_Jet30_vstar_                                  = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.nHLTObjects_;
-						ele17_CaloIdL_CaloIsoVL_vstar_                                     = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-						ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                    = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
-						ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
-						ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_       = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.nHLTObjects_;
-						ele27_WP80_vstar_                                                  = struct_ele27_WP80_vstar.nHLTObjects_;
+                        ele8_CaloIdL_CaloIsoVL_vstar_                                      = struct_ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                        ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                     = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
+                        ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
+                        ele8_CaloIdT_TrkIdVL_vstar_                                        = struct_ele8_CaloIdT_TrkIdVL_vstar.nHLTObjects_;
+                        ele8_CaloIdT_TrkIdVL_Jet30_vstar_                                  = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.nHLTObjects_;
+                        ele17_CaloIdL_CaloIsoVL_vstar_                                     = struct_ele17_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
+                        ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                    = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.nHLTObjects_;
+                        ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.nHLTObjects_;
+                        ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_       = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.nHLTObjects_;
+                        ele27_WP80_vstar_                                                  = struct_ele27_WP80_vstar.nHLTObjects_;
 
-						ele8_CaloIdL_CaloIsoVL_version_                                    = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
-						ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                   = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
-						ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_             = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
-						ele8_CaloIdT_TrkIdVL_version_                                      = struct_ele8_CaloIdT_TrkIdVL_vstar.version_;
-						ele8_CaloIdT_TrkIdVL_Jet30_version_                                = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.version_;
-						ele17_CaloIdL_CaloIsoVL_version_                                   = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_;
-						ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                  = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
-						ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_            = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
-						ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_     = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.version_;
-						ele27_WP80_version_                                                = struct_ele27_WP80_vstar.version_;
+                        ele8_CaloIdL_CaloIsoVL_version_                                    = struct_ele8_CaloIdL_CaloIsoVL_vstar.version_;
+                        ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                   = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
+                        ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_             = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
+                        ele8_CaloIdT_TrkIdVL_version_                                      = struct_ele8_CaloIdT_TrkIdVL_vstar.version_;
+                        ele8_CaloIdT_TrkIdVL_Jet30_version_                                = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.version_;
+                        ele17_CaloIdL_CaloIsoVL_version_                                   = struct_ele17_CaloIdL_CaloIsoVL_vstar.version_;
+                        ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_version_                  = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.version_;
+                        ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_version_            = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.version_;
+                        ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_version_     = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.version_;
+                        ele27_WP80_version_                                                = struct_ele27_WP80_vstar.version_;
 
-						dr_ele8_CaloIdL_CaloIsoVL_vstar_                                   = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
-						dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
-						dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
-						dr_ele8_CaloIdT_TrkIdVL_vstar_                                     = struct_ele8_CaloIdT_TrkIdVL_vstar.dR_;
-						dr_ele8_CaloIdT_TrkIdVL_Jet30_vstar_                               = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.dR_;
-						dr_ele17_CaloIdL_CaloIsoVL_vstar_                                  = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
-						dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                 = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
-						dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_           = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
-						dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_    = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.dR_;
-						dr_ele27_WP80_vstar_                                               = struct_ele27_WP80_vstar.dR_;
+                        dr_ele8_CaloIdL_CaloIsoVL_vstar_                                   = struct_ele8_CaloIdL_CaloIsoVL_vstar.dR_;
+                        dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
+                        dr_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
+                        dr_ele8_CaloIdT_TrkIdVL_vstar_                                     = struct_ele8_CaloIdT_TrkIdVL_vstar.dR_;
+                        dr_ele8_CaloIdT_TrkIdVL_Jet30_vstar_                               = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.dR_;
+                        dr_ele17_CaloIdL_CaloIsoVL_vstar_                                  = struct_ele17_CaloIdL_CaloIsoVL_vstar.dR_;
+                        dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                 = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.dR_;
+                        dr_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_           = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.dR_;
+                        dr_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_    = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.dR_;
+                        dr_ele27_WP80_vstar_                                               = struct_ele27_WP80_vstar.dR_;
 
-						hltps_ele8_CaloIdL_CaloIsoVL_vstar_                                = struct_ele8_CaloIdL_CaloIsoVL_vstar.hltps_;
-						hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
-						hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
-						hltps_ele8_CaloIdT_TrkIdVL_vstar_                                  = struct_ele8_CaloIdT_TrkIdVL_vstar.hltps_;
-						hltps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_                            = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.hltps_;
-						hltps_ele17_CaloIdL_CaloIsoVL_vstar_                               = struct_ele17_CaloIdL_CaloIsoVL_vstar.hltps_;
-						hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
-						hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_        = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
-						hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.hltps_;
-						hltps_ele27_WP80_vstar_                                            = struct_ele27_WP80_vstar.hltps_;
+                        hltps_ele8_CaloIdL_CaloIsoVL_vstar_                                = struct_ele8_CaloIdL_CaloIsoVL_vstar.hltps_;
+                        hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_               = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
+                        hltps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_         = struct_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
+                        hltps_ele8_CaloIdT_TrkIdVL_vstar_                                  = struct_ele8_CaloIdT_TrkIdVL_vstar.hltps_;
+                        hltps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_                            = struct_ele8_CaloIdT_TrkIdVL_Jet30_vstar.hltps_;
+                        hltps_ele17_CaloIdL_CaloIsoVL_vstar_                               = struct_ele17_CaloIdL_CaloIsoVL_vstar.hltps_;
+                        hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_              = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar.hltps_;
+                        hltps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_        = struct_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar.hltps_;
+                        hltps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_ = struct_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar.hltps_;
+                        hltps_ele27_WP80_vstar_                                            = struct_ele27_WP80_vstar.hltps_;
 
-						// These are hardcoded to the value in Dima's table:
-						// http://dmytro.web.cern.ch/dmytro/trigger/triggerEvolution_all.html
+                        // These are hardcoded to the value in Dima's table:
+                        // http://dmytro.web.cern.ch/dmytro/trigger/triggerEvolution_all.html
 #ifndef __CMS2_SLIM__
-						l1ps_ele8_CaloIdL_CaloIsoVL_vstar_                                    = L1_prescale("L1_SingleEG5");
-						l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                   = L1_prescale("L1_SingleEG7");
-						l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_             = L1_prescale("L1_SingleEG7");
-						l1ps_ele8_CaloIdT_TrkIdVL_vstar_                                      = L1_prescale("L1_SingleEG5");
-						l1ps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_                                = L1_prescale("L1_SingleEG5");
-						l1ps_ele17_CaloIdL_CaloIsoVL_vstar_                                   = L1_prescale("L1_SingleEG12");
-						l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = L1_prescale("L1_SingleEG12");
-						l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = L1_prescale("L1_SingleEG12");
-						l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_     = L1_prescale("L1_SingleEG20");
-						l1ps_ele27_WP80_vstar_                                                = L1_prescale("L1_SingleEG20");
-#endif
-
-
-						///////////////////////  
-						// end 2012 Triggers //
-						///////////////////////
-
-						///////////////////////  
-						// 2011 Triggers     //
-						///////////////////////
-
-
-						// Electrons
-						triggerMatchStruct struct_ele8_vstar                                          = MatchTriggerClass(els_p4().at(iLep), ele8_regexp                                         );
-						triggerMatchStruct struct_ele8_CaloIdL_TrkIdVL_vstar                          = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdL_TrkIdVL_regexp                         );
-						triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                  = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_Jet40_regexp                 );
-						triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar       = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp);
-						triggerMatchStruct struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar = MatchTriggerClass(els_p4().at(iLep), photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
-
-						ele8_vstar_                                             = struct_ele8_vstar.nHLTObjects_;
-						ele8_CaloIdL_TrkIdVL_vstar_                             = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
-						ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.nHLTObjects_;
-						ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_          = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.nHLTObjects_;
-						photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-
-						ele8_version_                                           = struct_ele8_vstar.version_;
-						ele8_CaloIdL_TrkIdVL_version_                           = struct_ele8_CaloIdL_TrkIdVL_vstar.version_; 
-						ele8_CaloIdL_CaloIsoVL_Jet40_version_                   = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.version_;
-						ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_        = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.version_;
-						photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
-
-						dr_ele8_vstar_                                          = struct_ele8_vstar.dR_;
-						dr_ele8_CaloIdL_TrkIdVL_vstar_                          = struct_ele8_CaloIdL_TrkIdVL_vstar.dR_;
-						dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.dR_;
-						dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.dR_;
-						dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
-
-						hltps_ele8_vstar_                                          = struct_ele8_vstar.hltps_;
-						hltps_ele8_CaloIdL_TrkIdVL_vstar_                          = struct_ele8_CaloIdL_TrkIdVL_vstar.hltps_;
-						hltps_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.hltps_;
-						hltps_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.hltps_;
-						hltps_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.hltps_; 
-
-						///////////////////////  
-						// end 2011 Triggers //
-						///////////////////////
-
-						//////////////
-						// Jets     //
-						//////////////
-
-						// Calo Jets
-						// Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
-						// #ifndef __CMS2_SLIM__
-						//                     ptj1_       = -999.0;
-						//                     ptj1_b2b_   = -999.0;
-						//                     dphij1_b2b_ = -999.0;
-						//                     nj1_        = 0;
-						//                     for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-						//                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet) );
-						//                         if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
-						//                         if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
-						//                             ptj1_ = jets_p4().at(iJet).pt();
-
-						//                             // back to back in phi
-						//                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jets_p4().at(iJet) ) );
-						//                             if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){ 
-						//                                 ptj1_b2b_   = jets_p4().at(iJet).pt();
-						//                                 dphij1_b2b_ = dphi;
-						//                             }
-						//                         }
-						//                     }
-						// #endif
-
-						// PF Jets
-						// Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
-						ptpfj1_       = -999.0;
-						ptpfj1_b2b_   = -999.0;
-						dphipfj1_b2b_ = -999.0;
-						npfj1_        = 0;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), pfjets_p4().at(iJet) );
-							if( dr > deltaRCut && pfjets_p4().at(iJet).pt() > 10 ) npfj1_++;
-							if ( dr > deltaRCut && pfjets_p4().at(iJet).pt() > ptpfj1_ ){
-								ptpfj1_ = pfjets_p4().at(iJet).pt();
-
-								// back to back in phi
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), pfjets_p4().at(iJet) ) );
-								if( dphi > deltaPhiCut && pfjets_p4().at(iJet).pt() > ptpfj1_b2b_ ){ 
-									ptpfj1_b2b_   = pfjets_p4().at(iJet).pt();
-									dphipfj1_b2b_ = dphi;
-								}
-							}
-						}
-
-						// L2L3 PF Jets
-						// Find the highest Pt PF L2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						ptpfcj1_       = -999.0; 
-						ptpfcj1_b2b_   = -999.0;
-						dphipfcj1_b2b_ = -999.0;
-						npfcj1_        = 0;
-						btagpfc_       = false;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
-							//float jet_cor = pfjets_corL2L3().at(iJet);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfc_ = true;
-							double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
-							if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
-							if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
-								ptpfcj1_ = jp4cor.pt();
-
-								// back to back in phi
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
-								if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcj1_b2b_ ){
-									ptpfcj1_b2b_   = jp4cor.pt();
-									dphipfcj1_b2b_ = dphi;
-								} 
-							}
-						}
-
-						// L1FastL2L3 PF Jets
-						// Find the highest Pt PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						emfpfcL1Fj1_      = -999.0;
-						ptpfcL1Fj1_       = -999.0;
-						dphipfcL1Fj1_ 	  = -999.0;
-						ptpfcL1Fj1_b2b_   = -999.0;
-						dphipfcL1Fj1_b2b_ = -999.0;
-						npfcL1Fj1_        = 0;
-						npfc30L1Fj1_      = 0;
-						npfc40L1Fj1_      = 0;
-						npfc50L1Fj1_eth_  = 0;
-						btagpfcL1F_       = false;
-						rho_ = cms2.evt_rho();
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
-							//jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfcL1F_ = true;
-							double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
-							if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
-							if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
-							if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
-							if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1_eth_++;
-							if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
-								emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
-								ptpfcL1Fj1_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
-								dphipfcL1Fj1_ = dphi;
-
-								// back to back in phi
-								if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1_b2b_ ){
-									ptpfcL1Fj1_b2b_   = jp4cor.pt();
-									dphipfcL1Fj1_b2b_ = dphi;
-								}
-							}
-						}
-
-						// L1FastL2L3Residual PF Jets
-						// Find the highest Pt PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						emfpfcL1Fj1res_      = -999.0;
-						ptpfcL1Fj1res_       = -999.0;
-						dphipfcL1Fj1res_ 	  = -999.0;
-						ptpfcL1Fj1res_b2b_   = -999.0;
-						dphipfcL1Fj1res_b2b_ = -999.0;
-						npfcL1Fj1res_        = 0;
-						npfc30L1Fj1res_      = 0;
-						npfc40L1Fj1res_      = 0;
-						npfc50L1Fj1res_eth_  = 0;
-						btagpfcL1Fres_       = false;
-						rho_ = cms2.evt_rho();
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
-							//jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfcL1Fres_ = true;
-							double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
-							if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
-							if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
-							if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
-							if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1res_eth_++;
-							if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
-								emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
-								ptpfcL1Fj1res_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
-								dphipfcL1Fj1res_ = dphi;
-
-								// back to back in phi
-								if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1res_b2b_ ){
-									ptpfcL1Fj1res_b2b_   = jp4cor.pt();
-									dphipfcL1Fj1res_b2b_ = dphi;
-								}
-							}
-						}
-
-						// *** Doing B-tagging correctly ***
-						// B-tagged L1FastL2L3 PF Jets
-						// Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						ptbtagpfcL1Fj1_       = -999.0;
-						dphibtagpfcL1Fj1_       = -999.0;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
-							//jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
-							double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
-							if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
-								ptbtagpfcL1Fj1_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
-								dphibtagpfcL1Fj1_ = dphi; 
-							}
-						}
-
-						// *** Doing B-tagging correctly ***
-						// B-tagged L1FastL2L3Residual PF Jets
-						// Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						ptbtagpfcL1Fj1res_       = -999.0;
-						dphibtagpfcL1Fj1res_       = -999.0;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
-							//jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
-							double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
-							if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
-								ptbtagpfcL1Fj1res_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
-								dphibtagpfcL1Fj1res_ = dphi; 
-							}
-						}
-						//////////////
-						// End Jets //
-						//////////////
-
-
-						///////////////////
-						// B Tagging     //
-						///////////////////
-
-						// The btag information
-						// #ifndef __CMS2_SLIM__
-						//                     nbjet_ = this_nbjet;
-						//                     dRbNear_ = 99.;
-						//                     dRbFar_  = -99.;
-						//                     for (int ii=0; ii<nbjet_; ii++) {
-						//                         unsigned int iJet = bindex.at(ii);
-						//                         float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet));
-						//                         if (dr < dRbNear_) dRbNear_ = dr;
-						//                         if (dr > dRbFar_)   dRbFar_  = dr;
-						//                     }
-						// #endif
-
-						// btag info for corrected pfjet
-						nbpfcjet_ = this_nbpfjet;
-						dRbpfcNear_ = 99.;
-						dRbpfcFar_  = -99.;
-						for (int ii=0; ii<nbpfcjet_; ii++) {
-							unsigned int iJet = bpfindex.at(ii);
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
-							//float jet_corr = pfjets_corL2L3().at(iJet);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor);
-							if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
-							if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
-						}
-
-						///////////////////
-						// End B Tagging //
-						///////////////////
-
-
-
-						// Time to fill the baby for the electrons
-						FillBabyNtuple();
-
-					} // closes loop over electrons
-				} // closes if statements about whether we want to fill electrons
-
-
-				// Muons
-				if (eormu == -1 || eormu==13) {
-					for ( unsigned int iLep = 0; iLep < mus_p4().size(); iLep++) {
-
-						// Apply a pt cut
-						if ( mus_p4().at(iLep).pt() < 5.0) continue;
-
-						////////////////////////////////////////////////////////////////////////
-						// NEED TO THINK ABOUT THIS... Z'S ARE VETOED BASED ON TOP SELECTIONS //
-						////////////////////////////////////////////////////////////////////////
-
-						// If it is above 20 GeV see if we can make a 
-						// Z with another pt>20 FO.  
-						bool isaZ = false;
-						if (mus_p4().at(iLep).pt() > 20.) {
-							for (unsigned int jMu = 0 ; jMu < mus_p4().size(); jMu++) {
-								if (iLep == jMu)                             continue;
-								if (mus_p4().at(jMu).pt() < 20.)            continue;
-								if ( ! muonId( jMu,  OSGeneric_v3_FO) ) continue;
-								if ( ! muonId( iLep, OSGeneric_v3_FO) ) continue;
-								LorentzVector w = mus_p4().at(iLep) + mus_p4().at(jMu);
-								if (abs(w.mass()-91.) > 20.) continue;
-								isaZ = true;
-							}
-						}
-						if (isaZ) continue;
-
-						// Initialize baby ntuple
-						InitBabyNtuple();
-
-						// store number of electron FOs in event (use SS FO definition)
-						nFOels_ = 0;
-						ngsfs_ = 0;
-						for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
-							if (cms2.els_p4().at(iel).pt() < 10.)
-								continue;
-
-							if (pass_electronSelection(iel, electronSelectionFOV7_v3, false, false))
-								++ngsfs_;
-
-							if (samesign::isDenominatorLepton(11, iel)) {
-								++nFOels_;
-								if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
-									foel_p4_ = cms2.els_p4().at(iel);
-									foel_id_ = 11*cms2.els_charge().at(iel);
-								}
-								continue;
-							}
-							if (samesign::isDenominatorLepton(11, iel)) {
-								++nFOels_;
-								if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
-									foel_p4_ = cms2.els_p4().at(iel);
-									foel_id_ = 11*cms2.els_charge().at(iel);
-								}
-								continue;
-							}
-						}
-
-						// store number of muon FOs in event (use SS FO definition)
-						nFOmus_ = 0;
-						nmus_ = 0;
-						for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
-							if (imu == iLep)
-								continue;
-
-							if (cms2.mus_p4().at(imu).pt() < 10.)
-								continue;
-
-							if (muonIdNotIsolated(imu, muonSelectionFO_ssV5))
-								++nmus_;
-
-							if (samesign::isDenominatorLepton(13, imu)) {
-								++nFOmus_;
-								if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
-									fomu_p4_ = cms2.mus_p4().at(imu);
-									fomu_id_ = 13*cms2.mus_charge().at(imu);
-								}
-								continue;
-							}
-							if (samesign::isDenominatorLepton(13, imu)) {
-								++nFOmus_;
-								if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
-									fomu_p4_ = cms2.mus_p4().at(imu);
-									fomu_id_ = 13*cms2.mus_charge().at(imu);
-								}
-								continue;
-							}
-						}
-
-						////////////////////////////////////////////////////////////////////////
-						// STORE SOME Z MASS VARIABLES //
-						////////////////////////////////////////////////////////////////////////
-
-						mz_fo_ctf_  = -999.;
-						mz_ctf_iso_ = -999.;
-						mupsilon_fo_mu_ = -999.;
-						mupsilon_mu_iso_ = -999.;
-						LorentzVector p4fo = cms2.mus_p4().at(iLep);
-						for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
-							if (imu == iLep) continue;
-
-							if (fabs(cms2.mus_p4().at(imu).eta()) > 2.5)
-								continue;
-
-							if (cms2.mus_p4().at(imu).pt() < 10.)
-								continue;
-
-							LorentzVector zp4 = p4fo + cms2.mus_p4().at(imu);
-							float zcandmass = sqrt(fabs(zp4.mass2()));
-							if ( fabs(zcandmass - 91.) < fabs(mz_fo_ctf_ - 91.) ) {
-								mz_fo_ctf_  = zcandmass;
-								mz_ctf_iso_ = muonIsoValue(imu, false);
-							}
-							if ( fabs(zcandmass - 9.5) < fabs(mupsilon_fo_mu_ - 9.5) ) {
-								mupsilon_fo_mu_  = zcandmass;
-								mupsilon_mu_iso_ = muonIsoValue(imu, false); 
-							}
-						}
-
-
-						/////////////////////////// 
-						// Event Information     //
-						///////////////////////////
-
-						// Load the electron and event quantities
-						run_          = evt_run();
-						ls_           = evt_lumiBlock();
-						evt_          = evt_event();
-						weight_       = isData ? 1.0 : evt_scale1fb();
-						filename_     = f->GetName();
-						dataset_      = evt_dataset().front();
-						is_real_data_ = evt_isRealData();
-
-						if(!isData){
-							// Pileup - PUSummaryInfoMaker
-							for (unsigned int vidx = 0; vidx < cms2.puInfo_nPUvertices().size(); vidx++) {
-								if (cms2.puInfo_bunchCrossing().at(vidx) != 0)
-									continue;
-								pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
-								pu_nPUtrueint_  = cms2.puInfo_trueNumInteractions().at(vidx);
-							}
-						} 
-
-						// Pileup - VertexMaker
-						bool first_good_vertex_found         = false;
-						unsigned int first_good_vertex_index = 0;
-						for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
-						{
-							if (!isGoodVertex(vidx))
-							{
-								continue;
-							}
-							if (!first_good_vertex_found)
-							{
-								first_good_vertex_found = true;
-								first_good_vertex_index = vidx;
-							}
-							++evt_nvtxs_;
-						}
-
-						/////////////////////////// 
-						// End Event Information //
-						///////////////////////////
-
-
-
-						//////////////////////////// 
-						// Lepton Information     //
-						////////////////////////////
-
-						// Basic Quantities
-						lp4_       = cms2.mus_p4().at(iLep);
-						pt_        = mus_p4().at(iLep).pt();
-						eta_       = mus_p4().at(iLep).eta();
-						phi_       = mus_p4().at(iLep).phi();
-						id_        = 13*mus_charge().at(iLep);
-						pfmet_     = evt_pfmet();
-						pfmetphi_  = evt_pfmetPhi();
-						foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
-						fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
-
-						// ip (2d and 3d)
-						const int mutkid = cms2.mus_trkidx().at(iLep);
-						const int ivtx   = firstGoodVertex();
-						if (ivtx >= 0 && mutkid >= 0) 
-						{
-							d0_        = trks_d0_pv(mutkid,ivtx).first;
-							d0err_     = trks_d0_pv(mutkid,ivtx).second;
-							dz_        = trks_dz_pv(mutkid,ivtx).first;
-							dzerr_     = trks_dz_pv(mutkid,ivtx).second;
-						}
-						else
-						{
-							d0_        = cms2.mus_d0().at(iLep);
-							d0err_     = cms2.mus_d0Err().at(iLep);
-							dz_        = cms2.mus_z0().at(iLep);
-							dzerr_     = cms2.mus_z0Err().at(iLep);
-						}
-						ip3d_      = mus_ip3d().at(iLep);;
-						ip3derr_   = mus_ip3derr().at(iLep);;
-
-						// Isolation
-						iso_      = muonIsoValue     (iLep, /*truncated=*/false);
-						trck_iso_ = muonIsoValue_TRK (iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
-						ecal_iso_ = muonIsoValue_ECAL(iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
-						hcal_iso_ = muonIsoValue_HCAL(iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
-
-						// PF Isolation 03
-						ch_pfiso03_ = mus_isoR03_pf_ChargedHadronPt().at(iLep);
-						nh_pfiso03_ = mus_isoR03_pf_NeutralHadronEt().at(iLep);
-						em_pfiso03_ = mus_isoR03_pf_PhotonEt().at(iLep);
-						pfiso03_    = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/mus_p4().at(iLep).pt(); 
-
-						// PF Isolation 04
-						ch_pfiso04_ = mus_isoR04_pf_ChargedHadronPt().at(iLep);
-						nh_pfiso04_ = mus_isoR04_pf_NeutralHadronEt().at(iLep);
-						em_pfiso04_ = mus_isoR04_pf_PhotonEt().at(iLep);
-						pfiso04_    = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/mus_p4().at(iLep).pt(); 
-
-						// Radial Isolation 03
-						//radiso_et1p0_ = muonRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, verbose_); 
-						//radiso_et0p5_ = muonRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, verbose_); 
-
-						// PF Pile UP Sim pT
-						pfpupt03_ = mus_isoR03_pf_PUPt().at(iLep);
-						pfpupt04_ = mus_isoR04_pf_PUPt().at(iLep);
-
-						// correct isolaion (for SS2012)
-						cpfiso03_db_ = muonIsoValuePF2012_deltaBeta(iLep); 
-
-						// mc information
-						if (!isData) {
-							mcid_       = mus_mc_id().at(iLep);
-							mcmotherid_ = mus_mc_motherid().at(iLep);
-							int status3_index = mc3idx_eormu(13, iLep);
-							if (status3_index >= 0)
-							{
-								mc3id_ = cms2.genps_id().at(status3_index);
-								mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
-								mc3p4_ = cms2.genps_p4().at(status3_index);                            
-							}
-							mc3dr_ = mc3dr_eormu(13, iLep);            
-							leptonIsFromW_ = leptonIsFromW(iLep, -13 * cms2.mus_charge().at(iLep), true);
-						}
-
-						// muon effective area
-						// 2012 working point effective id (take from https://indico.cern.ch/getFile.py/access?contribId=1&resId=0&materialId=slides&confId=188494)
-						mu_effarea03_          = EffectiveArea   (eta_, /*cone=*/0.3, /*eormu=*/13, /*use_tight=*/false);
-						mu_nh_effarea03_       = EffectiveArea_nh(eta_, /*cone=*/0.3, /*use_tight=*/false);
-						mu_em_effarea03_       = EffectiveArea_em(eta_, /*cone=*/0.3, /*use_tight=*/false);
-						mu_effarea03_tight_    = EffectiveArea   (eta_, /*cone=*/0.3, /*eormu=*/13, /*use_tight=*/true);
-						mu_nh_effarea03_tight_ = EffectiveArea_nh(eta_, /*cone=*/0.3, /*use_tight=*/true);
-						mu_em_effarea03_tight_ = EffectiveArea_em(eta_, /*cone=*/0.3, /*use_tight=*/true);
-						mu_effarea04_          = EffectiveArea   (eta_, /*cone=*/0.4, /*eormu=*/13, /*use_tight=*/false);
-						mu_nh_effarea04_       = EffectiveArea_nh(eta_, /*cone=*/0.4, /*use_tight=*/false);
-						mu_em_effarea04_       = EffectiveArea_em(eta_, /*cone=*/0.4, /*use_tight=*/false);
-						mu_effarea04_tight_    = EffectiveArea   (eta_, /*cone=*/0.4, /*eormu=*/13, /*use_tight=*/true);
-						mu_nh_effarea04_tight_ = EffectiveArea_nh(eta_, /*cone=*/0.4, /*use_tight=*/true);
-						mu_em_effarea04_tight_ = EffectiveArea_em(eta_, /*cone=*/0.4, /*use_tight=*/true);
-
-						// cosmics
-						mu_isCosmic_           = isCosmics(iLep);
-
-						// some muon quantities
-						mu_ecal_veto_dep_ = cms2.mus_iso_ecalvetoDep().at(iLep);
-						mu_hcal_veto_dep_ = cms2.mus_iso_hcalvetoDep().at(iLep);
-						mu_nchi2_         = cms2.mus_chi2().at(iLep) / cms2.mus_ndof().at(iLep);
-
-						// W transverse mass
-						mt_   = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
-						pfmt_ = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
-
-						// HT
-#ifndef __CMS2_SLIM__
-						ht_calo_           = (float) sumPt (iLep, JETS_TYPE_CALO_UNCORR  , JETS_CLEAN_SINGLE_MU );
-						ht_calo_L2L3_      = (float) sumPt (iLep, JETS_TYPE_CALO_CORR    , JETS_CLEAN_SINGLE_MU );
-#endif
-						ht_pf_             = (float) sumPt (iLep, JETS_TYPE_PF_UNCORR    , JETS_CLEAN_SINGLE_MU );
-						ht_pf_L2L3_        = (float) sumPt (iLep, JETS_TYPE_PF_CORR      , JETS_CLEAN_SINGLE_MU );
-
-						//////////////////////////// 
-						// End Lepton Information //
-						////////////////////////////
-
-						//////////////////////////////////////////////////////
-						// Fake Rate Numerator & Denominator Selections     //
-						//////////////////////////////////////////////////////
-
-						//////////
-						// 2012 //
-						//////////
-
-						// SS
-						num_mu_ssV5_       = muonId(iLep, NominalSSv5);
-						num_mu_ssV5_noIso_ = muonIdNotIsolated(iLep, NominalSSv5);
-						fo_mu_ssV5_        = muonId(iLep, muonSelectionFO_ssV5);
-						fo_mu_ssV5_noIso_  = muonIdNotIsolated(iLep, muonSelectionFO_ssV5);
-
-						// TTZ
-						num_mu_TTZtightv1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::TIGHT);
-						num_mu_TTZtightv1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::TIGHT);
-						fo_mu_TTZtightv1_        = muonId(iLep, NominalTTZ_tightFO_v1);
-						fo_mu_TTZtightv1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::TIGHT);
-
-						num_mu_TTZloosev1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::LOOSE);
-						num_mu_TTZloosev1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::LOOSE);
-						fo_mu_TTZloosev1_        = muonId(iLep, NominalTTZ_looseFO_v1);
-						fo_mu_TTZloosev1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::LOOSE);
-
-
-
-						//////////
-						// 2011 //
-						//////////
-
-						// SS
-						numNomSSv4_      = muonId(iLep, NominalSSv4          );
-						fo_mussV4_04_    = muonId(iLep, muonSelectionFO_ssV4 );
-						numNomSSv4noIso_ = muonIdNotIsolated(iLep, NominalSSv4);
-						fo_mussV4_noIso_ = muonIdNotIsolated(iLep, muonSelectionFO_ssV4 );
-
-						//OS
-						num_mu_OSGV3_     = muonId(iLep, OSGeneric_v3);
-						fo_mu_OSGV3_      = muonId(iLep, OSGeneric_v3_FO);
-
-						// WW
-						num_mu_smurfV6_    = muonId(iLep, NominalSmurfV6                    );
-						fo_mu_smurf_04_    = muonId(iLep, muonSelectionFO_mu_smurf_04       );
-						fo_mu_smurf_10_    = muonId(iLep, muonSelectionFO_mu_smurf_10       );
-
-						////////////////////////////////////////////////////////////
-						// Skip this muon if it fails the loosest denominator.    //
-						// Ignore this OR if applyFOfilter is set to false.       //
-						////////////////////////////////////////////////////////////
-						if (applyFOfilter) {
-							if (
-									!fo_mussV4_04_     && !fo_mu_ssV5_       &&                    // SS
-									!fo_mu_TTZtightv1_ && !fo_mu_TTZloosev1_ &&                 // TTZ 2012
-									!fo_mu_OSGV2_      && !fo_mu_OSGV3_      &&                    // OS
-									!fo_mu_smurf_04_   && !fo_mu_smurf_10_                       // WW
-							   )
-								continue;
-						}
-
-						//////////////////////////////////////////////////////
-						// End Fake Rate Numerator & Denominator Selections //
-						//////////////////////////////////////////////////////
-
-						///////////////////////  
-						// 2012 Triggers     //
-						///////////////////////
-
-						// Muons
-						triggerMatchStruct struct_mu5_vstar             = MatchTriggerClass(mus_p4().at(iLep), mu5_regexp            , 13);
-						triggerMatchStruct struct_mu8_vstar             = MatchTriggerClass(mus_p4().at(iLep), mu8_regexp            , 13);
-						triggerMatchStruct struct_mu12_vstar            = MatchTriggerClass(mus_p4().at(iLep), mu12_regexp           , 13);
-						triggerMatchStruct struct_mu17_vstar            = MatchTriggerClass(mus_p4().at(iLep), mu17_regexp           , 13);
-						triggerMatchStruct struct_mu15_eta2p1_vstar     = MatchTriggerClass(mus_p4().at(iLep), mu15_eta2p1_regexp    , 13);
-						triggerMatchStruct struct_mu24_eta2p1_vstar     = MatchTriggerClass(mus_p4().at(iLep), mu24_eta2p1_regexp    , 13);
-						triggerMatchStruct struct_mu30_eta2p1_vstar     = MatchTriggerClass(mus_p4().at(iLep), mu30_eta2p1_regexp    , 13);
-						triggerMatchStruct struct_isoMu20_eta2p1_vstar  = MatchTriggerClass(mus_p4().at(iLep), isoMu20_eta2p1_regexp , 13);
-						triggerMatchStruct struct_isoMu24_eta2p1_vstar  = MatchTriggerClass(mus_p4().at(iLep), isoMu24_eta2p1_regexp , 13);
-						triggerMatchStruct struct_isoMu30_eta2p1_vstar  = MatchTriggerClass(mus_p4().at(iLep), isoMu30_eta2p1_regexp , 13);
-						triggerMatchStruct struct_relIso1p0Mu17_vstar   = MatchTriggerClass(mus_p4().at(iLep), relIso1p0Mu17_regexp  , 13);
-						triggerMatchStruct struct_relIso1p0Mu20_vstar   = MatchTriggerClass(mus_p4().at(iLep), relIso1p0Mu20_regexp  , 13);
-						triggerMatchStruct struct_relIso1p0Mu5_vstar    = MatchTriggerClass(mus_p4().at(iLep), relIso1p0Mu5_regexp   , 13);
-
-						mu5_vstar_                  = struct_mu5_vstar.nHLTObjects_;
-						mu8_vstar_                  = struct_mu8_vstar.nHLTObjects_;
-						mu12_vstar_                 = struct_mu12_vstar.nHLTObjects_;
-						mu17_vstar_                 = struct_mu17_vstar.nHLTObjects_;
-						mu15_eta2p1_vstar_          = struct_mu15_eta2p1_vstar.nHLTObjects_;
-						mu24_eta2p1_vstar_          = struct_mu24_eta2p1_vstar.nHLTObjects_;
-						mu30_eta2p1_vstar_          = struct_mu30_eta2p1_vstar.nHLTObjects_;
-						isoMu20_eta2p1_vstar_       = struct_isoMu20_eta2p1_vstar.nHLTObjects_;
-						isoMu24_eta2p1_vstar_       = struct_isoMu24_eta2p1_vstar.nHLTObjects_;
-						isoMu30_eta2p1_vstar_       = struct_isoMu30_eta2p1_vstar.nHLTObjects_;
-						relIso1p0Mu17_vstar_        = struct_relIso1p0Mu17_vstar.nHLTObjects_;
-						relIso1p0Mu20_vstar_        = struct_relIso1p0Mu20_vstar.nHLTObjects_;
-						relIso1p0Mu5_vstar_         = struct_relIso1p0Mu5_vstar.nHLTObjects_;
-
-						mu5_version_                = struct_mu5_vstar.version_;
-						mu8_version_                = struct_mu8_vstar.version_;
-						mu12_version_               = struct_mu12_vstar.version_;
-						mu17_version_               = struct_mu17_vstar.version_;
-						mu15_eta2p1_version_        = struct_mu15_eta2p1_vstar.version_;
-						mu24_eta2p1_version_        = struct_mu24_eta2p1_vstar.version_;
-						mu30_eta2p1_version_        = struct_mu30_eta2p1_vstar.version_;
-						isoMu20_eta2p1_version_     = struct_isoMu20_eta2p1_vstar.version_;
-						isoMu24_eta2p1_version_     = struct_isoMu24_eta2p1_vstar.version_;
-						isoMu30_eta2p1_version_     = struct_isoMu30_eta2p1_vstar.version_;
-						relIso1p0Mu17_version_      = struct_relIso1p0Mu17_vstar.version_;
-						relIso1p0Mu20_version_      = struct_relIso1p0Mu20_vstar.version_;
-						relIso1p0Mu5_version_       = struct_relIso1p0Mu5_vstar.version_;
-
-						dr_mu5_vstar_               = struct_mu5_vstar.dR_;
-						dr_mu8_vstar_               = struct_mu8_vstar.dR_;
-						dr_mu12_vstar_              = struct_mu12_vstar.dR_;
-						dr_mu17_vstar_              = struct_mu17_vstar.dR_;
-						dr_mu15_eta2p1_vstar_       = struct_mu15_eta2p1_vstar.dR_;
-						dr_mu24_eta2p1_vstar_       = struct_mu24_eta2p1_vstar.dR_;
-						dr_mu30_eta2p1_vstar_       = struct_mu30_eta2p1_vstar.dR_;
-						dr_isoMu20_eta2p1_vstar_    = struct_isoMu20_eta2p1_vstar.dR_;
-						dr_isoMu24_eta2p1_vstar_    = struct_isoMu24_eta2p1_vstar.dR_;
-						dr_isoMu30_eta2p1_vstar_    = struct_isoMu30_eta2p1_vstar.dR_;
-						dr_relIso1p0Mu17_vstar_     = struct_relIso1p0Mu17_vstar.dR_;
-						dr_relIso1p0Mu20_vstar_     = struct_relIso1p0Mu20_vstar.dR_;
-						dr_relIso1p0Mu5_vstar_      = struct_relIso1p0Mu5_vstar.dR_;
-
-						hltps_mu5_vstar_            = struct_mu5_vstar.hltps_;
-						hltps_mu8_vstar_            = struct_mu8_vstar.hltps_;
-						hltps_mu12_vstar_           = struct_mu12_vstar.hltps_;
-						hltps_mu17_vstar_           = struct_mu17_vstar.hltps_;
-						hltps_mu15_eta2p1_vstar_    = struct_mu15_eta2p1_vstar.hltps_;
-						hltps_mu24_eta2p1_vstar_    = struct_mu24_eta2p1_vstar.hltps_;
-						hltps_mu30_eta2p1_vstar_    = struct_mu30_eta2p1_vstar.hltps_;
-						hltps_isoMu20_eta2p1_vstar_ = struct_isoMu20_eta2p1_vstar.hltps_;
-						hltps_isoMu24_eta2p1_vstar_ = struct_isoMu24_eta2p1_vstar.hltps_;
-						hltps_isoMu30_eta2p1_vstar_ = struct_isoMu30_eta2p1_vstar.hltps_;
-						hltps_relIso1p0Mu17_vstar_  = struct_relIso1p0Mu17_vstar.hltps_;
-						hltps_relIso1p0Mu20_vstar_  = struct_relIso1p0Mu20_vstar.hltps_;
-						hltps_relIso1p0Mu5_vstar_   = struct_relIso1p0Mu5_vstar.hltps_;
-
-						// These are hardcoded to the value in Dima's table:
-						// http://dmytro.web.cern.ch/dmytro/trigger/triggerEvolution_all.html 
-#ifndef __CMS2_SLIM__
-						l1ps_mu5_vstar_            = L1_prescale("L1_SingleMu3"         );
-						l1ps_mu8_vstar_            = L1_prescale("L1_SingleMu3"         );
-						l1ps_mu12_vstar_           = L1_prescale("L1_SingleMu7"         );
-						l1ps_mu17_vstar_           = L1_prescale("L1_SingleMu12"        );
-						l1ps_mu15_eta2p1_vstar_    = L1_prescale("L1_SingleMu7"         );
-						l1ps_mu24_eta2p1_vstar_    = L1_prescale("L1_SingleMu16_Eta2p1" );
-						l1ps_mu30_eta2p1_vstar_    = L1_prescale("L1_SingleMu16_Eta2p1" );
-						l1ps_isoMu20_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
-						l1ps_isoMu24_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
-						l1ps_isoMu30_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
-						l1ps_relIso1p0Mu17_vstar_  = L1_prescale("L1_SingleMu12"        );
-						l1ps_relIso1p0Mu5_vstar_   = L1_prescale("L1_SingleMu3"         );
+                        l1ps_ele8_CaloIdL_CaloIsoVL_vstar_                                    = L1_prescale("L1_SingleEG5");
+                        l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                   = L1_prescale("L1_SingleEG7");
+                        l1ps_ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_             = L1_prescale("L1_SingleEG7");
+                        l1ps_ele8_CaloIdT_TrkIdVL_vstar_                                      = L1_prescale("L1_SingleEG5");
+                        l1ps_ele8_CaloIdT_TrkIdVL_Jet30_vstar_                                = L1_prescale("L1_SingleEG5");
+                        l1ps_ele17_CaloIdL_CaloIsoVL_vstar_                                   = L1_prescale("L1_SingleEG12");
+                        l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_vstar_                  = L1_prescale("L1_SingleEG12");
+                        l1ps_ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Jet30_vstar_            = L1_prescale("L1_SingleEG12");
+                        l1ps_ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralPFJet30_vstar_     = L1_prescale("L1_SingleEG20");
+                        l1ps_ele27_WP80_vstar_                                                = L1_prescale("L1_SingleEG20");
 #endif
 
 
-						///////////////////////  
-						// End 2012 Triggers //
-						///////////////////////
+                        ///////////////////////  
+                        // end 2012 Triggers //
+                        ///////////////////////
 
-						///////////////////////  
-						// 2011 Triggers     //
-						///////////////////////
-
-						// Muons
-						triggerMatchStruct struct_mu3_vstar       = MatchTriggerClass(mus_p4().at(iLep), mu3_regexp      , 13);
-						triggerMatchStruct struct_mu15_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu15_regexp     , 13);
-						triggerMatchStruct struct_mu20_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu20_regexp     , 13);
-						triggerMatchStruct struct_mu24_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu24_regexp     , 13);
-						triggerMatchStruct struct_mu30_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu30_regexp     , 13);
-						triggerMatchStruct struct_mu8_Jet40_vstar = MatchTriggerClass(mus_p4().at(iLep), mu8_Jet40_regexp, 13);
-
-						mu3_vstar_          = struct_mu3_vstar.nHLTObjects_;
-						mu15_vstar_         = struct_mu15_vstar.nHLTObjects_;
-						mu20_vstar_         = struct_mu20_vstar.nHLTObjects_;
-						mu24_vstar_         = struct_mu24_vstar.nHLTObjects_;
-						mu30_vstar_         = struct_mu30_vstar.nHLTObjects_;
-						mu8_Jet40_vstar_    = struct_mu8_Jet40_vstar.nHLTObjects_;
-
-						mu3_version_        = struct_mu3_vstar.version_;
-						mu15_version_       = struct_mu15_vstar.version_;
-						mu20_version_       = struct_mu20_vstar.version_;
-						mu24_version_       = struct_mu24_vstar.version_;
-						mu30_version_       = struct_mu30_vstar.version_;
-						mu8_Jet40_version_  = struct_mu8_Jet40_vstar.version_;
-
-						dr_mu3_vstar_       = struct_mu3_vstar.dR_;
-						dr_mu15_vstar_      = struct_mu15_vstar.dR_;
-						dr_mu20_vstar_      = struct_mu20_vstar.dR_;
-						dr_mu24_vstar_      = struct_mu24_vstar.dR_;
-						dr_mu30_vstar_      = struct_mu30_vstar.dR_;
-						dr_mu8_Jet40_vstar_ = struct_mu8_Jet40_vstar.dR_;
-
-						hltps_mu3_vstar_       = struct_mu3_vstar.hltps_;
-						hltps_mu15_vstar_      = struct_mu15_vstar.hltps_;
-						hltps_mu20_vstar_      = struct_mu20_vstar.hltps_;
-						hltps_mu24_vstar_      = struct_mu24_vstar.hltps_;
-						hltps_mu30_vstar_      = struct_mu30_vstar.hltps_;
-						hltps_mu8_Jet40_vstar_ = struct_mu8_Jet40_vstar.hltps_;
-
-						///////////////////////  
-						// End 2011 Triggers //
-						///////////////////////
-
-						//////////////
-						// Jets     //
-						//////////////
-
-						// Calo Jets
-						// Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
-						// #ifndef __CMS2_SLIM__
-						//                     ptj1_       = -999.0;
-						//                     ptj1_b2b_   = -999.0;
-						//                     dphij1_b2b_ = -999.0;
-						//                     nj1_        = 0;
-						//                     for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
-						//                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet) );
-						//                         if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
-						//                         if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
-						//                             ptj1_ = jets_p4().at(iJet).pt();
-
-						//                             // back to back in phi
-						//                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jets_p4().at(iJet) ) );
-						//                             if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){        
-						//                                 ptj1_b2b_   = jets_p4().at(iJet).pt();
-						//                                 dphij1_b2b_ = dphi;
-						//                             }
-						//                         }
-						//                     }
-						// #endif
-
-						// PF Jets
-						// Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
-						ptpfj1_       = -999.0;
-						ptpfj1_b2b_   = -999.0;
-						dphipfj1_b2b_ = -999.0;
-						npfj1_        = 0;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), pfjets_p4().at(iJet) );
-							if( dr > deltaRCut && pfjets_p4().at(iJet).pt() > 10 ) npfj1_++;
-							if ( dr > deltaRCut && pfjets_p4().at(iJet).pt() > ptpfj1_ ){
-								ptpfj1_ = pfjets_p4().at(iJet).pt();
-
-								// back to back in phi
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), pfjets_p4().at(iJet) ) );
-								if( dphi > deltaPhiCut && pfjets_p4().at(iJet).pt() > ptpfj1_b2b_ ){        
-									ptpfj1_b2b_   = pfjets_p4().at(iJet).pt();
-									dphipfj1_b2b_ = dphi;
-								}
-							}
-						}
-
-						// L2L3 PF Jets
-						// Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						ptpfcj1_       = -999.0;
-						ptpfcj1_b2b_   = -999.0;
-						dphipfcj1_b2b_ = -999.0;
-						npfcj1_        = 0;
-						btagpfc_       = false;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							// JetID
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
-							//float jet_cor = pfjets_corL2L3().at(iJet);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfc_ = true;
-							double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
-							if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
-							if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
-								ptpfcj1_ = jp4cor.pt();
-
-								// back to back in phi
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
-								if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcj1_b2b_ ){
-									ptpfcj1_b2b_   = jp4cor.pt();
-									dphipfcj1_b2b_ = dphi;
-								}
-							}
-						}
-
-						// L1FastL2L3 PF Jets
-						// Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						emfpfcL1Fj1_      = -999.0;
-						ptpfcL1Fj1_       = -999.0;
-						dphipfcL1Fj1_ 	  = -999.0;
-						ptpfcL1Fj1_b2b_   = -999.0;
-						dphipfcL1Fj1_b2b_ = -999.0;
-						npfcL1Fj1_        = 0;
-						npfc30L1Fj1_      = 0;
-						npfc40L1Fj1_      = 0;
-						npfc50L1Fj1_eth_  = 0;
-						btagpfcL1F_       = false;
-						rho_ = cms2.evt_rho();
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							// JetID
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
-							//jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfcL1F_ = true;
-							double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
-							if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
-							if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
-							if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
-							if( dr > 0.4       && jp4cor.pt() > 40 ) npfc50L1Fj1_eth_++;
-							if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
-								emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
-								ptpfcL1Fj1_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
-								dphipfcL1Fj1_ = dphi;
-
-								// back to back in phi
-								if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1_b2b_ ){
-									ptpfcL1Fj1_b2b_   = jp4cor.pt();
-									dphipfcL1Fj1_b2b_ = dphi;
-								}
-							}
-						}
-
-						// L1FastL2L3Residual PF Jets
-						// Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						emfpfcL1Fj1res_      = -999.0;
-						ptpfcL1Fj1res_       = -999.0;
-						dphipfcL1Fj1res_ 	  = -999.0;
-						ptpfcL1Fj1res_b2b_   = -999.0;
-						dphipfcL1Fj1res_b2b_ = -999.0;
-						npfcL1Fj1res_        = 0;
-						npfc30L1Fj1res_      = 0;
-						npfc40L1Fj1res_      = 0;
-						npfc50L1Fj1res_eth_  = 0;
-						btagpfcL1Fres_       = false;
-						rho_ = cms2.evt_rho();
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							// JetID
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
-							//jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfcL1Fres_ = true;
-							double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
-							if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
-							if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
-							if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
-							if( dr > 0.4       && jp4cor.pt() > 40 ) npfc50L1Fj1res_eth_++;
-							if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
-								emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
-								ptpfcL1Fj1res_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
-								dphipfcL1Fj1res_ = dphi;
-
-								// back to back in phi
-								if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1res_b2b_ ){
-									ptpfcL1Fj1res_b2b_   = jp4cor.pt();
-									dphipfcL1Fj1res_b2b_ = dphi;
-								}
-							}
-						}
-
-						//***  Doing B-tagging correctly ***
-						// B-tagged L1FastL2L3 PF Jets
-						// Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						ptbtagpfcL1Fj1_       = -999.0;
-						dphibtagpfcL1Fj1_       = -999.0;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
-							//jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679 ) continue;
-							double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
-							if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
-								ptbtagpfcL1Fj1_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
-								dphibtagpfcL1Fj1_ = dphi; 
-							}
-						}
-
-						//***  Doing B-tagging correctly ***
-						// B-tagged L1FastL2L3Residual PF Jets
-						// Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
-						ptbtagpfcL1Fj1res_       = -999.0;
-						dphibtagpfcL1Fj1res_     = -999.0;
-						for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
-							if ( !passesPFJetID(iJet)) continue;
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
-							//jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679 ) continue;
-							double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
-							if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
-								ptbtagpfcL1Fj1res_ = jp4cor.pt();
-								float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
-								dphibtagpfcL1Fj1res_ = dphi; 
-							}
-						}
+                        ///////////////////////  
+                        // 2011 Triggers     //
+                        ///////////////////////
 
 
-						//////////////
-						// End Jets //
-						//////////////
+                        // Electrons
+                        triggerMatchStruct struct_ele8_vstar                                          = MatchTriggerClass(els_p4().at(iLep), ele8_regexp                                         );
+                        triggerMatchStruct struct_ele8_CaloIdL_TrkIdVL_vstar                          = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdL_TrkIdVL_regexp                         );
+                        triggerMatchStruct struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar                  = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdL_CaloIsoVL_Jet40_regexp                 );
+                        triggerMatchStruct struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar       = MatchTriggerClass(els_p4().at(iLep), ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_regexp);
+                        triggerMatchStruct struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar = MatchTriggerClass(els_p4().at(iLep), photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_regexp);
 
-						///////////////////
-						// B Tagging     //
-						///////////////////
+                        ele8_vstar_                                             = struct_ele8_vstar.nHLTObjects_;
+                        ele8_CaloIdL_TrkIdVL_vstar_                             = struct_ele8_CaloIdL_TrkIdVL_vstar.nHLTObjects_; 
+                        ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                     = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.nHLTObjects_;
+                        ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_          = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.nHLTObjects_;
+                        photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_    = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
 
-						// #ifndef __CMS2_SLIM__
-						//                     // The btag information
-						//                     nbjet_ = this_nbjet;
-						//                     dRbNear_ =  99.;
-						//                     dRbFar_  = -99.;
-						//                     for (int ii=0; ii<nbjet_; ii++) {
-						//                         unsigned int iJet = bindex.at(ii);
-						//                         float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet));
-						//                         if (dr < dRbNear_) dRbNear_ = dr;
-						//                         if (dr > dRbFar_)  dRbFar_  = dr;
-						//                     }
-						// #endif
+                        ele8_version_                                           = struct_ele8_vstar.version_;
+                        ele8_CaloIdL_TrkIdVL_version_                           = struct_ele8_CaloIdL_TrkIdVL_vstar.version_; 
+                        ele8_CaloIdL_CaloIsoVL_Jet40_version_                   = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.version_;
+                        ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_version_        = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.version_;
+                        photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_version_  = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.nHLTObjects_;
 
-						// The btag information for pfjets
-						nbpfcjet_ = this_nbpfjet;
-						dRbpfcNear_ = 99.;
-						dRbpfcFar_  = -99.;
-						//FactorizedJetCorrector* jet_pf_corrector = evt_isRealData() ? jet_pf_L1FastJetL2L3Residual_corrector : jet_pf_L1FastJetL2L3_corrector; 
-						for (int ii=0; ii<nbpfcjet_; ii++) {
-							unsigned int iJet = bpfindex.at(ii);
-							LorentzVector jp4 = pfjets_p4().at(iJet);
-							//jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
-							//jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
-							//jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
-							//jet_pf_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
-							//float jet_cor = jetCorrection(jp4, jet_pf_corrector);
-							float jet_cor = evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(iJet) : cms2.pfjets_corL1FastL2L3().at(iJet);
-							LorentzVector jp4cor = jp4 * jet_cor;
-							float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor);
-							if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
-							if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
-						}
+                        dr_ele8_vstar_                                          = struct_ele8_vstar.dR_;
+                        dr_ele8_CaloIdL_TrkIdVL_vstar_                          = struct_ele8_CaloIdL_TrkIdVL_vstar.dR_;
+                        dr_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.dR_;
+                        dr_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.dR_;
+                        dr_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.dR_; 
 
-						///////////////////
-						// End B Tagging //
-						///////////////////
+                        hltps_ele8_vstar_                                          = struct_ele8_vstar.hltps_;
+                        hltps_ele8_CaloIdL_TrkIdVL_vstar_                          = struct_ele8_CaloIdL_TrkIdVL_vstar.hltps_;
+                        hltps_ele8_CaloIdL_CaloIsoVL_Jet40_vstar_                  = struct_ele8_CaloIdL_CaloIsoVL_Jet40_vstar.hltps_;
+                        hltps_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar_       = struct_ele8_CaloIdT_TrkIdVL_CaloIsoVL_TrkIsoVL_vstar.hltps_;
+                        hltps_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar_ = struct_photon20_CaloIdVT_IsoT_Ele8_CaloIdL_CaloIsoVL_vstar.hltps_; 
+
+                        ///////////////////////  
+                        // end 2011 Triggers //
+                        ///////////////////////
+
+                        //////////////
+                        // Jets     //
+                        //////////////
+
+                        // Calo Jets
+                        // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+                        // #ifndef __CMS2_SLIM__
+                        //                     ptj1_       = -999.0;
+                        //                     ptj1_b2b_   = -999.0;
+                        //                     dphij1_b2b_ = -999.0;
+                        //                     nj1_        = 0;
+                        //                     for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+                        //                         double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet) );
+                        //                         if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
+                        //                         if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+                        //                             ptj1_ = jets_p4().at(iJet).pt();
+
+                        //                             // back to back in phi
+                        //                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jets_p4().at(iJet) ) );
+                        //                             if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){ 
+                        //                                 ptj1_b2b_   = jets_p4().at(iJet).pt();
+                        //                                 dphij1_b2b_ = dphi;
+                        //                             }
+                        //                         }
+                        //                     }
+                        // #endif
+
+                        // PF Jets
+                        // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
+                        ptpfj1_       = -999.0;
+                        ptpfj1_b2b_   = -999.0;
+                        dphipfj1_b2b_ = -999.0;
+                        npfj1_        = 0;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), pfjets_p4().at(iJet) );
+                            if( dr > deltaRCut && pfjets_p4().at(iJet).pt() > 10 ) npfj1_++;
+                            if ( dr > deltaRCut && pfjets_p4().at(iJet).pt() > ptpfj1_ ){
+                                ptpfj1_ = pfjets_p4().at(iJet).pt();
+
+                                // back to back in phi
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), pfjets_p4().at(iJet) ) );
+                                if( dphi > deltaPhiCut && pfjets_p4().at(iJet).pt() > ptpfj1_b2b_ ){ 
+                                    ptpfj1_b2b_   = pfjets_p4().at(iJet).pt();
+                                    dphipfj1_b2b_ = dphi;
+                                }
+                            }
+                        }
+
+                        // L2L3 PF Jets
+                        // Find the highest Pt PF L2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        ptpfcj1_       = -999.0; 
+                        ptpfcj1_b2b_   = -999.0;
+                        dphipfcj1_b2b_ = -999.0;
+                        npfcj1_        = 0;
+                        btagpfc_       = false;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                            //float jet_cor = pfjets_corL2L3().at(iJet);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfc_ = true;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                            if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
+                            if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
+                                ptpfcj1_ = jp4cor.pt();
+
+                                // back to back in phi
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+                                if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcj1_b2b_ ){
+                                    ptpfcj1_b2b_   = jp4cor.pt();
+                                    dphipfcj1_b2b_ = dphi;
+                                } 
+                            }
+                        }
+
+                        // L1FastL2L3 PF Jets
+                        // Find the highest Pt PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        emfpfcL1Fj1_      = -999.0;
+                        ptpfcL1Fj1_       = -999.0;
+                        dphipfcL1Fj1_     = -999.0;
+                        ptpfcL1Fj1_b2b_   = -999.0;
+                        dphipfcL1Fj1_b2b_ = -999.0;
+                        npfcL1Fj1_        = 0;
+                        npfc30L1Fj1_      = 0;
+                        npfc40L1Fj1_      = 0;
+                        npfc50L1Fj1_eth_  = 0;
+                        btagpfcL1F_       = false;
+                        rho_ = cms2.evt_rho();
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
+                            //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfcL1F_ = true;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                            if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
+                            if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1_eth_++;
+                            if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
+                                emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
+                                ptpfcL1Fj1_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+                                dphipfcL1Fj1_ = dphi;
+
+                                // back to back in phi
+                                if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1_b2b_ ){
+                                    ptpfcL1Fj1_b2b_   = jp4cor.pt();
+                                    dphipfcL1Fj1_b2b_ = dphi;
+                                }
+                            }
+                        }
+
+                        // L1FastL2L3Residual PF Jets
+                        // Find the highest Pt PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        emfpfcL1Fj1res_      = -999.0;
+                        ptpfcL1Fj1res_       = -999.0;
+                        dphipfcL1Fj1res_      = -999.0;
+                        ptpfcL1Fj1res_b2b_   = -999.0;
+                        dphipfcL1Fj1res_b2b_ = -999.0;
+                        npfcL1Fj1res_        = 0;
+                        npfc30L1Fj1res_      = 0;
+                        npfc40L1Fj1res_      = 0;
+                        npfc50L1Fj1res_eth_  = 0;
+                        btagpfcL1Fres_       = false;
+                        rho_ = cms2.evt_rho();
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) btagpfcL1Fres_ = true;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                            if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                            if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1res_eth_++;
+                            if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
+                                emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
+                                ptpfcL1Fj1res_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+                                dphipfcL1Fj1res_ = dphi;
+
+                                // back to back in phi
+                                if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1res_b2b_ ){
+                                    ptpfcL1Fj1res_b2b_   = jp4cor.pt();
+                                    dphipfcL1Fj1res_b2b_ = dphi;
+                                }
+                            }
+                        }
+
+                        // *** Doing B-tagging correctly ***
+                        // B-tagged L1FastL2L3 PF Jets
+                        // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        ptbtagpfcL1Fj1_       = -999.0;
+                        dphibtagpfcL1Fj1_       = -999.0;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
+                            //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                            if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
+                                ptbtagpfcL1Fj1_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+                                dphibtagpfcL1Fj1_ = dphi; 
+                            }
+                        }
+
+                        // *** Doing B-tagging correctly ***
+                        // B-tagged L1FastL2L3Residual PF Jets
+                        // Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        ptbtagpfcL1Fj1res_       = -999.0;
+                        dphibtagpfcL1Fj1res_       = -999.0;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679) continue;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor );
+                            if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
+                                ptbtagpfcL1Fj1res_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( els_p4().at(iLep), jp4cor ) );
+                                dphibtagpfcL1Fj1res_ = dphi; 
+                            }
+                        }
+                        //////////////
+                        // End Jets //
+                        //////////////
 
 
-						// Time to fill the baby for the muons
-						FillBabyNtuple();
+                        ///////////////////
+                        // B Tagging     //
+                        ///////////////////
 
-					}// closes loop over muons
-				} // closes if statements about whether we want to fill muons
+                        // The btag information
+                        // #ifndef __CMS2_SLIM__
+                        //                     nbjet_ = this_nbjet;
+                        //                     dRbNear_ = 99.;
+                        //                     dRbFar_  = -99.;
+                        //                     for (int ii=0; ii<nbjet_; ii++) {
+                        //                         unsigned int iJet = bindex.at(ii);
+                        //                         float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jets_p4().at(iJet));
+                        //                         if (dr < dRbNear_) dRbNear_ = dr;
+                        //                         if (dr > dRbFar_)   dRbFar_  = dr;
+                        //                     }
+                        // #endif
 
-			}// closes loop over events
-			//printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
+                        // btag info for corrected pfjet
+                        nbpfcjet_ = this_nbpfjet;
+                        dRbpfcNear_ = 99.;
+                        dRbpfcFar_  = -99.;
+                        for (int ii=0; ii<nbpfcjet_; ii++) {
+                            unsigned int iJet = bpfindex.at(ii);
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                            //float jet_corr = pfjets_corL2L3().at(iJet);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            float dr = ROOT::Math::VectorUtil::DeltaR( els_p4().at(iLep), jp4cor);
+                            if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
+                            if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
+                        }
 
-			f->Close();
-			//delete f;
+                        ///////////////////
+                        // End B Tagging //
+                        ///////////////////
 
-		}  // closes loop over files
 
-		std::cout << "nEventTotal = " << nEventsTotal << endl;
-		std::cout << "nEventChain = " << nEventsChain << endl;
 
-		bmark.Stop("benchmark");
-		cout << endl;
-		cout << nEventsTotal << " Events Processed" << endl;
-		//cout << "# of bad events filtered = " << bad_events << endl; 
-		//cout << "# of duplicates filtered = " << duplicates << endl; 
-		cout << "------------------------------" << endl;
-		cout << "CPU  Time:	" << Form("%.01f", bmark.GetCpuTime("benchmark" )) << endl;
-		cout << "Real Time:	" << Form("%.01f", bmark.GetRealTime("benchmark")) << endl;
-		cout << endl;
+                        // Time to fill the baby for the electrons
+                        FillBabyNtuple();
 
-		CloseBabyNtuple();
-		return;
+                    } // closes loop over electrons
+                } // closes if statements about whether we want to fill electrons
 
-	}
-	catch (std::exception& e)
-	{
-		cout << e.what() << endl;
-	}
-    
+
+                // Muons
+                if (eormu == -1 || eormu==13) {
+                    for ( unsigned int iLep = 0; iLep < mus_p4().size(); iLep++) {
+
+                        // Apply a pt cut
+                        if ( mus_p4().at(iLep).pt() < 5.0) continue;
+
+                        ////////////////////////////////////////////////////////////////////////
+                        // NEED TO THINK ABOUT THIS... Z'S ARE VETOED BASED ON TOP SELECTIONS //
+                        ////////////////////////////////////////////////////////////////////////
+
+                        // If it is above 20 GeV see if we can make a 
+                        // Z with another pt>20 FO.  
+                        bool isaZ = false;
+                        if (mus_p4().at(iLep).pt() > 20.) {
+                            for (unsigned int jMu = 0 ; jMu < mus_p4().size(); jMu++) {
+                                if (iLep == jMu)                             continue;
+                                if (mus_p4().at(jMu).pt() < 20.)            continue;
+                                if ( ! muonId( jMu,  OSGeneric_v3_FO) ) continue;
+                                if ( ! muonId( iLep, OSGeneric_v3_FO) ) continue;
+                                LorentzVector w = mus_p4().at(iLep) + mus_p4().at(jMu);
+                                if (abs(w.mass()-91.) > 20.) continue;
+                                isaZ = true;
+                            }
+                        }
+                        if (isaZ) continue;
+
+                        // Initialize baby ntuple
+                        InitBabyNtuple();
+
+                        // store number of electron FOs in event (use SS FO definition)
+                        nFOels_ = 0;
+                        ngsfs_ = 0;
+                        for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++) {
+                            if (cms2.els_p4().at(iel).pt() < 10.)
+                                continue;
+
+                            if (pass_electronSelection(iel, electronSelectionFOV7_v3, false, false))
+                                ++ngsfs_;
+
+                            if (samesign::isDenominatorLepton(11, iel)) {
+                                ++nFOels_;
+                                if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
+                                    foel_p4_ = cms2.els_p4().at(iel);
+                                    foel_id_ = 11*cms2.els_charge().at(iel);
+                                }
+                                continue;
+                            }
+                            if (samesign::isDenominatorLepton(11, iel)) {
+                                ++nFOels_;
+                                if (cms2.els_p4().at(iel).pt() > foel_p4_.pt()) {
+                                    foel_p4_ = cms2.els_p4().at(iel);
+                                    foel_id_ = 11*cms2.els_charge().at(iel);
+                                }
+                                continue;
+                            }
+                        }
+
+                        // store number of muon FOs in event (use SS FO definition)
+                        nFOmus_ = 0;
+                        nmus_ = 0;
+                        for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                            if (imu == iLep)
+                                continue;
+
+                            if (cms2.mus_p4().at(imu).pt() < 10.)
+                                continue;
+
+                            if (muonIdNotIsolated(imu, muonSelectionFO_ssV5))
+                                ++nmus_;
+
+                            if (samesign::isDenominatorLepton(13, imu)) {
+                                ++nFOmus_;
+                                if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
+                                    fomu_p4_ = cms2.mus_p4().at(imu);
+                                    fomu_id_ = 13*cms2.mus_charge().at(imu);
+                                }
+                                continue;
+                            }
+                            if (samesign::isDenominatorLepton(13, imu)) {
+                                ++nFOmus_;
+                                if (cms2.mus_p4().at(imu).pt() > fomu_p4_.pt() && imu != iLep) {
+                                    fomu_p4_ = cms2.mus_p4().at(imu);
+                                    fomu_id_ = 13*cms2.mus_charge().at(imu);
+                                }
+                                continue;
+                            }
+                        }
+
+                        // store number of "veto" electrons in event
+                        nvetoels_ = 0;
+                        for (unsigned int iel = 0; iel < cms2.els_p4().size(); iel++)
+                        {
+                            if (cms2.els_p4().at(iel).pt() < 5.0f)
+                                continue;
+
+                            if (fabs(cms2.els_p4().at(iel).eta()) > 2.4f)
+                                continue;
+
+                            const float iso = electronIsoValuePF2012_FastJetEffArea_v3(iel, /*conesize=*/0.3, /*vtx=*/-999, /*52X iso=*/false);
+                            if (iso > 1.0)
+                                continue;
+
+                            // if we get here, then count it
+                            nvetoels_++;
+                        }
+
+                        // store number of "veto" muons in event
+                        nvetomus_ = 0;
+                        for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++)
+                        {
+                            if (imu == iLep) // skip the current muon
+                                continue;
+
+                            if (cms2.mus_p4().at(imu).pt() < 5.0f)
+                                continue;
+
+                            if (fabs(cms2.mus_p4().at(imu).eta()) > 2.4f)
+                                continue;
+
+                            const bool is_global  = ((cms2.mus_type().at(imu) & (1<<1)) != 0);
+                            const bool is_tracker = ((cms2.mus_type().at(imu) & (1<<2)) != 0);
+                            const bool is_pfmu    = ((cms2.mus_type().at(imu) & (1<<5)) != 0);
+                            bool passes_mu_type = ((is_global or is_tracker) and is_pfmu);
+                            if (not passes_mu_type)
+                                continue;
+
+                            const float iso = muonIsoValuePF2012_deltaBeta(imu); 
+                            if (iso > 1.0)
+                                continue;
+
+                            // if we get here, then count it
+                            nvetomus_++;
+                        }
+
+                        ////////////////////////////////////////////////////////////////////////
+                        // STORE SOME Z MASS VARIABLES //
+                        ////////////////////////////////////////////////////////////////////////
+
+                        mz_fo_ctf_  = -999.;
+                        mz_ctf_iso_ = -999.;
+                        mupsilon_fo_mu_ = -999.;
+                        mupsilon_mu_iso_ = -999.;
+                        LorentzVector p4fo = cms2.mus_p4().at(iLep);
+                        for (unsigned int imu = 0; imu < cms2.mus_p4().size(); imu++) {
+                            if (imu == iLep) continue;
+
+                            if (fabs(cms2.mus_p4().at(imu).eta()) > 2.5)
+                                continue;
+
+                            if (cms2.mus_p4().at(imu).pt() < 10.)
+                                continue;
+
+                            LorentzVector zp4 = p4fo + cms2.mus_p4().at(imu);
+                            float zcandmass = sqrt(fabs(zp4.mass2()));
+                            if ( fabs(zcandmass - 91.) < fabs(mz_fo_ctf_ - 91.) ) {
+                                mz_fo_ctf_  = zcandmass;
+                                mz_ctf_iso_ = muonIsoValue(imu, false);
+                            }
+                            if ( fabs(zcandmass - 9.5) < fabs(mupsilon_fo_mu_ - 9.5) ) {
+                                mupsilon_fo_mu_  = zcandmass;
+                                mupsilon_mu_iso_ = muonIsoValue(imu, false); 
+                            }
+                        }
+
+
+                        /////////////////////////// 
+                        // Event Information     //
+                        ///////////////////////////
+
+                        // Load the electron and event quantities
+                        run_          = evt_run();
+                        ls_           = evt_lumiBlock();
+                        evt_          = evt_event();
+                        weight_       = isData ? 1.0 : evt_scale1fb();
+                        filename_     = f->GetName();
+                        dataset_      = evt_dataset().front();
+                        is_real_data_ = evt_isRealData();
+
+                        if(!isData){
+                            // Pileup - PUSummaryInfoMaker
+                            for (unsigned int vidx = 0; vidx < cms2.puInfo_nPUvertices().size(); vidx++) {
+                                if (cms2.puInfo_bunchCrossing().at(vidx) != 0)
+                                    continue;
+                                pu_nPUvertices_ = cms2.puInfo_nPUvertices().at(vidx);
+                                pu_nPUtrueint_  = cms2.puInfo_trueNumInteractions().at(vidx);
+                            }
+                        } 
+
+                        // Pileup - VertexMaker
+                        bool first_good_vertex_found         = false;
+                        unsigned int first_good_vertex_index = 0;
+                        for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++)
+                        {
+                            if (!isGoodVertex(vidx))
+                            {
+                                continue;
+                            }
+                            if (!first_good_vertex_found)
+                            {
+                                first_good_vertex_found = true;
+                                first_good_vertex_index = vidx;
+                            }
+                            ++evt_nvtxs_;
+                        }
+
+                        /////////////////////////// 
+                        // End Event Information //
+                        ///////////////////////////
+
+
+
+                        //////////////////////////// 
+                        // Lepton Information     //
+                        ////////////////////////////
+
+                        // Basic Quantities
+                        lp4_       = cms2.mus_p4().at(iLep);
+                        pt_        = mus_p4().at(iLep).pt();
+                        eta_       = mus_p4().at(iLep).eta();
+                        phi_       = mus_p4().at(iLep).phi();
+                        id_        = 13*mus_charge().at(iLep);
+                        pfmet_     = evt_pfmet();
+                        pfmetphi_  = evt_pfmetPhi();
+                        foel_mass_ = sqrt(fabs((lp4_ + foel_p4_).mass2()));
+                        fomu_mass_ = sqrt(fabs((lp4_ + fomu_p4_).mass2()));
+
+                        // ip (2d and 3d)
+                        const int mutkid = cms2.mus_trkidx().at(iLep);
+                        const int ivtx   = firstGoodVertex();
+                        if (ivtx >= 0 && mutkid >= 0) 
+                        {
+                            d0_        = trks_d0_pv(mutkid,ivtx).first;
+                            d0err_     = trks_d0_pv(mutkid,ivtx).second;
+                            dz_        = trks_dz_pv(mutkid,ivtx).first;
+                            dzerr_     = trks_dz_pv(mutkid,ivtx).second;
+                        }
+                        else
+                        {
+                            d0_        = cms2.mus_d0().at(iLep);
+                            d0err_     = cms2.mus_d0Err().at(iLep);
+                            dz_        = cms2.mus_z0().at(iLep);
+                            dzerr_     = cms2.mus_z0Err().at(iLep);
+                        }
+                        ip3d_      = mus_ip3d().at(iLep);;
+                        ip3derr_   = mus_ip3derr().at(iLep);;
+
+                        // Isolation
+                        iso_      = muonIsoValue     (iLep, /*truncated=*/false);
+                        trck_iso_ = muonIsoValue_TRK (iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
+                        ecal_iso_ = muonIsoValue_ECAL(iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
+                        hcal_iso_ = muonIsoValue_HCAL(iLep, /*truncated=*/false) * mus_p4().at(iLep).pt();
+
+                        // PF Isolation 03
+                        ch_pfiso03_ = mus_isoR03_pf_ChargedHadronPt().at(iLep);
+                        nh_pfiso03_ = mus_isoR03_pf_NeutralHadronEt().at(iLep);
+                        em_pfiso03_ = mus_isoR03_pf_PhotonEt().at(iLep);
+                        pfiso03_    = (ch_pfiso03_ + em_pfiso03_ + nh_pfiso03_)/mus_p4().at(iLep).pt(); 
+
+                        // PF Isolation 04
+                        ch_pfiso04_ = mus_isoR04_pf_ChargedHadronPt().at(iLep);
+                        nh_pfiso04_ = mus_isoR04_pf_NeutralHadronEt().at(iLep);
+                        em_pfiso04_ = mus_isoR04_pf_PhotonEt().at(iLep);
+                        pfiso04_    = (ch_pfiso04_ + em_pfiso04_ + nh_pfiso04_)/mus_p4().at(iLep).pt(); 
+
+                        // Radial Isolation 03
+                        //radiso_et1p0_ = muonRadialIsolation(iLep, ch_radiso_et1p0_, nh_radiso_et1p0_, em_radiso_et1p0_, /*neutral_et_threshold=*/1.0, /*cone size=*/0.3, verbose_); 
+                        //radiso_et0p5_ = muonRadialIsolation(iLep, ch_radiso_et0p5_, nh_radiso_et0p5_, em_radiso_et0p5_, /*neutral_et_threshold=*/0.5, /*cone size=*/0.3, verbose_); 
+
+                        // PF Pile UP Sim pT
+                        pfpupt03_ = mus_isoR03_pf_PUPt().at(iLep);
+                        pfpupt04_ = mus_isoR04_pf_PUPt().at(iLep);
+
+                        // correct isolaion (for SS2012)
+                        cpfiso03_db_ = muonIsoValuePF2012_deltaBeta(iLep); 
+
+                        // mc information
+                        if (!isData) {
+                            mcid_       = mus_mc_id().at(iLep);
+                            mcmotherid_ = mus_mc_motherid().at(iLep);
+                            int status3_index = mc3idx_eormu(13, iLep);
+                            if (status3_index >= 0)
+                            {
+                                mc3id_ = cms2.genps_id().at(status3_index);
+                                mc3pt_ = cms2.genps_p4().at(status3_index).pt();                            
+                                mc3p4_ = cms2.genps_p4().at(status3_index);                            
+                            }
+                            mc3dr_ = mc3dr_eormu(13, iLep);            
+                            leptonIsFromW_ = leptonIsFromW(iLep, -13 * cms2.mus_charge().at(iLep), true);
+                        }
+
+                        // muon effective area
+                        // 2012 working point effective id (take from https://indico.cern.ch/getFile.py/access?contribId=1&resId=0&materialId=slides&confId=188494)
+                        mu_effarea03_          = EffectiveArea   (eta_, /*cone=*/0.3, /*eormu=*/13, /*use_tight=*/false);
+                        mu_nh_effarea03_       = EffectiveArea_nh(eta_, /*cone=*/0.3, /*use_tight=*/false);
+                        mu_em_effarea03_       = EffectiveArea_em(eta_, /*cone=*/0.3, /*use_tight=*/false);
+                        mu_effarea03_tight_    = EffectiveArea   (eta_, /*cone=*/0.3, /*eormu=*/13, /*use_tight=*/true);
+                        mu_nh_effarea03_tight_ = EffectiveArea_nh(eta_, /*cone=*/0.3, /*use_tight=*/true);
+                        mu_em_effarea03_tight_ = EffectiveArea_em(eta_, /*cone=*/0.3, /*use_tight=*/true);
+                        mu_effarea04_          = EffectiveArea   (eta_, /*cone=*/0.4, /*eormu=*/13, /*use_tight=*/false);
+                        mu_nh_effarea04_       = EffectiveArea_nh(eta_, /*cone=*/0.4, /*use_tight=*/false);
+                        mu_em_effarea04_       = EffectiveArea_em(eta_, /*cone=*/0.4, /*use_tight=*/false);
+                        mu_effarea04_tight_    = EffectiveArea   (eta_, /*cone=*/0.4, /*eormu=*/13, /*use_tight=*/true);
+                        mu_nh_effarea04_tight_ = EffectiveArea_nh(eta_, /*cone=*/0.4, /*use_tight=*/true);
+                        mu_em_effarea04_tight_ = EffectiveArea_em(eta_, /*cone=*/0.4, /*use_tight=*/true);
+
+                        // cosmics
+                        mu_isCosmic_           = isCosmics(iLep);
+
+                        // some muon quantities
+                        mu_ecal_veto_dep_ = cms2.mus_iso_ecalvetoDep().at(iLep);
+                        mu_hcal_veto_dep_ = cms2.mus_iso_hcalvetoDep().at(iLep);
+                        mu_nchi2_         = cms2.mus_chi2().at(iLep) / cms2.mus_ndof().at(iLep);
+
+                        // W transverse mass
+                        mt_   = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
+                        pfmt_ = Mt( mus_p4().at(iLep), pfmet_, pfmetphi_ );
+
+                        // HT
+#ifndef __CMS2_SLIM__
+                        ht_calo_           = (float) sumPt (iLep, JETS_TYPE_CALO_UNCORR  , JETS_CLEAN_SINGLE_MU );
+                        ht_calo_L2L3_      = (float) sumPt (iLep, JETS_TYPE_CALO_CORR    , JETS_CLEAN_SINGLE_MU );
+#endif
+                        ht_pf_             = (float) sumPt (iLep, JETS_TYPE_PF_UNCORR    , JETS_CLEAN_SINGLE_MU );
+                        ht_pf_L2L3_        = (float) sumPt (iLep, JETS_TYPE_PF_CORR      , JETS_CLEAN_SINGLE_MU );
+
+                        //////////////////////////// 
+                        // End Lepton Information //
+                        ////////////////////////////
+
+                        //////////////////////////////////////////////////////
+                        // Fake Rate Numerator & Denominator Selections     //
+                        //////////////////////////////////////////////////////
+
+                        //////////
+                        // 2012 //
+                        //////////
+
+                        // SS
+                        num_mu_ssV5_       = muonId(iLep, NominalSSv5);
+                        num_mu_ssV5_noIso_ = muonIdNotIsolated(iLep, NominalSSv5);
+                        fo_mu_ssV5_        = muonId(iLep, muonSelectionFO_ssV5);
+                        fo_mu_ssV5_noIso_  = muonIdNotIsolated(iLep, muonSelectionFO_ssV5);
+
+                        // TTZ
+                        num_mu_TTZtightv1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::TIGHT);
+                        num_mu_TTZtightv1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::TIGHT);
+                        fo_mu_TTZtightv1_        = muonId(iLep, NominalTTZ_tightFO_v1);
+                        fo_mu_TTZtightv1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::TIGHT);
+
+                        num_mu_TTZloosev1_       = ttv::isNumeratorLepton(13, iLep, ttv::LeptonType::LOOSE);
+                        num_mu_TTZloosev1_noIso_ = ttv::isGoodLepton(13, iLep, ttv::LeptonType::LOOSE);
+                        fo_mu_TTZloosev1_        = muonId(iLep, NominalTTZ_looseFO_v1);
+                        fo_mu_TTZloosev1_noIso_  = ttv::isDenominatorLepton(13, iLep, ttv::LeptonType::LOOSE);
+
+
+
+                        //////////
+                        // 2011 //
+                        //////////
+
+                        // SS
+                        numNomSSv4_      = muonId(iLep, NominalSSv4          );
+                        fo_mussV4_04_    = muonId(iLep, muonSelectionFO_ssV4 );
+                        numNomSSv4noIso_ = muonIdNotIsolated(iLep, NominalSSv4);
+                        fo_mussV4_noIso_ = muonIdNotIsolated(iLep, muonSelectionFO_ssV4 );
+
+                        //OS
+                        num_mu_OSGV3_     = muonId(iLep, OSGeneric_v3);
+                        fo_mu_OSGV3_      = muonId(iLep, OSGeneric_v3_FO);
+
+                        // WW
+                        num_mu_smurfV6_    = muonId(iLep, NominalSmurfV6                    );
+                        fo_mu_smurf_04_    = muonId(iLep, muonSelectionFO_mu_smurf_04       );
+                        fo_mu_smurf_10_    = muonId(iLep, muonSelectionFO_mu_smurf_10       );
+
+                        ////////////////////////////////////////////////////////////
+                        // Skip this muon if it fails the loosest denominator.    //
+                        // Ignore this OR if applyFOfilter is set to false.       //
+                        ////////////////////////////////////////////////////////////
+                        if (applyFOfilter) {
+                            if (
+                                    !fo_mussV4_04_     && !fo_mu_ssV5_       &&                    // SS
+                                    !fo_mu_TTZtightv1_ && !fo_mu_TTZloosev1_ &&                 // TTZ 2012
+                                    !fo_mu_OSGV2_      && !fo_mu_OSGV3_      &&                    // OS
+                                    !fo_mu_smurf_04_   && !fo_mu_smurf_10_                       // WW
+                               )
+                                continue;
+                        }
+
+                        //////////////////////////////////////////////////////
+                        // End Fake Rate Numerator & Denominator Selections //
+                        //////////////////////////////////////////////////////
+
+                        ///////////////////////  
+                        // 2012 Triggers     //
+                        ///////////////////////
+
+                        // Muons
+                        triggerMatchStruct struct_mu5_vstar             = MatchTriggerClass(mus_p4().at(iLep), mu5_regexp            , 13);
+                        triggerMatchStruct struct_mu8_vstar             = MatchTriggerClass(mus_p4().at(iLep), mu8_regexp            , 13);
+                        triggerMatchStruct struct_mu12_vstar            = MatchTriggerClass(mus_p4().at(iLep), mu12_regexp           , 13);
+                        triggerMatchStruct struct_mu17_vstar            = MatchTriggerClass(mus_p4().at(iLep), mu17_regexp           , 13);
+                        triggerMatchStruct struct_mu15_eta2p1_vstar     = MatchTriggerClass(mus_p4().at(iLep), mu15_eta2p1_regexp    , 13);
+                        triggerMatchStruct struct_mu24_eta2p1_vstar     = MatchTriggerClass(mus_p4().at(iLep), mu24_eta2p1_regexp    , 13);
+                        triggerMatchStruct struct_mu30_eta2p1_vstar     = MatchTriggerClass(mus_p4().at(iLep), mu30_eta2p1_regexp    , 13);
+                        triggerMatchStruct struct_isoMu20_eta2p1_vstar  = MatchTriggerClass(mus_p4().at(iLep), isoMu20_eta2p1_regexp , 13);
+                        triggerMatchStruct struct_isoMu24_eta2p1_vstar  = MatchTriggerClass(mus_p4().at(iLep), isoMu24_eta2p1_regexp , 13);
+                        triggerMatchStruct struct_isoMu30_eta2p1_vstar  = MatchTriggerClass(mus_p4().at(iLep), isoMu30_eta2p1_regexp , 13);
+                        triggerMatchStruct struct_relIso1p0Mu17_vstar   = MatchTriggerClass(mus_p4().at(iLep), relIso1p0Mu17_regexp  , 13);
+                        triggerMatchStruct struct_relIso1p0Mu20_vstar   = MatchTriggerClass(mus_p4().at(iLep), relIso1p0Mu20_regexp  , 13);
+                        triggerMatchStruct struct_relIso1p0Mu5_vstar    = MatchTriggerClass(mus_p4().at(iLep), relIso1p0Mu5_regexp   , 13);
+
+                        mu5_vstar_                  = struct_mu5_vstar.nHLTObjects_;
+                        mu8_vstar_                  = struct_mu8_vstar.nHLTObjects_;
+                        mu12_vstar_                 = struct_mu12_vstar.nHLTObjects_;
+                        mu17_vstar_                 = struct_mu17_vstar.nHLTObjects_;
+                        mu15_eta2p1_vstar_          = struct_mu15_eta2p1_vstar.nHLTObjects_;
+                        mu24_eta2p1_vstar_          = struct_mu24_eta2p1_vstar.nHLTObjects_;
+                        mu30_eta2p1_vstar_          = struct_mu30_eta2p1_vstar.nHLTObjects_;
+                        isoMu20_eta2p1_vstar_       = struct_isoMu20_eta2p1_vstar.nHLTObjects_;
+                        isoMu24_eta2p1_vstar_       = struct_isoMu24_eta2p1_vstar.nHLTObjects_;
+                        isoMu30_eta2p1_vstar_       = struct_isoMu30_eta2p1_vstar.nHLTObjects_;
+                        relIso1p0Mu17_vstar_        = struct_relIso1p0Mu17_vstar.nHLTObjects_;
+                        relIso1p0Mu20_vstar_        = struct_relIso1p0Mu20_vstar.nHLTObjects_;
+                        relIso1p0Mu5_vstar_         = struct_relIso1p0Mu5_vstar.nHLTObjects_;
+
+                        mu5_version_                = struct_mu5_vstar.version_;
+                        mu8_version_                = struct_mu8_vstar.version_;
+                        mu12_version_               = struct_mu12_vstar.version_;
+                        mu17_version_               = struct_mu17_vstar.version_;
+                        mu15_eta2p1_version_        = struct_mu15_eta2p1_vstar.version_;
+                        mu24_eta2p1_version_        = struct_mu24_eta2p1_vstar.version_;
+                        mu30_eta2p1_version_        = struct_mu30_eta2p1_vstar.version_;
+                        isoMu20_eta2p1_version_     = struct_isoMu20_eta2p1_vstar.version_;
+                        isoMu24_eta2p1_version_     = struct_isoMu24_eta2p1_vstar.version_;
+                        isoMu30_eta2p1_version_     = struct_isoMu30_eta2p1_vstar.version_;
+                        relIso1p0Mu17_version_      = struct_relIso1p0Mu17_vstar.version_;
+                        relIso1p0Mu20_version_      = struct_relIso1p0Mu20_vstar.version_;
+                        relIso1p0Mu5_version_       = struct_relIso1p0Mu5_vstar.version_;
+
+                        dr_mu5_vstar_               = struct_mu5_vstar.dR_;
+                        dr_mu8_vstar_               = struct_mu8_vstar.dR_;
+                        dr_mu12_vstar_              = struct_mu12_vstar.dR_;
+                        dr_mu17_vstar_              = struct_mu17_vstar.dR_;
+                        dr_mu15_eta2p1_vstar_       = struct_mu15_eta2p1_vstar.dR_;
+                        dr_mu24_eta2p1_vstar_       = struct_mu24_eta2p1_vstar.dR_;
+                        dr_mu30_eta2p1_vstar_       = struct_mu30_eta2p1_vstar.dR_;
+                        dr_isoMu20_eta2p1_vstar_    = struct_isoMu20_eta2p1_vstar.dR_;
+                        dr_isoMu24_eta2p1_vstar_    = struct_isoMu24_eta2p1_vstar.dR_;
+                        dr_isoMu30_eta2p1_vstar_    = struct_isoMu30_eta2p1_vstar.dR_;
+                        dr_relIso1p0Mu17_vstar_     = struct_relIso1p0Mu17_vstar.dR_;
+                        dr_relIso1p0Mu20_vstar_     = struct_relIso1p0Mu20_vstar.dR_;
+                        dr_relIso1p0Mu5_vstar_      = struct_relIso1p0Mu5_vstar.dR_;
+
+                        hltps_mu5_vstar_            = struct_mu5_vstar.hltps_;
+                        hltps_mu8_vstar_            = struct_mu8_vstar.hltps_;
+                        hltps_mu12_vstar_           = struct_mu12_vstar.hltps_;
+                        hltps_mu17_vstar_           = struct_mu17_vstar.hltps_;
+                        hltps_mu15_eta2p1_vstar_    = struct_mu15_eta2p1_vstar.hltps_;
+                        hltps_mu24_eta2p1_vstar_    = struct_mu24_eta2p1_vstar.hltps_;
+                        hltps_mu30_eta2p1_vstar_    = struct_mu30_eta2p1_vstar.hltps_;
+                        hltps_isoMu20_eta2p1_vstar_ = struct_isoMu20_eta2p1_vstar.hltps_;
+                        hltps_isoMu24_eta2p1_vstar_ = struct_isoMu24_eta2p1_vstar.hltps_;
+                        hltps_isoMu30_eta2p1_vstar_ = struct_isoMu30_eta2p1_vstar.hltps_;
+                        hltps_relIso1p0Mu17_vstar_  = struct_relIso1p0Mu17_vstar.hltps_;
+                        hltps_relIso1p0Mu20_vstar_  = struct_relIso1p0Mu20_vstar.hltps_;
+                        hltps_relIso1p0Mu5_vstar_   = struct_relIso1p0Mu5_vstar.hltps_;
+
+                        // These are hardcoded to the value in Dima's table:
+                        // http://dmytro.web.cern.ch/dmytro/trigger/triggerEvolution_all.html 
+#ifndef __CMS2_SLIM__
+                        l1ps_mu5_vstar_            = L1_prescale("L1_SingleMu3"         );
+                        l1ps_mu8_vstar_            = L1_prescale("L1_SingleMu3"         );
+                        l1ps_mu12_vstar_           = L1_prescale("L1_SingleMu7"         );
+                        l1ps_mu17_vstar_           = L1_prescale("L1_SingleMu12"        );
+                        l1ps_mu15_eta2p1_vstar_    = L1_prescale("L1_SingleMu7"         );
+                        l1ps_mu24_eta2p1_vstar_    = L1_prescale("L1_SingleMu16_Eta2p1" );
+                        l1ps_mu30_eta2p1_vstar_    = L1_prescale("L1_SingleMu16_Eta2p1" );
+                        l1ps_isoMu20_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
+                        l1ps_isoMu24_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
+                        l1ps_isoMu30_eta2p1_vstar_ = L1_prescale("L1_SingleMu16_Eta2p1" );
+                        l1ps_relIso1p0Mu17_vstar_  = L1_prescale("L1_SingleMu12"        );
+                        l1ps_relIso1p0Mu5_vstar_   = L1_prescale("L1_SingleMu3"         );
+#endif
+
+
+                        ///////////////////////  
+                        // End 2012 Triggers //
+                        ///////////////////////
+
+                        ///////////////////////  
+                        // 2011 Triggers     //
+                        ///////////////////////
+
+                        // Muons
+                        triggerMatchStruct struct_mu3_vstar       = MatchTriggerClass(mus_p4().at(iLep), mu3_regexp      , 13);
+                        triggerMatchStruct struct_mu15_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu15_regexp     , 13);
+                        triggerMatchStruct struct_mu20_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu20_regexp     , 13);
+                        triggerMatchStruct struct_mu24_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu24_regexp     , 13);
+                        triggerMatchStruct struct_mu30_vstar      = MatchTriggerClass(mus_p4().at(iLep), mu30_regexp     , 13);
+                        triggerMatchStruct struct_mu8_Jet40_vstar = MatchTriggerClass(mus_p4().at(iLep), mu8_Jet40_regexp, 13);
+
+                        mu3_vstar_          = struct_mu3_vstar.nHLTObjects_;
+                        mu15_vstar_         = struct_mu15_vstar.nHLTObjects_;
+                        mu20_vstar_         = struct_mu20_vstar.nHLTObjects_;
+                        mu24_vstar_         = struct_mu24_vstar.nHLTObjects_;
+                        mu30_vstar_         = struct_mu30_vstar.nHLTObjects_;
+                        mu8_Jet40_vstar_    = struct_mu8_Jet40_vstar.nHLTObjects_;
+
+                        mu3_version_        = struct_mu3_vstar.version_;
+                        mu15_version_       = struct_mu15_vstar.version_;
+                        mu20_version_       = struct_mu20_vstar.version_;
+                        mu24_version_       = struct_mu24_vstar.version_;
+                        mu30_version_       = struct_mu30_vstar.version_;
+                        mu8_Jet40_version_  = struct_mu8_Jet40_vstar.version_;
+
+                        dr_mu3_vstar_       = struct_mu3_vstar.dR_;
+                        dr_mu15_vstar_      = struct_mu15_vstar.dR_;
+                        dr_mu20_vstar_      = struct_mu20_vstar.dR_;
+                        dr_mu24_vstar_      = struct_mu24_vstar.dR_;
+                        dr_mu30_vstar_      = struct_mu30_vstar.dR_;
+                        dr_mu8_Jet40_vstar_ = struct_mu8_Jet40_vstar.dR_;
+
+                        hltps_mu3_vstar_       = struct_mu3_vstar.hltps_;
+                        hltps_mu15_vstar_      = struct_mu15_vstar.hltps_;
+                        hltps_mu20_vstar_      = struct_mu20_vstar.hltps_;
+                        hltps_mu24_vstar_      = struct_mu24_vstar.hltps_;
+                        hltps_mu30_vstar_      = struct_mu30_vstar.hltps_;
+                        hltps_mu8_Jet40_vstar_ = struct_mu8_Jet40_vstar.hltps_;
+
+                        ///////////////////////  
+                        // End 2011 Triggers //
+                        ///////////////////////
+
+                        //////////////
+                        // Jets     //
+                        //////////////
+
+                        // Calo Jets
+                        // Find the highest Pt jet separated by at least dRcut from this lepton and fill the jet Pt
+                        // #ifndef __CMS2_SLIM__
+                        //                     ptj1_       = -999.0;
+                        //                     ptj1_b2b_   = -999.0;
+                        //                     dphij1_b2b_ = -999.0;
+                        //                     nj1_        = 0;
+                        //                     for (unsigned int iJet = 0; iJet < jets_p4().size(); iJet++) {
+                        //                         double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet) );
+                        //                         if( dr > deltaRCut && jets_p4().at(iJet).pt() > 10 ) nj1_++;
+                        //                         if ( dr > deltaRCut && jets_p4().at(iJet).pt() > ptj1_ ){
+                        //                             ptj1_ = jets_p4().at(iJet).pt();
+
+                        //                             // back to back in phi
+                        //                             float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jets_p4().at(iJet) ) );
+                        //                             if( dphi > deltaPhiCut && jets_p4().at(iJet).pt() > ptj1_b2b_ ){        
+                        //                                 ptj1_b2b_   = jets_p4().at(iJet).pt();
+                        //                                 dphij1_b2b_ = dphi;
+                        //                             }
+                        //                         }
+                        //                     }
+                        // #endif
+
+                        // PF Jets
+                        // Find the highest Pt pfjet separated by at least dRcut from this lepton and fill the pfjet Pt
+                        ptpfj1_       = -999.0;
+                        ptpfj1_b2b_   = -999.0;
+                        dphipfj1_b2b_ = -999.0;
+                        npfj1_        = 0;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), pfjets_p4().at(iJet) );
+                            if( dr > deltaRCut && pfjets_p4().at(iJet).pt() > 10 ) npfj1_++;
+                            if ( dr > deltaRCut && pfjets_p4().at(iJet).pt() > ptpfj1_ ){
+                                ptpfj1_ = pfjets_p4().at(iJet).pt();
+
+                                // back to back in phi
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), pfjets_p4().at(iJet) ) );
+                                if( dphi > deltaPhiCut && pfjets_p4().at(iJet).pt() > ptpfj1_b2b_ ){        
+                                    ptpfj1_b2b_   = pfjets_p4().at(iJet).pt();
+                                    dphipfj1_b2b_ = dphi;
+                                }
+                            }
+                        }
+
+                        // L2L3 PF Jets
+                        // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        ptpfcj1_       = -999.0;
+                        ptpfcj1_b2b_   = -999.0;
+                        dphipfcj1_b2b_ = -999.0;
+                        npfcj1_        = 0;
+                        btagpfc_       = false;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            // JetID
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = jetCorrection(jp4, jet_pf_L2L3corrector);
+                            //float jet_cor = pfjets_corL2L3().at(iJet);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfc_ = true;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                            if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcj1_++;
+                            if ( dr > deltaRCut && jp4cor.pt() > ptpfcj1_ ){
+                                ptpfcj1_ = jp4cor.pt();
+
+                                // back to back in phi
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+                                if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcj1_b2b_ ){
+                                    ptpfcj1_b2b_   = jp4cor.pt();
+                                    dphipfcj1_b2b_ = dphi;
+                                }
+                            }
+                        }
+
+                        // L1FastL2L3 PF Jets
+                        // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        emfpfcL1Fj1_      = -999.0;
+                        ptpfcL1Fj1_       = -999.0;
+                        dphipfcL1Fj1_     = -999.0;
+                        ptpfcL1Fj1_b2b_   = -999.0;
+                        dphipfcL1Fj1_b2b_ = -999.0;
+                        npfcL1Fj1_        = 0;
+                        npfc30L1Fj1_      = 0;
+                        npfc40L1Fj1_      = 0;
+                        npfc50L1Fj1_eth_  = 0;
+                        btagpfcL1F_       = false;
+                        rho_ = cms2.evt_rho();
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            // JetID
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
+                            //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfcL1F_ = true;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                            if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
+                            if( dr > 0.4       && jp4cor.pt() > 40 ) npfc50L1Fj1_eth_++;
+                            if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
+                                emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
+                                ptpfcL1Fj1_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+                                dphipfcL1Fj1_ = dphi;
+
+                                // back to back in phi
+                                if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1_b2b_ ){
+                                    ptpfcL1Fj1_b2b_   = jp4cor.pt();
+                                    dphipfcL1Fj1_b2b_ = dphi;
+                                }
+                            }
+                        }
+
+                        // L1FastL2L3Residual PF Jets
+                        // Find the highest Pt PF corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        emfpfcL1Fj1res_      = -999.0;
+                        ptpfcL1Fj1res_       = -999.0;
+                        dphipfcL1Fj1res_      = -999.0;
+                        ptpfcL1Fj1res_b2b_   = -999.0;
+                        dphipfcL1Fj1res_b2b_ = -999.0;
+                        npfcL1Fj1res_        = 0;
+                        npfc30L1Fj1res_      = 0;
+                        npfc40L1Fj1res_      = 0;
+                        npfc50L1Fj1res_eth_  = 0;
+                        btagpfcL1Fres_       = false;
+                        rho_ = cms2.evt_rho();
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            // JetID
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (jp4cor.pt() > 15 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679 ) btagpfcL1Fres_ = true;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                            if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                            if( dr > 0.4       && jp4cor.pt() > 40 ) npfc50L1Fj1res_eth_++;
+                            if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
+                                emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
+                                ptpfcL1Fj1res_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+                                dphipfcL1Fj1res_ = dphi;
+
+                                // back to back in phi
+                                if( dphi > deltaPhiCut && jp4cor.pt() > ptpfcL1Fj1res_b2b_ ){
+                                    ptpfcL1Fj1res_b2b_   = jp4cor.pt();
+                                    dphipfcL1Fj1res_b2b_ = dphi;
+                                }
+                            }
+                        }
+
+                        //***  Doing B-tagging correctly ***
+                        // B-tagged L1FastL2L3 PF Jets
+                        // Find the highest Pt B-tagged PF L1FastL2L3 corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        ptbtagpfcL1Fj1_       = -999.0;
+                        dphibtagpfcL1Fj1_       = -999.0;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3().at(iJet);
+                            //jet_pf_L1FastJetL2L3_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679 ) continue;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                            if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1_ ){
+                                ptbtagpfcL1Fj1_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+                                dphibtagpfcL1Fj1_ = dphi; 
+                            }
+                        }
+
+                        //***  Doing B-tagging correctly ***
+                        // B-tagged L1FastL2L3Residual PF Jets
+                        // Find the highest Pt B-tagged PF L1FastL2L3Residual corrected jet separated by at least dRcut from this lepton and fill the jet Pt
+                        ptbtagpfcL1Fj1res_       = -999.0;
+                        dphibtagpfcL1Fj1res_     = -999.0;
+                        for (unsigned int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                            if ( !passesPFJetID(iJet)) continue;
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            float jet_cor = cms2.pfjets_corL1FastL2L3residual().at(iJet);
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_L1FastJetL2L3Residual_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_L1FastJetL2L3Residual_corrector);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            if (pfjets_combinedSecondaryVertexBJetTag().at(iJet) < 0.679 ) continue;
+                            double dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor );
+                            if ( dr > deltaRCut && jp4cor.pt() > ptbtagpfcL1Fj1res_ ){
+                                ptbtagpfcL1Fj1res_ = jp4cor.pt();
+                                float dphi = fabs( ROOT::Math::VectorUtil::DeltaPhi( mus_p4().at(iLep), jp4cor ) );
+                                dphibtagpfcL1Fj1res_ = dphi; 
+                            }
+                        }
+
+
+                        //////////////
+                        // End Jets //
+                        //////////////
+
+                        ///////////////////
+                        // B Tagging     //
+                        ///////////////////
+
+                        // #ifndef __CMS2_SLIM__
+                        //                     // The btag information
+                        //                     nbjet_ = this_nbjet;
+                        //                     dRbNear_ =  99.;
+                        //                     dRbFar_  = -99.;
+                        //                     for (int ii=0; ii<nbjet_; ii++) {
+                        //                         unsigned int iJet = bindex.at(ii);
+                        //                         float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jets_p4().at(iJet));
+                        //                         if (dr < dRbNear_) dRbNear_ = dr;
+                        //                         if (dr > dRbFar_)  dRbFar_  = dr;
+                        //                     }
+                        // #endif
+
+                        // The btag information for pfjets
+                        nbpfcjet_ = this_nbpfjet;
+                        dRbpfcNear_ = 99.;
+                        dRbpfcFar_  = -99.;
+                        //FactorizedJetCorrector* jet_pf_corrector = evt_isRealData() ? jet_pf_L1FastJetL2L3Residual_corrector : jet_pf_L1FastJetL2L3_corrector; 
+                        for (int ii=0; ii<nbpfcjet_; ii++) {
+                            unsigned int iJet = bpfindex.at(ii);
+                            LorentzVector jp4 = pfjets_p4().at(iJet);
+                            //jet_pf_corrector->setRho(cms2.evt_ww_rho_vor());
+                            //jet_pf_corrector->setJetA(cms2.pfjets_area().at(iJet));
+                            //jet_pf_corrector->setJetPt(cms2.pfjets_p4().at(iJet).pt());
+                            //jet_pf_corrector->setJetEta(cms2.pfjets_p4().at(iJet).eta()); 
+                            //float jet_cor = jetCorrection(jp4, jet_pf_corrector);
+                            float jet_cor = evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(iJet) : cms2.pfjets_corL1FastL2L3().at(iJet);
+                            LorentzVector jp4cor = jp4 * jet_cor;
+                            float dr = ROOT::Math::VectorUtil::DeltaR( mus_p4().at(iLep), jp4cor);
+                            if (dr < dRbpfcNear_) dRbpfcNear_ = dr;
+                            if (dr > dRbpfcFar_)   dRbpfcFar_  = dr;
+                        }
+
+                        ///////////////////
+                        // End B Tagging //
+                        ///////////////////
+
+
+                        // Time to fill the baby for the muons
+                        FillBabyNtuple();
+
+                    }// closes loop over muons
+                } // closes if statements about whether we want to fill muons
+
+            }// closes loop over events
+            //printf("Good events found: %d out of %d\n",nGoodEvents,nEntries);
+
+            f->Close();
+            //delete f;
+
+        }  // closes loop over files
+
+        std::cout << "nEventTotal = " << nEventsTotal << endl;
+        std::cout << "nEventChain = " << nEventsChain << endl;
+
+        bmark.Stop("benchmark");
+        cout << endl;
+        cout << nEventsTotal << " Events Processed" << endl;
+        //cout << "# of bad events filtered = " << bad_events << endl; 
+        //cout << "# of duplicates filtered = " << duplicates << endl; 
+        cout << "------------------------------" << endl;
+        cout << "CPU  Time: " << Form("%.01f", bmark.GetCpuTime("benchmark" )) << endl;
+        cout << "Real Time: " << Form("%.01f", bmark.GetRealTime("benchmark")) << endl;
+        cout << endl;
+
+        CloseBabyNtuple();
+        return;
+
+    }
+    catch (std::exception& e)
+    {
+        cout << e.what() << endl;
+    }
+
 } // closes myLooper function  
 
