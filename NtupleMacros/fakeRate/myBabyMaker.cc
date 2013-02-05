@@ -567,7 +567,7 @@ void myBabyMaker::InitBabyNtuple()
   
     // Pileup - PUSummaryInfoMaker
     pu_nPUvertices_ = -1;
-    pu_nPUtrueint_  = -1;
+    pu_nPUtrueint_  = -1.0;
   
     // Pileup - VertexMaker
     evt_nvtxs_ = -1;
