@@ -12,7 +12,7 @@ numEvtsPerJob = 20000
 outNtupleName = 'ntuple.root'
 storageElement = 'T2_US_UCSD'
 tag = 'V01-02-06'
-mode = 'glidein'
+mode = 'remoteGlidein'
 dbs_url = ''
 dbs_url_pub = 'http://ming.ucsd.edu:8080/DBS2/servlet/DBSServlet';
 report_every = 1000;
@@ -29,7 +29,7 @@ def makeCrabConfig():
     outFile.write('[CRAB]\n')
     outFile.write('jobtype   = cmssw\n')
     outFile.write('scheduler = ' + mode + '\n')
-    outFile.write('use_server = ' + '1' + '\n')
+    outFile.write('use_server = ' + '0' + '\n')
     outFile.write('\n[CMSSW]\n')
     outFile.write('datasetpath             = ' + dataSet + '\n')
     outFile.write('pset                    = ' + outFileName + '_cfg.py \n')
@@ -49,7 +49,7 @@ def makeCrabConfig():
     outFile.write('publish_data_name       = CMS2_' + tag + '\n')
     outFile.write('dbs_url_for_publication = ' + dbs_url_pub + '\n\n')
     outFile.write('[GRID]\n')
-    outFile.write('maxtarballsize = 20\n')
+    # outFile.write('maxtarballsize = 20\n')
     
 	 
     outFile.write('##here are some default sites that we \n')
