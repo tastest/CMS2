@@ -21,6 +21,7 @@ sParms = [];
 
 fastSim = False;
 MCatNLO = False;
+isData  = False;
 
 def makeCrabConfig():
     outFileName = dataSet.split('/')[1]+'_'+dataSet.split('/')[2]
@@ -37,7 +38,10 @@ def makeCrabConfig():
     outFile.write('events_per_job          = ' + str(numEvtsPerJob) + '\n')
     outFile.write('output_file             = ' + outNtupleName + '\n')
     if dbs_url != '' :
-      outFile.write('dbs_url                 = ' + dbs_url + '\n')
+        outFile.write('dbs_url                 = ' + dbs_url + '\n')
+    if isData == True :
+        outFile.write('total_number_of_lumis   = -1\n')
+        outFile.write('lumis_per_job           = 1\n')
     outFile.write('\n')
     outFile.write('[USER]\n')
     outFile.write('return_data             = 0\n')
@@ -107,16 +111,18 @@ def makeCMSSWConfig(cmsswSkelFile):
         if i.find('globaltag') != -1:
             outFile.write('process.GlobalTag.globaltag = "' + global_tag + '"\n'); continue
 
-        if i.find('cms.Path') != -1:
+        if (i.find('cms.Path') != -1 and foundcmsPath == False ):
             foundcmsPath = True            
+            outFile.write('process.eventMaker.datasetName                   = cms.string(\"' + dataSet+'\")\n')
+            outFile.write('process.eventMaker.CMS2tag                       = cms.string(\"' + tag+'\")\n')
 
         outFile.write(i)
         if iline < nlines:
             outFile.write('\n')
 
-    if foundcmsPath == True:
-      outFile.write('process.eventMaker.datasetName                   = cms.string(\"' + dataSet+'\")\n')
-      outFile.write('process.eventMaker.CMS2tag                       = cms.string(\"' + tag+'\")\n')
+    # if foundcmsPath == True:
+    #   outFile.write('process.eventMaker.datasetName                   = cms.string(\"' + dataSet+'\")\n')
+    #   outFile.write('process.eventMaker.CMS2tag                       = cms.string(\"' + tag+'\")\n')
       
     if len(sParms) > 0:
         outFile.write('process.sParmMaker.vsparms = cms.untracked.vstring(\n')
@@ -150,6 +156,7 @@ if len(sys.argv) < 5 :
     print '\t-d\t\tname of dataset'
     print '\t-t\t\tCMS2 tag, will be added to publish_data_name'
     print '\nOptional arguments:'
+    print '\t-isData\t\tFlag to specify if you are running on data.'
     print '\t-strElem\tpreferred storage element. Default is T2_US_UCSD if left unspecified'
     print '\t-nEvts\t\tNumber of events you want to run on. Default is -1'
     print '\t-evtsPerJob\tNumber of events per job. Default is 20000'
@@ -193,6 +200,8 @@ for i in range(0, len(sys.argv)):
         fastSim = True
     if sys.argv[i] == '-MCatNLO':
         MCatNLO = True
+    if sys.argv[i] == '-isData':
+        isData = True
 
 if os.path.exists(cmsswSkelFile) == False:
     print 'CMSSW skeleton file does not exist. Exiting'
@@ -200,6 +209,9 @@ if os.path.exists(cmsswSkelFile) == False:
 
 
 #print '\nGetting global tag from DBS...'
+if isData == True :
+    print 'Running on data sample.'
+
 if( global_tag_flag != '' ):
 	print '\nUsing \'' + global_tag_flag + '\' specified by -gtag flag.\n'
 	global_tag = global_tag_flag
@@ -214,7 +226,6 @@ else :
       command = 'dbsql find config.name,config.content where dataset=' + dataSet.replace("AODSIM", "GEN-SIM-RECO") + '>config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
     else:
       command = 'python $DBSCMD_HOME/dbsCommandLine.py -c search --url=' + dbs_url + ' --query="find config.name,config.content where dataset=' + dataSet.replace("AODSIM", "GEN-SIM-RECO") + '">config.content; while read line; do globaltag=`echo $line | sed -n \'s/^.*process.GlobalTag.globaltag = \([^p]*\).*$/\\1/p\'`; if [ "$globaltag" != "" ]; then echo $globaltag; break; fi; done <config.content; rm config.content';
-
     #print command
 
     length = len( os.popen(command).readlines() )
