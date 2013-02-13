@@ -47,25 +47,25 @@ bool samesign::isGoodLepton(int id, int idx, bool use_el_eta)
 {
     // require a valid vertex
     // needed for the d0 calculation 
-    //const int vtxidx = firstGoodVertex();
-    //if (vtxidx < 0)
-    //{
-    //    return false;
-    //}
+    const int vtxidx = firstGoodVertex();
+    if (vtxidx < 0)
+    {
+        return false;
+    }
 
     // electrons
     if (abs(id) == 11)
     {
         // tightened |d0| cut wrt standard ID cut
-        //const int gsfidx = cms2.els_gsftrkidx().at(idx);
-        //if (gsfidx >= 0) 
-        //{
-        //    const float d0 = gsftrks_d0_pv(gsfidx, vtxidx).first;
-        //    if (fabs(d0) > 0.01) // 100 microns (units are cm)
-        //    {
-        //        return false;
-        //    }
-        //}
+        const int gsfidx = cms2.els_gsftrkidx().at(idx);
+        if (gsfidx >= 0) 
+        {
+            const float d0 = gsftrks_d0_pv(gsfidx, vtxidx).first;
+            if (fabs(d0) > 0.01) // 100 microns (units are cm)
+            {
+                return false;
+            }
+        }
 
         if (use_el_eta)
         {
@@ -110,15 +110,15 @@ bool samesign::isGoodLepton(int id, int idx, bool use_el_eta)
     if (abs(id) == 13)
     {
         // tightened |d0| cut wrt standard ID cut
-        //const int trkidx = cms2.mus_trkidx().at(idx);
-        //if (trkidx >= 0) 
-        //{
-        //    const float d0 = trks_d0_pv(trkidx, vtxidx).first;
-        //    if (fabs(d0) > 0.005) // 50 microns (units are cm)
-        //    {
-        //        return false;
-        //    }
-        //}
+        const int trkidx = cms2.mus_trkidx().at(idx);
+        if (trkidx >= 0) 
+        {
+            const float d0 = trks_d0_pv(trkidx, vtxidx).first;
+            if (fabs(d0) > 0.005) // 50 microns (units are cm)
+            {
+                return false;
+            }
+        }
 
         return (muonIdNotIsolated(idx, NominalSSv5));
     }
