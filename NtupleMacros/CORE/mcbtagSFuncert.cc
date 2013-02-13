@@ -301,7 +301,7 @@ double btagEventUncertainty(int nbjets, double pt1, double eta1, double pt2, dou
       std::cout << "Negative eps in btagEventUncertainty (4 jet case)" << std::endl;
       return 0.;
     }
-    double temp =  effErr[0]*(eff[1] + eff[2] + eff[3] + 3*eff[1]*eff[2]*eff[3]);
+    double temp = effErr[0]*(eff[1] + eff[2] + eff[3] + 3*eff[1]*eff[2]*eff[3]);
     temp = temp + effErr[1]*(eff[0] + eff[2] + eff[3] + 3*eff[0]*eff[2]*eff[3]);
     temp = temp + effErr[2]*(eff[0] + eff[1] + eff[3] + 3*eff[0]*eff[1]*eff[3]);
     temp = temp + effErr[3]*(eff[0] + eff[1] + eff[2] + 3*eff[0]*eff[1]*eff[2]);
