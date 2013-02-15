@@ -636,11 +636,16 @@ void FillSmurfNtuple(SmurfTree& tree, unsigned int i_hyp,
 			}
 		}
 	}
-
-    for (unsigned int nbc=0;nbc<cms2.puInfo_nPUvertices().size();++nbc) {
-      if (cms2.puInfo_bunchCrossing().at(nbc)==0) tree.npu_ = cms2.puInfo_nPUvertices().at(nbc);
-      else if (cms2.puInfo_bunchCrossing().at(nbc)==-1) tree.npuMinusOne_ = cms2.puInfo_nPUvertices().at(nbc);
-      else if (cms2.puInfo_bunchCrossing().at(nbc)==+1) tree.npuPlusOne_ = cms2.puInfo_nPUvertices().at(nbc);
+   
+    // true nPU
+    for (unsigned int nbc=0;nbc<cms2.puInfo_trueNumInteractions().size();++nbc) {
+      if (cms2.puInfo_bunchCrossing().at(nbc)==0) tree.npu_ = cms2.puInfo_trueNumInteractions().at(nbc);
+      else if (cms2.puInfo_bunchCrossing().at(nbc)==-1) tree.npuMinusOne_ = cms2.puInfo_trueNumInteractions().at(nbc);
+      else if (cms2.puInfo_bunchCrossing().at(nbc)==+1) tree.npuPlusOne_ = cms2.puInfo_trueNumInteractions().at(nbc);
+//    for (unsigned int nbc=0;nbc<cms2.puInfo_nPUvertices().size();++nbc) {
+//      if (cms2.puInfo_bunchCrossing().at(nbc)==0) tree.npu_ = cms2.puInfo_nPUvertices().at(nbc);
+//      else if (cms2.puInfo_bunchCrossing().at(nbc)==-1) tree.npuMinusOne_ = cms2.puInfo_nPUvertices().at(nbc);
+//      else if (cms2.puInfo_bunchCrossing().at(nbc)==+1) tree.npuPlusOne_ = cms2.puInfo_nPUvertices().at(nbc);
     }
 
   }
