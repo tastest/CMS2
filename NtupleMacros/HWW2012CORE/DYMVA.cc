@@ -63,8 +63,8 @@ float DYMVA(unsigned int ihyp, unsigned int njets, std::vector<JetPair> jets) {
   metPhi_ = cms2.evt_pfmetPhi();
   
   pmet_ 			= projectedMet(ihyp, met_, metPhi_); 
-  metStruct trkMET 	= trackerMET(ihyp,0.1);  
-  pTrackMet_ 		= projectedMet(ihyp, trkMET.met, trkMET.metphi);
+  //metStruct trkMET 	= trackerMET(ihyp,0.1);  
+  pTrackMet_ 		= projectedMet(ihyp, cms2.trk_met()[ihyp], cms2.trk_metPhi()[ihyp]);
   nvtx_ 			= nGoodVertex(); 
   sumet_ 			= cms2.evt_pfsumet(); 
   if(jets.size()>0) 

@@ -144,7 +144,7 @@ bool goodElectronWithoutIsolation(unsigned int i,  bool useLHeleId, int useMVAel
 
 bool goodElectronIsolated(unsigned int i,  bool useLHeleId, int useMVAeleId, EGammaMvaEleEstimator* egammaMvaEleEstimator, bool lockToCoreSelectors){
     bool ptcut = cms2.els_p4().at(i).pt() >= 10.0;
-    bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV6); 
+    bool core = ptcut && pass_electronSelection( i, electronSelection_smurfV6);
     bool internal = ww_elBase(i) && ww_elId(i, useLHeleId, useMVAeleId, egammaMvaEleEstimator) && ww_eld0PV(i) && ww_eldZPV(i) && ww_elIso(i);
     assert(!lockToCoreSelectors || core==internal); 
     return internal;
@@ -298,7 +298,7 @@ bool ww_elId(unsigned int index, bool useLHeleId, int useMVAeleId, EGammaMvaEleE
         if (cms2.els_p4().at(index).pt()<20 && (passLikelihoodId_v2(index,cms2.els_lh().at(index),0) & (1<<ELEID_ID))!=(1<<ELEID_ID) ) return false;
     }
     if (useMVAeleId>0){
-      if (!goodElectronTMVA(egammaMvaEleEstimator, useMVAeleId, index)) return false; 
+      if (!goodElectronTMVA(egammaMvaEleEstimator, useMVAeleId, index)) return false;
     } else {
         if (!pass_electronSelection(index, electronSelection_smurfV3_id, false, false) ) return false;
     }
@@ -520,21 +520,29 @@ bool passedTriggerRequirements() {
     // double electron 
     if(  	passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15")   ||
      		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v16") 	|| 
-     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17")  ||
-                passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18") 
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17") 	|| 
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18")  	|| 
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v19")  	|| 
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v20")  	|| 
+     		passedTrigger("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v21")  	 
 	  ) return true;
 
     // double muon 
 	if(  	passedTrigger("HLT_Mu17_Mu8_v16") 	||
 			passedTrigger("HLT_Mu17_Mu8_v17") 	||
 			passedTrigger("HLT_Mu17_Mu8_v18") 	||
-                        passedTrigger("HLT_Mu17_Mu8_v19")       ||
-                        passedTrigger("HLT_Mu17_Mu8_v21")       ||
+			passedTrigger("HLT_Mu17_Mu8_v19") 	||
+			passedTrigger("HLT_Mu17_Mu8_v20") 	||
+			passedTrigger("HLT_Mu17_Mu8_v21") 	||
+			passedTrigger("HLT_Mu17_Mu8_v22") 	||
+			passedTrigger("HLT_Mu17_Mu8_v23") 	||
 			passedTrigger("HLT_Mu17_TkMu8_v9") 	||
 			passedTrigger("HLT_Mu17_TkMu8_v10")	||
-			passedTrigger("HLT_Mu17_TkMu8_v11")     ||
-                        passedTrigger("HLT_Mu17_TkMu8_v12")     ||
-                        passedTrigger("HLT_Mu17_TkMu8_v13")
+			passedTrigger("HLT_Mu17_TkMu8_v11")	|| 
+			passedTrigger("HLT_Mu17_TkMu8_v12")	|| 
+			passedTrigger("HLT_Mu17_TkMu8_v13")	|| 
+			passedTrigger("HLT_Mu17_TkMu8_v14")	|| 
+			passedTrigger("HLT_Mu17_TkMu8_v15")	 
 	  ) return true;
 
 	// emu
@@ -542,37 +550,38 @@ bool passedTriggerRequirements() {
 	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 	||
 	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 	||
 	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	||
-                        passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8")    ||
-                        passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9")    ||
+	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8") 	||
+	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9") 	||
+	  		passedTrigger("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10") 	||
 	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v4") 	||
 	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v5") 	||
 	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v6") 	||
-	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	||
-                        passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8")    ||
-                        passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9")
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v7") 	||	
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v8") 	||	
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v9") 	||	
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v10") 	||	
+	  		passedTrigger("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v11") 	
 	  ) return true;
 
 	// single ele
-	if(  	passedTrigger("HLT_Ele27_WP80_v8") 	||
-	  		passedTrigger("HLT_Ele27_WP80_v9") 	||
+	if(  	passedTrigger("HLT_Ele27_WP80_v8") 		||
+	  		passedTrigger("HLT_Ele27_WP80_v9") 		||
 	  		passedTrigger("HLT_Ele27_WP80_v10") 	||
-                        passedTrigger("HLT_Ele27_WP80_v11")
-
+	  		passedTrigger("HLT_Ele27_WP80_v11") 	||
+	  		passedTrigger("HLT_Ele27_WP80_v12") 	
 	  ) return true;
 
 	// single muon
 	if(  	passedTrigger("HLT_IsoMu24_eta2p1_v11") 	||
 	 		passedTrigger("HLT_IsoMu24_eta2p1_v12") 	||
-	 		passedTrigger("HLT_IsoMu24_eta2p1_v13") ||
-                        passedTrigger("HLT_IsoMu24_eta2p1_v14") ||
-                        passedTrigger("HLT_IsoMu24_eta2p1_v15")
- 	
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v13") 	||
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v14") 	||
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v15") 	||
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v16") 	||
+	 		passedTrigger("HLT_IsoMu24_eta2p1_v17") 	
 	  ) return true;
    
     return false;
-
-
-
 
 }
 
@@ -688,9 +697,9 @@ bool passedTriggerRequirementsWithRuns() {
 //
 
 double minmet(unsigned int i_hyp) {
-    metStruct trkMET = trackerMET(i_hyp,0.1); 
+    //metStruct trkMET = trackerMET(i_hyp,0.1); 
     double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
-            projectedMet(i_hyp, trkMET.met, trkMET.metphi));
+            projectedMet(i_hyp, cms2.trk_met()[i_hyp], cms2.trk_metPhi()[i_hyp]));
     return pMet;
 }
 
@@ -705,9 +714,9 @@ bool passedMetRequirements(unsigned int i_hyp, FactorizedJetCorrector *jet_corre
 bool passedMetRequirements(unsigned int i_hyp, unsigned int njets, std::vector<JetPair> jets ){
 	float dymva=-999.;
     HypothesisType type = getHypothesisTypeNew(i_hyp);
-    metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
+    //metStruct trkMET = trackerMET(i_hyp,0.1); //,&jets);
     double pMet = std::min(projectedMet(i_hyp, metValue(), metPhiValue()),
-            projectedMet(i_hyp, trkMET.met, trkMET.metphi));
+            projectedMet(i_hyp, cms2.trk_met()[i_hyp], cms2.trk_metPhi()[i_hyp]));
     if ( njets<2 && pMet < 20 ) return false;
     if (type == EE || type == MM) {
 		if(njets==0) {
