@@ -112,16 +112,28 @@ int firstGoodVertex ();
 //----------------------------------------------------------------
 bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut = 1.0);
 
-#endif
-
-
-
 /*****************************************************************************************/
 // number of good vertices in the event
 /*****************************************************************************************/
 int numberOfGoodVertices(void);
 
 //
+
 int chargedHadronVertex( const unsigned int );
 
+//----------------------------------------------------------------
+// These are the MET filters described here:
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/MissingETOptionalFilters
+//----------------------------------------------------------------
+bool passCSCBeamHaloFilter();
 bool passHBHEFilter();
+bool passHCALLaserFilter();
+bool passECALDeadCellFilter();
+bool passTrackingFailureFilter();
+bool passeeBadScFilter();
+bool passECALLaserFilter();
+bool passMETFilters();
+
+
+#endif
+
