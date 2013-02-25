@@ -80,58 +80,66 @@ bool cleaning_standardNovember2011() {
 //----------------------------------------------------------------
 bool passCSCBeamHaloFilter()
 {
-  if (!cms2.evt_cscTightHaloId()) return false;
+  if (!cms2.evt_isRealData())     {return true; }
+  if (!cms2.evt_cscTightHaloId()) {return false;}
   return true;
 }
 
 bool passHBHEFilter()
 {
-  if( !cms2.evt_hbheFilter() )                             return false;
-  if( cms2.hcalnoise_isolatedNoiseSumE() >= 50.0       )   return false;
-  if( cms2.hcalnoise_isolatedNoiseSumEt() >= 25.0      )   return false;
-  if( cms2.hcalnoise_numIsolatedNoiseChannels() >= 10  )   return false;
+  if (!cms2.evt_isRealData())                          {return true; }
+  if (!cms2.evt_hbheFilter())                          {return false;}
+  if (cms2.hcalnoise_isolatedNoiseSumE() >= 50.0)      {return false;}
+  if (cms2.hcalnoise_isolatedNoiseSumEt() >= 25.0)     {return false;}
+  if (cms2.hcalnoise_numIsolatedNoiseChannels() >= 10) {return false;}
   return true;
 }
 
 bool passHCALLaserFilter()
 {
-  if (!cms2.filt_hcalLaser()) return false;
+  if (!cms2.evt_isRealData()) {return true; }
+  if (!cms2.filt_hcalLaser()) {return false;}
   return true;
 }
 
 bool passECALDeadCellFilter()
 {
-  if (!cms2.filt_ecalTP()) return false;
+  if (!cms2.evt_isRealData()) {return true; }
+  if (!cms2.filt_ecalTP())    {return false;}
   return true;
 }
 
 bool passTrackingFailureFilter()
 {
-  if (!cms2.filt_trackingFailure()) return false;
+  if (!cms2.evt_isRealData())       {return true; }
+  if (!cms2.filt_trackingFailure()) {return false;}
   return true;
 }
 
 bool passeeBadScFilter()
 {
-  if (!cms2.filt_eeBadSc()) return false;
+  if (!cms2.evt_isRealData()) {return true; }
+  if (!cms2.filt_eeBadSc())   {return false;}
   return true;
 }
 
 bool passECALLaserFilter()
 {
-  if (!cms2.filt_ecalLaser()) return false;
+  if (!cms2.evt_isRealData()) {return true; }
+  if (!cms2.filt_ecalLaser()) {return false;}
   return true;
 }
 
 bool passMETFilters()
 {
-  if (!passCSCBeamHaloFilter())     return false;
-  if (!passHBHEFilter())            return false;
-  if (!passHCALLaserFilter())       return false;
-  if (!passECALDeadCellFilter())    return false;
-  if (!passTrackingFailureFilter()) return false;
-  if (!passeeBadScFilter())         return false;
-  if (!passECALLaserFilter())       return false;
+  if (!cms2.evt_isRealData())       {return true; }
+  if (!passCSCBeamHaloFilter())     {return false;} 
+  if (!passHBHEFilter())            {return false;}
+  if (!passHCALLaserFilter())       {return false;}
+  if (!passECALDeadCellFilter())    {return false;}
+  if (!passTrackingFailureFilter()) {return false;}
+  if (!passeeBadScFilter())         {return false;}
+  if (!passECALLaserFilter())       {return false;}
   return true;
 }
 
