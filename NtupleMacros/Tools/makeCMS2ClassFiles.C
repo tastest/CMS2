@@ -104,7 +104,7 @@ void makeCMS2ClassFiles (const std::string& fname, bool paranoid = true, const s
 
 //-------------------------------------------------------------------------------------------------
 void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const string& Classname, const string& nameSpace, const string& objName) {
-	
+    
   
   
     headerf << "// -*- C++ -*-" << endl;
@@ -594,14 +594,14 @@ void makeHeaderFile(TFile *f, const string& treeName, bool paranoid, const strin
             if(i==0) {
                 headerf << "\t\t" << "if(trigIndx <= 31) {" << endl;
                 headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-                headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl;	
+                headerf << "\t\t\t" << "bitmask <<= trigIndx;" << endl; 
                 headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
                 headerf << "\t\t" << "}" << endl;
                 continue;
             }
             headerf << "\t\t" << "if(trigIndx >= " << Form("%d && trigIndx <= %d", 32*i, 32*i+31) << ") {" << endl;
             headerf << "\t\t\t" << "unsigned int bitmask = 1;" << endl;
-            headerf << "\t\t\t" << "bitmask <<= (trigIndx - " << Form("%d",32*i) << "); " << endl;	
+            headerf << "\t\t\t" << "bitmask <<= (trigIndx - " << Form("%d",32*i) << "); " << endl;  
             headerf << "\t\t\t" << "return " << *s_it << "() & bitmask;" << endl;
             headerf << "\t\t" << "}" << endl;
         }
