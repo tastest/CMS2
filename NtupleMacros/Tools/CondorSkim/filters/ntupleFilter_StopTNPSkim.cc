@@ -9,6 +9,7 @@
 #include "CMS2.cc"
 #include "CORE/utilities.cc"
 #include "CORE/electronSelections.cc"
+#include "CORE/susySelections.cc"
 #include "CORE/electronSelectionsParameters.cc"
 #include "CORE/MITConversionUtilities.cc"
 #include "CORE/muonSelections.cc"
@@ -38,9 +39,9 @@ using namespace tas;
 bool select (bool isData)
 {
 
-  for( unsigned int i = 0 ; i < svs_anglePV().size() ; ++i ){
-    if( svs_anglePV().at(i) != svs_anglePV().at(i) ) return false;
-  }
+  // for( unsigned int i = 0 ; i < svs_anglePV().size() ; ++i ){
+  //   if( svs_anglePV().at(i) != svs_anglePV().at(i) ) return false;
+  // }
 
   //------------------------------------
   // check for electron T&P pair
@@ -49,9 +50,11 @@ bool select (bool isData)
   // loop on tags
   for (unsigned int tag = 0; tag < cms2.els_p4().size(); ++tag) {
 
-    if( !pass_electronSelection( tag , electronSelection_ssV5 , false , false ) ) continue; // SS ID/iso
-    if( cms2.els_p4()[tag].Pt() < 20.)                                            continue; // pT > 20 GeV
-    if( fabs(cms2.els_etaSC()[tag]) > 2.5)                                        continue; // |eta| < 2.5
+    //if( !pass_electronSelection( tag , electronSelection_ssV5 , false , false ) ) continue; // SS ID/iso
+
+    if( !passElectronSelection_Stop2012_v3( iel , true , true , false ) )  continue; // Stop2012_v3
+    if( cms2.els_p4()[tag].Pt() < 20.)                                     continue; // pT > 20 GeV
+    if( fabs(cms2.els_etaSC()[tag]) > 2.5)                                 continue; // |eta| < 2.5
     
     // loop on probes
     for (unsigned int probe = 0; probe < cms2.els_p4().size(); ++probe) {
@@ -60,7 +63,7 @@ bool select (bool isData)
       if (tag == probe) continue;
 
       // basic probe denominator
-      if( cms2.els_p4()[probe].Pt() < 10.)      continue; // pT > 10 GeV
+      if( cms2.els_p4()[probe].Pt() < 5.0)      continue; // pT > 10 GeV
       if( fabs(cms2.els_etaSC()[probe]) > 2.5)  continue; // |eta| < 2.5
 
       float dilmass = (cms2.els_p4()[probe] + cms2.els_p4()[tag]).M();
@@ -77,9 +80,9 @@ bool select (bool isData)
   // loop on tags
   for (unsigned int tag = 0; tag < cms2.mus_p4().size(); ++tag) {
 
-    if( !muonId( tag , OSGeneric_v3 )   )        continue; // OS ID/iso    
+    if( !muonId( tag , ZMet2012_v1 )   )         continue; // ZMet2012_v1 ID/iso    
     if( cms2.mus_p4()[tag].Pt() < 20.0)          continue; // pT > 20 GeV
-    if( fabs(cms2.mus_p4()[tag].Eta()) > 2.4)    continue; // |eta| < 2.4
+    if( fabs(cms2.mus_p4()[tag].Eta()) > 2.5)    continue; // |eta| < 2.4
 
     // loop on probes
     for (unsigned int probe = 0; probe < cms2.mus_p4().size(); ++probe) {
@@ -88,8 +91,8 @@ bool select (bool isData)
       if (tag == probe) continue;
 
       // basic probe denominator
-      if (cms2.mus_p4()[probe].Pt() < 10.0)                continue; // pt cut
-      if (fabs(cms2.mus_p4()[probe].Eta()) > 2.4)          continue; // eta cut
+      if (cms2.mus_p4()[probe].Pt() < 5.0)                 continue; // pt cut
+      if (fabs(cms2.mus_p4()[probe].Eta()) > 2.5)          continue; // eta cut
 
       float dilmass = (cms2.mus_p4()[probe] + cms2.mus_p4()[tag]).M();
 
