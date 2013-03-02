@@ -9,7 +9,7 @@
 #include "CMS2.cc"
 #include "CORE/utilities.cc"
 #include "CORE/electronSelections.cc"
-#include "CORE/susySelections.cc"
+//#include "CORE/susySelections.cc"
 #include "CORE/electronSelectionsParameters.cc"
 #include "CORE/MITConversionUtilities.cc"
 #include "CORE/muonSelections.cc"
@@ -36,6 +36,36 @@ using namespace tas;
 // you can handle enormous files)
 
 
+bool overlapMuon_ZMet2012_v2(int index , float ptcut = 10.0 ){
+
+  for( unsigned int imu = 0 ; imu < mus_p4().size(); ++imu ){
+
+    float dr = ROOT::Math::VectorUtil::DeltaR( cms2.els_p4().at(index) , cms2.mus_p4().at(imu) );
+    
+    if( dr > 0.1                           ) continue;
+    if( cms2.mus_p4().at(imu).pt() < ptcut ) continue;
+    if ( (((cms2.mus_type().at(imu)) & (1<<1)) == 0) && (((cms2.mus_type().at(imu)) & (1<<2)) == 0) ) continue;
+    
+    return true;
+  }
+
+  return false;
+}
+
+bool passElectronSelection_Stop2012_v3(int index, bool vetoTransition, bool eta24, bool useOldIsolation ){
+
+  if( vetoTransition && fabs(cms2.els_etaSC()[index]) > 1.4442 && fabs(cms2.els_etaSC()[index]) < 1.566 ) return false;
+  if( eta24 && fabs(cms2.els_p4()[index].eta()) > 2.4 )                                                   return false;
+  if( overlapMuon_ZMet2012_v2(index,10.0) )                                                               return false;
+
+  electronIdComponent_t answer_loose_2012 = electronId_WP2012_v3(index, MEDIUM, useOldIsolation);
+  if ((answer_loose_2012 & PassAllWP2012Cuts) == PassAllWP2012Cuts)  return true;
+  
+  return false;
+}
+
+
+
 bool select (bool isData)
 {
 
@@ -52,7 +82,7 @@ bool select (bool isData)
 
     //if( !pass_electronSelection( tag , electronSelection_ssV5 , false , false ) ) continue; // SS ID/iso
 
-    if( !passElectronSelection_Stop2012_v3( iel , true , true , false ) )  continue; // Stop2012_v3
+    if( !passElectronSelection_Stop2012_v3( tag , true , true , false ) )  continue; // Stop2012_v3
     if( cms2.els_p4()[tag].Pt() < 20.)                                     continue; // pT > 20 GeV
     if( fabs(cms2.els_etaSC()[tag]) > 2.5)                                 continue; // |eta| < 2.5
     
