@@ -1078,6 +1078,7 @@ void myBabyMaker::InitBabyNtuple()
     npfcL1Fj1_         = 0;
     npfc30L1Fj1_       = 0;
     npfc40L1Fj1_       = 0;
+    nbpfc40L1Fj1_      = 0;
     btagpfcL1F_        = false;
     npfc50L1Fj1_eth_   = 0;
 
@@ -1090,6 +1091,7 @@ void myBabyMaker::InitBabyNtuple()
     npfcL1Fj1res_         = 0;
     npfc30L1Fj1res_       = 0;
     npfc40L1Fj1res_       = 0;
+    nbpfc40L1Fj1res_      = 0;
     btagpfcL1Fres_        = false;
     npfc50L1Fj1res_eth_   = 0;
 
@@ -1609,6 +1611,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("npfcL1Fj1"       , &npfcL1Fj1_        );
     babyTree_->Branch("npfc30L1Fj1"     , &npfc30L1Fj1_      );
     babyTree_->Branch("npfc40L1Fj1"     , &npfc40L1Fj1_      );
+    babyTree_->Branch("nbpfc40L1Fj1"    , &nbpfc40L1Fj1_     );
     babyTree_->Branch("ptpfcL1Fj1_b2b"  , &ptpfcL1Fj1_b2b_   );       
     babyTree_->Branch("dphipfcL1Fj1_b2b", &dphipfcL1Fj1_b2b_ );     
     babyTree_->Branch("btagpfcL1F"      , &btagpfcL1F_       );
@@ -1621,6 +1624,7 @@ void myBabyMaker::MakeBabyNtuple(const char *babyFilename)
     babyTree_->Branch("npfcL1Fj1res"       , &npfcL1Fj1res_        );
     babyTree_->Branch("npfc30L1Fj1res"     , &npfc30L1Fj1res_      );
     babyTree_->Branch("npfc40L1Fj1res"     , &npfc40L1Fj1res_      );
+    babyTree_->Branch("nbpfc40L1Fj1res"    , &nbpfc40L1Fj1res_     );
     babyTree_->Branch("ptpfcL1Fj1res_b2b"  , &ptpfcL1Fj1res_b2b_   );       
     babyTree_->Branch("dphipfcL1Fj1res_b2b", &dphipfcL1Fj1res_b2b_ );     
     babyTree_->Branch("btagpfcL1Fres"      , &btagpfcL1Fres_       );
@@ -2543,6 +2547,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         npfcL1Fj1_        = 0;
                         npfc30L1Fj1_      = 0;
                         npfc40L1Fj1_      = 0;
+                        nbpfc40L1Fj1_     = 0;
                         npfc50L1Fj1_eth_  = 0;
                         btagpfcL1F_       = false;
                         rho_ = cms2.evt_rho();
@@ -2561,6 +2566,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                             if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
                             if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) nbpfc40L1Fj1_++;
                             if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1_eth_++;
                             if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                                 emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
@@ -2586,6 +2592,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         npfcL1Fj1res_        = 0;
                         npfc30L1Fj1res_      = 0;
                         npfc40L1Fj1res_      = 0;
+                        nbpfc40L1Fj1res_     = 0;
                         npfc50L1Fj1res_eth_  = 0;
                         btagpfcL1Fres_       = false;
                         rho_ = cms2.evt_rho();
@@ -2604,6 +2611,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
                             if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
                             if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) nbpfc40L1Fj1res_++;
                             if (dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1res_eth_++;
                             if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
                                 emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
@@ -3338,6 +3346,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         npfcL1Fj1_        = 0;
                         npfc30L1Fj1_      = 0;
                         npfc40L1Fj1_      = 0;
+                        nbpfc40L1Fj1_     = 0;
                         npfc50L1Fj1_eth_  = 0;
                         btagpfcL1F_       = false;
                         rho_ = cms2.evt_rho();
@@ -3357,6 +3366,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1_++;
                             if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1_++;
                             if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) nbpfc40L1Fj1_++;
                             if( dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1_eth_++;
                             if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1_ ){
                                 emfpfcL1Fj1_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
@@ -3382,6 +3392,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         npfcL1Fj1res_        = 0;
                         npfc30L1Fj1res_      = 0;
                         npfc40L1Fj1res_      = 0;
+                        nbpfc40L1Fj1res_     = 0;
                         npfc50L1Fj1res_eth_  = 0;
                         btagpfcL1Fres_       = false;
                         rho_ = cms2.evt_rho();
@@ -3401,6 +3412,7 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                             if( dr > deltaRCut && jp4cor.pt() > 10 ) npfcL1Fj1res_++;
                             if( dr > deltaRCut && jp4cor.pt() > 30 ) npfc30L1Fj1res_++;
                             if( dr > deltaRCut && jp4cor.pt() > 40 ) npfc40L1Fj1res_++;
+                            if( dr > deltaRCut && jp4cor.pt() > 40 && pfjets_combinedSecondaryVertexBJetTag().at(iJet) > 0.679) nbpfc40L1Fj1res_++;
                             if( dr > 0.4       && jp4cor.pt() > 50 ) npfc50L1Fj1res_eth_++;
                             if ( dr > deltaRCut && jp4cor.pt() > ptpfcL1Fj1res_ ){
                                 emfpfcL1Fj1res_ = (cms2.pfjets_chargedEmE().at(iJet) + cms2.pfjets_neutralEmE().at(iJet)) / pfjets_p4().at(iJet).E();
