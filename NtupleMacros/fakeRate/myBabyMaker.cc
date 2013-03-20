@@ -2081,13 +2081,13 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         ////////////////////////////////////////////////////////////
                         if (applyFOfilter) {  
                             if (
-                                    !v1_el_ssV7_          && !v2_el_ssV7_          && !v3_el_ssV7_    &&                    // SS 2012
-                                    !fo_el_TTZMVAtightv1_ && !fo_el_TTZMVAloosev1_ &&                                       // TTZ MVA 2012
-                                    !fo_el_TTZcuttightv1_ && !fo_el_TTZcutloosev1_ &&                                       // TTZ cut 2012
-                                    !v1_el_ssV6_          && !v2_el_ssV6_          && !v3_el_ssV6_    &&                    // SS 2011
-                                    !fo_el_OSV2_          && !fo_el_OSV3_          &&                                       // OS 2011
-                                    !v1_el_smurfV1_       && !v1_el_smurfV1_       && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
-                               ) 
+                                !v1_el_ssV7_          && !v2_el_ssV7_          && !v3_el_ssV7_    &&                    // SS 2012
+                                !fo_el_TTZMVAtightv1_ && !fo_el_TTZMVAloosev1_ &&                                       // TTZ MVA 2012
+                                !fo_el_TTZcuttightv1_ && !fo_el_TTZcutloosev1_ &&                                       // TTZ cut 2012
+                                !v1_el_ssV6_          && !v2_el_ssV6_          && !v3_el_ssV6_    &&                    // SS 2011
+                                !fo_el_OSV2_          && !fo_el_OSV3_          &&                                       // OS 2011
+                                !v1_el_smurfV1_       && !v1_el_smurfV1_       && !v3_el_smurfV1_ && !v4_el_smurfV1_    // WW 2011
+                                ) 
                                 continue;
                         }
 
@@ -3106,11 +3106,11 @@ void myBabyMaker::ScanChain(TChain* chain, const char *babyFilename, int eormu, 
                         ////////////////////////////////////////////////////////////
                         if (applyFOfilter) {
                             if (
-                                    !fo_mussV4_04_     && !fo_mu_ssV5_       &&                    // SS
-                                    !fo_mu_TTZtightv1_ && !fo_mu_TTZloosev1_ &&                 // TTZ 2012
-                                    !fo_mu_OSGV2_      && !fo_mu_OSGV3_      &&                    // OS
-                                    !fo_mu_smurf_04_   && !fo_mu_smurf_10_                       // WW
-                               )
+                                !fo_mussV4_04_     && !fo_mu_ssV5_       &&                    // SS
+                                !fo_mu_TTZtightv1_ && !fo_mu_TTZloosev1_ &&                 // TTZ 2012
+                                !fo_mu_OSGV2_      && !fo_mu_OSGV3_      &&                    // OS
+                                !fo_mu_smurf_04_   && !fo_mu_smurf_10_                       // WW
+                                )
                                 continue;
                         }
 
