@@ -42,7 +42,7 @@ struct jet_pt_gt
 /////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
-// 2012 good lepton
+// 2012 good lepton (passes ID)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isGoodLepton(int id, int idx, bool use_el_eta)
 {
@@ -165,6 +165,7 @@ double samesign::leptonIsolation(int id, int idx)
     return -999999.0;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////     
 // 2012 effective area 
 ////////////////////////////////////////////////////////////////////////////////////////////     
@@ -195,8 +196,9 @@ float samesign::EffectiveArea04(int id, int idx)
     return fastJetEffArea04_v2(eta);    // 2013
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////     
-// 2012 numerator lepton
+// 2012 numerator lepton (passes ID and isolation)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isNumeratorLepton(int id, int idx, bool use_el_eta)
 {
@@ -205,7 +207,7 @@ bool samesign::isNumeratorLepton(int id, int idx, bool use_el_eta)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
-// 2012 numerator hypothesis
+// 2012 numerator hypothesis (passes ID and isolation)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isNumeratorHypothesis(int idx, bool use_el_eta)
 {
@@ -223,7 +225,7 @@ bool samesign::isNumeratorHypothesis(int idx, bool use_el_eta)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
-// 2012 denominator lepton
+// 2012 denominator lepton (relaxed ID and Isolation)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isDenominatorLepton(int id, int idx, bool use_el_eta)
 {
@@ -270,7 +272,7 @@ bool samesign::isDenominatorLepton(int id, int idx, bool use_el_eta)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////     
-// 2012 denominator hypothesis
+// 2012 denominator hypothesis (relaxed ID and Isolation)
 ////////////////////////////////////////////////////////////////////////////////////////////     
 bool samesign::isDenominatorHypothesis(int idx, bool use_el_eta)
 {
@@ -318,7 +320,7 @@ float samesign::electronIsolationPF2012_cone03(int idx)
 
     // pf iso
     // calculate from the ntuple for now...
-#ifdef SS_USE_OLD_ISO // for 52X 
+#ifdef SS_USE_OLD_ISO // for old 52X ntuples
     const float pfiso_ch = cms2.els_iso03_pf2012_ch().at(idx);
     const float pfiso_em = cms2.els_iso03_pf2012_em().at(idx);
     const float pfiso_nh = cms2.els_iso03_pf2012_nh().at(idx);
@@ -744,11 +746,13 @@ bool samesign::makesExtraGammaStar(int idx, bool apply_id_iso) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
+// 2012 get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
 ////////////////////////////////////////////////////////////////////////////////////////////////
+    
+// JEC taken from ntuple
 std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
 
-  std::vector<LorentzVector> tmp_jets = getJets(idx, true, type, JETS_CLEAN_HYP_E_MU, deltaR, 0., max_eta, (double) rescale, systFlag);
+  std::vector<LorentzVector> tmp_jets = getJets(idx, true, type, JETS_CLEAN_HYP_E_MU, deltaR, 0.0, max_eta, (double) rescale, systFlag);
 
     // ok, now perform the rest of the lepton overlap removal
     // and the impose the pt requirement after applying the
@@ -800,12 +804,10 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, float d
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// get jets and apply an on-the-fly JEC
-///////////////////////////////////////////////////////////////////////////////////////////
+// JEC applied otf
 std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
 {
-    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0., max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
 
     // now impose the pt requirement after applying the extra corrections
     std::vector<LorentzVector> final_jets;
@@ -826,7 +828,9 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
             vjet *= c;
         }
         if (vjet.pt() < min_pt)
+        {
             continue;
+        }
 
         final_jets.push_back(vjet);
     }
@@ -835,66 +839,86 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
     return final_jets;
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////	 
-// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)	 
-///////////////////////////////////////////////////////////////////////////////////////////	 
+// JEC uncertainty applied otf
 std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
 {	 
-    std::vector<LorentzVector> tmp_jets = samesign::getJets(idx, type, deltaR, 0., max_eta, mu_minpt, ele_minpt);	 
-	 
-    std::vector<LorentzVector> final_jets;	 
-    for (unsigned int jidx = 0; jidx < tmp_jets.size(); jidx++) {	 
-	 
-        LorentzVector vjet = tmp_jets.at(jidx);	 
+    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<LorentzVector> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx))
+            continue;
+
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        if (cms2.evt_isRealData()) 
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
+        }
+        else
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
+        }
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        float jet_cor = jet_unc->getUncertainty(true);	 
-        vjet *= (1. + jet_cor * scale_type);	 
-        if (vjet.pt() < min_pt)	 
-            continue;	 
-	 
-        final_jets.push_back(vjet);	 
-    }	 
-	 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());	 
-    return final_jets;	 
+        const float jet_cor = jet_unc->getUncertainty(true);	 
+        vjet *= (1.0 + jet_cor * scale_type);	 
+        if (vjet.pt() < min_pt)
+        {
+            continue;
+        }
+
+        final_jets.push_back(vjet);
+    }
+
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    return final_jets;
 }	 
 	 
 	 
-///////////////////////////////////////////////////////////////////////////////////////////	 
-// get jets and apply an on-the-fly JEC and perform overlap removal with numerator	 
-// e/mu with pt > x (defaults are 10/5 GeV)	 
-///////////////////////////////////////////////////////////////////////////////////////////	 
+// JEC AND JEC uncertainty applied otf
 std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type,  enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
 {	 
-    std::vector<LorentzVector> tmp_jets = samesign::getJets(idx, jet_corrector, type, deltaR, 0., max_eta, mu_minpt, ele_minpt);	 
-	 
-    std::vector<LorentzVector> final_jets;	 
-    for (unsigned int jidx = 0; jidx < tmp_jets.size(); jidx++) {	 
-	 
-        LorentzVector vjet = tmp_jets.at(jidx);	 
+    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<LorentzVector> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx))
+            continue;
+
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        jet_corrector->setRho(cms2.evt_ww_rho_vor());
+        jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
+        jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
+        jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
+        float jet_cor = jet_corrector->getCorrection();
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        float jet_cor = jet_unc->getUncertainty(true);	 
-        vjet *= (1. + jet_cor * scale_type);	 
-        if (vjet.pt() < min_pt)	 
-            continue;	 
-	 
-        final_jets.push_back(vjet);	 
-    }	 
+        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        if (vjet.pt() < min_pt)
+        {
+            continue;
+        }
+
+        final_jets.push_back(vjet);
+    }
 	 
     sort(final_jets.begin(), final_jets.end(), jet_pt_gt());	 
     return final_jets;	 
 }	 
- 	 
  	 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
+// 2012 get jet flags and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+// JEC taken from ntuple
 std::vector<bool> samesign::getJetFlags(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
 {
-    std::vector<bool> tmp_jet_flags = getJetFlags((unsigned int)idx, type, JETS_CLEAN_HYP_E_MU, (double)deltaR, 0., (double)max_eta, (double)rescale, systFlag);
+    std::vector<bool> tmp_jet_flags = getJetFlags((unsigned int)idx, type, JETS_CLEAN_HYP_E_MU, (double)deltaR, 0.0, (double)max_eta, (double)rescale, systFlag);
 
     // ok, now perform the rest of the lepton overlap removal
     // and the impose the pt requirement after applying the
@@ -959,7 +983,6 @@ std::vector<bool> samesign::getJetFlags(int idx, enum JetType type, float deltaR
             final_jets.push_back(false);
             continue;   
         }
-
         final_jets.push_back(true);
     }
 
@@ -967,13 +990,10 @@ std::vector<bool> samesign::getJetFlags(int idx, enum JetType type, float deltaR
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
-// e/mu with pt > x (defaults are 20/20 GeV)
-///////////////////////////////////////////////////////////////////////////////////////////
+// JEC applied otf
 std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
 {
-    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0., max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
 
     assert(tmp_jet_flags.size() == cms2.pfjets_p4().size());
 
@@ -1010,9 +1030,87 @@ std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_cor
 }
 
 
+// JEC uncertainty applied otf
+std::vector<bool> samesign::getJetFlags(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
+{
+    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    assert(tmp_jet_flags.size() == cms2.pfjets_p4().size());
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<bool> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx)) {
+            final_jets.push_back(tmp_jet_flags.at(jidx));
+            continue;
+        }
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        if (cms2.evt_isRealData()) 
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
+        }
+        else
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
+        }
+        jet_unc->setJetPt(vjet.pt());	 
+        jet_unc->setJetEta(vjet.eta());	 
+        const float jet_cor = jet_unc->getUncertainty(true);	 
+        vjet *= (1.0 + jet_cor * scale_type);	 
+        if (vjet.pt() < min_pt)	{
+            final_jets.push_back(false);
+            continue;   
+        }
+
+        final_jets.push_back(true);
+    }
+
+    return final_jets;    
+}
+
+
+// JEC AND JEC uncertainty applied otf
+std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type,  enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
+{
+    std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    assert(tmp_jet_flags.size() == cms2.pfjets_p4().size());
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<bool> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx)) {
+            final_jets.push_back(tmp_jet_flags.at(jidx));
+            continue;
+        }
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        jet_corrector->setRho(cms2.evt_ww_rho_vor());
+        jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
+        jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
+        jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
+        float jet_cor = jet_corrector->getCorrection();
+        jet_unc->setJetPt(vjet.pt());	 
+        jet_unc->setJetEta(vjet.eta());	 
+        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        if (vjet.pt() < min_pt)	{
+            final_jets.push_back(false);
+            continue;   
+        }
+
+        final_jets.push_back(true);
+    }
+
+    return final_jets;    
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////
-// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+// 2012 get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+// JEC taken from ntuple
 float samesign::sumJetPt(int idx_arg, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
   std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
     unsigned int nJets = good_jets.size();
@@ -1025,9 +1123,7 @@ float samesign::sumJetPt(int idx_arg, enum JetType type, float deltaR, float min
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// same as above, but allowing use of on-the-fly JEC corrections
-///////////////////////////////////////////////////////////////////////////////////////////
+// JEC applied otf
 float samesign::sumJetPt(int idx_arg, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
   std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
     unsigned int nJets = good_jets.size();
@@ -1040,9 +1136,7 @@ float samesign::sumJetPt(int idx_arg, FactorizedJetCorrector* jet_corrector, enu
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////	 
-// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)	 
-///////////////////////////////////////////////////////////////////////////////////////////	 
+// JEC uncertainty applied otf
 float samesign::sumJetPt(int idx_arg, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
 {	 
     std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);	 
@@ -1056,9 +1150,7 @@ float samesign::sumJetPt(int idx_arg, JetCorrectionUncertainty *jet_unc, enum Je
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////	 
-// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)	 
-///////////////////////////////////////////////////////////////////////////////////////////	 
+// JEC AND JEC uncertainty applied otf
 float samesign::sumJetPt(int idx_arg, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
 {	 
     std::vector<LorentzVector> good_jets = samesign::getJets(idx_arg, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);	 
@@ -1073,31 +1165,211 @@ float samesign::sumJetPt(int idx_arg, FactorizedJetCorrector* jet_corrector, Jet
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+// 2012 get njets, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
 ///////////////////////////////////////////////////////////////////////////////////////////
-int samesign::nJets(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
-    
-  std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+// JEC taken from ntuple
+int samesign::nJets(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+{
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    return good_jets.size();
+}
+
+
+// JEC applied otf
+int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+{
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    return good_jets.size();
+}
+
+
+// JEC uncertainty applied otf
+int samesign::nJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
+{
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    return good_jets.size();
+}
+
+
+// JEC AND JEC uncertainty applied otf
+int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
+{
+    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
     return good_jets.size();
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// same as above, but allowing use of on-the-fly JEC corrections
+// 2012 get b-tagged jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
 ///////////////////////////////////////////////////////////////////////////////////////////
-int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
 
-  std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
-    return good_jets.size();
+// JEC taken from ntuple
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+{
+    std::vector<LorentzVector> tmp_jets = getBtaggedJets(idx, true, type, JETS_CLEAN_HYP_E_MU, btag_type, deltaR, 0.0, max_eta, (double) rescale, systFlag);
+
+    // ok, now perform the rest of the lepton overlap removal
+    // and the impose the pt requirement after applying the
+    // extra corrections
+    std::vector<LorentzVector> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jets.size(); jidx++) {
+
+        bool jetIsLep = false;
+
+        LorentzVector vjet = tmp_jets.at(jidx);
+        if (vjet.pt() < min_pt)
+            continue;
+
+        for (unsigned int eidx = 0; eidx < cms2.els_p4().size(); eidx++) {
+            if (cms2.els_p4().at(eidx).pt() < ele_minpt)
+                continue;
+            if (!samesign::isNumeratorLepton(11, eidx))
+                continue;
+
+            if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.els_p4().at(eidx)) > deltaR)
+                continue;
+
+            jetIsLep = true;
+            break;
+        }
+
+        if (jetIsLep) continue;
+
+        for (unsigned int midx = 0; midx < cms2.mus_p4().size(); midx++) {
+            if (cms2.mus_p4().at(midx).pt() < mu_minpt)
+                continue;
+            if (!samesign::isNumeratorLepton(13, midx))
+                continue;
+
+            if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.mus_p4().at(midx)) > deltaR)
+                continue;                
+
+            jetIsLep = true;
+            break;
+        }            
+
+        if (jetIsLep) continue;
+
+        final_jets.push_back(vjet);
+    }
+
+
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    return final_jets;        
 }
 
 
+// JEC applied otf
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+{
+    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<LorentzVector> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx)) continue;
+
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        jet_corrector->setRho(cms2.evt_ww_rho_vor());
+        jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
+        jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
+        jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
+        float jet_cor = jet_corrector->getCorrection();
+        vjet *= jet_cor * rescale;
+        if (systFlag != 0) {
+            float c = getJetMetSyst(systFlag, vjet.pt(), vjet.eta());
+            vjet *= c;
+        }
+        if (vjet.pt() < min_pt)
+        {
+            continue;
+        }
+        final_jets.push_back(vjet);
+    }
+
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    return final_jets;
+}
+
+
+// JEC uncertainty applied otf
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
+{	 
+    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<LorentzVector> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx)) continue;
+
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        if (cms2.evt_isRealData()) 
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
+        }
+        else
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
+        }
+        jet_unc->setJetPt(vjet.pt());	 
+        jet_unc->setJetEta(vjet.eta());	 
+        float jet_cor = jet_unc->getUncertainty(true);	 
+        vjet *= (1.0 + jet_cor * scale_type);	 
+        if (vjet.pt() < min_pt)
+        {
+            continue;
+        }
+        final_jets.push_back(vjet);
+    }
+
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    return final_jets;
+}	 
+	 
+ 
+// JEC AND JEC uncertainty applied otf
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
+{	 
+    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<LorentzVector> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx)) continue;
+
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        jet_corrector->setRho(cms2.evt_ww_rho_vor());
+        jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
+        jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
+        jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
+        float jet_cor = jet_corrector->getCorrection();
+        jet_unc->setJetPt(vjet.pt());	 
+        jet_unc->setJetEta(vjet.eta());	 
+        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        if (vjet.pt() < min_pt)
+        {
+            continue;
+        }
+        final_jets.push_back(vjet);
+    }
+
+    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    return final_jets;
+}	 
+	 
+	 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// get b-tagged jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
+// 2012 get b-tagged jet flags and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
 ///////////////////////////////////////////////////////////////////////////////////////////
+
+// JEC taken from ntuple
 std::vector<bool> samesign::getBtaggedJetFlags(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
 {
-    std::vector<bool> tmp_jet_flags = getBtaggedJetFlags(idx, type, JETS_CLEAN_HYP_E_MU, btag_type, deltaR, 0., max_eta, (double) rescale, systFlag);
+    std::vector<bool> tmp_jet_flags = getBtaggedJetFlags(idx, type, JETS_CLEAN_HYP_E_MU, btag_type, deltaR, 0.0, max_eta, (double) rescale, systFlag);
 
     // ok, now perform the rest of the lepton overlap removal
     // and the impose the pt requirement after applying the
@@ -1168,13 +1440,11 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, enum JetType type, enum 
     return final_jets;    
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// get b=tagged jets and apply an on-the-fly JEC and perform overlap removal with numerator
-// e/mu with pt > x (defaults are 20/20 GeV)
-///////////////////////////////////////////////////////////////////////////////////////////
+
+// JEC applied otf
 std::vector<bool> samesign::getBtaggedJetFlags(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
 {
-    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0., max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
 
     assert(tmp_jet_flags.size() == cms2.pfjets_p4().size());
 
@@ -1202,7 +1472,80 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, FactorizedJetCorrector* 
             final_jets.push_back(false);
             continue;   
         }
+        final_jets.push_back(true);
+    }
 
+    return final_jets;
+}
+
+
+// JEC uncertainty applied otf
+std::vector<bool> samesign::getBtaggedJetFlags(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
+{
+    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    assert(tmp_jet_flags.size() == cms2.pfjets_p4().size());
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<bool> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx)) {
+            final_jets.push_back(tmp_jet_flags.at(jidx));
+            continue;
+        }
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        if (cms2.evt_isRealData()) 
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
+        }
+        else
+        {
+            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
+        }
+        jet_unc->setJetPt(vjet.pt());	 
+        jet_unc->setJetEta(vjet.eta());	 
+        float jet_cor = jet_unc->getUncertainty(true);	 
+        vjet *= (1.0 + jet_cor * scale_type);	 
+        if (vjet.pt() < min_pt) {
+            final_jets.push_back(false);
+            continue;   
+        }
+        final_jets.push_back(true);
+    }
+
+    return final_jets;
+}
+
+
+// JEC AND JEC uncertainty applied otf
+std::vector<bool> samesign::getBtaggedJetFlags(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
+{
+    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
+
+    assert(tmp_jet_flags.size() == cms2.pfjets_p4().size());
+
+    // now impose the pt requirement after applying the extra corrections
+    std::vector<bool> final_jets;
+    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
+
+        if (!tmp_jet_flags.at(jidx)) {
+            final_jets.push_back(tmp_jet_flags.at(jidx));
+            continue;
+        }
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
+        jet_corrector->setRho(cms2.evt_ww_rho_vor());
+        jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
+        jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
+        jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
+        float jet_cor = jet_corrector->getCorrection();
+        jet_unc->setJetPt(vjet.pt());	 
+        jet_unc->setJetEta(vjet.eta());	 
+        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        if (vjet.pt() < min_pt) {
+            final_jets.push_back(false);
+            continue;   
+        }
         final_jets.push_back(true);
     }
 
@@ -1211,255 +1554,81 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, FactorizedJetCorrector* 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 10/5 GeV)
+// 2012 get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
 ///////////////////////////////////////////////////////////////////////////////////////////
-std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+
+// JEC taken from ntuple
+int samesign::nBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
 {
-  std::vector<LorentzVector> tmp_jets = getBtaggedJets(idx, true, type, JETS_CLEAN_HYP_E_MU, btag_type, deltaR, 0., max_eta, (double) rescale, systFlag);
-
-    // ok, now perform the rest of the lepton overlap removal
-    // and the impose the pt requirement after applying the
-    // extra corrections
-    std::vector<LorentzVector> final_jets;
-    for (unsigned int jidx = 0; jidx < tmp_jets.size(); jidx++) {
-
-        bool jetIsLep = false;
-
-        LorentzVector vjet = tmp_jets.at(jidx);
-        if (vjet.pt() < min_pt)
-            continue;
-
-        for (unsigned int eidx = 0; eidx < cms2.els_p4().size(); eidx++) {
-            if (cms2.els_p4().at(eidx).pt() < ele_minpt)
-                continue;
-            if (!samesign::isNumeratorLepton(11, eidx))
-                continue;
-
-            if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.els_p4().at(eidx)) > deltaR)
-                continue;
-
-            jetIsLep = true;
-            break;
-        }
-
-        if (jetIsLep) continue;
-
-        for (unsigned int midx = 0; midx < cms2.mus_p4().size(); midx++) {
-            if (cms2.mus_p4().at(midx).pt() < mu_minpt)
-                continue;
-            if (!samesign::isNumeratorLepton(13, midx))
-                continue;
-
-            if (ROOT::Math::VectorUtil::DeltaR(vjet, cms2.mus_p4().at(midx)) > deltaR)
-                continue;                
-
-            jetIsLep = true;
-            break;
-        }            
-
-        if (jetIsLep) continue;
-
-        final_jets.push_back(vjet);
-    }
-
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
-    return final_jets;        
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// get jets and apply an on-the-fly JEC and perform overlap removal with numerator
-// e/mu with pt > x (defaults are 10/5 GeV)
-///////////////////////////////////////////////////////////////////////////////////////////
-std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
-{
-    std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0., max_eta, mu_minpt, ele_minpt, rescale, systFlag);
-
-    // now impose the pt requirement after applying the extra corrections
-    std::vector<LorentzVector> final_jets;
-    for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
-
-        if (!tmp_jet_flags.at(jidx)) continue;
-
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
-        jet_corrector->setRho(cms2.evt_ww_rho_vor());
-        jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
-        jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
-        jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
-        float jet_cor = jet_corrector->getCorrection();
-        vjet *= jet_cor * rescale;
-        if (systFlag != 0) {
-            float c = getJetMetSyst(systFlag, vjet.pt(), vjet.eta());
-            vjet *= c;
-        }
-        if (vjet.pt() < min_pt)
-            continue;
-
-        final_jets.push_back(vjet);
-    }
-
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
-    return final_jets;
-
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)
-///////////////////////////////////////////////////////////////////////////////////////////
-int samesign::nBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
-
-  std::vector<LorentzVector> good_jets = samesign::getBtaggedJets(idx, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    std::vector<LorentzVector> good_jets = samesign::getBtaggedJets(idx, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
     return good_jets.size();
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// same as above, but allowing use of on-the-fly JEC corrections
-///////////////////////////////////////////////////////////////////////////////////////////
-int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
-
-  std::vector<LorentzVector> good_jets = samesign::getBtaggedJets(idx, jet_corrector, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+// JEC applied otf
+int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+{
+    std::vector<LorentzVector> good_jets = samesign::getBtaggedJets(idx, jet_corrector, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
     return good_jets.size();    
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////
-// get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
-///////////////////////////////////////////////////////////////////////////////////////////
-int samesign::nJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
-{
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
-    return good_jets.size();
+// JEC uncertainty applied otf
+int samesign::nBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
+{	 
+    std::vector<LorentzVector> good_btags = samesign::getBtaggedJets(idx, jet_unc, scale_type, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);	 
+    return good_btags.size();	 
+}	 
+
+ 
+// JEC AND JEC uncertainty applied otf
+int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
+{	 
+    std::vector<LorentzVector> good_btags = samesign::getBtaggedJets(idx, jet_corrector, jet_unc, scale_type, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);	 
+    return good_btags.size();	 
+}	 
+
+	 
+///////////////////////////////////////////////////////////////////////////////////////////	 
+// 2012 get vector of good els p4s	 
+///////////////////////////////////////////////////////////////////////////////////////////	 
+std::vector<LorentzVector> samesign::getGoodElectrons(const float ptcut)	 
+{	 
+    std::vector<LorentzVector> good_els;	 
+    for (unsigned int idx = 0; idx < cms2.els_p4().size(); idx++) {	 
+	 
+        if (cms2.els_p4().at(idx).pt() < ptcut) continue;	 
+        if (fabs(cms2.els_p4().at(idx).eta()) > 2.4) continue;	 
+	 
+        if (!isNumeratorLepton(11, idx)) continue;	 
+    	 
+        good_els.push_back(cms2.els_p4().at(idx));	 
+    }	 
+    	 
+    sort(good_els.begin(), good_els.end(), jet_pt_gt());	 
+    return good_els;	 
+}	 
+
+    	 
+///////////////////////////////////////////////////////////////////////////////////////////	 
+// 2012 get vector of good mus p4s	 
+///////////////////////////////////////////////////////////////////////////////////////////	 
+std::vector<LorentzVector> samesign::getGoodMuons(const float ptcut)	 
+{	 
+    std::vector<LorentzVector> good_mus;	 
+    for (unsigned int idx = 0; idx < cms2.mus_p4().size(); idx++) {	 
+    	 
+        if (cms2.mus_p4().at(idx).pt() < ptcut) continue;	 
+        if (fabs(cms2.mus_p4().at(idx).eta()) > 2.4) continue;	 
+    	 
+        if (!isNumeratorLepton(13, idx)) continue;	 
+    	 
+        good_mus.push_back(cms2.mus_p4().at(idx));	 
+    }	 
+    	 
+    sort(good_mus.begin(), good_mus.end(), jet_pt_gt());	 
+    return good_mus;	 
 }
-
-
-///////////////////////////////////////////////////////////////////////////////////////////
-// same as above, but allowing use of on-the-fly JEC corrections
-///////////////////////////////////////////////////////////////////////////////////////////
-int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)
-{
-    std::vector<LorentzVector> good_jets = samesign::getJets(idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
-    return good_jets.size();
-}
-
-
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- // get jets and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
- {	 
-     std::vector<LorentzVector> tmp_jets = samesign::getBtaggedJets(idx, type, btag_type, deltaR, 0., max_eta, mu_minpt, ele_minpt);	 
- 	 
-     std::vector<LorentzVector> final_jets;	 
-     for (unsigned int jidx = 0; jidx < tmp_jets.size(); jidx++) {	 
- 	 
-         LorentzVector vjet = tmp_jets.at(jidx);	 
-         jet_unc->setJetPt(vjet.pt());	 
-         jet_unc->setJetEta(vjet.eta());	 
-         float jet_cor = jet_unc->getUncertainty(true);	 
-         vjet *= (1. + jet_cor * scale_type);	 
-         if (vjet.pt() < min_pt)	 
-             continue;	 
- 	 
-         final_jets.push_back(vjet);	 
-     }	 
- 	 
-     sort(final_jets.begin(), final_jets.end(), jet_pt_gt());	 
-     return final_jets;	 
- }	 
- 	 
- 	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- // get jets and apply an on-the-fly JEC and perform overlap removal with numerator	 
- // e/mu with pt > x (defaults are 20/20 GeV)	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
- {	 
-     std::vector<LorentzVector> tmp_jets = samesign::getBtaggedJets(idx, jet_corrector, type, btag_type, deltaR, 0., max_eta, mu_minpt, ele_minpt);	 
- 	 
-     std::vector<LorentzVector> final_jets;	 
-     for (unsigned int jidx = 0; jidx < tmp_jets.size(); jidx++) {	 
- 	 
-         LorentzVector vjet = tmp_jets.at(jidx);	 
-         jet_unc->setJetPt(vjet.pt());	 
-         jet_unc->setJetEta(vjet.eta());	 
-         float jet_cor = jet_unc->getUncertainty(true);	 
-         vjet *= (1. + jet_cor * scale_type);	 
-         if (vjet.pt() < min_pt)	 
-             continue;	 
- 	 
-         final_jets.push_back(vjet);	 
-     }	 
- 	 
-     sort(final_jets.begin(), final_jets.end(), jet_pt_gt());	 
-     return final_jets;	 
- }	 
- 	 
- 	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- // get sumpt, skip jets overlapping with numerator e/mu with pt>x (defaults are 10/5 GeV)	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- int samesign::nBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
- {	 
-     std::vector<LorentzVector> good_btags = samesign::getBtaggedJets(idx, jet_unc, scale_type, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);	 
-     return good_btags.size();	 
- }	 
-
- 	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- // same as above, but allowing use of on-the-fly JEC corrections	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
- {	 
-     std::vector<LorentzVector> good_btags = samesign::getBtaggedJets(idx, jet_corrector, jet_unc, scale_type, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);	 
-     return good_btags.size();	 
- }	 
-
- 	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- // get vector of good els p4s	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- std::vector<LorentzVector> samesign::getGoodElectrons(const float ptcut)	 
- {	 
-     std::vector<LorentzVector> good_els;	 
-     for (unsigned int idx = 0; idx < cms2.els_p4().size(); idx++) {	 
- 	 
-         if (cms2.els_p4().at(idx).pt() < ptcut) continue;	 
-         if (fabs(cms2.els_p4().at(idx).eta()) > 2.4) continue;	 
- 	 
-         if (!isNumeratorLepton(11, idx)) continue;	 
-	 	 
-         good_els.push_back(cms2.els_p4().at(idx));	 
-     }	 
-	 	 
-     sort(good_els.begin(), good_els.end(), jet_pt_gt());	 
-     return good_els;	 
- }	 
-
-	 	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- // get vector of good mus p4s	 
- ///////////////////////////////////////////////////////////////////////////////////////////	 
- std::vector<LorentzVector> samesign::getGoodMuons(const float ptcut)	 
- {	 
-     std::vector<LorentzVector> good_mus;	 
-     for (unsigned int idx = 0; idx < cms2.mus_p4().size(); idx++) {	 
-	 	 
-         if (cms2.mus_p4().at(idx).pt() < ptcut) continue;	 
-         if (fabs(cms2.mus_p4().at(idx).eta()) > 2.4) continue;	 
-	 	 
-         if (!isNumeratorLepton(13, idx)) continue;	 
-	 	 
-         good_mus.push_back(cms2.mus_p4().at(idx));	 
-     }	 
-	 	 
-     sort(good_mus.begin(), good_mus.end(), jet_pt_gt());	 
-     return good_mus;	 
- }
-
-
-
 
 
 /////////////////////////////////////////////////////////////////
