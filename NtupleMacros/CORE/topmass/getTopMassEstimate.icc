@@ -342,14 +342,8 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   // ttdilepsolve * d_llsol = new ttdilepsolve;
   // set up histos used in tomass calc
   TH1F * h_temp_MassWeight   = new TH1F("h_temp_MassWeight","h_temp_MassWeight", nMassPts, d_llsol->get_RangeLow(), d_llsol->get_RangeHigh());
-  TH1F * h_temp_MassWeight_1 = new TH1F("h_temp_MassWeight_1","h_temp_MassWeight_1", nMassPts, d_llsol->get_RangeLow(), d_llsol->get_RangeHigh());
-  TH1F * h_temp_MassWeight_2 = new TH1F("h_temp_MassWeight_2","h_temp_MassWeight_2", nMassPts, d_llsol->get_RangeLow(), d_llsol->get_RangeHigh());
-  float high_weight_mass;
-  float high_weight_mass_1;
-  float high_weight_mass_2;
-  float hwm_weight_1;
-  float hwm_weight_2;
 
+  float high_weight_mass;
 
   //101026 work begin
   // IBL: here the loop STARTs
@@ -429,8 +423,6 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   vector <TF1*> vPhiRes;
     
   h_temp_MassWeight   ->Reset();
-  h_temp_MassWeight_1 ->Reset();
-  h_temp_MassWeight_2 ->Reset();
 
   double max_sum_weight_all = 0.;
   //unsigned int msw_jet_all1 = d_llsol->get_SENTINEL();
@@ -512,9 +504,6 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
             }
           }
           
-          if(iPerm == 0) h_temp_MassWeight_1->Fill(m_top_iter, sum_weight);
-          if(iPerm == 1) h_temp_MassWeight_2->Fill(m_top_iter, sum_weight);
-          
           h_temp_MassWeight->Fill(m_top_iter, sum_weight); 
           
           if (sum_weight > max_sum_weight[i_t]){
@@ -537,28 +526,28 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   float highestWeightCheck = h_temp_MassWeight->GetBinContent(h_temp_MassWeight->GetMaximumBin());
   if ( highestWeightCheck != 0 ){
           
-    high_weight_mass_1 = h_temp_MassWeight_1->GetMaximumBin() + d_llsol->get_RangeLow() - 1;
-    high_weight_mass_2 = h_temp_MassWeight_2->GetMaximumBin() + d_llsol->get_RangeLow() - 1;
-          
-    //hwm_weight_1 = h_temp_MassWeight_1->GetBinContent(h_temp_MassWeight_1->GetMaximumBin());
-    //hwm_weight_2 = h_temp_MassWeight_2->GetBinContent(h_temp_MassWeight_2->GetMaximumBin());
-
-    hwm_weight_1 = h_temp_MassWeight_1->GetBinContent(h_temp_MassWeight->GetMaximumBin());
-    hwm_weight_2 = h_temp_MassWeight_2->GetBinContent(h_temp_MassWeight->GetMaximumBin());
-
     high_weight_mass  = h_temp_MassWeight->GetMaximumBin() + d_llsol->get_RangeLow() - 1;
+    int i_t_max = h_temp_MassWeight->GetMaximumBin()-1;
+
+    double sum_js_weight_max = -999.0;
+    int iPerm_max = -999;
+
+  	for (int iPerm = 0; iPerm < nJetPerm; ++iPerm)
+  	{
+  		if(sum_js_weight[i_t_max][iPerm]>sum_js_weight_max) { iPerm_max = iPerm; sum_js_weight_max = sum_js_weight[i_t_max][iPerm]; }
+  	}
+
+  	//cout<<i_t_max<<" "<<iPerm_max<<endl;
 
     for (int iSM_JMT = 0; iSM_JMT < SM_JetMET; iSM_JMT++){
-      if( ( (hwm_weight_1 > hwm_weight_2) && (max_weight_all[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][0]>0) ) || ( (hwm_weight_1 <= hwm_weight_2) && (max_weight_all[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][1]>0) ) ){
-        mom_top1.push_back( (hwm_weight_1 > hwm_weight_2 ? lvTop1[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][0] : lvTop1[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][1]) );
-        mom_top2.push_back( (hwm_weight_1 > hwm_weight_2 ? lvTop2[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][0] : lvTop2[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][1]) );
-        AMWTweight.push_back( (hwm_weight_1 > hwm_weight_2 ? max_weight_all[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][0] : max_weight_all[h_temp_MassWeight->GetMaximumBin()-1][iSM_JMT][1]) );
+      if( max_weight_all[i_t_max][iSM_JMT][iPerm_max] > 0 ){
+        mom_top1.push_back( lvTop1[i_t_max][iSM_JMT][iPerm_max] );
+        mom_top2.push_back( lvTop2[i_t_max][iSM_JMT][iPerm_max] );
+        AMWTweight.push_back( max_weight_all[i_t_max][iSM_JMT][iPerm_max] );
       }
     }
 
-    //cout<<"nsolns: "<<mom_top2.size()<<endl;
-    //cout<<"mass: "<<high_weight_mass<<" "<<mom_top1[0].M()<<" "<<mom_top2[0].M()<<endl;
-    //    if (42 == 42) cout<<"Found dilepton ttbar candidate with Mtop = "<<high_weight_mass<<" GeV"<<endl<<endl;
+
   }
 
 
@@ -567,8 +556,6 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   //101026 work end
 
   delete h_temp_MassWeight  ;
-  delete h_temp_MassWeight_1;
-  delete h_temp_MassWeight_2;
   
   if( SM_JetMET != 1 ) {
   delete rand3;
