@@ -230,17 +230,57 @@ namespace samesign
     // JEC AND JEC uncertainty applied otf
     int nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0);	 
 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // 2012 rescale the jet energy resolution (JER) 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    void smearJETScaleJetsMetHt(std::vector<LorentzVector>& vjets_p4, float& met, float& met_phi, float& ht, const unsigned int seed);
+    void smearJETScaleJets(std::vector<LorentzVector>& vjets_p4, const unsigned int seed);
+    void smearJETScaleJetsMetHt
+    (
+        std::vector<LorentzVector>& vjets_p4, 
+        float& met,
+        float& met_phi,
+        float& ht, 
+        int idx,
+        enum JetType type,
+        const unsigned int seed,
+        float deltaR = 0.4,
+        float min_pt = 40.0,
+        float max_eta = 2.4,
+        float mu_minpt = 20.0,
+        float ele_minpt = 20.0
+    );
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // 2012 rescale the MET by scaling up/down the unclustered erngy 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    float scaleMET
+    (
+        const float met,
+        const float met_phi,
+        int idx,
+        enum JetType type,
+        float deltaR = 0.4,
+        float min_pt = 40.0,
+        float max_eta = 2.4,
+        float mu_minpt = 20.0,
+        float ele_minpt = 20.0,
+        const int scale_type = 0,
+        const float scale = 0.1
+    );
 
     ///////////////////////////////////////////////////////////////////////////////////////////	 
     // 2012 get vector of good els p4s	 
     ///////////////////////////////////////////////////////////////////////////////////////////	 
     std::vector<LorentzVector> getGoodElectrons(const float ptcut = 20.0f);	 
+    std::vector<std::pair<LorentzVector, unsigned int> > getNumeratorElectrons(const float ptcut = 20.0f);	 
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////	 
     // 2012 get vector of good mus p4s	 
     ///////////////////////////////////////////////////////////////////////////////////////////	 
     std::vector<LorentzVector> getGoodMuons(const float ptcut = 20.0f);
+    std::vector<std::pair<LorentzVector, unsigned int> > getNumeratorMuons(const float ptcut = 20.0f);	 
 
 } // namespace samesign
 

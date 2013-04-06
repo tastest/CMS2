@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <iostream>
 #include <algorithm>
+#include "Math/Point2Dfwd.h"
 #include "Math/LorentzVector.h"
 #include "Math/VectorUtil.h"
 #include "TMath.h"
@@ -20,16 +21,24 @@
 #include "susySelections.h"
 #include "jetcorr/FactorizedJetCorrector.h"
 #include "jetcorr/JetCorrectionUncertainty.h"
+#include "Math/Vector2D.h"
+#include "TRandom3.h"
 
 using namespace wp2012;
 
-struct jet_pt_gt 
+struct SortByPt 
 {
-    bool operator () (const LorentzVector &v1, const LorentzVector &v2) 
+    bool operator () (const LorentzVector& lhs, const LorentzVector& rhs) 
     {
-        return v1.pt() > v2.pt();
+        return lhs.pt() > rhs.pt();
+    }
+
+    bool operator () (const std::pair<LorentzVector, unsigned int>& lhs, const std::pair<LorentzVector, unsigned int>& rhs) 
+    {
+        return lhs.first.pt() > rhs.first.pt();
     }
 };
+
 
 /////////////////////////////////////////////////////////////////
 ///                                                           ///
@@ -799,7 +808,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, float d
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;    
 }
 
@@ -835,7 +844,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }
 
@@ -851,19 +860,13 @@ std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *
         if (!tmp_jet_flags.at(jidx))
             continue;
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
-        if (cms2.evt_isRealData()) 
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
-        }
-        else
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
-        }
+        const float jet_cor = (cms2.evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(jidx) :  cms2.pfjets_corL1FastL2L3().at(jidx));
+        LorentzVector vjet  = cms2.pfjets_p4().at(jidx) * jet_cor; 
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        const float jet_cor = jet_unc->getUncertainty(true);	 
-        vjet *= (1.0 + jet_cor * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
             continue;
@@ -872,7 +875,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }	 
 	 
@@ -889,15 +892,17 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
         if (!tmp_jet_flags.at(jidx))
             continue;
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
         jet_corrector->setRho(cms2.evt_ww_rho_vor());
         jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
         jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
         jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
-        float jet_cor = jet_corrector->getCorrection();
+        const float jet_cor = jet_corrector->getCorrection();
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * jet_cor;
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+//         vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
             continue;
@@ -906,7 +911,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
         final_jets.push_back(vjet);
     }
 	 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());	 
+    sort(final_jets.begin(), final_jets.end(), SortByPt());	 
     return final_jets;	 
 }	 
  	 
@@ -931,12 +936,8 @@ std::vector<bool> samesign::getJetFlags(int idx, enum JetType type, float deltaR
             continue;
         }
 
-        LorentzVector vjet;
-        if (cms2.evt_isRealData()) 
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx) * rescale;
-        else
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx) * rescale;
-
+        const float jet_cor = (cms2.evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(jidx) :  cms2.pfjets_corL1FastL2L3().at(jidx));
+        LorentzVector vjet  = cms2.pfjets_p4().at(jidx) * jet_cor * rescale; 
         if (systFlag != 0) {
             float c = getJetMetSyst(systFlag, vjet.pt(), vjet.eta());
             vjet *= c;
@@ -1006,13 +1007,12 @@ std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_cor
             continue;
         }
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
         jet_corrector->setRho(cms2.evt_ww_rho_vor());
         jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
         jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
         jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
         float jet_cor = jet_corrector->getCorrection();
-        vjet *= jet_cor * rescale;
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * jet_cor * rescale;
         if (systFlag != 0) 
         {
             float c = getJetMetSyst(systFlag, vjet.pt(), vjet.eta());
@@ -1045,19 +1045,13 @@ std::vector<bool> samesign::getJetFlags(int idx, JetCorrectionUncertainty *jet_u
             final_jets.push_back(tmp_jet_flags.at(jidx));
             continue;
         }
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
-        if (cms2.evt_isRealData()) 
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
-        }
-        else
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
-        }
+        const float jet_cor = (cms2.evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(jidx) :  cms2.pfjets_corL1FastL2L3().at(jidx));
+        LorentzVector vjet  = cms2.pfjets_p4().at(jidx) * jet_cor; 
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        const float jet_cor = jet_unc->getUncertainty(true);	 
-        vjet *= (1.0 + jet_cor * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)	{
             final_jets.push_back(false);
             continue;   
@@ -1085,15 +1079,17 @@ std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_cor
             final_jets.push_back(tmp_jet_flags.at(jidx));
             continue;
         }
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
         jet_corrector->setRho(cms2.evt_ww_rho_vor());
         jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
         jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
         jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
         float jet_cor = jet_corrector->getCorrection();
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * jet_cor;
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)	{
             final_jets.push_back(false);
             continue;   
@@ -1255,7 +1251,7 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, 
     }
 
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;        
 }
 
@@ -1271,13 +1267,12 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
 
         if (!tmp_jet_flags.at(jidx)) continue;
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
         jet_corrector->setRho(cms2.evt_ww_rho_vor());
         jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
         jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
         jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
         float jet_cor = jet_corrector->getCorrection();
-        vjet *= jet_cor * rescale;
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * jet_cor * rescale;
         if (systFlag != 0) {
             float c = getJetMetSyst(systFlag, vjet.pt(), vjet.eta());
             vjet *= c;
@@ -1289,7 +1284,7 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }
 
@@ -1305,19 +1300,13 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncert
 
         if (!tmp_jet_flags.at(jidx)) continue;
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
-        if (cms2.evt_isRealData()) 
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
-        }
-        else
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
-        }
+        const float jet_cor = (cms2.evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(jidx) :  cms2.pfjets_corL1FastL2L3().at(jidx));
+        LorentzVector vjet  = cms2.pfjets_p4().at(jidx) * jet_cor; 
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        float jet_cor = jet_unc->getUncertainty(true);	 
-        vjet *= (1.0 + jet_cor * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
             continue;
@@ -1325,7 +1314,7 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncert
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }	 
 	 
@@ -1341,15 +1330,17 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
 
         if (!tmp_jet_flags.at(jidx)) continue;
 
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
         jet_corrector->setRho(cms2.evt_ww_rho_vor());
         jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
         jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
         jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
         float jet_cor = jet_corrector->getCorrection();
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * jet_cor;
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
             continue;
@@ -1357,7 +1348,7 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }	 
 	 
@@ -1382,11 +1373,8 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, enum JetType type, enum 
             continue;
         }
 
-        LorentzVector vjet;
-        if (cms2.evt_isRealData()) 
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx) * rescale;
-        else
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx) * rescale;
+        const float jet_cor = (cms2.evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(jidx) :  cms2.pfjets_corL1FastL2L3().at(jidx));
+        LorentzVector vjet  = cms2.pfjets_p4().at(jidx) * jet_cor * rescale; 
         if (systFlag != 0) {
             float c = getJetMetSyst(systFlag, vjet.pt(), vjet.eta());
             vjet *= c;
@@ -1494,19 +1482,13 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, JetCorrectionUncertainty
             final_jets.push_back(tmp_jet_flags.at(jidx));
             continue;
         }
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
-        if (cms2.evt_isRealData()) 
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3residual().at(jidx);
-        }
-        else
-        {
-            vjet = cms2.pfjets_p4().at(jidx) * cms2.pfjets_corL1FastL2L3().at(jidx);
-        }
+        const float jet_cor = (cms2.evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(jidx) :  cms2.pfjets_corL1FastL2L3().at(jidx));
+        LorentzVector vjet  = cms2.pfjets_p4().at(jidx) * jet_cor; 
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        float jet_cor = jet_unc->getUncertainty(true);	 
-        vjet *= (1.0 + jet_cor * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt) {
             final_jets.push_back(false);
             continue;   
@@ -1533,15 +1515,17 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, FactorizedJetCorrector* 
             final_jets.push_back(tmp_jet_flags.at(jidx));
             continue;
         }
-        LorentzVector vjet = cms2.pfjets_p4().at(jidx);
         jet_corrector->setRho(cms2.evt_ww_rho_vor());
         jet_corrector->setJetA(cms2.pfjets_area().at(jidx));
         jet_corrector->setJetPt(cms2.pfjets_p4().at(jidx).pt());
         jet_corrector->setJetEta(cms2.pfjets_p4().at(jidx).eta());        
-        float jet_cor = jet_corrector->getCorrection();
+        const float jet_cor = jet_corrector->getCorrection();
+        LorentzVector vjet = cms2.pfjets_p4().at(jidx) * jet_cor;
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
-        vjet *= jet_cor*(1.0 + jet_unc->getUncertainty(true) * scale_type);	 
+        const float jet_cor_unc = jet_unc->getUncertainty(true);	 
+        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
+        vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt) {
             final_jets.push_back(false);
             continue;   
@@ -1588,6 +1572,307 @@ int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCo
     return good_btags.size();	 
 }	 
 
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// 2012 rescale the jet energy resolution (JER) 
+///////////////////////////////////////////////////////////////////////////////////////////
+
+// function that returns the sigma(pT)*pT of the MC jets. those numbers are old,
+// but at least they are in an understandable format.
+// -----------------------------------------------------------------------------
+float getErrPt(const float pt, const float eta)
+{
+    float InvPerr2;
+    float N = 0.0;
+    float S = 0.0;
+    float C = 0.0;
+    float m = 0.0;
+    if(fabs(eta) < 0.5)
+    {
+        N = 3.96859;
+        S = 0.18348;
+        C = 0.;
+        m = 0.62627;
+    } 
+    else if(fabs(eta) < 1.0)
+    {
+        N = 3.55226;
+        S = 0.24026;
+        C = 0.;
+        m = 0.52571;
+    } 
+    else if(fabs(eta) < 1.5) 
+    {
+        N = 4.54826;
+        S = 0.22652;
+        C = 0.;
+        m = 0.58963;
+    }
+    else if(fabs(eta) < 2.0)
+    {
+        N = 4.62622;
+        S = 0.23664;
+        C = 0.;
+        m = 0.48738;
+    }
+    else if(fabs(eta) < 2.5)
+    {
+        N = 2.53324;
+        S = 0.34306;
+        C = 0.;
+        m = 0.28662;
+    }
+    else if(fabs(eta) < 3.0)
+    {
+        N = -3.33814;
+        S = 0.73360;
+        C = 0.;
+        m = 0.08264;
+    }
+    else if(fabs(eta) < 5.0)
+    {
+        N = 2.95397;
+        S = 0.11619;
+        C = 0.;
+        m = 0.96086;
+    }
+    
+    // this is the absolute resolution (squared), not sigma(pt)/pt
+    // so have to multiply by pt^2, thats why m+1 instead of m-1
+    InvPerr2 = (N * fabs(N) ) + (S * S) * pow(pt, m+1) + (C * C) * pt * pt;
+
+    return sqrt(InvPerr2);
+}
+
+// function to get the jer scale factors. values taken from the twiki: 
+// https://twiki.cern.ch/twiki/bin/view/CMS/JetResolution
+// -------------------------------------------------------------------
+float getJERScale(const float jet_eta)
+{
+    const float aeta = fabs(jet_eta);
+    if      (aeta < 0.5) {return 1.052;}
+    else if (aeta < 1.1) {return 1.057;}
+    else if (aeta < 1.7) {return 1.096;}
+    else if (aeta < 2.3) {return 1.134;}
+    else                 {return 1.288;}
+
+}
+
+// rescaled the jet p4s, met, met_phi and ht scaling up the JER
+void samesign::smearJETScaleJetsMetHt(std::vector<LorentzVector>& vjets_p4, float& met, float& met_phi, float& ht, const unsigned int seed)
+{
+    static TRandom3 random;
+    random.SetSeed(seed);
+    float new_ht = 0;
+
+    // rescale the jets/met/ht
+    ROOT::Math::XYVector cmet(met*cos(met_phi), met*sin(met_phi));
+    std::vector<LorentzVector> new_vjets_p4;
+    for (size_t jidx = 0; jidx != vjets_p4.size(); jidx++)
+    {
+        // rescale the jet pt
+        const LorentzVector& jet_p4 = vjets_p4.at(jidx);
+        const float jer_scale       = getJERScale(jet_p4.eta());
+        const float sigma_mc        = getErrPt(jet_p4.pt(), jet_p4.eta())/jet_p4.pt();
+        const float jet_rescaled    = random.Gaus(1.0, sqrt(jer_scale*jer_scale-1.0)*sigma_mc);
+        LorentzVector new_jet_p4    = (jet_p4 * jet_rescaled);
+//         cout << Form("rescaling jet %lu with pt %f to %f", jidx, jet_p4.pt(), new_jet_p4.pt()) << endl;
+
+        // propogate to the met
+        ROOT::Math::XYVector old_jet(jet_p4.px(), jet_p4.py());
+        ROOT::Math::XYVector new_jet(new_jet_p4.px(), new_jet_p4.py());
+        cmet = cmet - new_jet + old_jet;
+
+        // check that the new jets pass the min pt cut
+        if (new_jet_p4.pt() < 40.0)
+        {
+            continue;
+        }
+
+        // add to the new ht
+        new_ht += new_jet_p4.pt();
+
+        // return the new jet
+        new_vjets_p4.push_back(LorentzVector(new_jet_p4));
+    }
+    
+    // set the new met
+    met     = cmet.r();
+    met_phi = cmet.phi();
+//     cout << "new met = " << met << endl;
+
+    // set the new pt
+    ht = new_ht;
+//     cout << "new ht = " << ht << endl;
+
+    // set the new jets
+    vjets_p4 = new_vjets_p4;
+
+    // done
+    return;
+}       
+            
+void samesign::smearJETScaleJetsMetHt
+(
+    std::vector<LorentzVector>& vjets_p4, 
+    float& met,
+    float& met_phi,
+    float& ht,
+    int idx,
+    enum JetType type,
+    const unsigned int seed,
+    float deltaR,
+    float min_pt,
+    float max_eta,
+    float mu_minpt,
+    float ele_minpt
+)
+{
+    static TRandom3 random;
+    random.SetSeed(seed);
+    float new_ht = 0;
+
+    // rescale the jets/met/ht
+    ROOT::Math::XYVector cmet(met*cos(met_phi), met*sin(met_phi));
+    std::vector<LorentzVector> new_vjets_p4;
+    std::vector<LorentzVector> tmp_vjets_p4 = samesign::getJets(idx, type, deltaR, /*min_pt=*/15, /*max_eta=*/5.0, mu_minpt, ele_minpt);
+    for (size_t jidx = 0; jidx != tmp_vjets_p4.size(); jidx++)
+    {
+        // rescale the jet pt
+        const LorentzVector& jet_p4 = tmp_vjets_p4.at(jidx);
+        const float jer_scale       = getJERScale(jet_p4.eta());
+        const float sigma_mc        = getErrPt(jet_p4.pt(), jet_p4.eta())/jet_p4.pt();
+        const float jet_rescaled    = random.Gaus(1.0, sqrt(jer_scale*jer_scale-1.0)*sigma_mc);
+        LorentzVector new_jet_p4    = (jet_p4 * jet_rescaled);
+        //cout << Form("rescaling jet %lu with pt %f to %f", jidx, jet_p4.pt(), new_jet_p4.pt()) << endl;
+
+        // propogate to the met
+        ROOT::Math::XYVector old_jet(jet_p4.px(), jet_p4.py());
+        ROOT::Math::XYVector new_jet(new_jet_p4.px(), new_jet_p4.py());
+        cmet = cmet - new_jet + old_jet;
+
+        // check that the new jets pass the min pt cut
+        if (not (new_jet_p4.pt() > min_pt and fabs(new_jet_p4.eta()) < max_eta))
+        {
+            continue;
+        }
+
+        // add to the new ht
+        //cout << "adding " << new_jet_p4.pt() << " to " << new_ht << endl;
+        new_ht += new_jet_p4.pt();
+
+        // return the new jet
+        new_vjets_p4.push_back(LorentzVector(new_jet_p4));
+    }
+    
+    // set the new met
+    met     = cmet.r();
+    met_phi = cmet.phi();
+//     cout << "new met = " << met << endl;
+
+    // set the new pt
+    ht = new_ht;
+    //cout << "new ht = " << ht << endl;
+
+    // set the new jets
+    vjets_p4 = new_vjets_p4;
+
+    // done
+    return;
+}
+
+
+// semar JER for jets
+void samesign::smearJETScaleJets(std::vector<LorentzVector>& vjets_p4, const unsigned int seed)
+{
+    static TRandom3 random(seed);
+
+    // rescale the b-tagged jets
+    std::vector<LorentzVector> new_vjets_p4;
+    for (size_t jidx = 0; jidx != vjets_p4.size(); jidx++)
+    {
+        // rescale the jet pt
+        const LorentzVector& jet_p4 = vjets_p4.at(jidx);
+        const float jer_scale       = getJERScale(jet_p4.eta());
+        const float sigma_mc        = getErrPt(jet_p4.pt(), jet_p4.eta())/jet_p4.pt();
+        const float jet_rescaled    = random.Gaus(1.0, sqrt(jer_scale*jer_scale-1.0)*sigma_mc);
+        LorentzVector new_jet_p4    = (jet_p4 * jet_rescaled);
+//         cout << Form("rescaling jet %lu with pt %f to %f", jidx, jet_p4.pt(), new_jet_p4.pt()) << endl;
+
+        // check that the new jets pass the min pt cut
+        if (new_jet_p4.pt() < 40.0)
+        {
+            continue;
+        }
+
+        // return the new jet
+        new_vjets_p4.push_back(new_jet_p4);
+    }
+    vjets_p4 = new_vjets_p4;
+
+    // done
+    return;
+}       
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// 2012 rescale the MET by scaling up/down the unclustered erngy 
+///////////////////////////////////////////////////////////////////////////////////////////
+float samesign::scaleMET
+(
+    const float met,
+    const float met_phi,
+    int idx,
+    enum JetType type,
+    float deltaR,
+    float min_pt,
+    float max_eta,
+    float mu_minpt,
+    float ele_minpt,
+    const int scale_type,
+    const float scale
+)
+{
+    using namespace tas;
+    typedef ROOT::Math::Polar2DVectorF Polar2D;
+
+    // 2D vector to keep the sums
+    Polar2D jets;
+    Polar2D leps;
+
+    // sum up the jets 
+    std::vector<LorentzVector> vjets_p4 = samesign::getJets(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    for (size_t jidx = 0; jidx != vjets_p4.size(); jidx++)
+    {
+        jets += Polar2D(vjets_p4.at(jidx).pt(), vjets_p4.at(jidx).phi());
+    }
+    // sum up the electrons
+    for (size_t eidx = 0; eidx < els_p4().size(); eidx++)
+    {
+        if (els_p4().at(eidx).pt() < ele_minpt)     {continue;}
+        if (!samesign::isNumeratorLepton(11, eidx)) {continue;}
+        leps += Polar2D(els_p4().at(eidx).pt(), els_p4().at(eidx).phi());
+    }
+    // sum up the muons
+    for (size_t midx = 0; midx < mus_p4().size(); midx++)
+    {
+        if (mus_p4().at(midx).pt() < mu_minpt)      {continue;}
+        if (!samesign::isNumeratorLepton(13, midx)) {continue;}
+        leps += Polar2D(mus_p4().at(midx).pt(), mus_p4().at(midx).phi());
+    }
+    
+    // subtract the leptons and jet contributions
+    Polar2D umet(met, met_phi);
+    umet = umet + leps + jets;
+
+    // scale the unclustered energy by 10%
+    umet.SetR(umet.r() * (1.0 + scale_type * scale));
+
+    // resum the met
+    Polar2D new_met = umet - jets - leps;
+    return new_met.r();
+}
+
 	 
 ///////////////////////////////////////////////////////////////////////////////////////////	 
 // 2012 get vector of good els p4s	 
@@ -1605,10 +1890,27 @@ std::vector<LorentzVector> samesign::getGoodElectrons(const float ptcut)
         good_els.push_back(cms2.els_p4().at(idx));	 
     }	 
     	 
-    sort(good_els.begin(), good_els.end(), jet_pt_gt());	 
+    sort(good_els.begin(), good_els.end(), SortByPt());	 
     return good_els;	 
 }	 
 
+
+std::vector<std::pair<LorentzVector, unsigned int> > samesign::getNumeratorElectrons(const float ptcut)
+{	 
+    std::vector<std::pair<LorentzVector, unsigned int> > good_els;	 
+    for (unsigned int idx = 0; idx < cms2.els_p4().size(); idx++)
+    {	 
+        if (cms2.els_p4().at(idx).pt() < ptcut)      {continue;}
+        if (fabs(cms2.els_p4().at(idx).eta()) > 2.4) {continue;}
+        if (!samesign::isNumeratorLepton(11, idx))   {continue;}
+        good_els.push_back(std::make_pair(cms2.els_p4().at(idx), idx));	 
+    }	 
+    	 
+    sort(good_els.begin(), good_els.end(), SortByPt());	 
+    return good_els;	 
+}	 
+
+    	 
     	 
 ///////////////////////////////////////////////////////////////////////////////////////////	 
 // 2012 get vector of good mus p4s	 
@@ -1620,15 +1922,28 @@ std::vector<LorentzVector> samesign::getGoodMuons(const float ptcut)
     	 
         if (cms2.mus_p4().at(idx).pt() < ptcut) continue;	 
         if (fabs(cms2.mus_p4().at(idx).eta()) > 2.4) continue;	 
-    	 
         if (!isNumeratorLepton(13, idx)) continue;	 
     	 
         good_mus.push_back(cms2.mus_p4().at(idx));	 
     }	 
     	 
-    sort(good_mus.begin(), good_mus.end(), jet_pt_gt());	 
+    sort(good_mus.begin(), good_mus.end(), SortByPt());	 
     return good_mus;	 
 }
+
+std::vector<std::pair<LorentzVector, unsigned int> > samesign::getNumeratorMuons(const float ptcut)
+{	 
+    std::vector<std::pair<LorentzVector, unsigned int> > good_mus;	 
+    for (unsigned int idx = 0; idx < cms2.mus_p4().size(); idx++)
+    {	 
+        if (cms2.mus_p4().at(idx).pt() < ptcut)      {continue;}
+        if (fabs(cms2.mus_p4().at(idx).eta()) > 2.4) {continue;}
+        if (!samesign::isNumeratorLepton(13, idx))   {continue;}
+        good_mus.push_back(std::make_pair(cms2.mus_p4().at(idx), idx));	 
+    }	 
+    sort(good_mus.begin(), good_mus.end(), SortByPt());	 
+    return good_mus;	 
+}	 
 
 
 /////////////////////////////////////////////////////////////////
@@ -1820,7 +2135,7 @@ std::vector<LorentzVector> samesign2011::getJets(int idx, enum JetType type, dou
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;    
 }
 
@@ -1844,7 +2159,7 @@ std::vector<LorentzVector> samesign2011::getJets(int idx, FactorizedJetCorrector
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }
 
@@ -2141,7 +2456,7 @@ std::vector<LorentzVector> samesign2011::getBtaggedJets(int idx, enum JetType ty
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;        
 }
 
@@ -2166,7 +2481,7 @@ std::vector<LorentzVector> samesign2011::getBtaggedJets(int idx, FactorizedJetCo
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), jet_pt_gt());
+    sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
     
 }
