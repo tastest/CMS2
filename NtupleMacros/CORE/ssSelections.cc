@@ -853,6 +853,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *
 {	 
     std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
 
+    float ht = 0;
     // now impose the pt requirement after applying the extra corrections
     std::vector<LorentzVector> final_jets;
     for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++) {
@@ -865,15 +866,18 @@ std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
             continue;
         }
+        //cout << Form("selection jet %u with pt rescaled to using %f * (1.0 + %f) = %f", jidx, (cms2.pfjets_p4().at(jidx) * jet_cor).pt(), jet_cor_unc, vjet.pt()) << endl;
+        cout << vjet.eta() << endl;
+        ht += vjet.pt();
 
         final_jets.push_back(vjet);
     }
+    //cout << "using ht = " << ht << endl;
 
     sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
@@ -901,7 +905,6 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-//         vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
@@ -1050,7 +1053,6 @@ std::vector<bool> samesign::getJetFlags(int idx, JetCorrectionUncertainty *jet_u
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)	{
             final_jets.push_back(false);
@@ -1088,7 +1090,6 @@ std::vector<bool> samesign::getJetFlags(int idx, FactorizedJetCorrector* jet_cor
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)	{
             final_jets.push_back(false);
@@ -1305,7 +1306,6 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncert
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
@@ -1339,7 +1339,6 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt)
         {
@@ -1487,7 +1486,6 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, JetCorrectionUncertainty
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt) {
             final_jets.push_back(false);
@@ -1524,7 +1522,6 @@ std::vector<bool> samesign::getBtaggedJetFlags(int idx, FactorizedJetCorrector* 
         jet_unc->setJetPt(vjet.pt());	 
         jet_unc->setJetEta(vjet.eta());	 
         const float jet_cor_unc = jet_unc->getUncertainty(true);	 
-        //vjet += scale_type * (jet_cor_unc/jet_cor) * vjet;	 
         vjet *= (1.0 + jet_cor_unc * scale_type);	 
         if (vjet.pt() < min_pt) {
             final_jets.push_back(false);
@@ -1662,7 +1659,6 @@ float getJERScale(const float jet_eta)
 void samesign::smearJETScaleJetsMetHt(std::vector<LorentzVector>& vjets_p4, float& met, float& met_phi, float& ht, const unsigned int seed)
 {
     static TRandom3 random;
-    random.SetSeed(seed);
     float new_ht = 0;
 
     // rescale the jets/met/ht
@@ -1670,13 +1666,15 @@ void samesign::smearJETScaleJetsMetHt(std::vector<LorentzVector>& vjets_p4, floa
     std::vector<LorentzVector> new_vjets_p4;
     for (size_t jidx = 0; jidx != vjets_p4.size(); jidx++)
     {
+        random.SetSeed(seed * (jidx+1));
+
         // rescale the jet pt
         const LorentzVector& jet_p4 = vjets_p4.at(jidx);
         const float jer_scale       = getJERScale(jet_p4.eta());
         const float sigma_mc        = getErrPt(jet_p4.pt(), jet_p4.eta())/jet_p4.pt();
         const float jet_rescaled    = random.Gaus(1.0, sqrt(jer_scale*jer_scale-1.0)*sigma_mc);
         LorentzVector new_jet_p4    = (jet_p4 * jet_rescaled);
-//         cout << Form("rescaling jet %lu with pt %f to %f", jidx, jet_p4.pt(), new_jet_p4.pt()) << endl;
+        cout << Form("rescaling jet %lu with pt %f to %f using seed event # * (i+jet_index) = %lu", jidx, jet_p4.pt(), new_jet_p4.pt(), (seed*(jidx+1))) << endl;
 
         // propogate to the met
         ROOT::Math::XYVector old_jet(jet_p4.px(), jet_p4.py());
@@ -1729,7 +1727,6 @@ void samesign::smearJETScaleJetsMetHt
 )
 {
     static TRandom3 random;
-    random.SetSeed(seed);
     float new_ht = 0;
 
     // rescale the jets/met/ht
@@ -1739,12 +1736,14 @@ void samesign::smearJETScaleJetsMetHt
     for (size_t jidx = 0; jidx != tmp_vjets_p4.size(); jidx++)
     {
         // rescale the jet pt
+        random.SetSeed(seed*(jidx+1));
         const LorentzVector& jet_p4 = tmp_vjets_p4.at(jidx);
         const float jer_scale       = getJERScale(jet_p4.eta());
         const float sigma_mc        = getErrPt(jet_p4.pt(), jet_p4.eta())/jet_p4.pt();
         const float jet_rescaled    = random.Gaus(1.0, sqrt(jer_scale*jer_scale-1.0)*sigma_mc);
         LorentzVector new_jet_p4    = (jet_p4 * jet_rescaled);
         //cout << Form("rescaling jet %lu with pt %f to %f", jidx, jet_p4.pt(), new_jet_p4.pt()) << endl;
+//         cout << Form("rescaling jet %lu with pt %f to %f using seed event # * (i+jet_index) = %lu", jidx, jet_p4.pt(), new_jet_p4.pt(), (seed*(jidx+1))) << endl;
 
         // propogate to the met
         ROOT::Math::XYVector old_jet(jet_p4.px(), jet_p4.py());
@@ -1772,7 +1771,7 @@ void samesign::smearJETScaleJetsMetHt
 
     // set the new pt
     ht = new_ht;
-    //cout << "new ht = " << ht << endl;
+//     cout << "new ht = " << ht << endl;
 
     // set the new jets
     vjets_p4 = new_vjets_p4;
@@ -1791,6 +1790,7 @@ void samesign::smearJETScaleJets(std::vector<LorentzVector>& vjets_p4, const uns
     std::vector<LorentzVector> new_vjets_p4;
     for (size_t jidx = 0; jidx != vjets_p4.size(); jidx++)
     {
+        random.SetSeed(seed*(jidx+1));
         // rescale the jet pt
         const LorentzVector& jet_p4 = vjets_p4.at(jidx);
         const float jer_scale       = getJERScale(jet_p4.eta());
