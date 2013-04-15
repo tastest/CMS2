@@ -8,30 +8,47 @@
 // ROOT includes
 #include "TChain.h"
 #include "TChainElement.h"
+#include "TTreeCache.h"
 #include "TFile.h"
 #include "TDirectory.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TProfile.h"
-#include <cmath>
 
-// SMURF
-#include "SmurfTree.h"
+#include <cmath>
+#include <cassert>
 
 // LHAPDF
-#include "/tas03/home/dlevans/LHAPDF/include/LHAPDF/LHAPDF.h"
-//#include "/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/full/include/LHAPDF/LHAPDF.h"
+#include "/tas/dlevans/HWW2012/CMSSW_5_2_3/src/LHAPDF-5.8.92b/include/LHAPDF/LHAPDF.h"
 
-MyScanChain::MyScanChain() {
-}
+MyScanChain::MyScanChain(std::string genPdfName, unsigned int genPdfSubset)
+{                   
+    // gen set parameters
+    genPdfName_     = genPdfName;
+    genPdfSubset_   = genPdfSubset;
+
+    // set up LHAPDF
+    LHAPDF::setPDFPath("/tas/dlevans/HWW2012/CMSSW_5_2_3/src/LHAPDF-5.8.92b/PDFSets/");
+    LHAPDF::initPDFSetM(genset_, genPdfName_);
+    LHAPDF::initPDFM(genset_, genPdfSubset_);
+}   
 
 //
 // Main function
 //
 
-int MyScanChain::ScanChain(std::string sampleName, std::string pdfName, const char *file) {
+int MyScanChain::ScanChain(std::string sampleName, TChain *chain, std::string pdfName)
+{
 
-    std::cout << "scanning " << sampleName << std::endl;
+    TObjArray *listOfFiles = chain->GetListOfFiles();
+    if (listOfFiles->GetEntries() == 0) {
+        std::cout << "[MyScanChain::ScanChain] " << sampleName << " is not defined" << std::endl;
+        return 1;
+    }
+    else {
+        std::cout << "[MyScanChain::ScanChain] " << sampleName << std::endl;
+    }
+
     TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
     if (rootdir == 0){
         std::cout<<"Head directory root: not found. Try Rint: ..."<<std::endl;
@@ -45,36 +62,29 @@ int MyScanChain::ScanChain(std::string sampleName, std::string pdfName, const ch
     rootdir->cd(); 
 
     //
-    // file loop
+    // setup pdf stuff
     //
 
-    TFile f(file, "READ");
-    TTree *t = (TTree*)f.Get("tree");
-    t->SetBranchAddress("Q", &Q_);   
-    t->SetBranchAddress("x1", &x1_);                    
-    t->SetBranchAddress("id1", &id1f_);
-    t->SetBranchAddress("x2", &x2_); 
-    t->SetBranchAddress("id2", &id2f_);
-    t->SetBranchAddress("scale1fb", &scale1fb_);
-    t->SetBranchAddress(sampleName.c_str(), &bdt_);    
-    rootdir->cd();
+    // cteq6ll is only available in LHpdf format
+    if (pdfName != "cteq6ll")   LHAPDF::initPDFSetM(set_, pdfName + ".LHgrid");
+    else                        LHAPDF::initPDFSetM(set_, pdfName + ".LHpdf");
 
-    const unsigned int genset = 1;
-    const unsigned int set = 2;
-    std::string pdfDir = "/tas03/home/dlevans/lhapdf-5.8.6b2/PDFsets/";
-    //std::string pdfDir = "/afs/cern.ch/cms/slc5_amd64_gcc434/external/lhapdf/5.8.5/share/lhapdf/PDFsets/";
-    LHAPDF::initPDFSetM(genset, pdfDir +"cteq6mE.LHgrid");
-    LHAPDF::initPDFSetM(set, pdfDir + pdfName + ".LHgrid");
-
-    unsigned int nsets = 1 + LHAPDF::numberPDF(set);
-
-    // number of replicas to sample related to alpha_S for NNPDF 
+    unsigned int nsets = 1 + LHAPDF::numberPDFM(set_);
     if (pdfName == "NNPDF20_as_0116_100" || pdfName == "NNPDF20_as_0122_100") nsets = 5;
     if (pdfName == "NNPDF20_as_0117_100" || pdfName == "NNPDF20_as_0121_100") nsets = 27;
     if (pdfName == "NNPDF20_as_0118_100" || pdfName == "NNPDF20_as_0120_100") nsets = 72;
-
-    // only do the central value of CTEQ6M
     if (pdfName == "cteq6mE") nsets = 1;
+    if (pdfName == "cteq6ll") nsets = 1;
+
+    // are we calculating the central value of 
+    // the observable? 
+    // - e.g. no pdf re-weighting needed
+    bool doingGenSet = false;
+    if (pdfName == genPdfName_) doingGenSet = true;
+
+    //
+    // setup histograms
+    //
 
     Int_t nbins = 40;
     Float_t min = -1;
@@ -85,33 +95,86 @@ int MyScanChain::ScanChain(std::string sampleName, std::string pdfName, const ch
                 Form("%s_%s_%i", sampleName.c_str(), pdfName.c_str(), i), nbins, min, max));
     }
 
-    ULong64_t nEventsTree = t->GetEntries();
-    for(ULong64_t event = 0; event < nEventsTree; ++event) {
+    //
+    // loop over pdf subsets
+    //
 
-        t->GetEntry(event);
-        id1_ = int(id1f_);
-        id2_ = int(id2f_);
+    for (unsigned int subset = 0; subset < nsets; ++subset)
+    {
 
-        // get the generated central value
-        LHAPDF::initPDFM(genset, 0);
-        double fx1Q0gen = LHAPDF::xfxM(genset, x1_, Q_, id1_) / x1_;
-        double fx2Q0gen = LHAPDF::xfxM(genset, x2_, Q_, id2_) / x2_;
+        std::cout << "doing set, subset: " << set_ << ", " << subset << std::endl;
+        LHAPDF::initPDFM(set_, subset);
 
-        for (unsigned int subset = 0; subset < nsets; ++subset)
-        {
+        //
+        // loop over content of sample
+        //
 
-            // get the weight for this subset
-            LHAPDF::initPDFM(set, subset);
-            double fx1Qi = LHAPDF::xfxM(set, x1_, Q_, id1_) / x1_;
-            double fx2Qi = LHAPDF::xfxM(set, x2_, Q_, id2_) / x2_;
+        TIter fileIter(listOfFiles);
+        while (TChainElement *currentFile = (TChainElement*)fileIter.Next()) {
 
-            double weight = ((fx1Qi*fx2Qi)/(fx1Q0gen*fx2Q0gen));
+            // get the tree
+            TFile *f = TFile::Open(currentFile->GetTitle()); 
+            assert(f);
+            TTree *tree = (TTree*)f->Get("Events");
+            assert(tree);
+            TTreeCache::SetLearnEntries(10);
+            tree->SetCacheSize(128*1024*1024);
 
-            // full the histogram
-            histArr[subset]->Fill(bdt_, weight * scale1fb_);
-        }
+            // set the branch addresses
+            tree->SetBranchAddress("pdfinfo_scale", &Q_);
+            tree->SetBranchAddress("pdfinfo_x1",    &x1_);
+            tree->SetBranchAddress("pdfinfo_id1",   &id1_);
+            tree->SetBranchAddress("pdfinfo_x2",    &x2_);
+            tree->SetBranchAddress("pdfinfo_id2",   &id2_);
+            tree->SetBranchAddress("scale1fb",      &scale1fb_);
 
-    } // end loop on tree
+            //
+            // loop over events in file
+            //
+
+            ULong64_t nEvents = tree->GetEntries();
+            for(ULong64_t event = 0; event < nEvents; ++event) {
+
+                tree->GetEntry(event);
+
+                // check if event passes kinematic selection
+                if (!Cuts()) continue;
+
+                // calculate the pdf weight
+                double pdf_weight = 1.0;
+                double experimental_weight = scale1fb_;
+
+                // if looper has been invoked to calculate the same pdf the sample was
+                // generated with, then we know the pdf_weight will always be 1.0
+                // so no need to actually do any work
+                // e.g. this will represent the "central value" of the observable
+
+                if (!doingGenSet) {
+                    // generated pdf values
+                    double fx1Q0gen = LHAPDF::xfxM(genset_, x1_, Q_, id1_) / x1_;
+                    double fx2Q0gen = LHAPDF::xfxM(genset_, x2_, Q_, id2_) / x2_;
+                    // subset pdf values
+                    double fx1Qi = LHAPDF::xfxM(set_, x1_, Q_, id1_) / x1_;
+                    double fx2Qi = LHAPDF::xfxM(set_, x2_, Q_, id2_) / x2_;
+                    // calculate weight and fill histogram
+                    pdf_weight = ((fx1Qi*fx2Qi)/(fx1Q0gen*fx2Q0gen));
+                }
+
+                // inclusive uncertainty, one fixed bin
+                // but could equally easily fill with a physical variable...
+                double var = 1.0;
+                histArr[subset]->Fill(var, pdf_weight * experimental_weight);
+
+
+            } // end loop on events
+
+            delete tree;
+            f->Close();
+            delete f;
+
+        } // end loop on files in chain
+
+    } // end loop on subsets
 
     //
     // make sure we're back in the right root dir
@@ -130,8 +193,13 @@ int MyScanChain::ScanChain(std::string sampleName, std::string pdfName, const ch
         }
     }
 
-    f.Close();
     return 0;
 
+}
+
+// test event selection
+bool MyScanChain::Cuts()
+{
+    return true;
 }
 
