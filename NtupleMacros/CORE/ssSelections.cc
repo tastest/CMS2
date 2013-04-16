@@ -1666,8 +1666,8 @@ void samesign::smearJETScaleJetsMetHt(std::vector<LorentzVector>& vjets_p4, floa
     std::vector<LorentzVector> new_vjets_p4;
     for (size_t jidx = 0; jidx != vjets_p4.size(); jidx++)
     {
-        random.SetSeed(seed * (jidx+1));
-
+        random.SetSeed(seed*(jidx+1));
+    
         // rescale the jet pt
         const LorentzVector& jet_p4 = vjets_p4.at(jidx);
         const float jer_scale       = getJERScale(jet_p4.eta());
@@ -1727,14 +1727,17 @@ void samesign::smearJETScaleJetsMetHt
 )
 {
     static TRandom3 random;
+//     random.SetSeed(seed);                                                      
     float new_ht = 0;
 
     // rescale the jets/met/ht
     ROOT::Math::XYVector cmet(met*cos(met_phi), met*sin(met_phi));
     std::vector<LorentzVector> new_vjets_p4;
-    std::vector<LorentzVector> tmp_vjets_p4 = samesign::getJets(idx, type, deltaR, /*min_pt=*/15, /*max_eta=*/5.0, mu_minpt, ele_minpt);
+    std::vector<LorentzVector> tmp_vjets_p4 = samesign::getJets(idx, type, deltaR, /*min_pt=*/15, /*max_eta=*/2.4, mu_minpt, ele_minpt);
     for (size_t jidx = 0; jidx != tmp_vjets_p4.size(); jidx++)
     {
+        random.SetSeed(seed*(jidx+1));
+
         // rescale the jet pt
         random.SetSeed(seed*(jidx+1));
         const LorentzVector& jet_p4 = tmp_vjets_p4.at(jidx);
@@ -1784,13 +1787,14 @@ void samesign::smearJETScaleJetsMetHt
 // semar JER for jets
 void samesign::smearJETScaleJets(std::vector<LorentzVector>& vjets_p4, const unsigned int seed)
 {
-    static TRandom3 random(seed);
+    static TRandom3 random;
 
     // rescale the b-tagged jets
     std::vector<LorentzVector> new_vjets_p4;
     for (size_t jidx = 0; jidx != vjets_p4.size(); jidx++)
     {
         random.SetSeed(seed*(jidx+1));
+
         // rescale the jet pt
         const LorentzVector& jet_p4 = vjets_p4.at(jidx);
         const float jer_scale       = getJERScale(jet_p4.eta());
