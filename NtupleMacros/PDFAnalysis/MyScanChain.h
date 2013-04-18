@@ -35,13 +35,6 @@ class MyScanChain {
         // test event selection
         bool Cuts();
 
-        // variables to read
-        // from tree
-        float           scale1fb_;
-        float           Q_;
-        float           x1_, x2_;
-        int             id1_, id2_;
-
         // pdf parameters
         std::string     genPdfName_;
         unsigned int    genPdfSubset_;
