@@ -295,9 +295,9 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
 
 //this version finds the same "high_weight_mass", but returns vectors of top solutions (one solution for each smearing iteration).
 //The solutions are constrained to come from the top mass with max sum of weights, with the jet permutation also constrained to the one with max sum of weights (after the top mass is constrained). 
-static float getTopMassEstimate(ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &myJets_p4, double met, double metphi, int smearIterations, vector<TLorentzVector> &mom_top1,  vector<TLorentzVector> &mom_top2,  vector<float> &AMWTweight);
+static float getTopMassEstimate(ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &myJets_p4, double met, double metphi, int smearIterations, vector<TLorentzVector> &mom_top1,  vector<TLorentzVector> &mom_top2,  vector<float> &AMWTweight, double fixedmass = -1.0);
 
-float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &myJets_p4, double met, double metphi, int smearIterations, vector<TLorentzVector> &mom_top1,  vector<TLorentzVector> &mom_top2,  vector<float> &AMWTweight)
+float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &myJets_p4, double met, double metphi, int smearIterations, vector<TLorentzVector> &mom_top1,  vector<TLorentzVector> &mom_top2,  vector<float> &AMWTweight, double fixedmass)
 {
 
   //Jet resolution functions
@@ -305,6 +305,11 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   
   int SM_JetMET = smearIterations;
   int nMassPts = d_llsol->get_nMassPts();
+  double RangeLow = d_llsol->get_RangeLow();
+  double RangeHigh = d_llsol->get_RangeHigh();
+  if(fixedmass>=0) nMassPts = 1;
+  if(fixedmass>=0) RangeLow = fixedmass-0.5;
+  if(fixedmass>=0) RangeHigh = fixedmass+0.5;
 
   unsigned int nSearchJets = myJets_p4.size();
   if (nSearchJets > 2) nSearchJets = 2;
@@ -341,7 +346,7 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   //top mass instanciation:
   // ttdilepsolve * d_llsol = new ttdilepsolve;
   // set up histos used in tomass calc
-  TH1F * h_temp_MassWeight   = new TH1F("h_temp_MassWeight","h_temp_MassWeight", nMassPts, d_llsol->get_RangeLow(), d_llsol->get_RangeHigh());
+  TH1F * h_temp_MassWeight   = new TH1F("h_temp_MassWeight","h_temp_MassWeight", nMassPts, RangeLow, RangeHigh);
 
   float high_weight_mass;
 
@@ -468,7 +473,8 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
     else                smear_JetMET(myJets_nsm_p4, tcmetVec, myJets_sm_p4, tcmetVec_sm, rand3, vPtRes, vEtaRes, vPhiRes, inv_mass);
     
     for (int i_t = 0; i_t < nMassPts; i_t++){
-      double m_top_iter = d_llsol->get_RangeLow() + i_t;  
+      double m_top_iter = RangeLow + i_t;
+      if(fixedmass>=0) m_top_iter = fixedmass;
       
       //unsigned int msw_jet1 = d_llsol->get_SENTINEL();
       //unsigned int msw_jet2 = d_llsol->get_SENTINEL();
@@ -526,7 +532,8 @@ float getTopMassEstimate (ttdilepsolve * d_llsol, int hypIdx, vector<ROOT::Math:
   float highestWeightCheck = h_temp_MassWeight->GetBinContent(h_temp_MassWeight->GetMaximumBin());
   if ( highestWeightCheck != 0 ){
           
-    high_weight_mass  = h_temp_MassWeight->GetMaximumBin() + d_llsol->get_RangeLow() - 1;
+    high_weight_mass  = h_temp_MassWeight->GetMaximumBin() + RangeLow - 1;
+    if(fixedmass>=0) high_weight_mass = h_temp_MassWeight->GetBinCenter(h_temp_MassWeight->GetMaximumBin());
     int i_t_max = h_temp_MassWeight->GetMaximumBin()-1;
 
     double sum_js_weight_max = -999.0;
