@@ -8,126 +8,6 @@
 
  */
 
-
-
-void eidGetWP2012(const wp2012_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutsee, std::vector<double> &cutooemoop, std::vector<double> &cutd0vtx, std::vector<double> &cutdzvtx, std::vector<bool> &cutvtxfit, std::vector<int> &cutmhit, std::vector<double> &cutrelisohighpt, std::vector<double> &cutrelisolowpt)
-{
-
-    switch (tightness) {
-        case VETO:
-            {
-                double dEtaIn_tmp[2]        = {0.007, 0.010};
-                double dPhiIn_tmp[2]        = {0.800, 0.700};
-                double sigmaIEtaIEta_tmp[2] = {0.010, 0.030};
-                double hoe_tmp[2]           = {0.150, 999.9};
-                double ooemoop_tmp[2]       = {999.9, 999.9};
-                double d0Vtx_tmp[2]         = {0.040, 0.040};
-                double dzVtx_tmp[2]         = {0.200, 0.200};
-                bool vtxFit_tmp[2]          = {false, false};
-                int mHits_tmp[2]            = {999, 999};
-                double isoHi_tmp[2]         = {0.150, 0.150};
-                double isoLo_tmp[2]         = {0.150, 0.150};
-                eidAssign(cutdeta,          dEtaIn_tmp, 2);
-                eidAssign(cutdphi,          dPhiIn_tmp, 2);
-                eidAssign(cutsee,           sigmaIEtaIEta_tmp, 2);
-                eidAssign(cuthoe,           hoe_tmp, 2);
-                eidAssign(cutooemoop,       ooemoop_tmp, 2);
-                eidAssign(cutd0vtx,         d0Vtx_tmp, 2);
-                eidAssign(cutdzvtx,         dzVtx_tmp, 2);
-                eidAssign(cutvtxfit,        vtxFit_tmp, 2);
-                eidAssign(cutmhit,          mHits_tmp, 2);
-                eidAssign(cutrelisohighpt,  isoHi_tmp, 2);
-                eidAssign(cutrelisolowpt,   isoLo_tmp, 2);
-                return;
-            }
-        case LOOSE:
-            {
-                double dEtaIn_tmp[2]        = {0.007, 0.009};
-                double dPhiIn_tmp[2]        = {0.150, 0.100};
-                double sigmaIEtaIEta_tmp[2] = {0.010, 0.030};
-                double hoe_tmp[2]           = {0.120, 0.100};
-                double ooemoop_tmp[2]       = {0.050, 0.050};
-                double d0Vtx_tmp[2]         = {0.020, 0.020};
-                double dzVtx_tmp[2]         = {0.200, 0.200};
-                bool vtxFit_tmp[2]          = {true, true};
-                int mHits_tmp[2]            = {1, 1};
-                double isoHi_tmp[2]         = {0.150, 0.150};
-                double isoLo_tmp[2]         = {0.150, 0.100};
-                eidAssign(cutdeta,          dEtaIn_tmp, 2);
-                eidAssign(cutdphi,          dPhiIn_tmp, 2);
-                eidAssign(cutsee,           sigmaIEtaIEta_tmp, 2);
-                eidAssign(cuthoe,           hoe_tmp, 2);
-                eidAssign(cutooemoop,       ooemoop_tmp, 2);
-                eidAssign(cutd0vtx,         d0Vtx_tmp, 2);
-                eidAssign(cutdzvtx,         dzVtx_tmp, 2);
-                eidAssign(cutvtxfit,        vtxFit_tmp, 2);
-                eidAssign(cutmhit,          mHits_tmp, 2);
-                eidAssign(cutrelisohighpt,  isoHi_tmp, 2);
-                eidAssign(cutrelisolowpt,   isoLo_tmp, 2);
-                return;
-            }
-        case MEDIUM:
-            {
-                double dEtaIn_tmp[2]        = {0.004, 0.007};
-                double dPhiIn_tmp[2]        = {0.060, 0.030};
-                double sigmaIEtaIEta_tmp[2] = {0.010, 0.030};
-                double hoe_tmp[2]           = {0.120, 0.100};
-                double ooemoop_tmp[2]       = {0.050, 0.050};
-                double d0Vtx_tmp[2]         = {0.020, 0.020};
-                double dzVtx_tmp[2]         = {0.100, 0.100};
-                bool vtxFit_tmp[2]          = {true, true};
-                int mHits_tmp[2]            = {1, 1};
-                double isoHi_tmp[2]         = {0.150, 0.150};
-                double isoLo_tmp[2]         = {0.150, 0.100};
-                eidAssign(cutdeta,          dEtaIn_tmp, 2);
-                eidAssign(cutdphi,          dPhiIn_tmp, 2);
-                eidAssign(cutsee,           sigmaIEtaIEta_tmp, 2);
-                eidAssign(cuthoe,           hoe_tmp, 2);
-                eidAssign(cutooemoop,       ooemoop_tmp, 2);
-                eidAssign(cutd0vtx,         d0Vtx_tmp, 2);
-                eidAssign(cutdzvtx,         dzVtx_tmp, 2);
-                eidAssign(cutvtxfit,        vtxFit_tmp, 2);
-                eidAssign(cutmhit,          mHits_tmp, 2);
-                eidAssign(cutrelisohighpt,  isoHi_tmp, 2);
-                eidAssign(cutrelisolowpt,   isoLo_tmp, 2);
-                return;
-            }
-        case TIGHT:
-            {
-                double dEtaIn_tmp[2]        = {0.004, 0.005};
-                double dPhiIn_tmp[2]        = {0.030, 0.020};
-                double sigmaIEtaIEta_tmp[2] = {0.010, 0.030};
-                double hoe_tmp[2]           = {0.120, 0.100};
-                double ooemoop_tmp[2]       = {0.050, 0.050};
-                double d0Vtx_tmp[2]         = {0.020, 0.020};
-                double dzVtx_tmp[2]         = {0.100, 0.100};
-                bool vtxFit_tmp[2]          = {true, true};
-                int mHits_tmp[2]            = {0, 0};
-                double isoHi_tmp[2]         = {0.100, 0.100};
-                double isoLo_tmp[2]         = {0.100, 0.070};
-                eidAssign(cutdeta,          dEtaIn_tmp, 2);
-                eidAssign(cutdphi,          dPhiIn_tmp, 2);
-                eidAssign(cutsee,           sigmaIEtaIEta_tmp, 2);
-                eidAssign(cuthoe,           hoe_tmp, 2);
-                eidAssign(cutooemoop,       ooemoop_tmp, 2);
-                eidAssign(cutd0vtx,         d0Vtx_tmp, 2);
-                eidAssign(cutdzvtx,         dzVtx_tmp, 2);
-                eidAssign(cutvtxfit,        vtxFit_tmp, 2);
-                eidAssign(cutmhit,          mHits_tmp, 2);
-                eidAssign(cutrelisohighpt,  isoHi_tmp, 2);
-                eidAssign(cutrelisolowpt,   isoLo_tmp, 2);
-                return;
-            }
-
-        default:
-            std::cout << "[eidGetWP2012] ERROR! Invalid tightness level" << std::endl;
-
-    }
-
-    return;
-
-}
-
 void eidGetCand(const cand_tightness tightness, std::vector<double> &cutdeta, std::vector<double> &cutdphi, std::vector<double> &cuthoe, std::vector<double> &cutslat)
 {
 
@@ -369,21 +249,6 @@ void eidGetVBTF(const vbtf_tightness tightness, std::vector<double> &cutdeta, st
                 double dPhiInThresholds_tmp[2]              = {0.15,    0.10};
                 double dEtaInThresholds_tmp[2]              = {0.007,   0.009};
                 double hoeThresholds_tmp[2]                 = {0.10,    0.075};
-                eidAssign(cutreliso, isoThresholds_tmp, 2);
-                eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
-                eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
-                eidAssign(cuthoe, hoeThresholds_tmp, 2);
-                eidAssign(cutsee, sigmaIEtaIEtaThresholds_tmp, 2);
-                return;
-            }   
-
-        case VBTF_95_NOHOEEND:
-            {
-                double isoThresholds_tmp[2]                 = {0.15,    0.10};
-                double sigmaIEtaIEtaThresholds_tmp[2]       = {0.01,    0.03};
-                double dPhiInThresholds_tmp[2]              = {0.80,    0.70};
-                double dEtaInThresholds_tmp[2]              = {0.007,   0.01};
-                double hoeThresholds_tmp[2]                 = {0.15,    999.};
                 eidAssign(cutreliso, isoThresholds_tmp, 2);
                 eidAssign(cutdeta, dEtaInThresholds_tmp, 2);
                 eidAssign(cutdphi, dPhiInThresholds_tmp, 2);
@@ -2426,22 +2291,4 @@ void eidAssign(std::vector<double> &cutarr, double cutvals[], unsigned int size)
         cutarr.push_back(cutvals[i]);
     }
 }
-
-
-void eidAssign(std::vector<bool> &cutarr, bool cutvals[], unsigned int size)
-{
-    cutarr.clear();
-    for (unsigned int i = 0; i < size; ++i) {
-        cutarr.push_back(cutvals[i]);
-    }
-}
-
-void eidAssign(std::vector<int> &cutarr, int cutvals[], unsigned int size)
-{
-    cutarr.clear();
-    for (unsigned int i = 0; i < size; ++i) {
-        cutarr.push_back(cutvals[i]);
-    }
-}
-
 

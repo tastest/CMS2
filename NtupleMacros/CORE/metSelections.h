@@ -87,18 +87,5 @@ metStruct customType1Met( float metx , float mety , float sumet  , VofP4 jets , 
 metStruct trackerMET( int hyp_index, double deltaZCut = 0.2, 
                       const VofP4* jets = 0 );
 
-
-//---------------------------------------------
-// function to calculate CMS reduced MET
-// (simplified implementation from Nate Odell)
-//---------------------------------------------
-LorentzVector cmsReducedMET(LorentzVector sumJet, LorentzVector lep1, LorentzVector lep2, LorentzVector metP4, int version);
-std::pair<float, float> cmsReducedMET_v2(LorentzVector lep1, LorentzVector lep2, const std::vector<LorentzVector> &jets);
-
-//-----------------------------------------------------
-// function to scale the hadronic component of the MET
-//-----------------------------------------------------
-std::pair<float, float> scaleMET(std::pair<float, float> p_met, LorentzVector p4_dilep, double rescale = 1.0);
-
 #endif
 

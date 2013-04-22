@@ -1,9 +1,6 @@
 #include "MT2.h"
 #include "math.h"
 #include "Math/VectorUtil.h"
-#include "iostream"
-
-using namespace std;
 
 ///////////////////////////////////////////////////////////////
 // MT2 Calculated with the Bisection method from Cheng & Han //
@@ -95,18 +92,18 @@ double MT2J(
 // GRID //
 //////////
 
-//float TMt2::GetMt2j (
-//  const float                 met,
-//  const float                 metPhi,
-//  const LorentzVector         p4_lep1,
-//  const LorentzVector         p4_lep2,
-//  const vector<LorentzVector> v_p4_jets,
-//  const float                 invisible_particle_mass,
-//  const bool                  verbose
-//){
-//  mt2_ = -999.0;
-//  return mt2_;
-//}
+float TMt2::GetMt2j (
+  const float                 met,
+  const float                 metPhi,
+  const LorentzVector         p4_lep1,
+  const LorentzVector         p4_lep2,
+  const vector<LorentzVector> v_p4_jets,
+  const float                 invisible_particle_mass,
+  const bool                  verbose
+){
+  mt2_ = -999.0;
+  return mt2_;
+}
 
 float TMt2::GetMt2 (
   const float         met,
