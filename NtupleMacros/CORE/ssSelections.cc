@@ -872,7 +872,7 @@ std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *
             continue;
         }
         //cout << Form("selection jet %u with pt rescaled to using %f * (1.0 + %f) = %f", jidx, (cms2.pfjets_p4().at(jidx) * jet_cor).pt(), jet_cor_unc, vjet.pt()) << endl;
-        cout << vjet.eta() << endl;
+        //cout << vjet.eta() << endl;
         ht += vjet.pt();
 
         final_jets.push_back(vjet);
@@ -1674,7 +1674,7 @@ void samesign::smearJETScaleJetsMetHt(std::vector<LorentzVector>& vjets_p4, floa
         const float sigma_mc        = getErrPt(jet_p4.pt(), jet_p4.eta())/jet_p4.pt();
         const float jet_rescaled    = random.Gaus(1.0, sqrt(jer_scale*jer_scale-1.0)*sigma_mc);
         LorentzVector new_jet_p4    = (jet_p4 * jet_rescaled);
-        cout << Form("rescaling jet %lu with pt %f to %f using seed event # * (i+jet_index) = %lu", jidx, jet_p4.pt(), new_jet_p4.pt(), (seed*(jidx+1))) << endl;
+        //cout << Form("rescaling jet %lu with pt %f to %f using seed event # * (i+jet_index) = %lu", jidx, jet_p4.pt(), new_jet_p4.pt(), (seed*(jidx+1))) << endl;
 
         // propogate to the met
         ROOT::Math::XYVector old_jet(jet_p4.px(), jet_p4.py());
