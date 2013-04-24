@@ -204,5 +204,20 @@ float TMt2::GetMt2 (
   //
   mt2_ = Min;
   return mt2_;
+}
 
+// Constructor 
+TMt2::TMt2()  
+  : grid_size_(500)
+  , grid_spacing_(2)
+  , mt2_(-999.0)
+  , p4_nu1_(0,0,0,0)
+  , p4_nu2_(0,0,0,0)
+{
+}
+
+
+// destructor
+TMt2::~TMt2()
+{
 }

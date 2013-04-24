@@ -62,25 +62,17 @@ class TMt2 {
 
   public:
 
-    TMt2    (void);
-    ~TMt2   (void);
+    TMt2();
+    ~TMt2();
 
     float GetMt2  ( const float , const float , const LorentzVector , const LorentzVector ,                               const float = 0.0, bool = false );
     //float GetMt2j ( const float , const float , const LorentzVector , const LorentzVector , const vector<LorentzVector> , const float = 0.0, bool = false );
 
-    inline float         Mt2   (void) { return mt2_;    }
-    inline LorentzVector Nu1p4 (void) { return p4_nu1_; }
-    inline LorentzVector Nu2p4 (void) { return p4_nu2_; }
+    inline float         Mt2  () const { return mt2_;    }
+    inline LorentzVector Nu1p4() const { return p4_nu1_; }
+    inline LorentzVector Nu2p4() const { return p4_nu2_; }
 
 };
-
-// Constructor & Destructor
-TMt2::TMt2  (void) { 
-  grid_size_    = 500;
-  grid_spacing_ = 2;
-  mt2_          = -999.0;
-};
-TMt2::~TMt2 (void) { };
 
 
 #endif
