@@ -47,16 +47,16 @@ JetSmearer* makeJetSmearer(std::vector<std::string> &vector_of_file_names)
     return (new JetSmearer(vParam[0], vParam[1], vParam[2]));
 }
 
-LorentzVector smearJet(LorentzVector p4, JetSmearer* jetSmearer)
+LorentzVector smearJet(const LorentzVector& p4, JetSmearer* jetSmearer, bool recoOnly)
 {
-    return jetSmearer->smearJet(p4);
+    return jetSmearer->smearJet(p4, recoOnly);
 }
 
-std::vector<LorentzVector> smearJets(std::vector<LorentzVector>& vp4s, JetSmearer* jetSmearer)
+std::vector<LorentzVector> smearJets(const std::vector<LorentzVector>& vp4s, JetSmearer* jetSmearer, bool recoOnly)
 {
     std::vector<LorentzVector> smeared_jets;
     for (unsigned int idx = 0; idx < vp4s.size(); idx++) {
-        LorentzVector smeared_jet = jetSmearer->smearJet(vp4s.at(idx));
+      LorentzVector smeared_jet = jetSmearer->smearJet(vp4s.at(idx), recoOnly);
         smeared_jets.push_back(smeared_jet);
     }
 
@@ -67,14 +67,14 @@ std::vector<LorentzVector> smearJets(std::vector<LorentzVector>& vp4s, JetSmeare
 // function to smear the MET for differences in jet
 // resolution between data and MC
 //-----------------------------------------------------
-std::pair<double, double> smearMETforJER(std::pair<double, double> in_met, JetSmearer *jetSmearer, std::vector<LorentzVector>& vp4s) {
+std::pair<double, double> smearMETforJER(std::pair<double, double> in_met, JetSmearer *jetSmearer, const std::vector<LorentzVector>& vp4s, bool recoOnly) {
 
     double met     = in_met.first;
     double met_phi = in_met.second;
     double met_x   = met * cos(met_phi);
     double met_y   = met * sin(met_phi);
 
-    std::vector<LorentzVector> vsmeared_jets = smearJets(vp4s, jetSmearer);
+    std::vector<LorentzVector> vsmeared_jets = smearJets(vp4s, jetSmearer, recoOnly);
     assert(vp4s.size() == vsmeared_jets.size());
     for (unsigned int idx = 0; idx < vp4s.size(); idx++) {
         met_x += (vp4s.at(idx).px() - vsmeared_jets.at(idx).px());
@@ -91,12 +91,12 @@ std::pair<double, double> smearMETforJER(std::pair<double, double> in_met, JetSm
 // get (relative) resolution of a jet
 // NOTE: this gets the resolution of a MC jet only
 //-----------------------------------------------------
-double getJetResolution(LorentzVector p4, JetSmearer* jetSmearer)
+double getJetResolution(const LorentzVector& p4, JetSmearer* jetSmearer)
 {
     return jetSmearer->getJetResolution(p4);
 }
 
-std::vector<double> getJetResolutions(std::vector<LorentzVector>& vp4s, JetSmearer* jetSmearer)
+std::vector<double> getJetResolutions(const std::vector<LorentzVector>& vp4s, JetSmearer* jetSmearer)
 {
     std::vector<double> jet_rel_res;
     for (unsigned int idx = 0; idx < vp4s.size(); idx++)

@@ -10,7 +10,6 @@
 #include "JetResolution.h"
 #include "../jetcorr/JetCorrectorParameters.h"
 
-
 #include <TMath.h>
 
 
@@ -69,8 +68,6 @@ JetResolution::~JetResolution()
 void JetResolution::initialize(const string& fileName,bool doGaussian)
 {
   size_t pos;
-
-  // std::cout << "ptFileName: " << fileName << std::endl;
   
   name_ = fileName;
   pos = name_.find_last_of('.'); name_ = name_.substr(0,pos);
@@ -179,6 +176,43 @@ TF1* JetResolution::parameter(const string& parameterName,const vector<float>& x
 }
 
 
+//______________________________________________________________________________
+double JetResolution::parameterEtaEval(const std::string& parameterName, float eta, float pt)
+{
+  TF1* func(0);
+  JetCorrectorParameters* params(0);
+  for (std::vector<TF1*>::size_type ifunc = 0; ifunc < parameterFncs_.size(); ++ifunc)
+    {
+      std::string fncname = parameterFncs_[ifunc]->GetName();
+      if ( !(fncname.find("f"+parameterName) == 0) ) continue;
+      params = parameters_[ifunc];
+      func = (TF1*)parameterFncs_[ifunc];
+      break;
+    }
+
+  if (!func)
+    std::cout << "JetResolution::parameterEtaEval(): no parameter \""
+				  << parameterName << "\" found" << std::endl;
+
+  std::vector<float> etas; etas.push_back(eta);
+  int bin = params->binIndex(etas);
+
+  if ( !(0 <= bin && bin < (int)params->size() ) )
+    std::cout << "JetResolution::parameterEtaEval(): bin out of range: "
+				       << bin << std::endl;
+
+  const std::vector<float>& pars = params->record(bin).parameters();
+
+  int N = params->definitions().nParVar();
+  for (unsigned ii = 2*N; ii < pars.size(); ++ii)
+    {
+      func->SetParameter(ii-2*N, pars[ii]); 
+    }
+  
+  return func->Eval(pt);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // IMPLEMENTATION OF GLOBAL FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
@@ -237,3 +271,4 @@ double fnc_gaussalpha1alpha2(double *v, double *par)
       ((v[0]-mean)>=0) ? N*TMath::Exp(-0.5*(alpha1*(t-cut)+cut*cut)) :
       N*TMath::Exp(-0.5*(alpha2*(t-cut)+cut*cut));
 }
+

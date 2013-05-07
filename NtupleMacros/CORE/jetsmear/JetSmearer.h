@@ -22,27 +22,27 @@ class JetSmearer
 {
 public:
     JetSmearer ();
-    JetSmearer (const std::string ptFileName, const std::string phiFileName, const std::string resFileName);
+    JetSmearer (const std::string& ptFileName, const std::string& phiFileName, const std::string& resFileName);
     ~JetSmearer ();
-    void setResFileNames (const std::string ptFileName, const std::string phiFileName, const std::string resFileName);
-    LorentzVector smearJet (LorentzVector p4);
-    double getJetResolution(LorentzVector p4);
+    void setResFileNames (const std::string& ptFileName, const std::string& phiFileName, const std::string& resFileName);
+  LorentzVector smearJet (const LorentzVector& p4, bool recoOnly = false);
+    double getJetResolution(const LorentzVector& p4);
     void setDeltaR (double dr);
     double getJetPtThreshold ();
-    void setDelimiter (std::string);
+    void setDelimiter (const std::string&);
     std::string getDelimiter ();
 
 private:
     double deltaR_;
     TRandom3* rand_;
-    std::pair<double, double> getKjet(LorentzVector p4);
-    double getRjet(LorentzVector p4);
-    int matchRecoJetToGenJet(LorentzVector p4);
+    std::pair<double, double> getKjet(const LorentzVector& p4);
+    double getRjet(const LorentzVector& p4);
+    int matchRecoJetToGenJet(const LorentzVector& p4);
     double getRandom (double sigma, double mean = 0.);
     JetResolution* ptResol_;
     JetResolution* phiResol_;
-    void initializeJetResolutions (const std::string ptFileName, const std::string phiFileName);
-    void addResolutions (const std::string resFileName);
+    void initializeJetResolutions (const std::string& ptFileName, const std::string& phiFileName);
+    void addResolutions (const std::string& resFileName);
     double ptResolThreshold_;
     //temporary fix for low pT jet resolutions
     //First index, eta bins, from 0 to 5;
@@ -53,8 +53,8 @@ private:
     typedef std::vector<double> functionPars;
     std::map<functionCombo,functionPars> functionmap_;
     void addfunction(const resolutionType type, const resolutionFunc func, std::vector<double> parameters);
-    std::string getLine(std::ifstream *filep, std::string identifier);
-    SigInputObj evalPFJet(const LorentzVector p4)  const;
+    std::string getLine(std::ifstream *filep, const std::string& identifier);
+    SigInputObj evalPFJet(const LorentzVector& p4)  const;
     std::string res_delim_;
 };
 

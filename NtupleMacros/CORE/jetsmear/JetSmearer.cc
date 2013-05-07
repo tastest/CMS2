@@ -12,11 +12,12 @@ void JetSmearer::setDeltaR (double dr) {
     return;
 }
 
-LorentzVector JetSmearer::smearJet (LorentzVector p4)
+LorentzVector JetSmearer::smearJet (const LorentzVector& p4, bool recoOnly)
 {
     double scale = 1.;
 
-    int midx = matchRecoJetToGenJet(p4);
+    int midx = -1;
+    if (!recoOnly) midx = matchRecoJetToGenJet(p4);
     double kjet = getKjet(p4).first;
     double jet_energy = p4.energy();
     double rjet = getRjet(p4);
@@ -41,7 +42,7 @@ JetSmearer::JetSmearer() : deltaR_(0.5), res_delim_(",")
     phiResol_ = 0;
 }
 
-JetSmearer::JetSmearer(const std::string ptFileName, const std::string phiFileName, const std::string resFileName) : deltaR_(0.5), res_delim_(",")
+JetSmearer::JetSmearer(const std::string& ptFileName, const std::string& phiFileName, const std::string& resFileName) : deltaR_(0.5), res_delim_(",")
 {
     rand_ = new TRandom3();
     ptResol_ = 0;
@@ -53,7 +54,7 @@ JetSmearer::JetSmearer(const std::string ptFileName, const std::string phiFileNa
     addResolutions(resFileName);
 }
 
-std::pair<double, double> JetSmearer::getKjet (LorentzVector p4) {
+std::pair<double, double> JetSmearer::getKjet (const LorentzVector& p4) {
 
     double eta = fabs(p4.eta());
 
@@ -69,7 +70,7 @@ std::pair<double, double> JetSmearer::getKjet (LorentzVector p4) {
         return make_pair(1., 0.);
 }
 
-double JetSmearer::getRjet (LorentzVector p4) {
+double JetSmearer::getRjet (const LorentzVector& p4) {
 
     SigInputObj jet_res_obj = evalPFJet(p4);
     if (jet_res_obj.get_energy() > 0)
@@ -78,7 +79,7 @@ double JetSmearer::getRjet (LorentzVector p4) {
         return 0.;
 }
 
-int JetSmearer::matchRecoJetToGenJet(LorentzVector p4) {
+int JetSmearer::matchRecoJetToGenJet(const LorentzVector& p4) {
     
     double mindr = deltaR_;
     int midx = -1;
@@ -99,7 +100,7 @@ double JetSmearer::getRandom (double sigma, double mean) {
     return rand_->Gaus(mean, sigma);
 }
 
-void JetSmearer::initializeJetResolutions (const std::string ptFileName, const std::string phiFileName) {
+void JetSmearer::initializeJetResolutions (const std::string& ptFileName, const std::string& phiFileName) {
 
     // std::cout << "ptFileName: " << ptFileName << std::endl;
     // std::cout << "phiFileName: " << phiFileName << std::endl;
@@ -112,7 +113,7 @@ void JetSmearer::initializeJetResolutions (const std::string ptFileName, const s
     return;
 }
 
-void JetSmearer::setResFileNames (const std::string ptFileName, const std::string phiFileName, const std::string resFileName) {
+void JetSmearer::setResFileNames (const std::string& ptFileName, const std::string& phiFileName, const std::string& resFileName) {
 
     initializeJetResolutions(ptFileName, phiFileName);
     addResolutions(resFileName);
@@ -120,7 +121,7 @@ void JetSmearer::setResFileNames (const std::string ptFileName, const std::strin
     return;
 }
 
-void JetSmearer::addResolutions (const std::string resFileName) {
+void JetSmearer::addResolutions (const std::string& resFileName) {
 
     TString line;
     std::ifstream* res_file = new std::ifstream();
@@ -257,7 +258,7 @@ void JetSmearer::addfunction(const resolutionType type, const resolutionFunc fun
     return;
 }
 
-std::string JetSmearer::getLine(std::ifstream *filep, std::string identifier) {
+std::string JetSmearer::getLine(std::ifstream *filep, const std::string& identifier) {
 
     // need to re-set the file for reading
     filep->clear();
@@ -295,7 +296,7 @@ std::string JetSmearer::getLine(std::ifstream *filep, std::string identifier) {
     return matched_line;
 }
 
-SigInputObj JetSmearer::evalPFJet(const LorentzVector p4) const {
+SigInputObj JetSmearer::evalPFJet(const LorentzVector& p4) const {
     
     double jpt  = p4.pt();
     double jphi = p4.phi();
@@ -314,12 +315,9 @@ SigInputObj JetSmearer::evalPFJet(const LorentzVector p4) const {
         //use the resolution functions at |eta|=5 to avoid crash for jets with large eta.
         if(jeta>5) jeta=5;
         if(jeta<-5) jeta=-5;
-        TF1* fPtEta  = ptResol_->parameterEta("sigma",jeta);
-        TF1* fPhiEta = phiResol_->parameterEta("sigma",jeta);
-        jdeltapt   = jpt>ptResolThreshold_ ? jpt*fPtEta->Eval(jpt)  : jpt*fPtEta->Eval(ptResolThreshold_);
-        jdeltapphi = jpt>ptResolThreshold_ ? jpt*fPhiEta->Eval(jpt) : jpt*fPhiEta->Eval(ptResolThreshold_);
-        delete fPtEta;
-        delete fPhiEta;
+	float evalpt = jpt>ptResolThreshold_ ? jpt  : ptResolThreshold_;
+        jdeltapt   = jpt * ptResol_->parameterEtaEval("sigma",jeta,evalpt);
+        jdeltapphi = jpt * phiResol_->parameterEtaEval("sigma",jeta,evalpt);
     }
 
     std::string inputtype = "jet";
@@ -333,7 +331,7 @@ double JetSmearer::getJetPtThreshold ()
     return ptResolThreshold_;
 }
 
-void JetSmearer::setDelimiter (std::string delimiter)
+void JetSmearer::setDelimiter (const std::string& delimiter)
 {
     res_delim_ = delimiter;
 }
@@ -354,7 +352,7 @@ JetSmearer::~JetSmearer ()
 // get (relative) resolution of a jet
 // NOTE: this gets the resolution of a MC jet only
 //-----------------------------------------------------
-double JetSmearer::getJetResolution(LorentzVector p4)
+double JetSmearer::getJetResolution(const LorentzVector& p4)
 {
     double rjet = getRjet(p4);
     return rjet/p4.energy();
