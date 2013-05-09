@@ -24,7 +24,7 @@ LorentzVector JetSmearer::smearJet (const LorentzVector& p4, bool recoOnly)
     if (midx < 0) {
         double sigma = sqrt(kjet*kjet - 1.) * rjet;
         double mean = 0.;
-        double rand = getRandom(mean, sigma);
+        double rand = getRandom(sigma, mean);
         scale = 1. + (rand / jet_energy);
     }
     else {
