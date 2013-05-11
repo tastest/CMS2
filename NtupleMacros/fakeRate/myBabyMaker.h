@@ -598,7 +598,8 @@ private:
     Bool_t  btagpfcL1F_;
     Int_t   npfc30L1Fj1_;      // number of jets above 30 GeV and away from lepton by dR >= 1.0
     Int_t   npfc40L1Fj1_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
-    Int_t   npfc50L1Fj1_eth_;      // number of jets above 40 GeV and away from lepton by dR >= 0.4
+    Int_t   npfc50L1Fj1_eth_;      // number of jets above 50 GeV and away from lepton by dR >= 0.4
+    Int_t   npfc65L1Fj1_eth_;      // number of jets above 65 GeV and away from lepton by dR >= 0.4
     Int_t   nbpfc40L1Fj1_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
 
     // Same for btagged PF Corrected jets L1FastL2L3
@@ -615,7 +616,8 @@ private:
     Bool_t  btagpfcL1Fres_;
     Int_t   npfc30L1Fj1res_;      // number of jets above 30 GeV and away from lepton by dR >= 1.0
     Int_t   npfc40L1Fj1res_;      // number of jets above 40 GeV and away from lepton by dR >= 1.0
-    Int_t   npfc50L1Fj1res_eth_;      // number of jets above 40 GeV and away from lepton by dR >= 0.4
+    Int_t   npfc50L1Fj1res_eth_;      // number of jets above 50 GeV and away from lepton by dR >= 0.4
+    Int_t   npfc65L1Fj1res_eth_;      // number of jets above 65 GeV and away from lepton by dR >= 0.4
     Int_t   nbpfc40L1Fj1res_;      // number of b-tagged jets above 40 GeV and away from lepton by dR >= 1.0
 
     // Same for btagged PF Corrected jets L1FastL2L3Residual
