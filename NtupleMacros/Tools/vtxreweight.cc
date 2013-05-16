@@ -34,72 +34,40 @@
 // WHERE NVTX IS THE NUMBER OF DA VERTICES PASSING isGoodDAVertex()
 //------------------------------------------------------------------------------
 
-// $Id: vtxreweight.cc,v 1.6 2012/05/01 21:44:24 kelley Exp $
+// $Id: vtxreweight.cc,v 1.4 2011/05/20 14:24:22 warren Exp $
 
 // CINT is allowed to see this, but nothing else:
 #include "vtxreweight.h"
 
 #ifndef __CINT__
-#include <iostream>
-#include <iomanip>
-#include "CORE/CMS2.h"
-#include "CORE/eventSelections.h"
-#include "CORE/trackSelections.h"
-#include "TH1.h"
-#include "TFile.h"
 
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <set>
+#include <string>
 
-TH1F* vtxreweight_hist;
-TH1F* vtxreweight_hist_alt;
-//note: this hist should have the first bin be 1 vertex so that getnbinsx corresponds exactly to nvertices
+#include "../CORE/CMS2.h"
+#include "../CORE/eventSelections.h"
 
 bool loaded_vtxreweight_hist = false;
-bool loaded_vtxreweight_hist_alt = false;
 
-float vtxweight_n( const int nvertices , const bool isData , const bool usealt ) {
-
-  if( isData ) return 1;
-
-  if( (!usealt && !loaded_vtxreweight_hist) || 
-	  (usealt && !loaded_vtxreweight_hist_alt) ){
-    std::cout << "vtxreweight.cc: You need to do"                              << std::endl;
-    std::cout << "set_vtxreweight_rootfile( filename )"                        << std::endl;
-    std::cout << "before calling vtxweight()"                                  << std::endl;
-    std::cout << "a sample vtxreweight file can be found at"                   << std::endl;
-    std::cout << "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root" << std::endl;
-    std::cout << "now, quitting"                                               << std::endl;
-    exit(2);
-  }
-
-  int nvtx = nvertices;
-  TH1F* hist = (usealt ? vtxreweight_hist_alt : vtxreweight_hist );
-  if( nvtx > hist->GetNbinsX() )
-	nvtx = hist->GetNbinsX();
-
-  float weight = 0;
-  weight = hist->GetBinContent( hist->FindBin(nvtx) );
-  if( weight <= 0 ) //we don't want to kill events bc they have no weight
-	weight = 1.;
-  //cout << "nvtx " << nvtx << " weight " << weight << endl;
-  return weight;
-
-}
-
-
-//this is the original version--it used to count vertices and then get the weight
-//move the weight to the above (new) version
-float vtxweight( const bool isData , const bool useDAVertices , const bool usealt ){
+float vtxweight( bool isData , bool useDAVertices ){
 
   if( isData ) return 1;
 
-  if( (!usealt && !loaded_vtxreweight_hist) || 
-	  (usealt && !loaded_vtxreweight_hist_alt) ){
-    std::cout << "vtxreweight.cc: You need to do"                              << std::endl;
-    std::cout << "set_vtxreweight_rootfile( filename )"                        << std::endl;
-    std::cout << "before calling vtxweight()"                                  << std::endl;
-    std::cout << "a sample vtxreweight file can be found at"                   << std::endl;
-    std::cout << "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root" << std::endl;
-    std::cout << "now, quitting"                                               << std::endl;
+  if( !loaded_vtxreweight_hist ){
+    cout << "vtxreweight.cc: You need to do"                              << endl;
+    cout << "set_vtxreweight_rootfile( filename )"                        << endl;
+    cout << "before calling vtxweight()"                                  << endl;
+    cout << "a sample vtxreweight file can be found at"                   << endl;
+    cout << "/tas/benhoob/vtxreweight/vtxreweight_Spring11MC_23pbPR.root" << endl;
+    cout << "now, quitting"                                               << endl;
     exit(2);
   }
 
@@ -132,10 +100,14 @@ float vtxweight( const bool isData , const bool useDAVertices , const bool useal
     return 0;
   }
 
-  return vtxweight_n( nvtx, isData, usealt );
+  if( nvtx > vtxreweight_hist->GetNbinsX() ) nvtx = vtxreweight_hist->GetNbinsX();
+
+  //cout << "nvtx " << nvtx << " weight " << vtxreweight_hist->GetBinContent(nvtx) << endl;
+  return vtxreweight_hist->GetBinContent(nvtx);
+
 }
 
-void set_vtxreweight_rootfile ( const char* filename , const bool verbose , const bool usealt ){
+void set_vtxreweight_rootfile ( const char* filename , bool verbose ){
   TFile* file = TFile::Open(filename);
 
   if( file == 0 ){
@@ -144,15 +116,10 @@ void set_vtxreweight_rootfile ( const char* filename , const bool verbose , cons
     exit(0);
   }
 
-  if( !usealt )
-	vtxreweight_hist = (TH1F*) file->Get("hratio");
-  else 
-	vtxreweight_hist_alt = (TH1F*) file->Get("hratio_alt");
-  TH1F* hist = (usealt ? vtxreweight_hist_alt : vtxreweight_hist );
+  vtxreweight_hist = (TH1F*) file->Get("hratio");
 
-  if( hist == 0 ){
-    cout << "vtxreweight.cc: error, couldn't retrieve hist hratio"
-		 << (usealt ? "_alt" : "") << " from file " << filename << endl;
+  if( vtxreweight_hist == 0 ){
+    cout << "vtxreweight.cc: error, couldn't retrieve hist hratio from file " << filename << endl;
     cout << "Quitting" << endl;
     exit(1);
   }
@@ -160,21 +127,17 @@ void set_vtxreweight_rootfile ( const char* filename , const bool verbose , cons
   if( verbose ){
     cout << "Opened vtx reweighting file " << filename << endl;
     
-    cout << "|" << std::setw(10) << "nvtx"   << std::setw(4) 
-		 << "|" << std::setw(10) << "weight" << std::setw(4) << "|" << endl;
+    cout << "|" << setw(10) << "nvtx"   << setw(4) 
+	 << "|" << setw(10) << "weight" << setw(4) << "|" << endl;
 
-    for(unsigned int ibin = 1 ; ibin <= (unsigned int)hist->GetNbinsX() ; ++ibin ){
+    for(unsigned int ibin = 1 ; ibin <= (unsigned int)vtxreweight_hist->GetNbinsX() ; ++ibin ){
 
-      cout << "|" << std::setw(10) << ibin << std::setw(4) 
-		   << "|" << std::setw(10) << hist->GetBinContent(ibin) << std::setw(4) << "|" << endl;
+      cout << "|" << setw(10) << ibin                                   << setw(4) 
+	   << "|" << setw(10) << vtxreweight_hist->GetBinContent(ibin) << setw(4) << "|" << endl;
 
     }
   }
-
-  if( !usealt )
-	loaded_vtxreweight_hist = true;
-  else
-	loaded_vtxreweight_hist_alt = true;
+  loaded_vtxreweight_hist = true;
 
 }
 

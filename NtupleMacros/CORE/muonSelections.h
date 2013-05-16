@@ -19,29 +19,20 @@ enum SelectionType {
       OSGeneric_v3_FO,
 
       // OSZ
-      OSZ_v4,
       OSZ_v3,
       OSZ_v2,
 
-    ////////////////////
-    // Same Sign 2011 //
-    ///////////////////
+    ///////////////
+    // Same Sign //
+    ///////////////
 
       // Analysis
+      NominalSSv3,
       NominalSSv4,
    
       // Fakes
+      muonSelectionFO_ssV3,
       muonSelectionFO_ssV4,
-
-    ////////////////////
-    // Same Sign 2012 //
-    ///////////////////
-
-      // Analysis
-      NominalSSv5,
-   
-      // Fakes
-      muonSelectionFO_ssV5,
 
     ///////////////
     // Higgs, WW //
@@ -72,9 +63,8 @@ enum SelectionType {
 // Identification //
 ////////////////////
 
-bool muonId           ( unsigned int index, SelectionType type);
-bool muonIdNotIsolated( unsigned int index, SelectionType type);
-bool isGoodStandardMuon( unsigned int index );
+bool muonId           ( unsigned int index, SelectionType type, int vertex_index = -1);
+bool muonIdNotIsolated( unsigned int index, SelectionType type, int vertex_index = -1);
 
 ///////////////
 // Isolation //
@@ -86,12 +76,7 @@ double muonIsoValue_HCAL     ( unsigned int , bool = true );
 double muonIsoValue_FastJet  ( unsigned int , bool = true );
 double mu_fastjet_rel_offset ( unsigned int , bool = true );
 
-double muonIsoValuePF        ( unsigned int imu, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1, int filterId = 0);
-void muonIsoValuePF2012  (float &pfiso_ch, float &pfiso_em, float &pfiso_nh, const float R, const unsigned int imu, const int ivtx, float neutral_et_threshold = 0.5);
-float muonIsoValuePF2012_FastJetEffArea( int index , float conesize, float effective_area, int ivtx);
-double muonCorIsoValue (unsigned int , bool = true);
-float muonRadialIsolation (unsigned int imu, float &chiso, float &nhiso, float &emiso, float neutral_et_threshold = 1.0, float cone_size = 0.3, bool verbose = false);
-float muonIsoValuePF2012_deltaBeta(unsigned int imu);
+double muonIsoValuePF        ( unsigned int imu, unsigned int idavtx, float coner=0.4, float minptn=1.0, float dzcut=0.1);
 
 ///////////////////////
 // Cosmics Rejection //

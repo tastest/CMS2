@@ -973,15 +973,29 @@ float getBTagSF(const string algo, const float discriminator){
 }
 
 //I assume this is a relative error
+// OGU 130516: corrected to value from CMS-BTV-12-001 (https://cdsweb.cern.ch/record/1494669) and the recommendation TWiki, error now 3% (old: 4%)
 float getBTagSF_Err(const string algo){
 
   if(algo == "TCHE"){
-    return 0.04;
+    return 0.03;
   }
   else if (algo == "CSV" ){
-    return 0.04;
+    return 0.03;
   }
   std::cout << "Error in getBTagSF_Err: unsupported algo " << algo << endl;
+  return 0.0;
+}
+
+// OGU 130516: added value from CMS-BTV-12-001 (https://cdsweb.cern.ch/record/1494669) and the recommendation TWiki
+float getCTagSF_Err(const string algo){
+
+  if(algo == "TCHE"){
+    return 0.06;
+  }
+  else if (algo == "CSV" ){
+    return 0.06;
+  }
+  std::cout << "Error in getCTagSF_Err: unsupported algo " << algo << endl;
   return 0.0;
 }
 

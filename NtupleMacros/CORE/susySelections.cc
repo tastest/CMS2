@@ -9,7 +9,7 @@
 #include "CMS2.h"
 
 #include "susySelections.h"
-#include "triggerUtils.h"
+#include "triggerUtils.cc"
 #include "electronSelections.h"
 #include "muonSelections.h"
 #include "eventSelections.h"
@@ -228,7 +228,7 @@ int leptonOrTauIsFromW(int idx, int id, bool alsoSusy) {
 //print event info
 /*****************************************************************************************/
 void printEventInfo(){
-  //cout << cms2.evt_dataset() << endl;
+  cout << cms2.evt_dataset() << endl;
   cout << cms2.evt_run() << " " << cms2.evt_lumiBlock() << " " << cms2.evt_event() << endl;
 }
 
@@ -337,22 +337,6 @@ TString triggerName(TString triggerPattern){
 
 
 //---------------------------------------------
-// Check if trigger passes
-//---------------------------------------------
-
-bool passHLTTriggerPattern(const char* arg){
-
-  TString HLTTriggerPattern(arg);
-  TString HLTTrigger = triggerName( HLTTriggerPattern );
-
-  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND")){
-    return false;
-  }
-  return passHLTTrigger( HLTTrigger );
-}
-
-
-//---------------------------------------------
 // Check if trigger is unprescaled and passes
 //---------------------------------------------
 bool passUnprescaledHLTTriggerPattern(const char* arg){
@@ -373,181 +357,8 @@ bool passUnprescaledHLTTriggerPattern(const char* arg){
 
 }
 
-//---------------------------------------------
-// function returns:
-// -1: no matching trigger found
-//  0: trigger not passed
-//  1: trigger passed, un-prescaled
-//  N: trigger passed, prescale N
-//---------------------------------------------
-
-int passTriggerPrescale(const char* arg){
-
-  //Find exact trigger name
-  TString HLTTriggerPattern(arg);
-  TString HLTTrigger = triggerName( HLTTriggerPattern );
-
-  //Return -1 if no matching trigger found
-  if( HLTTrigger.Contains("TRIGGER_NOT_FOUND") )  return -1;
- 
-  //Return 0 if trigger didn't pass
-  if( !passHLTTrigger( HLTTrigger ) ) return 0;
-
-  //Return 1 if trigger passes and is unprescaled
-  if( passUnprescaledHLTTrigger( HLTTrigger ) ) return 1;
-
-  //Return prescale if prescaled trigger passes
-  return HLT_prescale( HLTTrigger );
-
-}
-
-//---------------------------------------------
-// single muon triggers for lljj bump search
-//---------------------------------------------
-
-bool passMuMuJJTrigger_v1( bool isData ) {
-
-  if( isData ){
-    
-    //-----------------------------------------------------------------------------
-    if (evt_run() >= 160329 && evt_run() <= 163261){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu15_v5") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 163269 && evt_run() <= 164236){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v2") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 165088 && evt_run() <= 165887){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v4") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() == 166346 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v6") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 165922 && evt_run() <= 167043){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v5") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 167078 && evt_run() <= 170053){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v7") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 170071 && evt_run() <= 173198){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v8") )          return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 173212 && evt_run() <= 178380){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v3") )   return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 178420 && evt_run() <= 179889){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v6") )   return true;
-    }
-    //-----------------------------------------------------------------------------
-    else if (evt_run() >= 179959 && evt_run() <= 180093){
-      if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v7") )   return true;
-    }
-    //-----------------------------------------------------------------------------
-  }
-
-  else{
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )  return true;
-  }
-
-  return false;
-}
-
-
-//-----------------------------------------------
-// single lepton + jets triggers for stop search
-//-----------------------------------------------
 
 bool passSingleLepSUSYTrigger2011_v1( bool isData , int lepType ) {
-
-  //------------------------------------------------------------------------
-  // These are the all the triggers considered for single lepton+jets 
-  //------------------------------------------------------------------------
-
-  // no triggers required for MC
-  if( !isData ) return true;
-
-  if( passSingleLep2JetSUSYTrigger2011( isData , lepType ) )   return true; // l+dijet+MHT triggers
-  if( passSingleLep3JetSUSYTrigger2011( isData , lepType ) )   return true; // l+trijet triggers
-  if( passSingleMuTrigger2011(          isData , lepType ) )   return true; // single muon triggers
-
-  return false;
-}
-
-bool passSingleLep2JetSUSYTrigger2011( bool isData , int lepType ) {
-
-  //-------------------------------------------------------
-  // These are the trigger options for lepton+2jets+MET 
-  //-------------------------------------------------------
-
-  // no triggers required for MC
-  if( !isData ) return true;
-
-  // electron channel
-  if( lepType == 0 ){
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_v") )                                   return true; // 160329-164236
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT15_v") ) return true; // 165088-165887
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele22_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; // 166979-173198
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_CentralJet30_CentralJet25_PFMHT20_v") ) return true; // 170826-176309
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele30_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_DiCentralJet30_PFMHT25_v") )            return true; // 173212-178380
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele27_WP80_DiCentralPFJet25_PFMHT15_v") )                                      return true; // 178420-180291
-  }
-
-  // muon channel
-  else if( lepType == 1 ){    
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_v") )          return true; // 160329-165887
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true; // 160329-173198
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true; // 173212-180291
-  }
-
-  else{
-    cout << "susySelections.cc:: ERROR unrecognized lepType " << lepType << ", quitting" << endl;
-    exit(0);
-  }
-
-  return false;
-}
-
-bool passSingleMuTrigger2011( bool isData , int lepType ) {
-  
-  //----------------------------
-  // single muon triggers
-  //----------------------------
-
-  // no triggers required for MC
-  if( !isData ) return true;
-
-  // false for electron channel
-  if( lepType == 0 ){
-    return false;
-  }
-
-  // muon channel
-  else if( lepType == 1 ){    
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_v") )          return true; // 160329-165887
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu24_v") )          return true; // 160329-173198
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu30_eta2p1_v") )   return true; // 173212-180291
-  }
-
-  else{
-    cout << "susySelections.cc:: " << __LINE__ << " ERROR unrecognized lepType " << lepType << ", quitting" << endl;
-    exit(0);
-  }
-
-  return false;
-}
-
-bool passSingleLep3JetSUSYTrigger2011( bool isData , int lepType ) {
-
-  //-------------------------------------------------------
-  //These are the triggers for lepton+3jets
-  //-------------------------------------------------------
 
   // no triggers required for MC
   if( !isData ) return true;
@@ -556,16 +367,14 @@ bool passSingleLep3JetSUSYTrigger2011( bool isData , int lepType ) {
   if( lepType == 0 ){
     if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_CentralTriJet30_v") )                     return true; // 160329-164236
     if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_TrkIdT_TriCentralJet30_v") )                     return true; // 165088-165887
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralJet30_v") )    return true; // 165922-178380
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralPFJet30_v") )  return true; // 178420-180291
+    if( passUnprescaledHLTTriggerPattern("HLT_Ele25_CaloIdVT_CaloIsoT_TrkIdT_TrkIsoT_TriCentralJet30_v") )    return true; // 165922-177730
   }
 
   // muon channel
   else if( lepType == 1 ){
     if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TriCentralJet30_v") )                   return true;   // 160329-165887
     if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_TriCentralJet30_v") )                return true;   // 165922-173198
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;   // 173212-178380
-    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralPFJet30_v") )       return true;   // 178420-180291
+    if( passUnprescaledHLTTriggerPattern("HLT_IsoMu17_eta2p1_TriCentralJet30_v") )         return true;   // 173212-177730 
   }
 
   else{
@@ -575,7 +384,6 @@ bool passSingleLep3JetSUSYTrigger2011( bool isData , int lepType ) {
 
   return false;
 }
-
 
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection 2011
@@ -597,30 +405,24 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
   
     //mm
     if( hypType == 0 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_Mass4_HT150_v") ) return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass4_HT150_v") ) return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu5_Mass8_HT150_v") ) return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleMu3_HT160_v") )   return true;
     }
     
     //em
     else if( hypType == 1 || hypType == 2 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )       return true; 
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )       return true; 
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass4_HT150_v") ) return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_Mu5_Ele8_CaloIdT_TrkIdVL_Mass8_HT150_v") ) return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT150_v") )     return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT150_v") )     return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdL_TrkIdVL_HT160_v") )     return true; 
+      if( passUnprescaledHLTTriggerPattern("HLT_Mu3_Ele8_CaloIdT_TrkIdVL_HT160_v") )     return true;
     }
     
     //ee
     else if( hypType == 3 ){
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )       return true;
-      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_Mass8_HT150_v") ) return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT150_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdL_TrkIdVL_HT160_v") )   return true;
+      if( passUnprescaledHLTTriggerPattern("HLT_DoubleEle8_CaloIdT_TrkIdVL_HT160_v") )   return true;
     }
   }
   
@@ -658,30 +460,6 @@ bool passSUSYTrigger2011_v1( bool isData , int hypType , bool highpt ) {
   return false;
     
 }
-
-
-bool passSUSYTrigger2012_v1( bool isData , int hypType ) {
-
-  //mm
-  if( hypType == 0 ){
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Mu8_v" ) )     return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_TkMu8_v" ) )   return true;
-  }
-  
-  //em
-  else if( hypType == 1 || hypType == 2 ){
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu17_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
-    if( passUnprescaledHLTTriggerPattern("HLT_Mu8_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
- }
-  
-  //ee
-  else if( hypType == 3 ){
-    if( passUnprescaledHLTTriggerPattern("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v") ) return true;
-  }
-
-  return false;
-}
-
 
 /*****************************************************************************************/
 //passes the OS SUSY trigger selection

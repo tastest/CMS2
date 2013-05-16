@@ -66,41 +66,33 @@ bool cleaning_standardApril2011()
     return true;
 }
 
-//----------------------------------------------------------------
-// 04 November 2011
-// standard event cleaning used for SS analysis
-//----------------------------------------------------------------
-bool cleaning_standardNovember2011() {
-    return cleaning_standardOctober2010();
+
+//
+// 5 August 2010
+// standard event cleaning
+// for low pt dilepton / fake rate data studies
+//
+bool cleaning_standardAugust2010(bool isdata)
+{
+    if (!cleaning_goodVertexAugust2010()) return false;
+    if (!cleaning_goodTracks()) return false;
+    if(isdata) {
+      if (cms2.evt_hbheFilter()==0) 
+	return false;
+    } else {
+      if(cms2.hcalnoise_minE2Over10TS()<0.7) return false;
+      //if(cms2.hcalnoise_maxE2Over10TS()>maxRatio_) return false; //don't have this in the MC ntuples :(
+      if(cms2.hcalnoise_maxHPDHits()>=17) return false;
+      if(cms2.hcalnoise_maxRBXHits()>=999) return false;
+      //if(cms2.hcalnoise_maxHPDNoOtherHits()>=10) return false; //don't have this in the MC ntuples :(
+      if(cms2.hcalnoise_maxZeros()>=10) return false;
+      if(cms2.hcalnoise_min25GeVHitTime()<-9999.0) return false;
+      if(cms2.hcalnoise_max25GeVHitTime()>9999.0) return false;
+      if(cms2.hcalnoise_minRBXEMF()<-999.0) return false;
+    }
+    
+    return true;
 }
-
-
-////
-//// 5 August 2010
-//// standard event cleaning
-//// for low pt dilepton / fake rate data studies
-////
-//bool cleaning_standardAugust2010(bool isdata)
-//{
-//    if (!cleaning_goodVertexAugust2010()) return false;
-//    if (!cleaning_goodTracks()) return false;
-//    if(isdata) {
-//      if (cms2.evt_hbheFilter()==0) 
-//	return false;
-//    } else {
-//      if(cms2.hcalnoise_minE2Over10TS()<0.7) return false;
-//      //if(cms2.hcalnoise_maxE2Over10TS()>maxRatio_) return false; //don't have this in the MC ntuples :(
-//      if(cms2.hcalnoise_maxHPDHits()>=17) return false;
-//      if(cms2.hcalnoise_maxRBXHits()>=999) return false;
-//      //if(cms2.hcalnoise_maxHPDNoOtherHits()>=10) return false; //don't have this in the MC ntuples :(
-//      if(cms2.hcalnoise_maxZeros()>=10) return false;
-//      if(cms2.hcalnoise_min25GeVHitTime()<-9999.0) return false;
-//      if(cms2.hcalnoise_max25GeVHitTime()>9999.0) return false;
-//      if(cms2.hcalnoise_minRBXEMF()<-999.0) return false;
-//    }
-//    
-//    return true;
-//}
 
 //
 // require bit 40 or 41 passed
@@ -194,7 +186,6 @@ bool isGoodVertex(size_t ivtx) {
   return true;
 
 }
-
 // function to select a good vertex
 // 
 bool isGoodDAVertex(size_t ivtx) {
@@ -206,6 +197,8 @@ bool isGoodDAVertex(size_t ivtx) {
   return true;
 
 }
+
+
 
 //
 // function to check whether or not both the hypotheses 
@@ -374,20 +367,6 @@ int firstGoodDAvertex () {
     return -1;
 }
 
-//---------------------------------------------------------
-//
-// Find first good vertex
-//
-//---------------------------------------------------------
-int firstGoodVertex () {
-    for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-        if (isGoodVertex(vidx))
-            return vidx;
-    }
-
-    return -1;
-}
-
 //----------------------------------------------------------------
 // checks whether the leptons of a given
 // hypothesis come from the same good vertex
@@ -418,91 +397,7 @@ bool hypsFromFirstGoodDAvertx(size_t hypIdx, float dz_cut) {
         ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, true).first;
 
     if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)
-        return true;    
+        return true;
     
     return false;
 }
-
-//----------------------------------------------------------------
-// checks whether the leptons of a given
-// hypothesis come from the same good vertex
-// by checking if both leptons are within dz
-// of 1cm of the same PV
-//----------------------------------------------------------------
-bool hypsFromFirstGoodVertex(size_t hypIdx, float dz_cut) {
-
-    int vtxidx = firstGoodVertex ();
-
-    if (vtxidx < 0)
-        return false;
-
-    float lt_dz = -999.;
-    float ll_dz = -999.;
-    
-    int lt_idx = cms2.hyp_lt_index()[hypIdx];
-    int ll_idx = cms2.hyp_ll_index()[hypIdx];
-
-    if (abs(cms2.hyp_lt_id().at(hypIdx)) == 11) {
-        if (cms2.els_gsftrkidx().at(lt_idx) < 0) return false;
-        lt_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(lt_idx), vtxidx, false).first;        
-    }
-    else if (abs(cms2.hyp_lt_id().at(hypIdx)) == 13) {
-        if (cms2.mus_trkidx().at(lt_idx) < 0) return false;
-        lt_dz = trks_dz_pv (cms2.mus_trkidx().at(lt_idx), vtxidx, false).first;
-    }
-
-    if (abs(cms2.hyp_ll_id().at(hypIdx)) == 11) {
-        if (cms2.els_gsftrkidx().at(ll_idx) < 0) return false;
-        ll_dz = gsftrks_dz_pv (cms2.els_gsftrkidx().at(ll_idx), vtxidx, false).first;
-    }
-    else if (abs(cms2.hyp_ll_id().at(hypIdx)) == 13) {
-        if (cms2.mus_trkidx().at(ll_idx) < 0) return false;
-        ll_dz = trks_dz_pv (cms2.mus_trkidx().at(ll_idx), vtxidx, false).first;
-    }
-
-    if (fabs(lt_dz) < dz_cut && fabs(ll_dz) < dz_cut)
-        return true;    
-    
-    return false;
-}
-
-
-/*****************************************************************************************/
-// number of good vertices in the event
-/*****************************************************************************************/
-int numberOfGoodVertices(void) {
-  int ngv = 0;
-  for (unsigned int vidx = 0; vidx < cms2.vtxs_position().size(); vidx++) {
-    if (isGoodVertex(vidx)) ++ngv;
-  }
-  return ngv;
-}
-
-
-//
-int chargedHadronVertex( const unsigned int ipf ){
-
-    double  dzmin = 10000;
-    bool    found = false;
-    int     iVertex = -1;
-
-    // loop on vertices
-    for (unsigned int index = 0; index < cms2.vtxs_position().size(); ++index) {
-
-        // find the dz
-        const unsigned int itrk = cms2.pfcands_trkidx()[ipf];
-        double dz = fabs(cms2.trks_vertex_p4()[itrk].z() - cms2.vtxs_position()[index].z());
-
-        // find the closest dz
-        if (dz < dzmin) {
-            dzmin = dz;
-            iVertex = index;
-            found = true;
-        }
-    }
-
-    if (found) return iVertex;
-    return -1;
-
-} //
-

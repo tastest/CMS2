@@ -66,8 +66,19 @@ bool ttdilepsolve::solve( const TVector2 & met, const TLorentzVector & bq1 , con
         TLorentzVector nu1_vec , nu2_vec;
         nu1_vec.SetXYZM( pnux[i] , pnuy[i] , pnuz[i] , 0 );
         nu2_vec.SetXYZM( pnubx[i] , pnuby[i] , pnubz[i] , 0 );
-        nu1.push_back( nu1_vec );
-        nu2.push_back( nu2_vec );
+
+        TLorentzVector lvTop1 = lep1 + nu1_vec + bq1;
+        TLorentzVector lvTop2 = lep2 + nu2_vec + bq2;
+        TLorentzVector lvW1 = lep1 + nu1_vec;
+        TLorentzVector lvW2 = lep2 + nu2_vec;
+
+        if ((fabs (lvTop1.M() - mt1) < 0.5) && (fabs (lvTop2.M() - mt2) < 0.5) &&     (fabs(lvW1.M() - mW1) < 0.5) && (fabs(lvW2.M() - mW2) < 0.5)) {
+            nu1.push_back( nu1_vec );
+            nu2.push_back( nu2_vec );
+//        } else {
+//            cout <<"Wrong mass\n";
+        }
+
     }
     return true;
 }

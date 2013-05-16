@@ -30,8 +30,4 @@ std::pair<double , double> gsftrks_dz_dapv (int itrk, int ipv);
 
 bool isTrackQuality( int index, int cuts );
 
-float ctfIsoValuePF(const unsigned int itrk, unsigned int ivtx, float coner = 0.3, float minptn = 1.0, float dzcut = 0.1);
-
-int associateTrackToVertex(const unsigned int);
-
 #endif

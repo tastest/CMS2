@@ -17,7 +17,7 @@ inline float deltaPhi( float phi1 , float phi2 ) {
   return dphi;
 }
 
-bool   hypsOverlap(int, int );
+bool   hypsOverlap(int idxa, int idxb);
 
 //double trkIsolation(int trk_index);
 
