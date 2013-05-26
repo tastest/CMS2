@@ -117,16 +117,16 @@ namespace samesign
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     // JEC taken from ntuple
-    std::vector<LorentzVector> getJets(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0);
+    std::vector<LorentzVector> getJets(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0, bool sort_by_pt = true);
 
     // JEC applied otf
-    std::vector<LorentzVector> getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0);
+    std::vector<LorentzVector> getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0, bool sort_by_pt = true);
 
     // JEC uncertainty applied otf
-    std::vector<LorentzVector> getJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0);	 
+    std::vector<LorentzVector> getJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, bool sort_by_pt = true);	 
 
     // JEC AND JEC uncertainty applied otf
-    std::vector<LorentzVector> getJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type,  enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0);	 
+    std::vector<LorentzVector> getJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type,  enum JetType type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, bool sort_by_pt = true);	 
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -185,16 +185,16 @@ namespace samesign
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     // JEC taken from ntuple
-    std::vector<LorentzVector> getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0);
+    std::vector<LorentzVector> getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0, bool sort_by_pt = true);
 
     // JEC applied otf
-    std::vector<LorentzVector> getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0);
+    std::vector<LorentzVector> getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0, bool sort_by_pt = true);
 
     // JEC uncertainty applied otf
-    std::vector<LorentzVector> getBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0);	 
+    std::vector<LorentzVector> getBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, bool sort_by_pt = true);	 
 
     // JEC AND JEC uncertainty applied otf
-    std::vector<LorentzVector> getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0); 
+    std::vector<LorentzVector> getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, bool sort_by_pt = true); 
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -229,6 +229,24 @@ namespace samesign
 
     // JEC AND JEC uncertainty applied otf
     int nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0);	 
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // 2012 get jet b-tag discriminators, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    // JEC taken from ntuple
+    std::vector<float> getJetBtagDiscriminators(int idx, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0, bool sort_by_pt = true);
+
+    // JEC applied otf
+    std::vector<float> getJetBtagDiscriminators(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, float rescale = 1.0, int systFlag = 0, bool sort_by_pt = true);
+
+    // JEC uncertainty applied otf
+    std::vector<float> getJetBtagDiscriminators(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, bool sort_by_pt = true);	 
+
+    // JEC AND JEC uncertainty applied otf
+    std::vector<float> getJetBtagDiscriminators(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 40.0, float max_eta = 2.4, float mu_minpt = 20.0, float ele_minpt = 20.0, bool sort_by_pt = true);	 
+
 
     ///////////////////////////////////////////////////////////////////////////////////////////
     // 2012 rescale the jet energy resolution (JER) 
