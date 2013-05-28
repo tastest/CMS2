@@ -37,7 +37,23 @@ struct SortByPt
     {
         return lhs.first.pt() > rhs.first.pt();
     }
+
+    bool operator () (const std::pair<LorentzVector, int>& lhs, const std::pair<LorentzVector, int>& rhs) 
+    {
+        return lhs.first.pt() > rhs.first.pt();
+    }
+
+    bool operator () (const std::pair<LorentzVector, bool>& lhs, const std::pair<LorentzVector, bool>& rhs) 
+    {
+        return lhs.first.pt() > rhs.first.pt();
+    }
+
+    bool operator () (const std::pair<LorentzVector, float>& lhs, const std::pair<LorentzVector, float>& rhs) 
+    {
+        return lhs.first.pt() > rhs.first.pt();
+    }
 };
+
 
 
 /////////////////////////////////////////////////////////////////
@@ -759,7 +775,7 @@ bool samesign::makesExtraGammaStar(int idx, bool apply_id_iso) {
 ////////////////////////////////////////////////////////////////////////////////////////////////
     
 // JEC taken from ntuple
-std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag) {
+std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt) {
 
   std::vector<LorentzVector> tmp_jets = getJets(idx, true, type, JETS_CLEAN_HYP_E_MU, deltaR, 0.0, max_eta, (double) rescale, systFlag);
 
@@ -808,13 +824,14 @@ std::vector<LorentzVector> samesign::getJets(int idx, enum JetType type, float d
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), SortByPt());
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;    
 }
 
 
 // JEC applied otf
-std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
 {
     std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
 
@@ -844,12 +861,13 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), SortByPt());
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }
 
 // JEC uncertainty applied otf
-std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)    
+std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)
 {    
     std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
 
@@ -876,12 +894,13 @@ std::vector<LorentzVector> samesign::getJets(int idx, JetCorrectionUncertainty *
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), SortByPt());
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }
 
 // JEC AND JEC uncertainty applied otf
-std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type,  enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)    
+std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type,  enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)
 {    
     std::vector<bool> tmp_jet_flags = samesign::getJetFlags(idx, type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
 
@@ -910,11 +929,11 @@ std::vector<LorentzVector> samesign::getJets(int idx, FactorizedJetCorrector* je
         final_jets.push_back(vjet);
     }
      
-    sort(final_jets.begin(), final_jets.end(), SortByPt());  
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());  
     return final_jets;   
 }    
      
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 // 2012 get all the jets with corrected energy 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1288,7 +1307,7 @@ int samesign::nJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectio
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 // JEC taken from ntuple
-std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
 {
     std::vector<LorentzVector> tmp_jets = getBtaggedJets(idx, true, type, JETS_CLEAN_HYP_E_MU, btag_type, deltaR, 0.0, max_eta, (double) rescale, systFlag);
 
@@ -1338,13 +1357,14 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, enum JetType type, 
     }
 
 
-    sort(final_jets.begin(), final_jets.end(), SortByPt());
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;        
 }
 
 
 // JEC applied otf
-std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
 {
     std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
 
@@ -1371,13 +1391,14 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), SortByPt());
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }
 
 
 // JEC uncertainty applied otf
-std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)    
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)
 {    
     std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
 
@@ -1400,13 +1421,14 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, JetCorrectionUncert
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), SortByPt());
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }    
      
  
 // JEC AND JEC uncertainty applied otf
-std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)     
+std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)
 {    
     std::vector<bool> tmp_jet_flags = samesign::getBtaggedJetFlags(idx, type, btag_type, deltaR, 0.0, max_eta, mu_minpt, ele_minpt);
 
@@ -1433,7 +1455,8 @@ std::vector<LorentzVector> samesign::getBtaggedJets(int idx, FactorizedJetCorrec
         final_jets.push_back(vjet);
     }
 
-    sort(final_jets.begin(), final_jets.end(), SortByPt());
+    if (sort_by_pt)
+        sort(final_jets.begin(), final_jets.end(), SortByPt());
     return final_jets;
 }    
      
@@ -1655,6 +1678,387 @@ int samesign::nBtaggedJets(int idx, FactorizedJetCorrector* jet_corrector, JetCo
     return good_btags.size();    
 }    
 
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// 2012 get jet b-tag discriminators, skip jets overlapping with numerator e/mu with pt>x (defaults are 20/20 GeV)
+///////////////////////////////////////////////////////////////////////////////////////////
+
+// JEC taken from ntuple
+std::vector<float> samesign::getJetBtagDiscriminators(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
+{
+    std::vector<LorentzVector> tmp_jet_p4s = samesign::getJets(idx, type, 0.0, -9999., 9999., 9999., 9999., rescale, systFlag, /*sort_by_pt=*/false);
+    std::vector<bool> tmp_jet_flags        = samesign::getJetFlags(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+    assert(tmp_jet_p4s.size() == tmp_jet_flags.size());
+
+    std::vector<float> tmp_btag_disc = getJetBtagDiscriminators(btag_type, type);
+
+    assert(tmp_jet_flags.size() == tmp_btag_disc.size());
+
+    std::vector<float> ret;
+    if (sort_by_pt)
+    {
+        std::vector<std::pair<LorentzVector, float> > tmp_jet_p4_disc;
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            tmp_jet_p4_disc.push_back(std::make_pair(tmp_jet_p4s.at(jidx), tmp_btag_disc.at(jidx)));
+        }
+        
+        sort(tmp_jet_p4_disc.begin(), tmp_jet_p4_disc.end(), SortByPt());
+        
+        for (unsigned int bidx = 0; bidx < tmp_jet_p4_disc.size(); bidx++)
+        {
+            ret.push_back(tmp_jet_p4_disc.at(bidx).second);
+        }
+    }
+    else
+    {
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            ret.push_back(tmp_btag_disc.at(jidx));
+        }
+    }
+
+    return ret;
+}
+
+// JEC applied otf
+std::vector<float> samesign::getJetBtagDiscriminators(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
+{
+    std::vector<LorentzVector> tmp_jet_p4s = samesign::getJets(idx, jet_corrector, type, 0.0, -9999., 9999., 9999., 9999., rescale, systFlag, /*sort_by_pt=*/false);
+    std::vector<bool> tmp_jet_flags        = samesign::getJetFlags(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+    assert(tmp_jet_p4s.size() == tmp_jet_flags.size());
+
+    std::vector<float> tmp_btag_disc = getJetBtagDiscriminators(btag_type, type);
+
+    assert(tmp_jet_flags.size() == tmp_btag_disc.size());
+
+    std::vector<float> ret;
+    if (sort_by_pt)
+    {
+        std::vector<std::pair<LorentzVector, float> > tmp_jet_p4_disc;
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            tmp_jet_p4_disc.push_back(std::make_pair(tmp_jet_p4s.at(jidx), tmp_btag_disc.at(jidx)));
+        }
+        
+        sort(tmp_jet_p4_disc.begin(), tmp_jet_p4_disc.end(), SortByPt());
+        
+        for (unsigned int bidx = 0; bidx < tmp_jet_p4_disc.size(); bidx++)
+        {
+            ret.push_back(tmp_jet_p4_disc.at(bidx).second);
+        }
+    }
+    else
+    {
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            ret.push_back(tmp_btag_disc.at(jidx));
+        }
+    }
+
+    return ret;    
+}
+
+// JEC uncertainty applied otf
+std::vector<float> samesign::getJetBtagDiscriminators(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)
+{
+    std::vector<LorentzVector> tmp_jet_p4s = samesign::getJets(idx, jet_unc, scale_type, type, 0.0, -9999., 9999., 9999., 9999., /*sort_by_pt=*/false);
+    std::vector<bool> tmp_jet_flags        = samesign::getJetFlags(idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+    assert(tmp_jet_p4s.size() == tmp_jet_flags.size());
+
+    std::vector<float> tmp_btag_disc = getJetBtagDiscriminators(btag_type, type);
+
+    assert(tmp_jet_flags.size() == tmp_btag_disc.size());
+
+    std::vector<float> ret;
+    if (sort_by_pt)
+    {
+        std::vector<std::pair<LorentzVector, float> > tmp_jet_p4_disc;
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            tmp_jet_p4_disc.push_back(std::make_pair(tmp_jet_p4s.at(jidx), tmp_btag_disc.at(jidx)));
+        }
+        
+        sort(tmp_jet_p4_disc.begin(), tmp_jet_p4_disc.end(), SortByPt());
+        
+        for (unsigned int bidx = 0; bidx < tmp_jet_p4_disc.size(); bidx++)
+        {
+            ret.push_back(tmp_jet_p4_disc.at(bidx).second);
+        }
+    }
+    else
+    {
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            ret.push_back(tmp_btag_disc.at(jidx));
+        }
+    }
+
+    return ret;    
+}
+
+// JEC AND JEC uncertainty applied otf
+std::vector<float> samesign::getJetBtagDiscriminators(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)
+{
+    std::vector<LorentzVector> tmp_jet_p4s = samesign::getJets(idx, jet_corrector, jet_unc, scale_type, type, 0.0, -9999., 9999., 9999., 9999., /*sort_by_pt=*/false);
+    std::vector<bool> tmp_jet_flags        = samesign::getJetFlags(idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+    assert(tmp_jet_p4s.size() == tmp_jet_flags.size());
+
+    std::vector<float> tmp_btag_disc = getJetBtagDiscriminators(btag_type, type);
+
+    assert(tmp_jet_flags.size() == tmp_btag_disc.size());
+
+    std::vector<float> ret;
+    if (sort_by_pt)
+    {
+        std::vector<std::pair<LorentzVector, float> > tmp_jet_p4_disc;
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            tmp_jet_p4_disc.push_back(std::make_pair(tmp_jet_p4s.at(jidx), tmp_btag_disc.at(jidx)));
+        }
+        
+        sort(tmp_jet_p4_disc.begin(), tmp_jet_p4_disc.end(), SortByPt());
+        
+        for (unsigned int bidx = 0; bidx < tmp_jet_p4_disc.size(); bidx++)
+        {
+            ret.push_back(tmp_jet_p4_disc.at(bidx).second);
+        }
+    }
+    else
+    {
+        for (unsigned int jidx = 0; jidx < tmp_jet_flags.size(); jidx++)
+        {
+            if (!tmp_jet_flags.at(jidx)) continue;
+            ret.push_back(tmp_btag_disc.at(jidx));
+        }
+    }
+
+    return ret;    
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// 2012 get the mc flavor Algo matched to the jet (MC only -- data retusns bogus value) 
+///////////////////////////////////////////////////////////////////////////////////////////
+
+std::vector<int> getJetMcAlgoMatch(const std::vector<LorentzVector>& jets_p4, const std::vector<bool>& jets_flag, bool sort_by_pt)
+{
+    // test the jet flags 
+    if (jets_flag.size() != cms2.pfjets_mcflavorAlgo().size())
+    {
+        throw std::runtime_error("[samesign::getJetMcAgloMatch]: ERROR -- jet_flags and pfjets_mcflavorAlgo not the same size!");
+    }
+
+    std::vector<std::pair<LorentzVector, int> > tmp_p4_match;
+    unsigned int good_jidx = 0;
+    for (unsigned int jidx = 0; jidx < jets_flag.size(); jidx++)
+    {
+        if (!jets_flag.at(jidx)) continue;
+        tmp_p4_match.push_back(std::make_pair(jets_p4.at(good_jidx), cms2.pfjets_mcflavorAlgo().at(jidx)));
+        good_jidx++;
+    }
+
+    if (sort_by_pt)
+    {
+        sort(tmp_p4_match.begin(), tmp_p4_match.end(), SortByPt());
+    }
+
+    std::vector<int> ret;
+    for (unsigned int idx = 0; idx < tmp_p4_match.size(); idx++)
+    {
+        ret.push_back(tmp_p4_match.at(idx).second);
+    }
+
+    return ret;
+}
+
+std::vector<int> samesign::getJetMcAlgoMatch(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
+{
+    // get appropriate jet flags
+    std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag, sort_by_pt);
+    std::vector<bool> tmp_jets_flag        = getJetFlags(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+    return ::getJetMcAlgoMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+std::vector<int> samesign::getJetMcAlgoMatch(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
+{
+   // get appropriate jet flags
+   std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag, sort_by_pt);
+   std::vector<bool> tmp_jets_flag        = getJetFlags(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+   return ::getJetMcAlgoMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+std::vector<int> samesign::getJetMcAlgoMatch(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)	 
+{
+   // get appropriate jet flags
+   std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, sort_by_pt);
+   std::vector<bool> tmp_jets_flag        = getJetFlags(idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+   return ::getJetMcAlgoMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+std::vector<int> samesign::getJetMcAlgoMatch(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)	 
+{
+   // get appropriate jet flags
+   std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, sort_by_pt);
+   std::vector<bool> tmp_jets_flag        = getJetFlags(idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+   return ::getJetMcAlgoMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// 2012 get the mc flavor Phys matched to the jet (MC only -- data retusns bogus value) 
+///////////////////////////////////////////////////////////////////////////////////////////
+
+std::vector<int> getJetMcPhysMatch(const std::vector<LorentzVector>& jets_p4, const std::vector<bool>& jets_flag, bool sort_by_pt)
+{
+    // test the jet flags 
+    if (jets_flag.size() != cms2.pfjets_mcflavorPhys().size())
+    {
+        throw std::runtime_error("[samesign::getJetMcAgloMatch]: ERROR -- jet_flags and pfjets_mcflavorPhys not the same size!");
+    }
+
+    std::vector<std::pair<LorentzVector, int> > tmp_p4_match;
+    unsigned int good_jidx = 0;
+    for (unsigned int jidx = 0; jidx < jets_flag.size(); jidx++)
+    {
+        if (!jets_flag.at(jidx)) continue;
+        tmp_p4_match.push_back(std::make_pair(jets_p4.at(good_jidx), cms2.pfjets_mcflavorPhys().at(jidx)));
+        good_jidx++;
+    }
+
+    if (sort_by_pt)
+    {
+        sort(tmp_p4_match.begin(), tmp_p4_match.end(), SortByPt());
+    }
+
+    std::vector<int> ret;
+    for (unsigned int idx = 0; idx < tmp_p4_match.size(); idx++)
+    {
+        ret.push_back(tmp_p4_match.at(idx).second);
+    }
+
+    return ret;
+}
+
+std::vector<int> samesign::getJetMcPhysMatch(int idx, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
+{
+    // get appropriate jet flags
+    std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag, sort_by_pt);
+    std::vector<bool> tmp_jets_flag        = getJetFlags(idx, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+    return ::getJetMcPhysMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+std::vector<int> samesign::getJetMcPhysMatch(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag, bool sort_by_pt)
+{
+   // get appropriate jet flags
+   std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag, sort_by_pt);
+   std::vector<bool> tmp_jets_flag        = getJetFlags(idx, jet_corrector, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+   return ::getJetMcPhysMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+std::vector<int> samesign::getJetMcPhysMatch(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)	 
+{
+   // get appropriate jet flags
+   std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, sort_by_pt);
+   std::vector<bool> tmp_jets_flag        = getJetFlags(idx, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+   return ::getJetMcPhysMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+std::vector<int> samesign::getJetMcPhysMatch(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, bool sort_by_pt)	 
+{
+   // get appropriate jet flags
+   std::vector<LorentzVector> tmp_jets_p4 = getJets    (idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, sort_by_pt);
+   std::vector<bool> tmp_jets_flag        = getJetFlags(idx, jet_corrector, jet_unc, scale_type, type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+   return ::getJetMcPhysMatch(tmp_jets_p4, tmp_jets_flag, sort_by_pt);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// 2012 get the pt sorted btagged jet flags 
+///////////////////////////////////////////////////////////////////////////////////////////
+
+std::vector<bool> sortBtaggedFlags(const std::vector<LorentzVector>& all_jet_p4s, const std::vector<bool>& all_jet_flags, const std::vector<bool>& all_bjet_flags)
+{
+    // some sanity checks
+    assert(all_jet_p4s.size() == all_jet_flags.size());
+    assert(all_jet_flags.size() == all_bjet_flags.size());
+
+    std::vector<std::pair<LorentzVector, bool> > tmp_p4_flags;
+    for (unsigned int idx = 0; idx < all_jet_flags.size(); idx++)
+    {
+        if (!all_jet_flags.at(idx)) continue;
+        tmp_p4_flags.push_back(std::make_pair(all_jet_p4s.at(idx), all_bjet_flags.at(idx)));
+    }
+
+    sort(tmp_p4_flags.begin(), tmp_p4_flags.end(), SortByPt());
+
+    std::vector<bool> ret;
+    for(unsigned int idx = 0; idx < tmp_p4_flags.size(); idx++)
+    {
+        ret.push_back(tmp_p4_flags.at(idx).second);
+    }
+
+    return ret;
+}
+
+std::vector<bool> samesign::getSortedBtaggedFlags(int idx, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+{
+    // get appropriate jet flags
+    std::vector<LorentzVector> tmp_jets_p4 = getJets           (idx, type, /*dR=*/0.0, /*jet_pt>*/-9999., /*|eta|<*/9999., /*mu_min_pt=*/9999., /*el_min_pt=*/9999., /*rescale=*/1.0,  systFlag, /*sort_by_pt=*/true);
+    std::vector<bool> tmp_jets_flag        = getJetFlags       (idx, type,            deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    std::vector<bool> tmp_jets_btag_flag   = getBtaggedJetFlags(idx, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+    return sortBtaggedFlags(tmp_jets_p4, tmp_jets_flag, tmp_jets_btag_flag);
+}
+
+std::vector<bool> samesign::getSortedBtaggedFlags(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt, float rescale, int systFlag)
+{
+    // get appropriate jet flags
+    std::vector<LorentzVector> tmp_jets_p4 = getJets           (idx, jet_corrector, type, /*dR=*/0.0, /*jet_pt>*/-9999., /*|eta|<*/9999., /*mu_min_pt=*/9999., /*el_min_pt=*/9999., /*rescale=*/1.0,  systFlag, /*sort_by_pt=*/true);
+    std::vector<bool> tmp_jets_flag        = getJetFlags       (idx, jet_corrector, type,            deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+    std::vector<bool> tmp_jets_btag_flag   = getBtaggedJetFlags(idx, jet_corrector, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt, rescale, systFlag);
+
+    return sortBtaggedFlags(tmp_jets_p4, tmp_jets_flag, tmp_jets_btag_flag);
+}
+
+std::vector<bool> samesign::getSortedBtaggedFlags(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
+{
+    // get appropriate jet flags
+    std::vector<LorentzVector> tmp_jets_p4 = getJets           (idx, jet_unc, scale_type, type, /*dR=*/0.0, /*jet_pt>*/-9999., /*|eta|<*/9999., /*mu_min_pt=*/9999., /*el_min_pt=*/9999., /*sort_by_pt=*/true);
+    std::vector<bool> tmp_jets_flag        = getJetFlags       (idx, jet_unc, scale_type, type,            deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    std::vector<bool> tmp_jets_btag_flag   = getBtaggedJetFlags(idx, jet_unc, scale_type, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+    return sortBtaggedFlags(tmp_jets_p4, tmp_jets_flag, tmp_jets_btag_flag);
+}
+
+std::vector<bool> samesign::getSortedBtaggedFlags(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR, float min_pt, float max_eta, float mu_minpt, float ele_minpt)	 
+{
+    // get appropriate jet flags
+    std::vector<LorentzVector> tmp_jets_p4 = getJets           (idx, jet_corrector, jet_unc, scale_type, type, /*dR=*/0.0, /*jet_pt>*/-9999., /*|eta|<*/9999., /*mu_min_pt=*/9999., /*el_min_pt=*/9999., /*sort_by_pt=*/true);
+    std::vector<bool> tmp_jets_flag        = getJetFlags       (idx, jet_corrector, jet_unc, scale_type, type,            deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+    std::vector<bool> tmp_jets_btag_flag   = getBtaggedJetFlags(idx, jet_corrector, jet_unc, scale_type, type, btag_type, deltaR, min_pt, max_eta, mu_minpt, ele_minpt);
+
+    return sortBtaggedFlags(tmp_jets_p4, tmp_jets_flag, tmp_jets_btag_flag);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // 2012 rescale the jet energy resolution (JER) 
