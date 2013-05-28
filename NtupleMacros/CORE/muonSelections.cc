@@ -90,6 +90,14 @@ bool muonId(unsigned int index, SelectionType type){
         return (muonIsoValuePF2012_deltaBeta(index) < 0.4);
         break;
 
+        //////////////////////
+        // OS RPV STOP2012  //
+        //////////////////////
+    case NominalOSv1:
+        if (!muonIdNotIsolated(index, type)) return false;
+        return (muonIsoValuePF2012_deltaBeta(index) < 0.15);
+        break;
+
         ///////////////
         // Higgs, WW //
         ///////////////
@@ -591,7 +599,16 @@ bool muonIdNotIsolated(unsigned int index, SelectionType type) {
         if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.10) return false;
         return true;
         break;        
-
+        //baseline selector for 2012 OS RPV STOP analysis
+    case NominalOSv1:
+        if (fabs(cms2.mus_p4().at(index).eta()) > 2.4)                           return false;
+        if (cms2.mus_gfit_chi2().at(index)/cms2.mus_gfit_ndof().at(index) >= 10) return false;
+        if (!passes_muid_wp2012(index, mu2012_tightness::TIGHT))                 return false;
+        if (cms2.mus_ptErr().at(index)/cms2.mus_p4().at(index).pt() > 0.1)       return false;
+        if (fabs(trks_d0_pv(trkidx, vtxidx).first) > 0.02)                       return false;
+        if (fabs(trks_dz_pv(trkidx, vtxidx).first) > 0.1)                        return false;
+        return true;
+        break;
     default:
         std::cout << "muonID ERROR: requested muon type is not defined. Abort." << std::endl;
         return false;

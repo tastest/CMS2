@@ -78,7 +78,13 @@ enum SelectionType {
 
       // Fakes
       NominalTTZ_looseFO_v1,
-      NominalTTZ_tightFO_v1
+      NominalTTZ_tightFO_v1,
+
+    //////////////////////
+    // OS RPV STOP2012  //
+    //////////////////////
+      NominalOSv1
+
 }; 
 
 ////////////////////

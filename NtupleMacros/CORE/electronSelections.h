@@ -79,7 +79,7 @@ enum EleSelectionType {
   ELEID_VBTF_35X_95,                  // VBTF95 electron ID (35X)
   ELEID_VBTF_35X_90,                  // VBTF90 electron ID (35X)
   ELEID_VBTF_35X_80,                  // VBTF80 electron ID (35X)
-  ELEID_VBTF_35X_70,                  // VBTF70 electron ID (35X)
+//  ELEID_VBTF_35X_70,                  // VBTF70 electron ID (35X)
   ELEID_VBTF_80_NOHOEEND,             // VBTF80 electron ID no HoE in endcap
   ELEID_VBTF_85_NOHOEEND,             // VBTF85 electron ID no HoE in endcap
   ELEID_VBTF_85,                      // VBTF85 electron ID
@@ -92,6 +92,7 @@ enum EleSelectionType {
   // ELEID_WP2012_LOOSE_NOISO_NOIP,     // WP2012 LOOSE ELECTRON ID, NO ISO, NO IP
   ELEID_WP2012_MEDIUM_NOISO,          // WP2012 MEDIUM ELECTRON ID, NO ISO
   ELEID_WP2012_MEDIUM_NOISO_NOIP,     // WP2012 MEDIUM ELECTRON ID, NO ISO, NO IP
+  ELEID_WP2012_LOOSE_NOISO,          // WP2012 MEDIUM ELECTRON ID, NO ISO
 
 //////////////////////////
 // Conversion Rejection //
@@ -973,6 +974,30 @@ static const cuts_t electronSelection_TTVTightFOv1 =
 // /////////////////////////////////////
 
 
+/////////////////////////////////////
+// 2012 OS RPV Stop Selections     //
+/////////////////////////////////////
+
+// electron preselection
+static const cuts_t electronSelection_OS_presel =
+           (1ll<<ELEETA_240) |
+           (1ll<<ELENOMUON_010);
+
+// Analysis Selection (fake rate numerator)
+static const cuts_t electronSelection_osV1_noIso = 
+                 electronSelection_OS_presel   |
+                 (1ll<<ELEID_WP2012_LOOSE_NOISO);
+
+static const cuts_t electronSelection_osV1_iso =
+                       (1ll<<ELEISO_RELNT015);
+
+static const cuts_t electronSelection_osV1 = 
+                       electronSelection_osV1_noIso |
+                       electronSelection_osV1_iso;
+
+/////////////////////////////////////
+// End 2012 SS Selections          //
+/////////////////////////////////////
 
 
 
