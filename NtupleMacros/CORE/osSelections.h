@@ -105,6 +105,22 @@ namespace os2012
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////
+    // 2012 get all the jets with corrected energy 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    // JEC taken from ntuple
+    std::vector<LorentzVector> getAllJets(enum JetType type, const int systFlag = 0, bool sort_by_pt = false);
+
+    // JEC applied otf
+    std::vector<LorentzVector> getAllJets(enum JetType type, FactorizedJetCorrector* jet_corrector, const int systFlag = 0, bool sort_by_type = false);
+
+    // JEC uncertainty applied otf
+    std::vector<LorentzVector> getAllJets(enum JetType type, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, bool sort_by_type = false);
+
+    // JEC AND JEC uncertainty applied otf
+    std::vector<LorentzVector> getAllJets(enum JetType type, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, bool sort_by_pt = false);
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
     // 2012 get jet flags and perform overlap removal with numerator e/mu with pt > x (defaults are 20/20 GeV)
     ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -221,6 +237,51 @@ namespace os2012
 
     // JEC AND JEC uncertainty applied otf
     std::vector<float> getJetBtagDiscriminators(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, bool sort_by_pt = true);	 
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // 2012 get the mc flavor ALGO matched to the jet (MC only -- data retusns bogus value) 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    std::vector<int> getJetMcAlgoMatch(const std::vector<LorentzVector>& jets_p4, const std::vector<bool>& jets_flag, bool sort_by_pt);
+
+    std::vector<int> getJetMcAlgoMatch(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, int systFlag = 0, bool sort_by_pt = true);
+
+    std::vector<int> getJetMcAlgoMatch(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, int systFlag = 0, bool sort_by_pt = true);
+
+    std::vector<int> getJetMcAlgoMatch(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, bool sort_by_pt = true);	 
+
+    std::vector<int> getJetMcAlgoMatch(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, bool sort_by_pt = true);	 
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // 2012 get the mc flavor PHYS matched to the jet (MC only -- data retusns bogus value) 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    std::vector<int> getJetMcPhysMatch(const std::vector<LorentzVector>& jets_p4, const std::vector<bool>& jets_flag, bool sort_by_pt);
+
+    std::vector<int> getJetMcPhysMatch(int idx, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, int systFlag = 0, bool sort_by_pt = true);
+
+    std::vector<int> getJetMcPhysMatch(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, int systFlag = 0, bool sort_by_pt = true);
+
+    std::vector<int> getJetMcPhysMatch(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, bool sort_by_pt = true);	 
+
+    std::vector<int> getJetMcPhysMatch(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, bool sort_by_pt = true);	 
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    // 2012 get the pt sorted btagged jet flags 
+    ///////////////////////////////////////////////////////////////////////////////////////////
+
+    std::vector<bool> sortBtaggedFlags(const std::vector<LorentzVector>& all_jet_p4s, const std::vector<bool>& all_jet_flags, const std::vector<bool>& all_bjet_flags);
+
+    std::vector<bool> getSortedBtaggedFlags(int idx, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, int systFlag = 0);
+
+    std::vector<bool> getSortedBtaggedFlags(int idx, FactorizedJetCorrector* jet_corrector, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0, int systFlag = 0);
+
+    std::vector<bool> getSortedBtaggedFlags(int idx, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0);	 
+
+    std::vector<bool> getSortedBtaggedFlags(int idx, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, enum JetType type, enum BtagType btag_type, float deltaR = 0.4, float min_pt = 30.0, float max_eta = 2.4, float min_lep_pt = 20.0);	 
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////

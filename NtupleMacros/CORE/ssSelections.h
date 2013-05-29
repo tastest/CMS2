@@ -134,16 +134,16 @@ namespace samesign
     ///////////////////////////////////////////////////////////////////////////////////////////
 
     // JEC taken from ntuple
-    std::vector<LorentzVector> getAllCorrectedJets(const int systFlag = 0);
+    std::vector<LorentzVector> getAllCorrectedJets(enum JetType type, const int systFlag = 0, bool sort_by_pt = false);
 
     // JEC applied otf
-    std::vector<LorentzVector> getAllCorrectedJets(FactorizedJetCorrector* jet_corrector, const int systFlag = 0);
+    std::vector<LorentzVector> getAllCorrectedJets(enum JetType type, FactorizedJetCorrector* jet_corrector, const int systFlag = 0, bool sort_by_pt = false);
 
     // JEC uncertainty applied otf
-    std::vector<LorentzVector> getAllCorrectedJets(JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type);	 
+    std::vector<LorentzVector> getAllCorrectedJets(enum JetType type, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, bool sort_by_pt = false);	 
 
     // JEC AND JEC uncertainty applied otf
-    std::vector<LorentzVector> getAllCorrectedJets(FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type);	 
+    std::vector<LorentzVector> getAllCorrectedJets(enum JetType type, FactorizedJetCorrector* jet_corrector, JetCorrectionUncertainty *jet_unc, enum JetScaleType scale_type, bool sort_by_pt = false);	 
 
 
     ///////////////////////////////////////////////////////////////////////////////////////////
