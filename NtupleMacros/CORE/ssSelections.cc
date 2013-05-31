@@ -998,7 +998,7 @@ std::vector<LorentzVector> samesign::getAllCorrectedJets(enum JetType type, JetC
         const float jet_cor = (cms2.evt_isRealData() ? cms2.pfjets_corL1FastL2L3residual().at(jidx) :  cms2.pfjets_corL1FastL2L3().at(jidx));
         LorentzVector vjet  = cms2.pfjets_p4().at(jidx) * jet_cor; 
         jet_unc->setJetPt(vjet.pt());    
-        jet_unc->setJetEta(vjet.eta());  
+        jet_unc->setJetEta(vjet.eta() > 0.0f ? (std::min(vjet.eta(), 5.1999f)) : (std::max(vjet.eta(), -5.1999f)));  
         const float jet_cor_unc = jet_unc->getUncertainty(true);     
         vjet *= (1.0 + jet_cor_unc * scale_type);    
         temp_vjets.push_back(vjet);
@@ -1021,7 +1021,7 @@ std::vector<LorentzVector> samesign::getAllCorrectedJets(enum JetType type, Fact
         float jet_cor = jet_corrector->getCorrection();
         LorentzVector vjet = cms2.pfjets_p4().at(jidx) * jet_cor;
         jet_unc->setJetPt(vjet.pt());    
-        jet_unc->setJetEta(vjet.eta());  
+        jet_unc->setJetEta(vjet.eta() > 0.0f ? (std::min(vjet.eta(), 5.1999f)) : (std::max(vjet.eta(), -5.1999f)));  
         const float jet_cor_unc = jet_unc->getUncertainty(true);     
         vjet *= (1.0 + jet_cor_unc * scale_type);    
         temp_vjets.push_back(vjet);
