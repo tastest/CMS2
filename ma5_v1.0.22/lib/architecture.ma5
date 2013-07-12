@@ -1,0 +1,19 @@
+linux2
+1.0.22
+2012/06/20
+2.6.4 (r264:75706, Mar 15 2011, 15:00:56) [GCC 4.3.4]
+4.3.4
+52706
+False
+3
+PyROOT
+/code/osgcode/cmssoft/cms/slc5_amd64_gcc434/cms/cmssw-patch/CMSSW_4_2_7_patch1/external/slc5_amd64_gcc434/lib/libPyROOT.so:1308641685.0
+ROOT
+/code/osgcode/cmssoft/cms/slc5_amd64_gcc434/cms/cmssw-patch/CMSSW_4_2_7_patch1/external/slc5_amd64_gcc434/lib/ROOT.py:1308641543.0
+ZLib
+/code/osgcode/cmssoft/cms/slc5_amd64_gcc434/cms/cmssw-patch/CMSSW_4_2_7_patch1/external/slc5_amd64_gcc434/lib/libz.so:1294413101.0
+2
+ZLib
+/usr/include/zlib.h:1305111436.0
+ROOT
+/code/osgcode/cmssoft/cms/slc5_amd64_gcc434/lcg/root/5.27.06b-cms21/include/TH1F.h:1308641133.0

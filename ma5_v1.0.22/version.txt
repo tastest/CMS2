@@ -1,0 +1,5 @@
+Date : 2012/06/20
+Time : 09:54:21
+SVN tag : 495
+MA5 version : 1.0.22
+tarball created by bfuks
