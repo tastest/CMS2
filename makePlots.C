@@ -1,0 +1,18 @@
+ttR(){
+  gStyle->SetOptStat(0);
+  ttdil_httRapidityGluongenp_allj_all->SetLineColor(kBlue);
+  ttdil_httRapidityGluongenp_allj_all->SetTitle("");
+  ttdil_httRapidityGluongenp_allj_all->GetXaxis()->SetTitle("y_t+y_#bar{t}");
+  ttdil_httRapidityGluongenp_allj_all->Draw();
+  ttdil_httRapidityQuarkgenp_allj_all->SetLineColor(kRed);
+  ttdil_httRapidityQuarkgenp_allj_all->Draw("same");
+}
+llbbR(){
+  gStyle->SetOptStat(0);
+  ttdil_hllbbRapidityGluongenp_allj_all->SetLineColor(kBlue);
+  ttdil_hllbbRapidityGluongenp_allj_all->SetTitle("");
+  ttdil_hllbbRapidityGluongenp_allj_all->GetXaxis()->SetTitle("y_{l^{+}b}+y_{l^{-}#bar{b}}");
+  ttdil_hllbbRapidityGluongenp_allj_all->Draw();
+  ttdil_hllbbRapidityQuarkgenp_allj_all->SetLineColor(kRed);
+  ttdil_hllbbRapidityQuarkgenp_allj_all->Draw("same");
+}
